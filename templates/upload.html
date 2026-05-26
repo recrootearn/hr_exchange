@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row">
+
+    <!-- SINGLE UPLOAD -->
+
+    <div class="col-md-6">
+
+        <div class="card-box">
+
+            <h2 class="mb-4">
+                Upload Candidate
+            </h2>
+
+            <form method="POST">
+
+                <label class="mb-1">
+                    Candidate Name
+                </label>
+
+                <input type="text"
+                name="name"
+                class="form-control mb-3"
+                placeholder="Enter Candidate Name"
+                required>
+
+                <label class="mb-1">
+                    Phone Number
+                </label>
+
+                <input type="text"
+                name="phone"
+                class="form-control mb-3"
+                placeholder="Enter Mobile Number"
+                required>
+
+                <label class="mb-1">
+                    Experience
+                </label>
+
+                <select name="experience"
+                class="form-control mb-3">
+
+                    <option>Fresher</option>
+
+                    <option>Experienced</option>
+
+                </select>
+
+                <label class="mb-1">
+                    Designation
+                </label>
+
+                <input type="text"
+                name="designation"
+                class="form-control mb-3"
+                placeholder="Example: Telecaller"
+                required>
+
+                <label class="mb-1">
+                    City
+                </label>
+
+                <input type="text"
+                name="city"
+                class="form-control mb-3"
+                placeholder="Example: Mumbai"
+                required>
+
+                <label class="mb-1">
+                    Industry
+                </label>
+
+                <select name="category"
+                class="form-control mb-4">
+
+                    <option>IT</option>
+
+                    <option>Advisory</option>
+
+                    <option>Finance</option>
+
+                    <option>Healthcare</option>
+
+                    <option>Automobile</option>
+
+                    <option>Broking</option>
+
+                </select>
+
+                <button class="btn btn-primary w-100">
+
+                    Upload Candidate
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- BULK UPLOAD -->
+
+    <div class="col-md-6">
+
+        <div class="card-box">
+
+            <h2 class="mb-4">
+                Bulk Upload
+            </h2>
+
+            <form method="POST"
+            action="/bulk-upload"
+            enctype="multipart/form-data">
+
+                <label class="mb-2">
+                    Upload Excel File
+                </label>
+
+                <input type="file"
+                name="file"
+                class="form-control mb-4"
+                required>
+
+                <button class="btn btn-success w-100">
+
+                    Upload Excel
+
+                </button>
+
+            </form>
+
+            <hr>
+
+            <h5>
+                Excel Format
+            </h5>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered">
+
+                    <tr>
+
+                        <th>Name</th>
+
+                        <th>Phone</th>
+
+                        <th>Experience</th>
+
+                        <th>Designation</th>
+
+                        <th>City</th>
+
+                        <th>Industry</th>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Rahul</td>
+
+                        <td>9876543210</td>
+
+                        <td>Fresher</td>
+
+                        <td>Telecaller</td>
+
+                        <td>Mumbai</td>
+
+                        <td>Advisory</td>
+
+                    </tr>
+
+                </table>
+
+            </div>
+
+            <div class="alert alert-info mt-3">
+
+                Excel column names must be exactly:
+
+                <br><br>
+
+                <b>
+                    Name,
+                    Phone,
+                    Experience,
+                    Designation,
+                    City,
+                    Industry
+                </b>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Unlock History
+</h2>
+
+<div class="stats-card">
+
+    <table class="table table-bordered table-striped">
+
+        <tr>
+
+            <th>HR Name</th>
+
+            <th>HR Mobile</th>
+
+            <th>Candidate Name</th>
+
+            <th>Candidate Number</th>
+
+            <th>Designation</th>
+
+        </tr>
+
+        {% for u in unlocks %}
+
+        {% set hr = User.query.get(u.user_id) %}
+
+        {% set candidate = Candidate.query.get(u.candidate_id) %}
+
+        <tr>
+
+            <td>
+
+                {% if hr %}
+                    {{ hr.first_name }}
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                {% if hr %}
+                    {{ hr.mobile }}
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                {% if candidate %}
+                    {{ candidate.name }}
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                {% if candidate %}
+                    {{ candidate.phone }}
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                {% if candidate %}
+                    {{ candidate.designation }}
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+
+{% endblock %}

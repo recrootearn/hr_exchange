@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">All HR Users</h2>
+
+<a href="/export-unlocked"
+class="btn btn-success mb-3">
+
+    Export Excel
+
+</a>
+
+<table class="table table-bordered table-striped">
+
+    <tr>
+
+        <th>ID</th>
+
+        <th>Name</th>
+
+        <th>Company</th>
+
+        <th>Mobile</th>
+
+        <th>Credits</th>
+
+        <th>Trust Score</th>
+
+        <th>Action</th>
+
+    </tr>
+
+    {% for user in users %}
+
+    <tr>
+
+        <td>{{ user.id }}</td>
+
+        <td>{{ user.first_name }}</td>
+
+        <td>{{ user.company }}</td>
+
+        <td>{{ user.mobile }}</td>
+
+        <td>{{ user.credits }}</td>
+
+        <td>{{ user.trust_score }}</td>
+
+        <td>
+
+            <a href="/ban-user/{{ user.id }}"
+               class="btn btn-danger btn-sm">
+               Ban
+            </a>
+
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card-box">
+
+    <h3 class="mb-4">
+        Earnings Wallet
+    </h3>
+
+    <div class="alert alert-success">
+
+        <h5>
+
+            Current Balance:
+            ₹{{ current_user.wallet_balance }}
+
+        </h5>
+
+    </div>
+
+    <div class="mb-4">
+
+        <a href="/withdraw"
+           class="btn btn-primary">
+
+            Withdraw Earnings
+
+        </a>
+
+        <a href="/payment-info"
+           class="btn btn-warning">
+
+            Payment Information
+
+        </a>
+
+    </div>
+
+    <h4 class="mb-3">
+        Earnings History
+    </h4>
+
+    <table class="table table-bordered">
+
+        <tr>
+
+            <th>Date</th>
+
+            <th>Amount</th>
+
+            <th>Reason</th>
+
+        </tr>
+
+        {% for e in earnings %}
+
+        <tr>
+
+            <td>
+
+                {{ e.created_at.strftime('%d-%m-%Y %H:%M') }}
+
+            </td>
+
+            <td class="text-success">
+
+                ₹{{ e.amount }}
+
+            </td>
+
+            <td>
+
+                {{ e.reason }}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+
+{% endblock %}

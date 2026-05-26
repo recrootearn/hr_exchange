@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Support Center
+</h2>
+
+<!-- CREATE TICKET -->
+
+<div class="stats-card mb-4">
+
+    <form method="POST">
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Subject
+            </label>
+
+            <input type="text"
+                   name="subject"
+                   class="form-control"
+                   required>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Message
+            </label>
+
+            <textarea name="message"
+                      class="form-control"
+                      rows="5"
+                      required></textarea>
+
+        </div>
+
+        <button class="btn btn-primary">
+            Submit Ticket
+        </button>
+
+    </form>
+
+</div>
+
+<!-- TICKETS -->
+
+<div class="stats-card">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h4>
+            My Support Requests
+        </h4>
+
+        <span class="badge bg-primary">
+
+            {{ tickets.total }} Tickets
+
+        </span>
+
+    </div>
+
+    {% if tickets.items %}
+
+        {% for t in tickets.items %}
+
+        <div class="border rounded p-3 mb-4"
+             style="
+             background:#ffffff;
+             border:1px solid #e5e7eb;
+             ">
+
+            <!-- SUBJECT -->
+
+            <div class="mb-2">
+
+                <b>Subject:</b>
+
+                {{ t.subject }}
+
+            </div>
+
+            <!-- MESSAGE -->
+
+            <div class="mb-2">
+
+                <b>Message:</b>
+
+                {{ t.message }}
+
+            </div>
+
+            <!-- STATUS -->
+
+            <div class="mb-2">
+
+                <b>Status:</b>
+
+                {% if t.status == 'Open' %}
+
+                    <span class="badge bg-success">
+
+                        Open
+
+                    </span>
+
+                {% elif t.status == 'Closed' %}
+
+                    <span class="badge bg-danger">
+
+                        Closed
+
+                    </span>
+
+                {% else %}
+
+                    <span class="badge bg-info">
+
+                        {{ t.status }}
+
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+            <!-- DATE -->
+
+            <div class="mb-3">
+
+                <b>Date:</b>
+
+                {{ t.created_at.strftime('%d-%m-%Y %H:%M') }}
+
+            </div>
+
+            <hr>
+
+            <!-- CONVERSATION -->
+
+            <h6 class="mb-3">
+                Conversation
+            </h6>
+
+            {% set replies = SupportReply.query.filter_by(ticket_id=t.id).all() %}
+
+            {% if replies %}
+
+                {% for r in replies %}
+
+                    <div class="border rounded p-2 mb-2"
+                         style="
+                         background:#f9fafb;
+                         ">
+
+                        <b>
+
+                            {{ r.sender }}
+
+                        </b>
+
+                        <br>
+
+                        {{ r.message }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="text-muted mb-3">
+
+                    No replies yet
+
+                </div>
+
+            {% endif %}
+
+            <!-- REPLY FORM -->
+
+            <form method="POST"
+                  action="/user-reply/{{ t.id }}"
+                  class="mt-3">
+
+                <textarea
+                    name="reply"
+                    class="form-control"
+                    rows="2"
+                    placeholder="Type your reply..."
+                    required></textarea>
+
+                <button class="btn btn-sm btn-primary mt-2">
+
+                    Send Reply
+
+                </button>
+
+            </form>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="text-center text-muted py-5">
+
+            No support tickets found
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<!-- PAGINATION -->
+
+<div class="d-flex justify-content-center mt-4">
+
+    {% if tickets.has_prev %}
+
+        <a href="?page={{ tickets.prev_num }}"
+           class="btn btn-outline-primary me-2">
+
+            Previous
+
+        </a>
+
+    {% endif %}
+
+    {% if tickets.has_next %}
+
+        <a href="?page={{ tickets.next_num }}"
+           class="btn btn-outline-primary">
+
+            Next
+
+        </a>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Admin Dashboard
+</h2>
+
+<div class="row mb-4">
+
+    <div class="col-md-4">
+
+        <div class="stats-card">
+
+            <h5>Total HR Users</h5>
+
+            <h2>{{ total_users }}</h2>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="stats-card">
+
+            <h5>Total Candidates</h5>
+
+            <h2>{{ total_candidates }}</h2>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="stats-card">
+
+            <h5>Total Unlocks</h5>
+
+            <h2>{{ total_unlocks }}</h2>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-md-3 mb-3">
+
+        <a href="/admin/logs"
+        class="btn btn-danger w-100 p-3">
+
+        Admin Logs
+
+    </a>
+
+    </div>
+
+    <div class="col-md-3 mb-3">
+
+        <a href="/admin/users" class="btn btn-dark w-100 p-3">
+            Manage HR Users
+        </a>
+
+    </div>
+
+    <div class="col-md-3 mb-3">
+
+        <a href="/admin/candidates" class="btn btn-primary w-100 p-3">
+            Manage Candidates
+        </a>
+
+    </div>
+
+    <div class="col-md-3 mb-3">
+
+        <a href="/admin/unlocks" class="btn btn-success w-100 p-3">
+            Unlock History
+        </a>
+
+    </div>
+
+    <div class="col-md-3 mb-3">
+
+    <a href="/admin/support"
+       class="btn btn-info w-100 p-3">
+
+        Support Tickets
+
+    </a>
+
+    </div>
+
+    <div class="col-md-3 mb-3">
+
+        <a href="/admin/credits" class="btn btn-warning w-100 p-3">
+            Credit History
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

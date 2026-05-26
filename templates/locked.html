@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- FILTER SECTION -->
+
+<div class="stats-card mb-4">
+
+    <h3 class="mb-3">
+        Discover Candidates
+    </h3>
+
+    <p style="color:#6b7280;">
+        Use filters and unlock credits to access recruiter verified candidates.
+    </p>
+
+    <form method="GET">
+
+        <div class="row g-3">
+
+            <div class="col-md-2">
+
+                <input type="text"
+                class="form-control"
+                name="designation"
+                placeholder="Search designation">
+
+            </div>
+
+            <div class="col-md-2">
+
+                <input type="text"
+                class="form-control"
+                name="city"
+                placeholder="Search city">
+
+            </div>
+
+            <div class="col-md-2">
+
+                <select
+                class="form-control"
+                name="industry">
+
+                    <option value="">
+                        All Industries
+                    </option>
+
+                    <option>IT</option>
+                    <option>BPO</option>
+                    <option>Finance</option>
+                    <option>Banking</option>
+                    <option>Healthcare</option>
+                    <option>Sales</option>
+                    <option>Marketing</option>
+                    <option>HR</option>
+                    <option>Recruitment</option>
+                    <option>Education</option>
+                    <option>Telecalling</option>
+                    <option>Customer Support</option>
+                    <option>Automobile</option>
+                    <option>Manufacturing</option>
+                    <option>Advisory</option>
+                    <option>Insurance</option>
+                    <option>Real Estate</option>
+                    <option>Logistics</option>
+                    <option>E-Commerce</option>
+                    <option>Digital Marketing</option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-2">
+
+                <select
+                class="form-control"
+                name="experience">
+
+                    <option value="">
+                        All Experience
+                    </option>
+
+                    <option value="Fresher">
+                        Fresher
+                    </option>
+
+                    <option value="Experienced">
+                        Experienced
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-2">
+
+                <select
+                class="form-control"
+                name="sort">
+
+                    <option value="">
+                        Sort By
+                    </option>
+
+                    <option value="new">
+                        New to Old
+                    </option>
+
+                    <option value="old">
+                        Old to New
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-2">
+
+                <button class="btn btn-primary w-100">
+
+                    <i class="fas fa-search"></i>
+
+                    Search
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<!-- CANDIDATES GRID -->
+
+<div class="row">
+
+{% for c in candidates.items %}
+
+{% if c.id not in unlocked_ids %}
+
+<div class="col-md-6">
+
+    <div class="candidate-card"
+         id="candidate-{{ c.id }}">
+
+        <div class="candidate-top">
+
+            <div class="candidate-profile">
+
+                <div class="avatar">
+
+                    {{ c.name[0] }}
+
+                </div>
+
+                <div>
+
+                    <div class="candidate-name">
+
+                        {{ c.name }}
+
+                    </div>
+
+                    <div class="candidate-role">
+
+                        {{ c.designation }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div>
+
+                {% if c.experience == 'Experienced' %}
+
+                    <span class="badge bg-success badge-custom">
+
+                        Experienced
+
+                    </span>
+
+                {% else %}
+
+                    <span class="badge bg-primary badge-custom">
+
+                        Fresher
+
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <!-- DETAILS -->
+
+        <div class="candidate-details mt-3">
+
+            <div class="detail-pill">
+
+                <i class="fas fa-location-dot"></i>
+
+                {{ c.city }}
+
+            </div>
+
+            <div class="detail-pill">
+
+                <i class="fas fa-briefcase"></i>
+
+                {{ c.category }}
+
+            </div>
+
+            <div class="detail-pill">
+
+                <i class="fas fa-phone"></i>
+
+                {{ c.phone[:2] }}XXXX{{ c.phone[-2:] }}
+
+            </div>
+
+        </div>
+
+        <!-- BUTTON -->
+
+        <div class="action-buttons mt-3">
+
+            <a href="/unlock/{{ c.id }}"
+               class="btn btn-primary btn-sm unlock-btn"
+               data-candidate="{{ c.id }}">
+
+                <i class="fas fa-lock-open"></i>
+
+                Unlock Candidate
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endfor %}
+
+</div>
+
+<!-- PAGINATION -->
+
+<div class="d-flex justify-content-center mt-4">
+
+    {% if candidates.has_prev %}
+
+        <a href="?page={{ candidates.prev_num }}"
+           class="btn btn-outline-primary me-2">
+
+            ← Previous
+
+        </a>
+
+    {% endif %}
+
+    {% if candidates.has_next %}
+
+        <a href="?page={{ candidates.next_num }}"
+           class="btn btn-outline-primary">
+
+            Next →
+
+        </a>
+
+    {% endif %}
+
+</div>
+
+<!-- NO PAGE REFRESH -->
+
+<script>
+
+document.querySelectorAll('.unlock-btn').forEach(button => {
+
+    button.addEventListener('click', function(e){
+
+        e.preventDefault();
+
+        const url = this.href;
+
+        const candidateId =
+            this.dataset.candidate;
+
+        fetch(url)
+
+        .then(response => response.text())
+
+        .then(data => {
+
+            const card = document.getElementById(
+                `candidate-${candidateId}`
+            );
+
+            if(card){
+
+                card.style.transition =
+                    "0.3s";
+
+                card.style.opacity = "0";
+
+                card.style.transform =
+                    "scale(0.95)";
+
+                setTimeout(() => {
+
+                    card.remove();
+
+                },300);
+
+            }
+
+        });
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

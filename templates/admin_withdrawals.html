@@ -1,0 +1,100 @@
+<table class="table table-hover">
+
+    <thead>
+
+        <tr>
+
+            <th>HR</th>
+            <th>Amount</th>
+            <th>UPI</th>
+            <th>Bank</th>
+            <th>Account</th>
+            <th>IFSC</th>
+            <th>Status</th>
+            <th>Action</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for w in withdrawals %}
+
+        {% set hr = User.query.get(w.user_id) %}
+
+        <tr>
+
+            <td>
+
+                {{ hr.first_name }}
+                {{ hr.last_name }}
+
+            </td>
+
+            <td>
+
+                ₹{{ w.amount }}
+
+            </td>
+
+            <td>
+
+                {{ hr.upi_id }}
+
+            </td>
+
+            <td>
+
+                {{ hr.bank_name }}
+
+            </td>
+
+            <td>
+
+                {{ hr.account_number }}
+
+            </td>
+
+            <td>
+
+                {{ hr.ifsc_code }}
+
+            </td>
+
+            <td>
+
+                {{ w.status }}
+
+            </td>
+
+            <td>
+
+                {% if w.status == 'Pending' %}
+
+                <a href="/mark-paid/{{ w.id }}"
+                   class="btn btn-success btn-sm">
+
+                    Mark Paid
+
+                </a>
+
+                {% else %}
+
+                <span class="badge bg-success">
+
+                    Paid
+
+                </span>
+
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>

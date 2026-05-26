@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Unlocked Candidates
+</h2>
+
+<a href="/export-unlocked"
+class="btn btn-success mb-3">
+
+    Export Excel
+
+</a>
+
+{% for c in candidates.items %}
+
+<div class="candidate-card"
+     data-aos="fade-up">
+
+    <div class="candidate-top">
+
+        <div class="candidate-profile">
+
+            <div class="avatar">
+                {{ c.name[0] }}
+            </div>
+
+            <div>
+
+                <div class="candidate-name">
+                    {{ c.name }}
+                </div>
+
+                <div class="candidate-role">
+                    {{ c.designation }}
+                </div>
+
+            </div>
+
+        </div>
+
+        <div>
+
+            {% if c.experience == 'Experienced' %}
+
+                <span class="badge bg-success badge-custom">
+
+                    Experienced
+
+                </span>
+
+            {% else %}
+
+                <span class="badge bg-primary badge-custom">
+
+                    Fresher
+
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- REVIEWS SECTION -->
+
+    {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
+
+    <div class="review-box mt-3 p-3"
+         style="
+         background:#f8fafc;
+         border-radius:12px;
+         max-height:220px;
+         overflow-y:auto;
+         ">
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+
+            <strong>
+
+                ⭐ Reviews ({{ reviews|length }})
+
+            </strong>
+
+        </div>
+
+        {% if reviews %}
+
+            {% for r in reviews %}
+
+                {% set reviewer = User.query.get(r.user_id) %}
+
+                <div class="mb-3 p-2"
+                     style="
+                     background:white;
+                     border-radius:10px;
+                     border:1px solid #e5e7eb;
+                     ">
+
+                    <div class="d-flex justify-content-between">
+
+                        <strong style="color:#2563eb;">
+
+                            {{ reviewer.first_name if reviewer else 'HR User' }}
+
+                        </strong>
+
+                        <span class="badge bg-warning text-dark">
+
+                            ⭐ {{ r.rating }}/5
+
+                        </span>
+
+                    </div>
+
+                    <div class="mt-2"
+                         style="
+                         font-size:14px;
+                         color:#374151;
+                         ">
+
+                        {{ r.review }}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="text-muted">
+
+                No reviews yet
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <!-- CANDIDATE DETAILS -->
+
+    <div class="candidate-details mt-3">
+
+        <div class="detail-pill">
+
+            <i class="fas fa-location-dot"></i>
+
+            {{ c.city }}
+
+        </div>
+
+        <div class="detail-pill">
+
+            <i class="fas fa-briefcase"></i>
+
+            {{ c.category }}
+
+        </div>
+
+        <div class="detail-pill">
+
+            <i class="fas fa-phone"></i>
+
+            {{ c.phone }}
+
+        </div>
+
+    </div>
+
+    <!-- ACTION BUTTONS -->
+
+    <div class="action-buttons mt-3">
+
+        <!-- CALL -->
+
+        <a href="tel:{{ c.phone }}"
+        class="btn btn-success btn-sm">
+
+            <i class="fas fa-phone"></i>
+
+            Call
+
+        </a>
+
+        <!-- WHATSAPP -->
+
+        <a href="https://wa.me/91{{ c.phone }}"
+        target="_blank"
+        class="btn btn-dark btn-sm">
+
+            <i class="fab fa-whatsapp"></i>
+
+            WhatsApp
+
+        </a>
+
+        <!-- ADD REVIEW -->
+
+        <button
+        class="btn btn-info btn-sm"
+        data-bs-toggle="modal"
+        data-bs-target="#reviewModal{{ c.id }}">
+
+            <i class="fas fa-star"></i>
+
+            Add Review
+
+        </button>
+
+        <!-- REPORT FAKE -->
+
+        <a href="/report-fake/{{ c.id }}"
+        class="btn btn-danger btn-sm">
+
+            <i class="fas fa-flag"></i>
+
+            Report Fake
+
+        </a>
+
+        <!-- WRONG EXPERIENCE -->
+
+        <a href="/wrong-experience/{{ c.id }}"
+        class="btn btn-warning btn-sm">
+
+            <i class="fas fa-triangle-exclamation"></i>
+
+            Wrong Experience
+
+        </a>
+
+    </div>
+
+</div>
+
+<!-- REVIEW MODAL -->
+
+<div class="modal fade"
+id="reviewModal{{ c.id }}"
+tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    Add Review
+
+                </h5>
+
+                <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <form method="POST"
+                      action="/add-review/{{ c.id }}">
+
+                    <div class="mb-3">
+
+                        <label>
+
+                            Rating
+
+                        </label>
+
+                        <select name="rating"
+                                class="form-control">
+
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Good</option>
+                            <option value="3">3 - Average</option>
+                            <option value="2">2 - Poor</option>
+                            <option value="1">1 - Very Poor</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <textarea
+                        name="review"
+                        class="form-control"
+                        placeholder="Write review about candidate"
+                        required></textarea>
+
+                    </div>
+
+                    <button
+                    class="btn btn-primary w-100">
+
+                        Submit Review
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+<!-- PAGINATION -->
+
+<div class="d-flex justify-content-center mt-4">
+
+    {% if candidates.has_prev %}
+
+        <a href="?page={{ candidates.prev_num }}"
+           class="btn btn-outline-primary me-2">
+
+            Previous
+
+        </a>
+
+    {% endif %}
+
+    {% if candidates.has_next %}
+
+        <a href="?page={{ candidates.next_num }}"
+           class="btn btn-outline-primary">
+
+            Next
+
+        </a>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

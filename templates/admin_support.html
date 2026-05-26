@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Support Tickets
+</h2>
+
+{% for t in tickets %}
+
+<div class="card-box mb-4">
+
+    <h5>
+        {{ t.subject }}
+    </h5>
+
+    <p>
+        {{ t.message }}
+    </p>
+
+    <p>
+        <b>User ID:</b>
+        {{ t.user_id }}
+    </p>
+
+    <p>
+        <b>Status:</b>
+        {{ t.status }}
+    </p>
+
+    <hr>
+
+    <h6>
+        Conversation
+    </h6>
+
+    {% for r in SupportReply.query.filter_by(ticket_id=t.id).all() %}
+
+        <div class="border rounded p-2 mb-2">
+
+            <b>{{ r.sender }}:</b>
+            {{ r.message }}
+
+        </div>
+
+    {% endfor %}
+
+    <form method="POST"
+    action="/reply-ticket/{{ t.id }}">
+
+        <textarea
+        name="reply"
+        class="form-control mb-2"
+        placeholder="Reply..."
+        required></textarea>
+
+        <button class="btn btn-primary btn-sm">
+            Send Reply
+        </button>
+
+    </form>
+
+</div>
+
+{% endfor %}
+
+{% endblock %}

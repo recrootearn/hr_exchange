@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="stats-card"
+     style="max-width:700px;margin:auto;">
+
+    <h2 class="mb-4">
+
+        Update Payment Information
+
+    </h2>
+
+    <form method="POST">
+
+        <!-- ACCOUNT HOLDER NAME -->
+
+        <div class="mb-3">
+
+            <label>
+                Account Holder Name
+            </label>
+
+            <input type="text"
+                   name="account_holder_name"
+                   class="form-control"
+                   value="{{ current_user.account_holder_name or '' }}"
+                   required>
+
+        </div>
+
+        <!-- UPI -->
+
+        <div class="mb-3">
+
+            <label>
+                UPI ID
+            </label>
+
+            <input type="text"
+                   name="upi_id"
+                   class="form-control"
+                   value="{{ current_user.upi_id or '' }}">
+
+        </div>
+
+        <!-- BANK NAME -->
+
+        <div class="mb-3">
+
+            <label>
+                Bank Name
+            </label>
+
+            <input type="text"
+                   name="bank_name"
+                   class="form-control"
+                   value="{{ current_user.bank_name or '' }}">
+
+        </div>
+
+        <!-- ACCOUNT NUMBER -->
+
+        <div class="mb-3">
+
+            <label>
+                Account Number
+            </label>
+
+            <input type="text"
+                   name="account_number"
+                   class="form-control"
+                   value="{{ current_user.account_number or '' }}">
+
+        </div>
+
+        <!-- IFSC -->
+
+        <div class="mb-3">
+
+            <label>
+                IFSC Code
+            </label>
+
+            <input type="text"
+                   name="ifsc_code"
+                   class="form-control"
+                   value="{{ current_user.ifsc_code or '' }}">
+
+        </div>
+
+        <!-- SAVE BUTTON -->
+
+        <button class="btn btn-primary w-100">
+
+            Save Payment Info
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

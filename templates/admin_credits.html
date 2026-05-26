@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="stats-card">
+
+    <h2 class="mb-4">
+        Credit History
+    </h2>
+
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        HR Name
+                    </th>
+
+                    <th>
+                        Username
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
+                    <th>
+                        Action
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for h in history %}
+
+                {% set hr = User.query.get(h.user_id) %}
+
+                <tr>
+
+                    <td>
+
+                        {% if hr %}
+
+                            {{ hr.first_name }}
+                            {{ hr.last_name }}
+
+                        {% else %}
+
+                            Unknown HR
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if hr %}
+
+                            {{ hr.username }}
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if h.amount > 0 %}
+
+                            <span class="text-success fw-bold">
+
+                                +{{ h.amount }}
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-danger fw-bold">
+
+                                {{ h.amount }}
+
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {{ h.action }}
+
+                    </td>
+
+                    <td>
+
+                        {{ h.created_at.strftime('%d %b %Y %I:%M %p') }}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

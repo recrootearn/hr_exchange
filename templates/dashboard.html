@@ -1,0 +1,661 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row">
+
+    <!-- Credits -->
+
+    <div class="col-md-3">
+
+        <div class="stats-card">
+
+            <div class="stats-icon"
+                 style="background:#2563eb;">
+
+                <i class="fas fa-coins"></i>
+
+            </div>
+
+            <h5>My Credits</h5>
+
+            <a href="/credits"
+               style="text-decoration:none; color:inherit;">
+
+                <h2>{{ current_user.credits }}</h2>
+
+            </a>
+
+            <a href="/credits"
+               class="btn btn-primary mt-2">
+
+                Buy Credits
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- Wallet -->
+
+    <div class="col-md-3">
+
+        <div class="stats-card">
+
+            <div class="stats-icon"
+                 style="background:#f59e0b;">
+
+                <i class="fas fa-wallet"></i>
+
+            </div>
+
+            <h5>Wallet Balance</h5>
+
+            <h2>₹{{ current_user.wallet_balance }}</h2>
+
+            <a href="/wallet"
+               class="btn btn-warning mt-3">
+
+                Open Wallet
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- Uploads -->
+
+    <div class="col-md-3">
+
+        <div class="stats-card">
+
+            <div class="stats-icon"
+                 style="background:#059669;">
+
+                <i class="fas fa-upload"></i>
+
+            </div>
+
+            <h5>My Uploads</h5>
+
+            <a href="/my-uploads"
+               style="text-decoration:none;color:inherit;">
+
+                <h2>{{ my_uploads_count }}</h2>
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- Unlocks -->
+
+    <div class="col-md-3">
+
+        <div class="stats-card">
+
+            <div class="stats-icon"
+                 style="background:#7c3aed;">
+
+                <i class="fas fa-lock-open"></i>
+
+            </div>
+
+            <h5>Unlocked Candidates</h5>
+
+            <h2>{{ my_unlocks_count }}</h2>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MOTIVATION + TOP UPLOADERS -->
+
+<div class="row mt-4">
+
+    <!-- LIVE EARNING NEWS -->
+
+    <div class="col-md-8">
+
+        <div class="stats-card">
+
+            <h4 class="mb-4">
+
+                🔥 Live Recruiter Activity
+
+            </h4>
+
+            <div id="earning-news"></div>
+
+        </div>
+
+    </div>
+
+    <!-- TOP UPLOADERS -->
+
+    <div class="col-md-4">
+
+        <div class="stats-card">
+
+            <h4 class="mb-4">
+
+                🏆 Top Uploaders
+
+            </h4>
+
+            <div id="top-uploaders"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- FILTERS -->
+
+<div class="filter-box mt-4">
+
+    <form method="GET">
+
+        <div class="row g-3">
+
+            <div class="col-md-3">
+
+                <input type="text"
+                       name="search"
+                       class="form-control"
+                       placeholder="Search Candidate">
+
+            </div>
+
+            <div class="col-md-3">
+
+                <input type="text"
+                       name="designation"
+                       class="form-control"
+                       placeholder="Designation">
+
+            </div>
+
+            <div class="col-md-3">
+
+                <input type="text"
+                       name="city"
+                       class="form-control"
+                       placeholder="City">
+
+            </div>
+
+            <div class="col-md-3">
+
+                <button class="btn btn-primary w-100">
+
+                    Apply Filters
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<!-- CANDIDATES -->
+
+{% for c in candidates.items %}
+
+<div class="candidate-card"
+     data-aos="fade-up">
+
+    <div class="candidate-top">
+
+        <div class="candidate-profile">
+
+            <div class="avatar">
+
+                {{ c.name[0] }}
+
+            </div>
+
+            <div>
+
+                <div class="candidate-name">
+
+                    {{ c.name }}
+
+                </div>
+
+                <div class="candidate-role">
+
+                    {{ c.designation }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div>
+
+            {% if c.experience == 'Experienced' %}
+
+                <span class="badge bg-success badge-custom">
+
+                    Experienced
+
+                </span>
+
+            {% else %}
+
+                <span class="badge bg-primary badge-custom">
+
+                    Fresher
+
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- REVIEWS -->
+
+    {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
+
+    <div class="review-box mt-3 p-3"
+         style="
+         background:#f8fafc;
+         border-radius:12px;
+         max-height:220px;
+         overflow-y:auto;
+         ">
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+
+            <strong>
+
+                ⭐ Reviews ({{ reviews|length }})
+
+            </strong>
+
+        </div>
+
+        {% if reviews %}
+
+            {% for r in reviews %}
+
+                {% set reviewer = User.query.get(r.user_id) %}
+
+                <div class="mb-3 p-2"
+                     style="
+                     background:white;
+                     border-radius:10px;
+                     border:1px solid #e5e7eb;
+                     ">
+
+                    <div class="d-flex justify-content-between">
+
+                        <strong style="color:#2563eb;">
+
+                            {{ reviewer.first_name if reviewer else 'HR User' }}
+
+                        </strong>
+
+                        <span class="badge bg-warning text-dark">
+
+                            ⭐ {{ r.rating }}/5
+
+                        </span>
+
+                    </div>
+
+                    <div class="mt-2"
+                         style="
+                         font-size:14px;
+                         color:#374151;
+                         ">
+
+                        {{ r.review }}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="text-muted">
+
+                No reviews yet
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <!-- DETAILS -->
+
+    <div class="candidate-details mt-3">
+
+        <div class="detail-pill">
+
+            <i class="fas fa-location-dot"></i>
+
+            {{ c.city }}
+
+        </div>
+
+        <div class="detail-pill">
+
+            <i class="fas fa-briefcase"></i>
+
+            {{ c.category }}
+
+        </div>
+
+        <div class="detail-pill">
+
+            <i class="fas fa-phone"></i>
+
+            {% if c.id in unlocked_ids %}
+
+                {{ c.phone }}
+
+            {% else %}
+
+                {{ c.phone[:2] }}XXXX{{ c.phone[-2:] }}
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- BUTTONS -->
+
+    <div class="action-buttons mt-3">
+
+        {% if c.id in unlocked_ids %}
+
+            <span class="btn btn-success btn-sm">
+
+                Unlocked
+
+            </span>
+
+            <a href="tel:{{ c.phone }}"
+               class="btn btn-success btn-sm">
+
+                <i class="fas fa-phone"></i>
+
+                Call
+
+            </a>
+
+            <a href="https://wa.me/91{{ c.phone }}"
+               target="_blank"
+               class="btn btn-dark btn-sm">
+
+                <i class="fab fa-whatsapp"></i>
+
+                WhatsApp
+
+            </a>
+
+            <a href="/report-fake/{{ c.id }}"
+               class="btn btn-danger btn-sm">
+
+                Report Fake
+
+            </a>
+
+            <a href="/report-experience/{{ c.id }}"
+               class="btn btn-warning btn-sm">
+
+                Wrong Experience
+
+            </a>
+
+            <button class="btn btn-info btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#reviewModal{{ c.id }}">
+
+                Add Review
+
+            </button>
+
+        {% else %}
+
+            <a href="/unlock/{{ c.id }}"
+               class="btn btn-primary btn-sm">
+
+                Unlock Candidate
+
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+<!-- PAGINATION -->
+
+<div style="margin-top:40px;text-align:center;">
+
+    {% if candidates.has_prev %}
+
+        <a href="?page={{ candidates.prev_num }}"
+           style="
+           padding:12px 25px;
+           background:#6c63ff;
+           color:white;
+           border-radius:12px;
+           text-decoration:none;
+           margin-right:10px;
+           font-weight:600;">
+
+           ← Previous
+
+        </a>
+
+    {% endif %}
+
+    {% if candidates.has_next %}
+
+        <a href="?page={{ candidates.next_num }}"
+           style="
+           padding:12px 25px;
+           background:#6c63ff;
+           color:white;
+           border-radius:12px;
+           text-decoration:none;
+           font-weight:600;">
+
+           Next →
+
+        </a>
+
+    {% endif %}
+
+</div>
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+const firstNames = [
+
+"Aarav","Vivaan","Aditya","Vihaan","Arjun",
+"Reyansh","Sai","Krishna","Ishaan","Rahul",
+"Amit","Priya","Neha","Pooja","Simran",
+"Shivani","Ritika","Rohit","Vikas","Anjali",
+"Deepak","Karan","Ayush","Mohit","Varun",
+"Abhishek","Rohan","Kunal","Sneha","Komal"
+
+];
+
+const lastNames = [
+
+"Sharma","Verma","Patel","Jain","Agarwal",
+"Singh","Yadav","Gupta","Soni","Mishra",
+"Chauhan","Pawar","Malhotra","Kapoor",
+"Khanna","Bansal","Joshi","Rathore",
+"Dubey","Rajput","Mehta","Arora"
+
+];
+
+const achievements = [
+
+"earned",
+"generated",
+"made",
+"received",
+"achieved",
+"crossed"
+
+];
+
+const actions = [
+
+"by uploading candidates",
+"through recruiter referrals",
+"through bulk uploads",
+"through hiring leads",
+"through fresher hiring",
+"through IT hiring"
+
+];
+
+const bonusNews = [
+
+"became Top Recruiter of the week",
+"uploaded 420 candidates this month",
+"closed 18 hirings this week",
+"earned premium recruiter badge",
+"crossed 1000 uploads milestone",
+"unlocked 80 candidates today"
+
+];
+
+function randomItem(arr){
+
+    return arr[
+        Math.floor(
+            Math.random() * arr.length
+        )
+    ];
+
+}
+
+function generateNews(){
+
+    const fullName =
+        randomItem(firstNames)
+        + " " +
+        randomItem(lastNames);
+
+    const earning =
+        Math.floor(
+            Math.random() * 45000
+        ) + 3000;
+
+    const newsType =
+        Math.floor(Math.random() * 2);
+
+    if(newsType === 0){
+
+        return `🔥 HR ${fullName} ${randomItem(achievements)} ₹${earning.toLocaleString()} this week ${randomItem(actions)}.`;
+
+    }
+
+    else{
+
+        return `🚀 HR ${fullName} ${randomItem(bonusNews)}.`;
+
+    }
+
+}
+
+function loadNews(){
+
+    let html = "";
+
+    for(let i=0;i<10;i++){
+
+        html += `
+
+        <div class="detail-pill mb-3 p-3">
+
+            ${generateNews()}
+
+        </div>
+
+        `;
+
+    }
+
+    document.getElementById(
+        "earning-news"
+    ).innerHTML = html;
+
+}
+
+function loadTopUploaders(){
+
+    let html = "";
+
+    for(let i=1;i<=10;i++){
+
+        const uploads =
+            Math.floor(
+                Math.random() * 900
+            ) + 100;
+
+        html += `
+
+        <div class="detail-pill mb-3 p-3 d-flex justify-content-between">
+
+            <span>
+
+                🏅 ${randomItem(firstNames)} ${randomItem(lastNames)}
+
+            </span>
+
+            <strong>
+
+                ${uploads} Uploads
+
+            </strong>
+
+        </div>
+
+        `;
+
+    }
+
+    document.getElementById(
+        "top-uploaders"
+    ).innerHTML = html;
+
+}
+
+loadNews();
+
+loadTopUploaders();
+
+</script>
+
+{% endblock %}

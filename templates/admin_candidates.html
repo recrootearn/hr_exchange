@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">Manage Candidates</h2>
+
+<a href="/export-candidates"
+class="btn btn-success mb-3">
+
+    Export Candidates Excel
+
+</a>
+
+<table class="table table-bordered table-striped">
+
+    <tr>
+
+        <th>ID</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Designation</th>
+        <th>City</th>
+        <th>Category</th>
+        <th>Action</th>
+
+    </tr>
+
+    {% for c in candidates %}
+
+    <tr>
+
+        <td>{{ c.id }}</td>
+        <td>{{ c.name }}</td>
+        <td>{{ c.phone }}</td>
+        <td>{{ c.designation }}</td>
+        <td>{{ c.city }}</td>
+        <td>{{ c.category }}</td>
+
+        <td>
+
+            <a href="/delete-candidate/{{ c.id }}"
+            class="btn btn-danger btn-sm">
+
+                Delete
+
+            </a>
+
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock %}

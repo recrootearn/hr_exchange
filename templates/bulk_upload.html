@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card-box">
+
+<h2>Bulk Upload Candidates</h2>
+
+<form method="POST"
+enctype="multipart/form-data">
+
+<input type="file"
+name="file"
+class="form-control mb-3"
+required>
+
+<button class="btn btn-primary">
+Upload Excel File
+</button>
+
+</form>
+
+<br>
+
+<p>
+Excel columns should be:
+</p>
+
+<ul>
+<li>Name</li>
+<li>Phone</li>
+<li>Experience</li>
+<li>Industry</li>
+</ul>
+
+</div>
+
+{% endblock %}
