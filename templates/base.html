@@ -60,18 +60,24 @@ body{
 
 }
 
-/* SPLASH */
+/* SPLASH SCREEN */
 
 #loader{
 
     position:fixed;
+
     width:100%;
+
     height:100vh;
+
     background:white;
+
     z-index:99999;
 
     display:flex;
+
     justify-content:center;
+
     align-items:center;
 
     transition:0.5s;
@@ -84,13 +90,16 @@ body{
 .loader-content h1{
 
     font-size:48px;
+
     font-weight:bold;
+
     color:#2563eb;
 }
 
 .loader-content p{
 
     color:#6b7280;
+
     font-size:16px;
 }
 
@@ -577,6 +586,63 @@ body{
 
 }
 
+.candidate-card{
+
+    background:white !important;
+
+    border-radius:24px !important;
+
+    padding:18px !important;
+
+    margin-bottom:20px !important;
+
+    box-shadow:0 4px 18px rgba(0,0,0,0.08) !important;
+
+    display:block !important;
+}
+
+.action-buttons{
+
+    display:flex !important;
+
+    gap:10px !important;
+
+    flex-wrap:wrap !important;
+
+    margin-top:18px !important;
+}
+
+.candidate-profile{
+
+    display:flex !important;
+
+    align-items:flex-start !important;
+
+    gap:14px !important;
+}
+
+.candidate-details{
+
+    display:flex !important;
+
+    flex-wrap:wrap !important;
+
+    gap:10px !important;
+
+    margin-top:16px !important;
+}
+
+@media(max-width:768px){
+
+    .candidate-card{
+
+        padding:16px !important;
+
+        border-radius:22px !important;
+    }
+
+}
+
 </style>
 
 </head>
@@ -662,6 +728,35 @@ body{
     <a href="/profile">
         <i class="fas fa-user"></i>
         My Profile
+    </a>
+
+    <a href="/credits">
+        <i class="fas fa-coins"></i>
+        Credit History
+    </a>
+
+    <a href="/support">
+        <i class="fas fa-headset"></i>
+        Support
+    </a>
+
+    {% if current_user.is_admin %}
+
+    <a href="/admin">
+        <i class="fas fa-shield-alt"></i>
+        Admin Panel
+    </a>
+
+    <a href="/admin/withdrawals">
+        <i class="fas fa-money-bill-wave"></i>
+        Withdrawal Requests
+    </a>
+
+    {% endif %}
+
+    <a href="/logout">
+        <i class="fas fa-right-from-bracket"></i>
+        Logout
     </a>
 
 </div>
