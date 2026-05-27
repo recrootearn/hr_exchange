@@ -1267,7 +1267,6 @@ def unlocked():
     )
 
 @app.route('/export-unlocked')
-
 @login_required
 def export_unlocked():
 
