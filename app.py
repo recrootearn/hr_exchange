@@ -458,11 +458,29 @@ def locked():
         User=User
     )
 
-@app.route("/leads")
+@app.route('/leads')
 @login_required
 def leads():
 
-    return render_template("leads.html")
+    candidates = Candidate.query.order_by(
+        Candidate.id.desc()
+    ).paginate(page=1, per_page=20)
+
+    unlocked = Unlock.query.filter_by(
+        user_id=current_user.id
+    ).all()
+
+    unlocked_ids = [
+        u.candidate_id for u in unlocked
+    ]
+
+    return render_template(
+        'leads.html',
+        candidates=candidates,
+        unlocked_ids=unlocked_ids,
+        CandidateReview=CandidateReview,
+        User=User
+    )
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
