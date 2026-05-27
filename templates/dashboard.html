@@ -2,444 +2,494 @@
 
 {% block content %}
 
-<div class="row">
+<style>
 
-    <!-- Credits -->
+.dashboard-scroll{
+    display:flex;
+    gap:14px;
+    overflow-x:auto;
+    padding-bottom:10px;
+    margin-bottom:20px;
+}
 
-    <div class="col-md-3">
+.dashboard-scroll::-webkit-scrollbar{
+    display:none;
+}
 
-        <div class="stats-card">
+.mini-card{
+    min-width:160px;
+    background:white;
+    border-radius:22px;
+    padding:18px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.08);
+}
 
-            <div class="stats-icon"
+.mini-card h6{
+    font-size:13px;
+    color:#6b7280;
+    margin-top:12px;
+}
+
+.mini-card h3{
+    font-weight:800;
+    margin-top:5px;
+}
+
+.icon-circle{
+    width:48px;
+    height:48px;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-size:18px;
+}
+
+.quick-actions{
+    display:flex;
+    gap:12px;
+    overflow-x:auto;
+    margin-bottom:22px;
+}
+
+.quick-actions::-webkit-scrollbar{
+    display:none;
+}
+
+.quick-btn{
+    min-width:110px;
+    background:white;
+    border-radius:18px;
+    padding:14px;
+    text-align:center;
+    text-decoration:none;
+    color:#111827;
+    box-shadow:0 4px 15px rgba(0,0,0,0.08);
+}
+
+.quick-btn i{
+    font-size:22px;
+    margin-bottom:10px;
+}
+
+.section-title{
+    font-size:22px;
+    font-weight:800;
+    margin-bottom:18px;
+}
+
+.candidate-card-modern{
+    background:white;
+    border-radius:24px;
+    padding:18px;
+    margin-bottom:18px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.08);
+}
+
+.candidate-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.candidate-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.candidate-avatar{
+    width:58px;
+    height:58px;
+    border-radius:18px;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.candidate-name{
+    font-size:18px;
+    font-weight:700;
+}
+
+.candidate-role{
+    color:#6b7280;
+    font-size:13px;
+}
+
+.modern-pill-wrap{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:14px;
+}
+
+.modern-pill{
+    background:#f3f4f6;
+    border-radius:30px;
+    padding:8px 14px;
+    font-size:12px;
+}
+
+.unlock-btn{
+    width:100%;
+    height:46px;
+    border:none;
+    border-radius:14px;
+    margin-top:16px;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    font-weight:700;
+}
+
+.live-box{
+    background:white;
+    border-radius:24px;
+    padding:18px;
+    margin-bottom:20px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.08);
+}
+
+.live-item{
+    background:#f9fafb;
+    border-radius:14px;
+    padding:12px;
+    margin-bottom:10px;
+    font-size:14px;
+}
+
+.filter-scroll{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    margin-bottom:20px;
+}
+
+.filter-scroll::-webkit-scrollbar{
+    display:none;
+}
+
+.filter-chip{
+    background:white;
+    border:none;
+    border-radius:30px;
+    padding:10px 18px;
+    white-space:nowrap;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+
+.desktop-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+}
+
+@media(max-width:768px){
+
+    .desktop-grid{
+        display:none;
+    }
+
+}
+
+@media(min-width:769px){
+
+    .mobile-ui{
+        display:none;
+    }
+
+}
+
+</style>
+
+<!-- DESKTOP OLD UI -->
+
+<div class="desktop-grid">
+
+    <div class="stats-card">
+        <h5>My Credits</h5>
+        <h2>{{ current_user.credits }}</h2>
+    </div>
+
+    <div class="stats-card">
+        <h5>Wallet Balance</h5>
+        <h2>₹{{ current_user.wallet_balance }}</h2>
+    </div>
+
+    <div class="stats-card">
+        <h5>My Uploads</h5>
+        <h2>{{ my_uploads_count }}</h2>
+    </div>
+
+    <div class="stats-card">
+        <h5>Unlocked Candidates</h5>
+        <h2>{{ my_unlocks_count }}</h2>
+    </div>
+
+</div>
+
+<!-- MOBILE UI -->
+
+<div class="mobile-ui">
+
+    <!-- TOP SCROLL CARDS -->
+
+    <div class="dashboard-scroll">
+
+        <div class="mini-card">
+
+            <div class="icon-circle"
                  style="background:#2563eb;">
 
                 <i class="fas fa-coins"></i>
 
             </div>
 
-            <h5>My Credits</h5>
+            <h6>Total Credits</h6>
 
-            <a href="/credits"
-               style="text-decoration:none; color:inherit;">
-
-                <h2>{{ current_user.credits }}</h2>
-
-            </a>
-
-            <a href="/credits"
-               class="btn btn-primary mt-2">
-
-                Buy Credits
-
-            </a>
+            <h3>{{ current_user.credits }}</h3>
 
         </div>
 
-    </div>
+        <div class="mini-card">
 
-    <!-- Wallet -->
-
-    <div class="col-md-3">
-
-        <div class="stats-card">
-
-            <div class="stats-icon"
+            <div class="icon-circle"
                  style="background:#f59e0b;">
 
                 <i class="fas fa-wallet"></i>
 
             </div>
 
-            <h5>Wallet Balance</h5>
+            <h6>Wallet</h6>
 
-            <h2>₹{{ current_user.wallet_balance }}</h2>
-
-            <a href="/wallet"
-               class="btn btn-warning mt-3">
-
-                Open Wallet
-
-            </a>
+            <h3>₹{{ current_user.wallet_balance }}</h3>
 
         </div>
 
-    </div>
+        <div class="mini-card">
 
-    <!-- Uploads -->
-
-    <div class="col-md-3">
-
-        <div class="stats-card">
-
-            <div class="stats-icon"
+            <div class="icon-circle"
                  style="background:#059669;">
 
                 <i class="fas fa-upload"></i>
 
             </div>
 
-            <h5>My Uploads</h5>
+            <h6>Uploads</h6>
 
-            <a href="/my-uploads"
-               style="text-decoration:none;color:inherit;">
-
-                <h2>{{ my_uploads_count }}</h2>
-
-            </a>
+            <h3>{{ my_uploads_count }}</h3>
 
         </div>
 
-    </div>
+        <div class="mini-card">
 
-    <!-- Unlocks -->
-
-    <div class="col-md-3">
-
-        <div class="stats-card">
-
-            <div class="stats-icon"
+            <div class="icon-circle"
                  style="background:#7c3aed;">
 
                 <i class="fas fa-lock-open"></i>
 
             </div>
 
-            <h5>Unlocked Candidates</h5>
+            <h6>Unlocked</h6>
 
-            <h2>{{ my_unlocks_count }}</h2>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- MOTIVATION + TOP UPLOADERS -->
-
-<div class="row mt-4">
-
-    <!-- LIVE EARNING NEWS -->
-
-    <div class="col-md-8">
-
-        <div class="stats-card">
-
-            <h4 class="mb-4">
-
-                🔥 Live Recruiter Activity
-
-            </h4>
-
-            <div id="earning-news"></div>
+            <h3>{{ my_unlocks_count }}</h3>
 
         </div>
 
     </div>
 
-    <!-- TOP UPLOADERS -->
+    <!-- QUICK ACTIONS -->
 
-    <div class="col-md-4">
+    <div class="quick-actions">
 
-        <div class="stats-card">
+        <a href="/upload"
+           class="quick-btn">
 
-            <h4 class="mb-4">
+            <i class="fas fa-upload"></i>
 
-                🏆 Top Uploaders
+            <div>Upload</div>
 
-            </h4>
+        </a>
 
-            <div id="top-uploaders"></div>
+        <a href="/wallet"
+           class="quick-btn">
 
-        </div>
+            <i class="fas fa-wallet"></i>
+
+            <div>Wallet</div>
+
+        </a>
+
+        <a href="/leads"
+           class="quick-btn">
+
+            <i class="fas fa-users"></i>
+
+            <div>Leads</div>
+
+        </a>
+
+        <a href="/credits"
+           class="quick-btn">
+
+            <i class="fas fa-coins"></i>
+
+            <div>Credits</div>
+
+        </a>
 
     </div>
 
-</div>
+    <!-- LIVE ACTIVITY -->
 
-<!-- FILTERS -->
+    <div class="live-box">
 
-<div class="filter-box mt-4">
+        <div class="section-title">
 
-    <form method="GET">
-
-        <div class="row g-3">
-
-            <div class="col-md-3">
-
-                <input type="text"
-                       name="search"
-                       class="form-control"
-                       placeholder="Search Candidate">
-
-            </div>
-
-            <div class="col-md-3">
-
-                <input type="text"
-                       name="designation"
-                       class="form-control"
-                       placeholder="Designation">
-
-            </div>
-
-            <div class="col-md-3">
-
-                <input type="text"
-                       name="city"
-                       class="form-control"
-                       placeholder="City">
-
-            </div>
-
-            <div class="col-md-3">
-
-                <button class="btn btn-primary w-100">
-
-                    Apply Filters
-
-                </button>
-
-            </div>
+            🔥 Live Recruiter Activity
 
         </div>
 
-    </form>
+        <div id="earning-news"></div>
 
-</div>
+    </div>
 
-<!-- CANDIDATES -->
+    <!-- FILTERS -->
 
-{% for c in candidates.items %}
+    <div class="filter-scroll">
 
-<div class="candidate-card"
-     data-aos="fade-up">
+        <button class="filter-chip">
+            All
+        </button>
 
-    <div class="candidate-top">
+        <button class="filter-chip">
+            IT
+        </button>
 
-        <div class="candidate-profile">
+        <button class="filter-chip">
+            Fresher
+        </button>
 
-            <div class="avatar">
+        <button class="filter-chip">
+            Experienced
+        </button>
 
-                {{ c.name[0] }}
+        <button class="filter-chip">
+            Remote
+        </button>
 
-            </div>
+    </div>
 
-            <div>
+    <!-- CANDIDATES -->
 
-                <div class="candidate-name">
+    <div class="section-title">
 
-                    {{ c.name }}
+        Candidates
+
+    </div>
+
+    {% for c in candidates.items %}
+
+    <div class="candidate-card-modern">
+
+        <div class="candidate-header">
+
+            <div class="candidate-left">
+
+                <div class="candidate-avatar">
+
+                    {{ c.name[0] }}
 
                 </div>
 
-                <div class="candidate-role">
+                <div>
 
-                    {{ c.designation }}
+                    <div class="candidate-name">
+
+                        {{ c.name }}
+
+                    </div>
+
+                    <div class="candidate-role">
+
+                        {{ c.designation }}
+
+                    </div>
 
                 </div>
 
             </div>
-
-        </div>
-
-        <div>
 
             {% if c.experience == 'Experienced' %}
 
-                <span class="badge bg-success badge-custom">
+            <span class="badge bg-success">
 
-                    Experienced
-
-                </span>
-
-            {% else %}
-
-                <span class="badge bg-primary badge-custom">
-
-                    Fresher
-
-                </span>
-
-            {% endif %}
-
-        </div>
-
-    </div>
-
-    <!-- REVIEWS -->
-
-    {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
-
-    <div class="review-box mt-3 p-3"
-         style="
-         background:#f8fafc;
-         border-radius:12px;
-         max-height:220px;
-         overflow-y:auto;
-         ">
-
-        <div class="d-flex justify-content-between align-items-center mb-2">
-
-            <strong>
-
-                ⭐ Reviews ({{ reviews|length }})
-
-            </strong>
-
-        </div>
-
-        {% if reviews %}
-
-            {% for r in reviews %}
-
-                {% set reviewer = User.query.get(r.user_id) %}
-
-                <div class="mb-3 p-2"
-                     style="
-                     background:white;
-                     border-radius:10px;
-                     border:1px solid #e5e7eb;
-                     ">
-
-                    <div class="d-flex justify-content-between">
-
-                        <strong style="color:#2563eb;">
-
-                            {{ reviewer.first_name if reviewer else 'HR User' }}
-
-                        </strong>
-
-                        <span class="badge bg-warning text-dark">
-
-                            ⭐ {{ r.rating }}/5
-
-                        </span>
-
-                    </div>
-
-                    <div class="mt-2"
-                         style="
-                         font-size:14px;
-                         color:#374151;
-                         ">
-
-                        {{ r.review }}
-
-                    </div>
-
-                </div>
-
-            {% endfor %}
-
-        {% else %}
-
-            <div class="text-muted">
-
-                No reviews yet
-
-            </div>
-
-        {% endif %}
-
-    </div>
-
-    <!-- DETAILS -->
-
-    <div class="candidate-details mt-3">
-
-        <div class="detail-pill">
-
-            <i class="fas fa-location-dot"></i>
-
-            {{ c.city }}
-
-        </div>
-
-        <div class="detail-pill">
-
-            <i class="fas fa-briefcase"></i>
-
-            {{ c.category }}
-
-        </div>
-
-        <div class="detail-pill">
-
-            <i class="fas fa-phone"></i>
-
-            {% if c.id in unlocked_ids %}
-
-                {{ c.phone }}
-
-            {% else %}
-
-                {{ c.phone[:2] }}XXXX{{ c.phone[-2:] }}
-
-            {% endif %}
-
-        </div>
-
-    </div>
-
-    <!-- BUTTONS -->
-
-    <div class="action-buttons mt-3">
-
-        {% if c.id in unlocked_ids %}
-
-            <span class="btn btn-success btn-sm">
-
-                Unlocked
+                Experienced
 
             </span>
 
-            <a href="tel:{{ c.phone }}"
-               class="btn btn-success btn-sm">
+            {% else %}
 
-                <i class="fas fa-phone"></i>
+            <span class="badge bg-primary">
 
-                Call
+                Fresher
 
-            </a>
+            </span>
 
-            <a href="https://wa.me/91{{ c.phone }}"
-               target="_blank"
-               class="btn btn-dark btn-sm">
+            {% endif %}
 
-                <i class="fab fa-whatsapp"></i>
+        </div>
 
-                WhatsApp
+        <div class="modern-pill-wrap">
 
-            </a>
+            <div class="modern-pill">
 
-            <a href="/report-fake/{{ c.id }}"
-               class="btn btn-danger btn-sm">
+                📍 {{ c.city }}
 
-                Report Fake
+            </div>
 
-            </a>
+            <div class="modern-pill">
 
-            <a href="/report-experience/{{ c.id }}"
-               class="btn btn-warning btn-sm">
+                💼 {{ c.category }}
 
-                Wrong Experience
+            </div>
 
-            </a>
+            <div class="modern-pill">
 
-            <button class="btn btn-info btn-sm"
-                    data-bs-toggle="modal"
-                    data-bs-target="#reviewModal{{ c.id }}">
+                📞
+                {% if c.id in unlocked_ids %}
+                    {{ c.phone }}
+                {% else %}
+                    {{ c.phone[:2] }}XXXX{{ c.phone[-2:] }}
+                {% endif %}
 
-                Add Review
+            </div>
+
+        </div>
+
+        {% if c.id in unlocked_ids %}
+
+            <button class="unlock-btn">
+
+                Already Unlocked
 
             </button>
 
         {% else %}
 
-            <a href="/unlock/{{ c.id }}"
-               class="btn btn-primary btn-sm">
+            <a href="/unlock/{{ c.id }}">
 
-                Unlock Candidate
+                <button class="unlock-btn">
+
+                    Unlock Candidate
+
+                </button>
 
             </a>
 
@@ -447,117 +497,24 @@
 
     </div>
 
-</div>
-
-{% endfor %}
-
-<!-- PAGINATION -->
-
-<div style="margin-top:40px;text-align:center;">
-
-    {% if candidates.has_prev %}
-
-        <a href="?page={{ candidates.prev_num }}"
-           style="
-           padding:12px 25px;
-           background:#6c63ff;
-           color:white;
-           border-radius:12px;
-           text-decoration:none;
-           margin-right:10px;
-           font-weight:600;">
-
-           ← Previous
-
-        </a>
-
-    {% endif %}
-
-    {% if candidates.has_next %}
-
-        <a href="?page={{ candidates.next_num }}"
-           style="
-           padding:12px 25px;
-           background:#6c63ff;
-           color:white;
-           border-radius:12px;
-           text-decoration:none;
-           font-weight:600;">
-
-           Next →
-
-        </a>
-
-    {% endif %}
+    {% endfor %}
 
 </div>
-
-<!-- JAVASCRIPT -->
 
 <script>
 
 const firstNames = [
-
 "Aarav","Vivaan","Aditya","Vihaan","Arjun",
-"Reyansh","Sai","Krishna","Ishaan","Rahul",
-"Amit","Priya","Neha","Pooja","Simran",
-"Shivani","Ritika","Rohit","Vikas","Anjali",
-"Deepak","Karan","Ayush","Mohit","Varun",
-"Abhishek","Rohan","Kunal","Sneha","Komal"
-
+"Reyansh","Sai","Krishna","Ishaan","Rahul"
 ];
 
 const lastNames = [
-
 "Sharma","Verma","Patel","Jain","Agarwal",
-"Singh","Yadav","Gupta","Soni","Mishra",
-"Chauhan","Pawar","Malhotra","Kapoor",
-"Khanna","Bansal","Joshi","Rathore",
-"Dubey","Rajput","Mehta","Arora"
-
-];
-
-const achievements = [
-
-"earned",
-"generated",
-"made",
-"received",
-"achieved",
-"crossed"
-
-];
-
-const actions = [
-
-"by uploading candidates",
-"through recruiter referrals",
-"through bulk uploads",
-"through hiring leads",
-"through fresher hiring",
-"through IT hiring"
-
-];
-
-const bonusNews = [
-
-"became Top Recruiter of the week",
-"uploaded 420 candidates this month",
-"closed 18 hirings this week",
-"earned premium recruiter badge",
-"crossed 1000 uploads milestone",
-"unlocked 80 candidates today"
-
+"Singh","Yadav","Gupta","Soni"
 ];
 
 function randomItem(arr){
-
-    return arr[
-        Math.floor(
-            Math.random() * arr.length
-        )
-    ];
-
+    return arr[Math.floor(Math.random()*arr.length)];
 }
 
 function generateNews(){
@@ -567,94 +524,23 @@ function generateNews(){
         + " " +
         randomItem(lastNames);
 
-    const earning =
-        Math.floor(
-            Math.random() * 45000
-        ) + 3000;
+    const amount =
+        Math.floor(Math.random()*50000);
 
-    const newsType =
-        Math.floor(Math.random() * 2);
-
-    if(newsType === 0){
-
-        return `🔥 HR ${fullName} ${randomItem(achievements)} ₹${earning.toLocaleString()} this week ${randomItem(actions)}.`;
-
-    }
-
-    else{
-
-        return `🚀 HR ${fullName} ${randomItem(bonusNews)}.`;
-
-    }
-
+    return `
+    <div class="live-item">
+        🔥 HR ${fullName} earned ₹${amount.toLocaleString()} this week
+    </div>
+    `;
 }
 
-function loadNews(){
+let html = "";
 
-    let html = "";
-
-    for(let i=0;i<10;i++){
-
-        html += `
-
-        <div class="detail-pill mb-3 p-3">
-
-            ${generateNews()}
-
-        </div>
-
-        `;
-
-    }
-
-    document.getElementById(
-        "earning-news"
-    ).innerHTML = html;
-
+for(let i=0;i<6;i++){
+    html += generateNews();
 }
 
-function loadTopUploaders(){
-
-    let html = "";
-
-    for(let i=1;i<=10;i++){
-
-        const uploads =
-            Math.floor(
-                Math.random() * 900
-            ) + 100;
-
-        html += `
-
-        <div class="detail-pill mb-3 p-3 d-flex justify-content-between">
-
-            <span>
-
-                🏅 ${randomItem(firstNames)} ${randomItem(lastNames)}
-
-            </span>
-
-            <strong>
-
-                ${uploads} Uploads
-
-            </strong>
-
-        </div>
-
-        `;
-
-    }
-
-    document.getElementById(
-        "top-uploaders"
-    ).innerHTML = html;
-
-}
-
-loadNews();
-
-loadTopUploaders();
+document.getElementById("earning-news").innerHTML = html;
 
 </script>
 
