@@ -8,7 +8,9 @@
     padding-bottom:100px;
 }
 
-/* TOP ACTION ROW */
+/* =========================
+TOP ACTION ROW
+========================= */
 
 .top-action-row{
 
@@ -18,25 +20,31 @@
 
     align-items:center;
 
+    gap:12px;
+
     margin-bottom:18px;
 }
 
-/* MINI TABS */
+/* =========================
+MINI TABS
+========================= */
 
 .mini-tabs{
 
     display:flex;
 
     gap:10px;
+
+    flex:1;
 }
 
 .mini-tab{
 
+    flex:1;
+
     border:none;
 
-    height:42px;
-
-    padding:0 18px;
+    height:44px;
 
     border-radius:14px;
 
@@ -50,7 +58,7 @@
 
     box-shadow:0 4px 12px rgba(0,0,0,0.08);
 
-    transition:0.2s;
+    transition:0.25s ease;
 }
 
 .mini-tab.active{
@@ -62,15 +70,21 @@
     );
 
     color:white;
+
+    transform:scale(1.02);
 }
 
-/* FILTER BUTTON */
+/* =========================
+FILTER BUTTON
+========================= */
 
 .filter-toggle{
 
-    width:42px;
+    width:44px;
 
-    height:42px;
+    height:44px;
+
+    min-width:44px;
 
     border:none;
 
@@ -80,10 +94,14 @@
 
     box-shadow:0 4px 12px rgba(0,0,0,0.08);
 
-    font-size:18px;
+    font-size:17px;
+
+    color:#111827;
 }
 
-/* FILTER BOX */
+/* =========================
+FILTER BOX
+========================= */
 
 .compact-filter{
 
@@ -91,38 +109,79 @@
 
     background:white;
 
-    border-radius:22px;
+    border-radius:24px;
 
     padding:16px;
 
     margin-bottom:18px;
 
     box-shadow:0 4px 18px rgba(0,0,0,0.08);
+
+    animation:fadeSlide .25s ease;
 }
 
 .compact-filter.active{
     display:block;
 }
 
-.compact-filter input,
-.compact-filter select{
+@keyframes fadeSlide{
 
-    height:44px;
+    from{
+        opacity:0;
+        transform:translateY(-8px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+.compact-filter .form-control{
+
+    height:46px;
 
     border-radius:14px;
 
-    margin-bottom:12px;
-
     border:1px solid #e5e7eb;
+
+    box-shadow:none;
+
+    font-size:14px;
+
+    margin-bottom:12px;
 }
 
-/* SEARCH BUTTON */
+.compact-filter .form-control:focus{
+
+    border-color:#7c3aed;
+
+    box-shadow:0 0 0 3px rgba(124,58,237,0.10);
+}
+
+/* =========================
+GRID FILTERS
+========================= */
+
+.filter-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:12px;
+}
+
+/* =========================
+SEARCH BUTTON
+========================= */
 
 .search-btn-modern{
 
     width:100%;
 
-    height:46px;
+    height:48px;
 
     border:none;
 
@@ -136,10 +195,16 @@
 
     color:white;
 
+    font-size:15px;
+
     font-weight:700;
+
+    margin-top:4px;
 }
 
-/* LEAD SECTION */
+/* =========================
+LEAD SECTION
+========================= */
 
 .lead-section{
     display:none;
@@ -149,11 +214,28 @@
     display:block;
 }
 
+/* =========================
+MOBILE
+========================= */
+
+@media(max-width:768px){
+
+    .container-fluid{
+        padding-left:0;
+        padding-right:0;
+    }
+
+    .filter-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
 </style>
 
 <div class="container-fluid leads-container">
 
-    <!-- TOP ROW -->
+    <!-- TOP ACTION ROW -->
 
     <div class="top-action-row">
 
@@ -191,7 +273,7 @@
         class="filter-toggle"
         onclick="toggleFilters()">
 
-            <i class="fas fa-sliders"></i>
+            <i class="fas fa-sliders-h"></i>
 
         </button>
 
@@ -205,124 +287,140 @@
 
         <form method="GET">
 
-            <input
-            type="text"
-            class="form-control"
-            name="designation"
-            placeholder="Designation">
+            <div class="filter-grid">
 
-            <input
-            type="text"
-            class="form-control"
-            name="city"
-            placeholder="City">
+                <!-- DESIGNATION -->
 
-            <select
-            class="form-control"
-            name="industry">
+                <input
+                type="text"
+                class="form-control"
+                name="designation"
+                placeholder="Designation">
 
-                <option value="">
-                    All Industries
-                </option>
+                <!-- CITY -->
 
-                <option>IT</option>
-                <option>BPO</option>
-                <option>Finance</option>
-                <option>Banking</option>
-                <option>Healthcare</option>
-                <option>Sales</option>
-                <option>Marketing</option>
-                <option>HR</option>
-                <option>Recruitment</option>
-                <option>Education</option>
-                <option>Telecalling</option>
-                <option>Customer Support</option>
-                <option>Automobile</option>
-                <option>Manufacturing</option>
-                <option>Advisory</option>
-                <option>Insurance</option>
-                <option>Real Estate</option>
-                <option>Logistics</option>
-                <option>E-Commerce</option>
-                <option>Digital Marketing</option>
-                <option>Construction</option>
-                <option>Hospitality</option>
-                <option>Hotel Management</option>
-                <option>Aviation</option>
-                <option>Pharmaceutical</option>
-                <option>Retail</option>
-                <option>Textile</option>
-                <option>Media</option>
-                <option>Advertising</option>
-                <option>Legal</option>
-                <option>FMCG</option>
-                <option>Electronics</option>
-                <option>Telecom</option>
-                <option>Data Entry</option>
-                <option>Operations</option>
-                <option>Admin</option>
-                <option>Business Development</option>
-                <option>Procurement</option>
-                <option>Supply Chain</option>
-                <option>Travel</option>
-                <option>Event Management</option>
-                <option>NGO</option>
-                <option>Government</option>
-                <option>Security</option>
-                <option>Fitness</option>
-                <option>Food & Beverage</option>
-                <option>Architecture</option>
-                <option>Interior Design</option>
-                <option>Animation</option>
-                <option>UI/UX</option>
-                <option>Software Testing</option>
-                <option>Cloud Computing</option>
-                <option>Cyber Security</option>
-                <option>AI / ML</option>
+                <input
+                type="text"
+                class="form-control"
+                name="city"
+                placeholder="City">
 
-            </select>
+                <!-- INDUSTRY -->
 
-            <select
-            class="form-control"
-            name="experience">
+                <select
+                class="form-control"
+                name="industry">
 
-                <option value="">
-                    Experience
-                </option>
+                    <option value="">
+                        All Industries
+                    </option>
 
-                <option value="Fresher">
-                    Fresher
-                </option>
+                    <option>IT</option>
+                    <option>BPO</option>
+                    <option>Finance</option>
+                    <option>Banking</option>
+                    <option>Healthcare</option>
+                    <option>Sales</option>
+                    <option>Marketing</option>
+                    <option>HR</option>
+                    <option>Recruitment</option>
+                    <option>Education</option>
+                    <option>Telecalling</option>
+                    <option>Customer Support</option>
+                    <option>Automobile</option>
+                    <option>Manufacturing</option>
+                    <option>Advisory</option>
+                    <option>Insurance</option>
+                    <option>Real Estate</option>
+                    <option>Logistics</option>
+                    <option>E-Commerce</option>
+                    <option>Digital Marketing</option>
+                    <option>Construction</option>
+                    <option>Hospitality</option>
+                    <option>Hotel Management</option>
+                    <option>Aviation</option>
+                    <option>Pharmaceutical</option>
+                    <option>Retail</option>
+                    <option>Textile</option>
+                    <option>Media</option>
+                    <option>Advertising</option>
+                    <option>Legal</option>
+                    <option>FMCG</option>
+                    <option>Electronics</option>
+                    <option>Telecom</option>
+                    <option>Data Entry</option>
+                    <option>Operations</option>
+                    <option>Admin</option>
+                    <option>Business Development</option>
+                    <option>Procurement</option>
+                    <option>Supply Chain</option>
+                    <option>Travel</option>
+                    <option>Event Management</option>
+                    <option>NGO</option>
+                    <option>Government</option>
+                    <option>Security</option>
+                    <option>Fitness</option>
+                    <option>Food & Beverage</option>
+                    <option>Architecture</option>
+                    <option>Interior Design</option>
+                    <option>Animation</option>
+                    <option>UI/UX</option>
+                    <option>Software Testing</option>
+                    <option>Cloud Computing</option>
+                    <option>Cyber Security</option>
+                    <option>AI / ML</option>
 
-                <option value="Experienced">
-                    Experienced
-                </option>
+                </select>
 
-            </select>
+                <!-- EXPERIENCE -->
 
-            <select
-            class="form-control"
-            name="sort">
+                <select
+                class="form-control"
+                name="experience">
 
-                <option value="">
-                    Sort By
-                </option>
+                    <option value="">
+                        Experience
+                    </option>
 
-                <option value="new">
-                    New to Old
-                </option>
+                    <option value="Fresher">
+                        Fresher
+                    </option>
 
-                <option value="old">
-                    Old to New
-                </option>
+                    <option value="Experienced">
+                        Experienced
+                    </option>
 
-            </select>
+                </select>
+
+                <!-- SORT -->
+
+                <select
+                class="form-control"
+                name="sort">
+
+                    <option value="">
+                        Sort By
+                    </option>
+
+                    <option value="new">
+                        New to Old
+                    </option>
+
+                    <option value="old">
+                        Old to New
+                    </option>
+
+                </select>
+
+            </div>
+
+            <!-- SEARCH BUTTON -->
 
             <button class="search-btn-modern">
 
                 <i class="fas fa-search"></i>
 
-                Search
+                Search Candidates
 
             </button>
 
