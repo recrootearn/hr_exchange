@@ -1270,13 +1270,22 @@ def unlocked():
 @login_required
 def export_unlocked():
 
-    unlocked_candidates = []
+    import pandas as pd
+    from flask import send_file
 
-    for c in Candidate.query.all():
+    unlocked = Unlock.query.filter_by(
+        user_id=current_user.id
+    ).all()
 
-        if c.id in current_user.unlocked_candidates:
+    data = []
 
-            unlocked_candidates.append({
+    for u in unlocked:
+
+        c = Candidate.query.get(u.candidate_id)
+
+        if c:
+
+            data.append({
 
                 "Name": c.name,
                 "Phone": c.phone,
@@ -1287,14 +1296,14 @@ def export_unlocked():
 
             })
 
-    df = pd.DataFrame(unlocked_candidates)
+    df = pd.DataFrame(data)
 
-    file_path = "unlocked_candidates.xlsx"
+    file_name = "unlocked_candidates.xlsx"
 
-    df.to_excel(file_path, index=False)
+    df.to_excel(file_name, index=False)
 
     return send_file(
-        file_path,
+        file_name,
         as_attachment=True
     )
 
