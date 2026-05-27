@@ -458,6 +458,12 @@ def locked():
         User=User
     )
 
+@app.route("/leads")
+@login_required
+def leads():
+
+    return render_template("leads.html")
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
 
