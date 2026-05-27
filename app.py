@@ -946,7 +946,19 @@ def report_fake(id):
         uploader = User.query.get(candidate.uploaded_by)
         if uploader: uploader.trust_score -= 10
     db.session.commit()
-    return redirect(url_for('home'))
+    return redirect('/leads)
+
+@app.route('/wrong-experience/<int:id>')
+@login_required
+def wrong_experience(id):
+
+    candidate = Candidate.query.get(id)
+
+    candidate.wrong_experience_reports += 1
+
+    db.session.commit()
+
+    return redirect('/leads')
 
 # =========================
 # ADMIN ROUTES (Fixed Indentations)
