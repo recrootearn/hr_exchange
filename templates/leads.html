@@ -8,30 +8,52 @@
     padding-bottom:100px;
 }
 
-.swipe-tabs{
+/* TOP ACTION ROW */
+
+.top-action-row{
+
     display:flex;
-    gap:14px;
-    margin-bottom:20px;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:18px;
 }
 
-.swipe-tabs button{
+/* MINI TABS */
+
+.mini-tabs{
+
+    display:flex;
+
+    gap:10px;
+}
+
+.mini-tab{
 
     border:none;
 
-    padding:14px 24px;
+    height:42px;
 
-    border-radius:18px;
+    padding:0 18px;
 
-    font-weight:700;
+    border-radius:14px;
 
     background:white;
 
-    box-shadow:0 4px 14px rgba(0,0,0,0.08);
+    font-size:14px;
 
-    transition:0.3s;
+    font-weight:700;
+
+    color:#111827;
+
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+
+    transition:0.2s;
 }
 
-.swipe-tabs button.active-tab{
+.mini-tab.active{
 
     background:linear-gradient(
     135deg,
@@ -41,6 +63,83 @@
 
     color:white;
 }
+
+/* FILTER BUTTON */
+
+.filter-toggle{
+
+    width:42px;
+
+    height:42px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:white;
+
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+
+    font-size:18px;
+}
+
+/* FILTER BOX */
+
+.compact-filter{
+
+    display:none;
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:16px;
+
+    margin-bottom:18px;
+
+    box-shadow:0 4px 18px rgba(0,0,0,0.08);
+}
+
+.compact-filter.active{
+    display:block;
+}
+
+.compact-filter input,
+.compact-filter select{
+
+    height:44px;
+
+    border-radius:14px;
+
+    margin-bottom:12px;
+
+    border:1px solid #e5e7eb;
+}
+
+/* SEARCH BUTTON */
+
+.search-btn-modern{
+
+    width:100%;
+
+    height:46px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+    );
+
+    color:white;
+
+    font-weight:700;
+}
+
+/* LEAD SECTION */
 
 .lead-section{
     display:none;
@@ -54,34 +153,184 @@
 
 <div class="container-fluid leads-container">
 
-    <!-- TABS -->
+    <!-- TOP ROW -->
 
-    <div class="swipe-tabs">
+    <div class="top-action-row">
+
+        <!-- TABS -->
+
+        <div class="mini-tabs">
+
+            <button
+            id="locked-tab"
+            class="mini-tab active"
+            onclick="showLocked()">
+
+                <i class="fas fa-lock"></i>
+
+                Locked
+
+            </button>
+
+            <button
+            id="unlocked-tab"
+            class="mini-tab"
+            onclick="showUnlocked()">
+
+                <i class="fas fa-lock-open"></i>
+
+                Unlocked
+
+            </button>
+
+        </div>
+
+        <!-- FILTER BUTTON -->
 
         <button
-        id="locked-tab"
-        class="active-tab"
-        onclick="showLocked()">
+        class="filter-toggle"
+        onclick="toggleFilters()">
 
-            <i class="fas fa-lock"></i>
-
-            Locked
-
-        </button>
-
-        <button
-        id="unlocked-tab"
-        onclick="showUnlocked()">
-
-            <i class="fas fa-lock-open"></i>
-
-            Unlocked
+            <i class="fas fa-sliders"></i>
 
         </button>
 
     </div>
 
-    <!-- LOCKED -->
+    <!-- FILTER BOX -->
+
+    <div
+    id="compactFilter"
+    class="compact-filter">
+
+        <form method="GET">
+
+            <input
+            type="text"
+            class="form-control"
+            name="designation"
+            placeholder="Designation">
+
+            <input
+            type="text"
+            class="form-control"
+            name="city"
+            placeholder="City">
+
+            <select
+            class="form-control"
+            name="industry">
+
+                <option value="">
+                    All Industries
+                </option>
+
+                <option>IT</option>
+                <option>BPO</option>
+                <option>Finance</option>
+                <option>Banking</option>
+                <option>Healthcare</option>
+                <option>Sales</option>
+                <option>Marketing</option>
+                <option>HR</option>
+                <option>Recruitment</option>
+                <option>Education</option>
+                <option>Telecalling</option>
+                <option>Customer Support</option>
+                <option>Automobile</option>
+                <option>Manufacturing</option>
+                <option>Advisory</option>
+                <option>Insurance</option>
+                <option>Real Estate</option>
+                <option>Logistics</option>
+                <option>E-Commerce</option>
+                <option>Digital Marketing</option>
+                <option>Construction</option>
+                <option>Hospitality</option>
+                <option>Hotel Management</option>
+                <option>Aviation</option>
+                <option>Pharmaceutical</option>
+                <option>Retail</option>
+                <option>Textile</option>
+                <option>Media</option>
+                <option>Advertising</option>
+                <option>Legal</option>
+                <option>FMCG</option>
+                <option>Electronics</option>
+                <option>Telecom</option>
+                <option>Data Entry</option>
+                <option>Operations</option>
+                <option>Admin</option>
+                <option>Business Development</option>
+                <option>Procurement</option>
+                <option>Supply Chain</option>
+                <option>Travel</option>
+                <option>Event Management</option>
+                <option>NGO</option>
+                <option>Government</option>
+                <option>Security</option>
+                <option>Fitness</option>
+                <option>Food & Beverage</option>
+                <option>Architecture</option>
+                <option>Interior Design</option>
+                <option>Animation</option>
+                <option>UI/UX</option>
+                <option>Software Testing</option>
+                <option>Cloud Computing</option>
+                <option>Cyber Security</option>
+                <option>AI / ML</option>
+
+            </select>
+
+            <select
+            class="form-control"
+            name="experience">
+
+                <option value="">
+                    Experience
+                </option>
+
+                <option value="Fresher">
+                    Fresher
+                </option>
+
+                <option value="Experienced">
+                    Experienced
+                </option>
+
+            </select>
+
+            <select
+            class="form-control"
+            name="sort">
+
+                <option value="">
+                    Sort By
+                </option>
+
+                <option value="new">
+                    New to Old
+                </option>
+
+                <option value="old">
+                    Old to New
+                </option>
+
+            </select>
+
+            <button class="search-btn-modern">
+
+                <i class="fas fa-search"></i>
+
+                Search
+
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- LOCKED SECTION -->
 
     <div
     id="locked-section"
@@ -91,7 +340,7 @@
 
     </div>
 
-    <!-- UNLOCKED -->
+    <!-- UNLOCKED SECTION -->
 
     <div
     id="unlocked-section"
@@ -117,11 +366,11 @@ function showLocked(){
 
     document
     .getElementById("locked-tab")
-    .classList.add("active-tab");
+    .classList.add("active");
 
     document
     .getElementById("unlocked-tab")
-    .classList.remove("active-tab");
+    .classList.remove("active");
 
 }
 
@@ -137,11 +386,19 @@ function showUnlocked(){
 
     document
     .getElementById("unlocked-tab")
-    .classList.add("active-tab");
+    .classList.add("active");
 
     document
     .getElementById("locked-tab")
-    .classList.remove("active-tab");
+    .classList.remove("active");
+
+}
+
+function toggleFilters(){
+
+    document
+    .getElementById("compactFilter")
+    .classList.toggle("active");
 
 }
 
