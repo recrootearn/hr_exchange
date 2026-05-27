@@ -570,6 +570,8 @@
 
 <!-- MOBILE BOTTOM NAV -->
 
+{% if current_user.is_authenticated %}
+
 <div class="mobile-bottom-nav">
 
     <a href="/">
@@ -598,6 +600,8 @@
     </a>
 
 </div>
+
+{% endif %}
 
 </body>
 
