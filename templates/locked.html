@@ -1,23 +1,19 @@
-<!-- CANDIDATES GRID -->
-
 <div class="row">
 
 {% for c in candidates.items %}
 
 {% if c.id not in unlocked_ids %}
 
-<div class="col-12 col-md-6">
+<div class="col-12">
 
-    <div class="candidate-card-modern"
+    <div class="candidate-card"
          id="candidate-{{ c.id }}">
 
-        <!-- TOP -->
+        <div class="candidate-top">
 
-        <div class="candidate-header">
+            <div class="candidate-profile">
 
-            <div class="candidate-left">
-
-                <div class="candidate-avatar">
+                <div class="avatar">
 
                     {{ c.name[0] }}
 
@@ -41,35 +37,29 @@
 
             </div>
 
-            <div>
+            {% if c.experience == 'Experienced' %}
 
-                {% if c.experience == 'Experienced' %}
+                <span class="badge bg-success badge-custom">
 
-                    <span class="badge bg-success">
+                    Experienced
 
-                        Experienced
+                </span>
 
-                    </span>
+            {% else %}
 
-                {% else %}
+                <span class="badge bg-primary badge-custom">
 
-                    <span class="badge bg-primary">
+                    Fresher
 
-                        Fresher
+                </span>
 
-                    </span>
-
-                {% endif %}
-
-            </div>
+            {% endif %}
 
         </div>
 
-        <!-- DETAILS -->
+        <div class="candidate-details">
 
-        <div class="modern-pill-wrap">
-
-            <div class="modern-pill">
+            <div class="detail-pill">
 
                 <i class="fas fa-location-dot"></i>
 
@@ -77,7 +67,7 @@
 
             </div>
 
-            <div class="modern-pill">
+            <div class="detail-pill">
 
                 <i class="fas fa-briefcase"></i>
 
@@ -85,7 +75,7 @@
 
             </div>
 
-            <div class="modern-pill">
+            <div class="detail-pill">
 
                 <i class="fas fa-phone"></i>
 
@@ -95,12 +85,10 @@
 
         </div>
 
-        <!-- ACTION -->
-
-        <div class="mt-3">
+        <div class="action-buttons">
 
             <a href="/unlock/{{ c.id }}"
-               class="unlock-btn-modern unlock-btn"
+               class="btn btn-primary unlock-btn"
                data-candidate="{{ c.id }}">
 
                 <i class="fas fa-lock-open"></i>
@@ -120,82 +108,3 @@
 {% endfor %}
 
 </div>
-
-<!-- PAGINATION -->
-
-<div class="d-flex justify-content-center mt-4 mb-5">
-
-    {% if candidates.has_prev %}
-
-        <a href="?page={{ candidates.prev_num }}"
-           class="btn btn-outline-primary rounded-pill px-4 me-2">
-
-            ← Previous
-
-        </a>
-
-    {% endif %}
-
-    {% if candidates.has_next %}
-
-        <a href="?page={{ candidates.next_num }}"
-           class="btn btn-outline-primary rounded-pill px-4">
-
-            Next →
-
-        </a>
-
-    {% endif %}
-
-</div>
-
-<!-- UNLOCK SCRIPT -->
-
-<script>
-
-document.querySelectorAll('.unlock-btn').forEach(button => {
-
-    button.addEventListener('click', function(e){
-
-        e.preventDefault();
-
-        const url = this.href;
-
-        const candidateId =
-            this.dataset.candidate;
-
-        fetch(url)
-
-        .then(response => response.text())
-
-        .then(data => {
-
-            const card = document.getElementById(
-                `candidate-${candidateId}`
-            );
-
-            if(card){
-
-                card.style.transition =
-                    "0.3s ease";
-
-                card.style.opacity = "0";
-
-                card.style.transform =
-                    "scale(0.92)";
-
-                setTimeout(() => {
-
-                    location.reload();
-
-                },300);
-
-            }
-
-        });
-
-    });
-
-});
-
-</script>

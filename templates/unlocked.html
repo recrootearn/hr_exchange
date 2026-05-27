@@ -1,15 +1,13 @@
-<!-- HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-
-    <h4 style="font-weight:800;">
+    <h2 class="mb-0">
 
         Unlocked Candidates
 
-    </h4>
+    </h2>
 
     <a href="/export-unlocked"
-       class="btn btn-success rounded-pill px-3">
+       class="btn btn-success">
 
         <i class="fas fa-file-excel"></i>
 
@@ -17,25 +15,21 @@
 
 </div>
 
-<!-- CANDIDATES -->
-
 <div class="row">
 
 {% for c in candidates.items %}
 
 {% if c.id in unlocked_ids %}
 
-<div class="col-12 col-md-6">
+<div class="col-12">
 
-    <div class="candidate-card-modern">
+    <div class="candidate-card">
 
-        <!-- TOP -->
+        <div class="candidate-top">
 
-        <div class="candidate-header">
+            <div class="candidate-profile">
 
-            <div class="candidate-left">
-
-                <div class="candidate-avatar">
+                <div class="avatar">
 
                     {{ c.name[0] }}
 
@@ -59,35 +53,29 @@
 
             </div>
 
-            <div>
+            {% if c.experience == 'Experienced' %}
 
-                {% if c.experience == 'Experienced' %}
+                <span class="badge bg-success badge-custom">
 
-                    <span class="badge bg-success">
+                    Experienced
 
-                        Experienced
+                </span>
 
-                    </span>
+            {% else %}
 
-                {% else %}
+                <span class="badge bg-primary badge-custom">
 
-                    <span class="badge bg-primary">
+                    Fresher
 
-                        Fresher
+                </span>
 
-                    </span>
-
-                {% endif %}
-
-            </div>
+            {% endif %}
 
         </div>
 
-        <!-- DETAILS -->
+        <div class="candidate-details">
 
-        <div class="modern-pill-wrap">
-
-            <div class="modern-pill">
+            <div class="detail-pill">
 
                 <i class="fas fa-location-dot"></i>
 
@@ -95,7 +83,7 @@
 
             </div>
 
-            <div class="modern-pill">
+            <div class="detail-pill">
 
                 <i class="fas fa-briefcase"></i>
 
@@ -103,7 +91,7 @@
 
             </div>
 
-            <div class="modern-pill">
+            <div class="detail-pill">
 
                 <i class="fas fa-phone"></i>
 
@@ -113,14 +101,10 @@
 
         </div>
 
-        <!-- ACTION BUTTONS -->
-
-        <div class="mt-3 d-flex flex-wrap gap-2">
-
-            <!-- CALL -->
+        <div class="action-buttons">
 
             <a href="tel:{{ c.phone }}"
-               class="btn btn-success btn-sm rounded-pill px-3">
+               class="btn btn-success btn-sm">
 
                 <i class="fas fa-phone"></i>
 
@@ -128,11 +112,9 @@
 
             </a>
 
-            <!-- WHATSAPP -->
-
             <a href="https://wa.me/91{{ c.phone }}"
                target="_blank"
-               class="btn btn-dark btn-sm rounded-pill px-3">
+               class="btn btn-dark btn-sm">
 
                 <i class="fab fa-whatsapp"></i>
 
@@ -140,10 +122,8 @@
 
             </a>
 
-            <!-- REVIEW -->
-
             <button
-            class="btn btn-info btn-sm rounded-pill px-3"
+            class="btn btn-info btn-sm"
             data-bs-toggle="modal"
             data-bs-target="#reviewModal{{ c.id }}">
 
@@ -153,86 +133,29 @@
 
             </button>
 
-            <!-- REPORT -->
-
-            <a href="/report-fake/{{ c.id }}"
-               class="btn btn-danger btn-sm rounded-pill px-3">
-
-                <i class="fas fa-flag"></i>
-
-            </a>
-
-            <!-- WRONG EXPERIENCE -->
-
-            <a href="/wrong-experience/{{ c.id }}"
-               class="btn btn-warning btn-sm rounded-pill px-3">
-
-                <i class="fas fa-triangle-exclamation"></i>
-
-            </a>
-
         </div>
-
-        <!-- REVIEWS -->
-
-        {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
 
         <div class="review-box mt-3 p-3"
              style="
              background:#f8fafc;
-             border-radius:18px;
-             max-height:220px;
-             overflow-y:auto;
+             border-radius:16px;
              ">
 
-            <div class="d-flex justify-content-between align-items-center mb-2">
+            {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
 
-                <strong>
+            <strong>
 
-                    ⭐ Reviews ({{ reviews|length }})
+                ⭐ Reviews ({{ reviews|length }})
 
-                </strong>
-
-            </div>
+            </strong>
 
             {% if reviews %}
 
                 {% for r in reviews %}
 
-                    {% set reviewer = User.query.get(r.user_id) %}
+                    <div class="mt-3">
 
-                    <div class="mb-2 p-2"
-                         style="
-                         background:white;
-                         border-radius:12px;
-                         border:1px solid #e5e7eb;
-                         ">
-
-                        <div class="d-flex justify-content-between">
-
-                            <strong style="color:#2563eb;">
-
-                                {{ reviewer.first_name if reviewer else 'HR User' }}
-
-                            </strong>
-
-                            <span class="badge bg-warning text-dark">
-
-                                ⭐ {{ r.rating }}/5
-
-                            </span>
-
-                        </div>
-
-                        <div class="mt-2"
-                             style="
-                             font-size:13px;
-                             color:#374151;
-                             ">
-
-                            {{ r.review }}
-
-                        </div>
+                        {{ r.review }}
 
                     </div>
 
@@ -240,7 +163,7 @@
 
             {% else %}
 
-                <div class="text-muted">
+                <div class="text-muted mt-2">
 
                     No reviews yet
 
@@ -254,121 +177,8 @@
 
 </div>
 
-<!-- REVIEW MODAL -->
-
-<div class="modal fade"
-     id="reviewModal{{ c.id }}"
-     tabindex="-1">
-
-    <div class="modal-dialog modal-dialog-centered">
-
-        <div class="modal-content"
-             style="
-             border-radius:22px;
-             border:none;
-             ">
-
-            <div class="modal-header border-0">
-
-                <h5 class="modal-title">
-
-                    Add Review
-
-                </h5>
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"></button>
-
-            </div>
-
-            <div class="modal-body">
-
-                <form method="POST"
-                      action="/add-review/{{ c.id }}">
-
-                    <div class="mb-3">
-
-                        <label class="mb-2">
-
-                            Rating
-
-                        </label>
-
-                        <select name="rating"
-                                class="form-control">
-
-                            <option value="5">5 - Excellent</option>
-                            <option value="4">4 - Good</option>
-                            <option value="3">3 - Average</option>
-                            <option value="2">2 - Poor</option>
-                            <option value="1">1 - Very Poor</option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="mb-3">
-
-                        <textarea
-                        name="review"
-                        class="form-control"
-                        placeholder="Write review"
-                        required
-                        style="
-                        border-radius:14px;
-                        min-height:120px;
-                        "></textarea>
-
-                    </div>
-
-                    <button
-                    class="btn btn-primary w-100 rounded-pill">
-
-                        Submit Review
-
-                    </button>
-
-                </form>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
 {% endif %}
 
 {% endfor %}
-
-</div>
-
-<!-- PAGINATION -->
-
-<div class="d-flex justify-content-center mt-4 mb-5">
-
-    {% if candidates.has_prev %}
-
-        <a href="?page={{ candidates.prev_num }}"
-           class="btn btn-outline-primary rounded-pill px-4 me-2">
-
-            ← Previous
-
-        </a>
-
-    {% endif %}
-
-    {% if candidates.has_next %}
-
-        <a href="?page={{ candidates.next_num }}"
-           class="btn btn-outline-primary rounded-pill px-4">
-
-            Next →
-
-        </a>
-
-    {% endif %}
 
 </div>
