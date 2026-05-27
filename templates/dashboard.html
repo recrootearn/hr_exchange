@@ -5,10 +5,9 @@
 <style>
 
 .dashboard-scroll{
-    display:flex;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
     gap:14px;
-    overflow-x:auto;
-    padding-bottom:10px;
     margin-bottom:20px;
 }
 
@@ -17,7 +16,6 @@
 }
 
 .mini-card{
-    min-width:160px;
     background:white;
     border-radius:22px;
     padding:18px;
@@ -47,9 +45,9 @@
 }
 
 .quick-actions{
-    display:flex;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
     gap:12px;
-    overflow-x:auto;
     margin-bottom:22px;
 }
 
@@ -58,10 +56,9 @@
 }
 
 .quick-btn{
-    min-width:110px;
     background:white;
     border-radius:18px;
-    padding:14px;
+    padding:14px 8px;
     text-align:center;
     text-decoration:none;
     color:#111827;
@@ -70,7 +67,12 @@
 
 .quick-btn i{
     font-size:22px;
-    margin-bottom:10px;
+    margin-bottom:8px;
+}
+
+.quick-btn div{
+    font-size:13px;
+    font-weight:600;
 }
 
 .section-title{
@@ -202,6 +204,23 @@
 
     .mobile-ui{
         display:none;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .content{
+        padding:16px;
+        padding-bottom:100px;
+    }
+
+    .dashboard-scroll{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .quick-actions{
+        grid-template-columns:repeat(4,1fr);
     }
 
 }
@@ -505,12 +524,15 @@
 
 const firstNames = [
 "Aarav","Vivaan","Aditya","Vihaan","Arjun",
-"Reyansh","Sai","Krishna","Ishaan","Rahul"
+"Reyansh","Sai","Krishna","Ishaan","Rahul",
+"Kishan","Rahul","Medhvi","Jyoti","Shivani",
+"Pradeep","Harshit","Ahana","Suhani"
 ];
 
 const lastNames = [
 "Sharma","Verma","Patel","Jain","Agarwal",
-"Singh","Yadav","Gupta","Soni"
+"Singh","Yadav","Gupta","Soni","Mishra","Arora",
+"Grover","Tiwari","Goyal","Singh","Thakor"
 ];
 
 function randomItem(arr){
