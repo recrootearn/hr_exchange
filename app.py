@@ -946,7 +946,7 @@ def report_fake(id):
         uploader = User.query.get(candidate.uploaded_by)
         if uploader: uploader.trust_score -= 10
     db.session.commit()
-    return redirect('/leads)
+    return redirect('/leads')
 
 @app.route('/wrong-experience/<int:id>')
 @login_required
