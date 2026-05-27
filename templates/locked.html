@@ -6,16 +6,18 @@
 
 {% if c.id not in unlocked_ids %}
 
-<div class="col-md-6">
+<div class="col-12 col-md-6">
 
-    <div class="candidate-card"
+    <div class="candidate-card-modern"
          id="candidate-{{ c.id }}">
 
-        <div class="candidate-top">
+        <!-- TOP -->
 
-            <div class="candidate-profile">
+        <div class="candidate-header">
 
-                <div class="avatar">
+            <div class="candidate-left">
+
+                <div class="candidate-avatar">
 
                     {{ c.name[0] }}
 
@@ -43,7 +45,7 @@
 
                 {% if c.experience == 'Experienced' %}
 
-                    <span class="badge bg-success badge-custom">
+                    <span class="badge bg-success">
 
                         Experienced
 
@@ -51,7 +53,7 @@
 
                 {% else %}
 
-                    <span class="badge bg-primary badge-custom">
+                    <span class="badge bg-primary">
 
                         Fresher
 
@@ -65,9 +67,9 @@
 
         <!-- DETAILS -->
 
-        <div class="candidate-details mt-3">
+        <div class="modern-pill-wrap">
 
-            <div class="detail-pill">
+            <div class="modern-pill">
 
                 <i class="fas fa-location-dot"></i>
 
@@ -75,7 +77,7 @@
 
             </div>
 
-            <div class="detail-pill">
+            <div class="modern-pill">
 
                 <i class="fas fa-briefcase"></i>
 
@@ -83,7 +85,7 @@
 
             </div>
 
-            <div class="detail-pill">
+            <div class="modern-pill">
 
                 <i class="fas fa-phone"></i>
 
@@ -93,12 +95,12 @@
 
         </div>
 
-        <!-- BUTTON -->
+        <!-- ACTION -->
 
-        <div class="action-buttons mt-3">
+        <div class="mt-3">
 
             <a href="/unlock/{{ c.id }}"
-               class="btn btn-primary btn-sm unlock-btn"
+               class="unlock-btn-modern unlock-btn"
                data-candidate="{{ c.id }}">
 
                 <i class="fas fa-lock-open"></i>
@@ -121,12 +123,12 @@
 
 <!-- PAGINATION -->
 
-<div class="d-flex justify-content-center mt-4">
+<div class="d-flex justify-content-center mt-4 mb-5">
 
     {% if candidates.has_prev %}
 
         <a href="?page={{ candidates.prev_num }}"
-           class="btn btn-outline-primary me-2">
+           class="btn btn-outline-primary rounded-pill px-4 me-2">
 
             ← Previous
 
@@ -137,7 +139,7 @@
     {% if candidates.has_next %}
 
         <a href="?page={{ candidates.next_num }}"
-           class="btn btn-outline-primary">
+           class="btn btn-outline-primary rounded-pill px-4">
 
             Next →
 
@@ -147,7 +149,7 @@
 
 </div>
 
-<!-- NO PAGE REFRESH -->
+<!-- UNLOCK SCRIPT -->
 
 <script>
 
@@ -175,16 +177,16 @@ document.querySelectorAll('.unlock-btn').forEach(button => {
             if(card){
 
                 card.style.transition =
-                    "0.3s";
+                    "0.3s ease";
 
                 card.style.opacity = "0";
 
                 card.style.transform =
-                    "scale(0.95)";
+                    "scale(0.92)";
 
                 setTimeout(() => {
 
-                    card.remove();
+                    location.reload();
 
                 },300);
 

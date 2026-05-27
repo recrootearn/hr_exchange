@@ -1,233 +1,254 @@
-<h2 class="mb-4">
-    Unlocked Candidates
-</h2>
+<!-- HEADER -->
 
-<a href="/export-unlocked"
-class="btn btn-success mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3">
 
-    Export Excel
+    <h4 style="font-weight:800;">
 
-</a>
+        Unlocked Candidates
+
+    </h4>
+
+    <a href="/export-unlocked"
+       class="btn btn-success rounded-pill px-3">
+
+        <i class="fas fa-file-excel"></i>
+
+    </a>
+
+</div>
+
+<!-- CANDIDATES -->
+
+<div class="row">
 
 {% for c in candidates.items %}
 
-<div class="candidate-card"
-     data-aos="fade-up">
+{% if c.id in unlocked_ids %}
 
-    <div class="candidate-top">
+<div class="col-12 col-md-6">
 
-        <div class="candidate-profile">
+    <div class="candidate-card-modern">
 
-            <div class="avatar">
-                {{ c.name[0] }}
+        <!-- TOP -->
+
+        <div class="candidate-header">
+
+            <div class="candidate-left">
+
+                <div class="candidate-avatar">
+
+                    {{ c.name[0] }}
+
+                </div>
+
+                <div>
+
+                    <div class="candidate-name">
+
+                        {{ c.name }}
+
+                    </div>
+
+                    <div class="candidate-role">
+
+                        {{ c.designation }}
+
+                    </div>
+
+                </div>
+
             </div>
 
             <div>
 
-                <div class="candidate-name">
-                    {{ c.name }}
-                </div>
+                {% if c.experience == 'Experienced' %}
 
-                <div class="candidate-role">
-                    {{ c.designation }}
-                </div>
+                    <span class="badge bg-success">
+
+                        Experienced
+
+                    </span>
+
+                {% else %}
+
+                    <span class="badge bg-primary">
+
+                        Fresher
+
+                    </span>
+
+                {% endif %}
 
             </div>
 
         </div>
 
-        <div>
+        <!-- DETAILS -->
 
-            {% if c.experience == 'Experienced' %}
+        <div class="modern-pill-wrap">
 
-                <span class="badge bg-success badge-custom">
+            <div class="modern-pill">
 
-                    Experienced
+                <i class="fas fa-location-dot"></i>
 
-                </span>
+                {{ c.city }}
+
+            </div>
+
+            <div class="modern-pill">
+
+                <i class="fas fa-briefcase"></i>
+
+                {{ c.category }}
+
+            </div>
+
+            <div class="modern-pill">
+
+                <i class="fas fa-phone"></i>
+
+                {{ c.phone }}
+
+            </div>
+
+        </div>
+
+        <!-- ACTION BUTTONS -->
+
+        <div class="mt-3 d-flex flex-wrap gap-2">
+
+            <!-- CALL -->
+
+            <a href="tel:{{ c.phone }}"
+               class="btn btn-success btn-sm rounded-pill px-3">
+
+                <i class="fas fa-phone"></i>
+
+                Call
+
+            </a>
+
+            <!-- WHATSAPP -->
+
+            <a href="https://wa.me/91{{ c.phone }}"
+               target="_blank"
+               class="btn btn-dark btn-sm rounded-pill px-3">
+
+                <i class="fab fa-whatsapp"></i>
+
+                WhatsApp
+
+            </a>
+
+            <!-- REVIEW -->
+
+            <button
+            class="btn btn-info btn-sm rounded-pill px-3"
+            data-bs-toggle="modal"
+            data-bs-target="#reviewModal{{ c.id }}">
+
+                <i class="fas fa-star"></i>
+
+                Review
+
+            </button>
+
+            <!-- REPORT -->
+
+            <a href="/report-fake/{{ c.id }}"
+               class="btn btn-danger btn-sm rounded-pill px-3">
+
+                <i class="fas fa-flag"></i>
+
+            </a>
+
+            <!-- WRONG EXPERIENCE -->
+
+            <a href="/wrong-experience/{{ c.id }}"
+               class="btn btn-warning btn-sm rounded-pill px-3">
+
+                <i class="fas fa-triangle-exclamation"></i>
+
+            </a>
+
+        </div>
+
+        <!-- REVIEWS -->
+
+        {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
+
+        <div class="review-box mt-3 p-3"
+             style="
+             background:#f8fafc;
+             border-radius:18px;
+             max-height:220px;
+             overflow-y:auto;
+             ">
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+
+                <strong>
+
+                    ⭐ Reviews ({{ reviews|length }})
+
+                </strong>
+
+            </div>
+
+            {% if reviews %}
+
+                {% for r in reviews %}
+
+                    {% set reviewer = User.query.get(r.user_id) %}
+
+                    <div class="mb-2 p-2"
+                         style="
+                         background:white;
+                         border-radius:12px;
+                         border:1px solid #e5e7eb;
+                         ">
+
+                        <div class="d-flex justify-content-between">
+
+                            <strong style="color:#2563eb;">
+
+                                {{ reviewer.first_name if reviewer else 'HR User' }}
+
+                            </strong>
+
+                            <span class="badge bg-warning text-dark">
+
+                                ⭐ {{ r.rating }}/5
+
+                            </span>
+
+                        </div>
+
+                        <div class="mt-2"
+                             style="
+                             font-size:13px;
+                             color:#374151;
+                             ">
+
+                            {{ r.review }}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
 
             {% else %}
 
-                <span class="badge bg-primary badge-custom">
+                <div class="text-muted">
 
-                    Fresher
+                    No reviews yet
 
-                </span>
+                </div>
 
             {% endif %}
 
         </div>
-
-    </div>
-
-    <!-- REVIEWS SECTION -->
-
-    {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
-
-    <div class="review-box mt-3 p-3"
-         style="
-         background:#f8fafc;
-         border-radius:12px;
-         max-height:220px;
-         overflow-y:auto;
-         ">
-
-        <div class="d-flex justify-content-between align-items-center mb-2">
-
-            <strong>
-
-                ⭐ Reviews ({{ reviews|length }})
-
-            </strong>
-
-        </div>
-
-        {% if reviews %}
-
-            {% for r in reviews %}
-
-                {% set reviewer = User.query.get(r.user_id) %}
-
-                <div class="mb-3 p-2"
-                     style="
-                     background:white;
-                     border-radius:10px;
-                     border:1px solid #e5e7eb;
-                     ">
-
-                    <div class="d-flex justify-content-between">
-
-                        <strong style="color:#2563eb;">
-
-                            {{ reviewer.first_name if reviewer else 'HR User' }}
-
-                        </strong>
-
-                        <span class="badge bg-warning text-dark">
-
-                            ⭐ {{ r.rating }}/5
-
-                        </span>
-
-                    </div>
-
-                    <div class="mt-2"
-                         style="
-                         font-size:14px;
-                         color:#374151;
-                         ">
-
-                        {{ r.review }}
-
-                    </div>
-
-                </div>
-
-            {% endfor %}
-
-        {% else %}
-
-            <div class="text-muted">
-
-                No reviews yet
-
-            </div>
-
-        {% endif %}
-
-    </div>
-
-    <!-- CANDIDATE DETAILS -->
-
-    <div class="candidate-details mt-3">
-
-        <div class="detail-pill">
-
-            <i class="fas fa-location-dot"></i>
-
-            {{ c.city }}
-
-        </div>
-
-        <div class="detail-pill">
-
-            <i class="fas fa-briefcase"></i>
-
-            {{ c.category }}
-
-        </div>
-
-        <div class="detail-pill">
-
-            <i class="fas fa-phone"></i>
-
-            {{ c.phone }}
-
-        </div>
-
-    </div>
-
-    <!-- ACTION BUTTONS -->
-
-    <div class="action-buttons mt-3">
-
-        <!-- CALL -->
-
-        <a href="tel:{{ c.phone }}"
-        class="btn btn-success btn-sm">
-
-            <i class="fas fa-phone"></i>
-
-            Call
-
-        </a>
-
-        <!-- WHATSAPP -->
-
-        <a href="https://wa.me/91{{ c.phone }}"
-        target="_blank"
-        class="btn btn-dark btn-sm">
-
-            <i class="fab fa-whatsapp"></i>
-
-            WhatsApp
-
-        </a>
-
-        <!-- ADD REVIEW -->
-
-        <button
-        class="btn btn-info btn-sm"
-        data-bs-toggle="modal"
-        data-bs-target="#reviewModal{{ c.id }}">
-
-            <i class="fas fa-star"></i>
-
-            Add Review
-
-        </button>
-
-        <!-- REPORT FAKE -->
-
-        <a href="/report-fake/{{ c.id }}"
-        class="btn btn-danger btn-sm">
-
-            <i class="fas fa-flag"></i>
-
-            Report Fake
-
-        </a>
-
-        <!-- WRONG EXPERIENCE -->
-
-        <a href="/wrong-experience/{{ c.id }}"
-        class="btn btn-warning btn-sm">
-
-            <i class="fas fa-triangle-exclamation"></i>
-
-            Wrong Experience
-
-        </a>
 
     </div>
 
@@ -236,14 +257,18 @@ class="btn btn-success mb-3">
 <!-- REVIEW MODAL -->
 
 <div class="modal fade"
-id="reviewModal{{ c.id }}"
-tabindex="-1">
+     id="reviewModal{{ c.id }}"
+     tabindex="-1">
 
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
 
-        <div class="modal-content">
+        <div class="modal-content"
+             style="
+             border-radius:22px;
+             border:none;
+             ">
 
-            <div class="modal-header">
+            <div class="modal-header border-0">
 
                 <h5 class="modal-title">
 
@@ -252,8 +277,8 @@ tabindex="-1">
                 </h5>
 
                 <button type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"></button>
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
 
             </div>
 
@@ -264,7 +289,7 @@ tabindex="-1">
 
                     <div class="mb-3">
 
-                        <label>
+                        <label class="mb-2">
 
                             Rating
 
@@ -288,13 +313,17 @@ tabindex="-1">
                         <textarea
                         name="review"
                         class="form-control"
-                        placeholder="Write review about candidate"
-                        required></textarea>
+                        placeholder="Write review"
+                        required
+                        style="
+                        border-radius:14px;
+                        min-height:120px;
+                        "></textarea>
 
                     </div>
 
                     <button
-                    class="btn btn-primary w-100">
+                    class="btn btn-primary w-100 rounded-pill">
 
                         Submit Review
 
@@ -310,18 +339,22 @@ tabindex="-1">
 
 </div>
 
+{% endif %}
+
 {% endfor %}
+
+</div>
 
 <!-- PAGINATION -->
 
-<div class="d-flex justify-content-center mt-4">
+<div class="d-flex justify-content-center mt-4 mb-5">
 
     {% if candidates.has_prev %}
 
         <a href="?page={{ candidates.prev_num }}"
-           class="btn btn-outline-primary me-2">
+           class="btn btn-outline-primary rounded-pill px-4 me-2">
 
-            Previous
+            ← Previous
 
         </a>
 
@@ -330,9 +363,9 @@ tabindex="-1">
     {% if candidates.has_next %}
 
         <a href="?page={{ candidates.next_num }}"
-           class="btn btn-outline-primary">
+           class="btn btn-outline-primary rounded-pill px-4">
 
-            Next
+            Next →
 
         </a>
 
