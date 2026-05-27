@@ -1270,38 +1270,26 @@ def unlocked():
 @login_required
 def export_unlocked():
 
-    unlocked = Unlock.query.filter_by(
-        user_id=current_user.id
-    ).all()
+    unlocked_candidates = []
 
-    candidate_ids = []
+    for c in Candidate.query.all():
 
-    for u in unlocked:
+        if c.id in current_user.unlocked_candidates:
 
-        candidate_ids.append(u.candidate_id)
+            unlocked_candidates.append({
 
-    candidates = Candidate.query.filter(
-        Candidate.id.in_(candidate_ids)
-    ).all()
+                "Name": c.name,
+                "Phone": c.phone,
+                "City": c.city,
+                "Category": c.category,
+                "Designation": c.designation,
+                "Experience": c.experience
 
-    data = []
+            })
 
-    for c in candidates:
+    df = pd.DataFrame(unlocked_candidates)
 
-        data.append({
-
-            'Name': c.name,
-            'Phone': c.phone,
-            'Experience': c.experience,
-            'Designation': c.designation,
-            'City': c.city,
-            'Category': c.category
-
-        })
-
-    df = pd.DataFrame(data)
-
-    file_path = 'unlocked_candidates.xlsx'
+    file_path = "unlocked_candidates.xlsx"
 
     df.to_excel(file_path, index=False)
 
