@@ -8,30 +8,15 @@
     padding-bottom:100px;
 }
 
-/* TABS */
-
-.swipe-tabs-wrapper{
-    overflow-x:auto;
-    margin-bottom:22px;
-}
-
-.swipe-tabs-wrapper::-webkit-scrollbar{
-    display:none;
-}
-
 .swipe-tabs{
     display:flex;
     gap:14px;
-    min-width:max-content;
+    margin-bottom:20px;
 }
 
 .swipe-tabs button{
 
     border:none;
-
-    background:white;
-
-    color:#111827;
 
     padding:14px 24px;
 
@@ -39,13 +24,7 @@
 
     font-weight:700;
 
-    font-size:15px;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
+    background:white;
 
     box-shadow:0 4px 14px rgba(0,0,0,0.08);
 
@@ -61,203 +40,14 @@
     );
 
     color:white;
-
-    transform:scale(1.03);
 }
-
-/* SECTIONS */
 
 .lead-section{
     display:none;
-    animation:slideFade 0.3s ease;
 }
 
 .active-section{
     display:block;
-}
-
-@keyframes slideFade{
-
-    from{
-        opacity:0;
-        transform:translateX(20px);
-    }
-
-    to{
-        opacity:1;
-        transform:translateX(0px);
-    }
-
-}
-
-/* CARD */
-
-.lead-card{
-
-    background:white;
-
-    border-radius:28px;
-
-    padding:22px;
-
-    margin-bottom:22px;
-
-    box-shadow:0 6px 18px rgba(0,0,0,0.08);
-}
-
-.lead-top{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:flex-start;
-
-    gap:12px;
-}
-
-.lead-user{
-
-    display:flex;
-
-    gap:14px;
-}
-
-.lead-avatar{
-
-    width:70px;
-
-    height:70px;
-
-    border-radius:22px;
-
-    background:linear-gradient(
-    135deg,
-    #2563eb,
-    #7c3aed
-    );
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    color:white;
-
-    font-size:32px;
-
-    font-weight:800;
-}
-
-.lead-name{
-
-    font-size:21px;
-
-    font-weight:800;
-
-    margin-bottom:2px;
-}
-
-.lead-role{
-
-    color:#6b7280;
-
-    font-size:14px;
-}
-
-.detail-wrap{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:10px;
-
-    margin-top:20px;
-}
-
-.detail-pill{
-
-    background:#f3f4f6;
-
-    padding:10px 15px;
-
-    border-radius:16px;
-
-    font-size:13px;
-
-    font-weight:600;
-}
-
-.unlock-btn{
-
-    width:100%;
-
-    border:none;
-
-    margin-top:20px;
-
-    border-radius:18px;
-
-    padding:16px;
-
-    background:linear-gradient(
-    135deg,
-    #2563eb,
-    #7c3aed
-    );
-
-    color:white;
-
-    font-size:17px;
-
-    font-weight:700;
-}
-
-/* REVIEW */
-
-.review-box{
-
-    background:#f9fafb;
-
-    border-radius:18px;
-
-    padding:14px;
-
-    margin-top:16px;
-}
-
-.review-card{
-
-    background:white;
-
-    border-radius:14px;
-
-    padding:12px;
-
-    margin-top:10px;
-
-    border:1px solid #e5e7eb;
-}
-
-.review-text{
-
-    color:#4b5563;
-
-    font-size:14px;
-
-    margin-top:8px;
-}
-
-/* MOBILE */
-
-@media(max-width:768px){
-
-    .container-fluid{
-        padding:0;
-    }
-
 }
 
 </style>
@@ -266,32 +56,28 @@
 
     <!-- TABS -->
 
-    <div class="swipe-tabs-wrapper">
+    <div class="swipe-tabs">
 
-        <div class="swipe-tabs">
+        <button
+        id="locked-tab"
+        class="active-tab"
+        onclick="showLocked()">
 
-            <button
-            id="locked-tab"
-            class="active-tab"
-            onclick="showLocked()">
+            <i class="fas fa-lock"></i>
 
-                <i class="fas fa-lock"></i>
+            Locked
 
-                Locked
+        </button>
 
-            </button>
+        <button
+        id="unlocked-tab"
+        onclick="showUnlocked()">
 
-            <button
-            id="unlocked-tab"
-            onclick="showUnlocked()">
+            <i class="fas fa-lock-open"></i>
 
-                <i class="fas fa-lock-open"></i>
+            Unlocked
 
-                Unlocked
-
-            </button>
-
-        </div>
+        </button>
 
     </div>
 
@@ -301,98 +87,7 @@
     id="locked-section"
     class="lead-section active-section">
 
-        {% for c in candidates.items %}
-
-        {% if c.id not in unlocked_ids %}
-
-        <div class="lead-card">
-
-            <div class="lead-top">
-
-                <div class="lead-user">
-
-                    <div class="lead-avatar">
-
-                        {{ c.name[0] }}
-
-                    </div>
-
-                    <div>
-
-                        <div class="lead-name">
-
-                            {{ c.name }}
-
-                        </div>
-
-                        <div class="lead-role">
-
-                            {{ c.designation }}
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                {% if c.experience == 'Experienced' %}
-
-                    <span class="badge bg-success">
-
-                        Experienced
-
-                    </span>
-
-                {% else %}
-
-                    <span class="badge bg-primary">
-
-                        Fresher
-
-                    </span>
-
-                {% endif %}
-
-            </div>
-
-            <div class="detail-wrap">
-
-                <div class="detail-pill">
-
-                    📍 {{ c.city }}
-
-                </div>
-
-                <div class="detail-pill">
-
-                    💼 {{ c.category }}
-
-                </div>
-
-                <div class="detail-pill">
-
-                    📞 {{ c.phone[:2] }}XXXX{{ c.phone[-2:] }}
-
-                </div>
-
-            </div>
-
-            <a
-            href="/unlock/{{ c.id }}">
-
-                <button class="unlock-btn">
-
-                    Unlock Candidate
-
-                </button>
-
-            </a>
-
-        </div>
-
-        {% endif %}
-
-        {% endfor %}
+        {% include 'locked.html' %}
 
     </div>
 
@@ -402,193 +97,7 @@
     id="unlocked-section"
     class="lead-section">
 
-        {% for c in candidates.items %}
-
-        {% if c.id in unlocked_ids %}
-
-        <div class="lead-card">
-
-            <div class="lead-top">
-
-                <div class="lead-user">
-
-                    <div class="lead-avatar">
-
-                        {{ c.name[0] }}
-
-                    </div>
-
-                    <div>
-
-                        <div class="lead-name">
-
-                            {{ c.name }}
-
-                        </div>
-
-                        <div class="lead-role">
-
-                            {{ c.designation }}
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <span class="badge bg-success">
-
-                    Unlocked
-
-                </span>
-
-            </div>
-
-            <div class="detail-wrap">
-
-                <div class="detail-pill">
-
-                    📍 {{ c.city }}
-
-                </div>
-
-                <div class="detail-pill">
-
-                    💼 {{ c.category }}
-
-                </div>
-
-                <div class="detail-pill">
-
-                    📞 {{ c.phone }}
-
-                </div>
-
-            </div>
-
-            <!-- ACTIONS -->
-
-            <div class="d-flex gap-2 mt-4">
-
-                <a
-                href="tel:{{ c.phone }}"
-                class="btn btn-success flex-fill rounded-4 py-3 fw-bold">
-
-                    <i class="fas fa-phone"></i>
-
-                    Call
-
-                </a>
-
-                <a
-                href="https://wa.me/91{{ c.phone }}"
-                target="_blank"
-                class="btn btn-dark flex-fill rounded-4 py-3 fw-bold">
-
-                    <i class="fab fa-whatsapp"></i>
-
-                    WhatsApp
-
-                </a>
-
-            </div>
-
-            <!-- REVIEW -->
-
-            <button
-            class="unlock-btn mt-3"
-            data-bs-toggle="modal"
-            data-bs-target="#reviewModal{{ c.id }}">
-
-                ⭐ Add Review
-
-            </button>
-
-            <!-- REPORT -->
-
-            <div class="d-flex gap-2 mt-2">
-
-                <a
-                href="/report-fake/{{ c.id }}"
-                class="btn btn-danger flex-fill rounded-4 py-2">
-
-                    Fake
-
-                </a>
-
-                <a
-                href="/report-experience/{{ c.id }}"
-                class="btn btn-warning flex-fill rounded-4 py-2">
-
-                    Wrong Exp
-
-                </a>
-
-            </div>
-
-            <!-- REVIEWS -->
-
-            {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
-
-            <div class="review-box">
-
-                <strong>
-
-                    ⭐ Reviews ({{ reviews|length }})
-
-                </strong>
-
-                {% if reviews %}
-
-                    {% for r in reviews %}
-
-                        {% set reviewer = User.query.get(r.user_id) %}
-
-                        <div class="review-card">
-
-                            <div class="d-flex justify-content-between">
-
-                                <strong>
-
-                                    {{ reviewer.first_name if reviewer else 'HR User' }}
-
-                                </strong>
-
-                                <span class="badge bg-warning text-dark">
-
-                                    ⭐ {{ r.rating }}/5
-
-                                </span>
-
-                            </div>
-
-                            <div class="review-text">
-
-                                {{ r.review }}
-
-                            </div>
-
-                        </div>
-
-                    {% endfor %}
-
-                {% else %}
-
-                    <div class="text-muted mt-2">
-
-                        No reviews yet
-
-                    </div>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-        {% endif %}
-
-        {% endfor %}
+        {% include 'unlocked.html' %}
 
     </div>
 
