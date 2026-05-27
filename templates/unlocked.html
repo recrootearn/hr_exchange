@@ -11,7 +11,7 @@
 
         <i class="fas fa-file-excel"></i>
 
-Export Excel
+        Export Excel
 
     </a>
 
@@ -26,6 +26,8 @@ Export Excel
 <div class="col-12">
 
     <div class="candidate-card">
+
+        <!-- TOP -->
 
         <div class="candidate-top">
 
@@ -75,6 +77,8 @@ Export Excel
 
         </div>
 
+        <!-- DETAILS -->
+
         <div class="candidate-details">
 
             <div class="detail-pill">
@@ -103,67 +107,99 @@ Export Excel
 
         </div>
 
+        <!-- REPORT STATUS -->
+
+        {% if c.report_count > 0 %}
+
+        <div class="alert alert-danger mt-3">
+
+            Candidate marked as Fake
+            ({{ c.report_count }} reports)
+
+        </div>
+
+        {% endif %}
+
+        {% if c.wrong_experience_reports > 0 %}
+
+        <div class="alert alert-warning mt-2">
+
+            Candidate marked as Wrong Experience
+            ({{ c.wrong_experience_reports }} reports)
+
+        </div>
+
+        {% endif %}
+
+        <!-- BUTTONS -->
+
+        {% if c.report_count == 0 and c.wrong_experience_reports == 0 %}
+
         <div class="action-buttons">
 
-    <!-- CALL -->
+            <!-- CALL -->
 
-    <a href="tel:{{ c.phone }}"
-       class="btn btn-success btn-sm">
+            <a href="tel:{{ c.phone }}"
+               class="btn btn-success btn-sm">
 
-        <i class="fas fa-phone"></i>
+                <i class="fas fa-phone"></i>
 
-        Call
+                Call
 
-    </a>
+            </a>
 
-    <!-- WHATSAPP -->
+            <!-- WHATSAPP -->
 
-    <a href="https://wa.me/91{{ c.phone }}"
-       target="_blank"
-       class="btn btn-dark btn-sm">
+            <a href="https://wa.me/91{{ c.phone }}"
+               target="_blank"
+               class="btn btn-dark btn-sm">
 
-        <i class="fab fa-whatsapp"></i>
+                <i class="fab fa-whatsapp"></i>
 
-        WhatsApp
+                WhatsApp
 
-    </a>
+            </a>
 
-    <!-- REVIEW -->
+            <!-- REVIEW -->
 
-    <button
-    class="btn btn-info btn-sm"
-    data-bs-toggle="modal"
-    data-bs-target="#reviewModal{{ c.id }}">
+            <button
+            class="btn btn-info btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#reviewModal{{ c.id }}">
 
-        <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
 
-        Add Review
+                Add Review
 
-    </button>
+            </button>
 
-    <!-- REPORT FAKE -->
+            <!-- REPORT FAKE -->
 
-    <a href="/report-fake/{{ c.id }}"
-       class="btn btn-danger btn-sm">
+            <a href="/report-fake/{{ c.id }}"
+               class="btn btn-danger btn-sm">
 
-        <i class="fas fa-flag"></i>
+                <i class="fas fa-flag"></i>
 
-        Report Fake
+                Report Fake
 
-    </a>
+            </a>
 
-    <!-- WRONG EXPERIENCE -->
+            <!-- WRONG EXPERIENCE -->
 
-    <a href="/wrong-experience/{{ c.id }}"
-       class="btn btn-warning btn-sm">
+            <a href="/wrong-experience/{{ c.id }}"
+               class="btn btn-warning btn-sm">
 
-        <i class="fas fa-triangle-exclamation"></i>
+                <i class="fas fa-triangle-exclamation"></i>
 
-        Wrong Experience
+                Wrong Experience
 
-    </a>
+            </a>
 
-</div>
+        </div>
+
+        {% endif %}
+
+        <!-- REVIEWS -->
 
         <div class="review-box mt-3 p-3"
              style="
@@ -183,9 +219,24 @@ Export Excel
 
                 {% for r in reviews %}
 
-                    <div class="mt-3">
+                    <div class="mt-3 p-2"
+                         style="
+                         background:white;
+                         border-radius:10px;
+                         border:1px solid #e5e7eb;
+                         ">
 
-                        {{ r.review }}
+                        <strong>
+
+                            ⭐ {{ r.rating }}/5
+
+                        </strong>
+
+                        <div class="mt-1">
+
+                            {{ r.review }}
+
+                        </div>
 
                     </div>
 
@@ -200,6 +251,98 @@ Export Excel
                 </div>
 
             {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- REVIEW MODAL -->
+
+<div class="modal fade"
+id="reviewModal{{ c.id }}"
+tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    Add Review
+
+                </h5>
+
+                <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"></button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <form method="POST"
+                      action="/add-review/{{ c.id }}">
+
+                    <div class="mb-3">
+
+                        <label>
+
+                            Rating
+
+                        </label>
+
+                        <select
+                        name="rating"
+                        class="form-control">
+
+                            <option value="5">
+                                5 - Excellent
+                            </option>
+
+                            <option value="4">
+                                4 - Good
+                            </option>
+
+                            <option value="3">
+                                3 - Average
+                            </option>
+
+                            <option value="2">
+                                2 - Poor
+                            </option>
+
+                            <option value="1">
+                                1 - Very Poor
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <textarea
+                        name="review"
+                        class="form-control"
+                        placeholder="Write review about candidate"
+                        required></textarea>
+
+                    </div>
+
+                    <button
+                    class="btn btn-primary w-100">
+
+                        Submit Review
+
+                    </button>
+
+                </form>
+
+            </div>
 
         </div>
 
