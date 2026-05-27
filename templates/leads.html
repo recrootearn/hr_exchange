@@ -2,38 +2,532 @@
 
 {% block content %}
 
-<div class="container-fluid">
+<style>
 
-    <div class="d-flex gap-2 mb-3">
+.leads-container{
+    padding-bottom:100px;
+}
 
-        <a href="/locked"
-        class="btn btn-dark rounded-pill px-4">
+/* SWIPE TABS */
 
-            Locked
+.swipe-tabs-wrapper{
+    overflow-x:auto;
+    margin-bottom:22px;
+}
 
-        </a>
+.swipe-tabs-wrapper::-webkit-scrollbar{
+    display:none;
+}
 
-        <a href="/unlocked"
-        class="btn btn-primary rounded-pill px-4">
+.swipe-tabs{
+    display:flex;
+    gap:14px;
+    min-width:max-content;
+}
 
-            Unlocked
+.swipe-tabs button{
 
-        </a>
+    border:none;
+
+    background:white;
+
+    color:#111827;
+
+    padding:14px 24px;
+
+    border-radius:18px;
+
+    font-weight:700;
+
+    font-size:15px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    box-shadow:0 4px 14px rgba(0,0,0,0.08);
+
+    transition:0.3s;
+}
+
+.swipe-tabs button.active-tab{
+
+    background:linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+    );
+
+    color:white;
+
+    transform:scale(1.03);
+}
+
+/* LEADS SECTIONS */
+
+.lead-section{
+
+    display:none;
+
+    animation:slideFade 0.3s ease;
+}
+
+.active-section{
+    display:block;
+}
+
+@keyframes slideFade{
+
+    from{
+        opacity:0;
+        transform:translateX(20px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateX(0px);
+    }
+
+}
+
+/* CANDIDATE CARD */
+
+.candidate-card-modern{
+
+    background:white;
+
+    border-radius:24px;
+
+    padding:18px;
+
+    margin-bottom:18px;
+
+    box-shadow:0 4px 18px rgba(0,0,0,0.08);
+}
+
+.candidate-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:15px;
+}
+
+.candidate-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+}
+
+.candidate-avatar{
+
+    width:58px;
+
+    height:58px;
+
+    border-radius:18px;
+
+    background:linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+    );
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:22px;
+
+    font-weight:bold;
+}
+
+.candidate-name{
+
+    font-size:18px;
+
+    font-weight:700;
+}
+
+.candidate-role{
+
+    color:#6b7280;
+
+    font-size:13px;
+}
+
+.modern-pill-wrap{
+
+    display:flex;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+    margin-top:14px;
+}
+
+.modern-pill{
+
+    background:#f3f4f6;
+
+    border-radius:30px;
+
+    padding:8px 14px;
+
+    font-size:12px;
+}
+
+.unlock-btn{
+
+    width:100%;
+
+    height:46px;
+
+    border:none;
+
+    border-radius:14px;
+
+    margin-top:16px;
+
+    background:linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+    );
+
+    color:white;
+
+    font-weight:700;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+    .container-fluid{
+        padding:0;
+    }
+
+}
+
+</style>
+
+<div class="container-fluid leads-container">
+
+    <!-- TABS -->
+
+    <div class="swipe-tabs-wrapper">
+
+        <div class="swipe-tabs">
+
+            <button
+            id="locked-tab"
+            class="active-tab"
+            onclick="showLocked()">
+
+                <i class="fas fa-lock"></i>
+
+                Locked
+
+            </button>
+
+            <button
+            id="unlocked-tab"
+            onclick="showUnlocked()">
+
+                <i class="fas fa-lock-open"></i>
+
+                Unlocked
+
+            </button>
+
+        </div>
 
     </div>
 
-    <div class="stats-card">
+    <!-- LOCKED SECTION -->
 
-        <h4>
-            Leads Dashboard
-        </h4>
+    <div
+    id="locked-section"
+    class="lead-section active-section">
 
-        <p>
-            Manage all your candidates here.
-        </p>
+        <!-- CARD -->
+
+        <div class="candidate-card-modern">
+
+            <div class="candidate-header">
+
+                <div class="candidate-left">
+
+                    <div class="candidate-avatar">
+
+                        R
+
+                    </div>
+
+                    <div>
+
+                        <div class="candidate-name">
+
+                            Rohit Sharma
+
+                        </div>
+
+                        <div class="candidate-role">
+
+                            React Developer
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <span class="badge bg-primary">
+
+                    Fresher
+
+                </span>
+
+            </div>
+
+            <div class="modern-pill-wrap">
+
+                <div class="modern-pill">
+
+                    📍 Mumbai
+
+                </div>
+
+                <div class="modern-pill">
+
+                    💼 IT
+
+                </div>
+
+                <div class="modern-pill">
+
+                    📞 98XXXXXX21
+
+                </div>
+
+            </div>
+
+            <button class="unlock-btn">
+
+                Unlock Candidate
+
+            </button>
+
+        </div>
+
+        <!-- CARD -->
+
+        <div class="candidate-card-modern">
+
+            <div class="candidate-header">
+
+                <div class="candidate-left">
+
+                    <div class="candidate-avatar">
+
+                        P
+
+                    </div>
+
+                    <div>
+
+                        <div class="candidate-name">
+
+                            Priya Verma
+
+                        </div>
+
+                        <div class="candidate-role">
+
+                            HR Executive
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <span class="badge bg-success">
+
+                    Experienced
+
+                </span>
+
+            </div>
+
+            <div class="modern-pill-wrap">
+
+                <div class="modern-pill">
+
+                    📍 Delhi
+
+                </div>
+
+                <div class="modern-pill">
+
+                    💼 HR
+
+                </div>
+
+                <div class="modern-pill">
+
+                    📞 97XXXXXX10
+
+                </div>
+
+            </div>
+
+            <button class="unlock-btn">
+
+                Unlock Candidate
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- UNLOCKED SECTION -->
+
+    <div
+    id="unlocked-section"
+    class="lead-section">
+
+        <!-- CARD -->
+
+        <div class="candidate-card-modern">
+
+            <div class="candidate-header">
+
+                <div class="candidate-left">
+
+                    <div class="candidate-avatar">
+
+                        A
+
+                    </div>
+
+                    <div>
+
+                        <div class="candidate-name">
+
+                            Amit Patel
+
+                        </div>
+
+                        <div class="candidate-role">
+
+                            Python Developer
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <span class="badge bg-success">
+
+                    Unlocked
+
+                </span>
+
+            </div>
+
+            <div class="modern-pill-wrap">
+
+                <div class="modern-pill">
+
+                    📍 Bangalore
+
+                </div>
+
+                <div class="modern-pill">
+
+                    💼 Software
+
+                </div>
+
+                <div class="modern-pill">
+
+                    📞 9876543210
+
+                </div>
+
+            </div>
+
+            <button class="unlock-btn">
+
+                Contact Candidate
+
+            </button>
+
+        </div>
 
     </div>
 
 </div>
+
+<script>
+
+function showLocked(){
+
+    document
+    .getElementById("locked-section")
+    .classList.add("active-section");
+
+    document
+    .getElementById("unlocked-section")
+    .classList.remove("active-section");
+
+    document
+    .getElementById("locked-tab")
+    .classList.add("active-tab");
+
+    document
+    .getElementById("unlocked-tab")
+    .classList.remove("active-tab");
+
+}
+
+function showUnlocked(){
+
+    document
+    .getElementById("unlocked-section")
+    .classList.add("active-section");
+
+    document
+    .getElementById("locked-section")
+    .classList.remove("active-section");
+
+    document
+    .getElementById("unlocked-tab")
+    .classList.add("active-tab");
+
+    document
+    .getElementById("locked-tab")
+    .classList.remove("active-tab");
+
+}
+
+</script>
 
 {% endblock %}
