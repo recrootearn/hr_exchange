@@ -513,7 +513,12 @@ function showLocked(){
 
     document.getElementById("unlocked-section").style.display = "none";
 
-    document.getElementById("tabInput").value = "locked";
+    const input =
+        document.getElementById("tabInput");
+
+    if(input){
+        input.value = "locked";
+    }
 }
 
 function showUnlocked(){
@@ -522,7 +527,12 @@ function showUnlocked(){
 
     document.getElementById("unlocked-section").style.display = "block";
 
-    document.getElementById("tabInput").value = "unlocked";
+    const input =
+        document.getElementById("tabInput");
+
+    if(input){
+        input.value = "unlocked";
+    }
 }
 
 window.onload = function(){
