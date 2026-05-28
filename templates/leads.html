@@ -287,6 +287,11 @@ MOBILE
 
         <form method="GET">
 
+    <input type="hidden"
+           name="tab"
+           id="tabInput"
+           value="locked">
+
             <div class="filter-grid">
 
                 <!-- DESIGNATION -->
@@ -498,6 +503,41 @@ function toggleFilters(){
     .getElementById("compactFilter")
     .classList.toggle("active");
 
+}
+
+<script>
+
+function showLocked(){
+
+    document.getElementById("locked-section").style.display = "block";
+
+    document.getElementById("unlocked-section").style.display = "none";
+
+    document.getElementById("tabInput").value = "locked";
+}
+
+function showUnlocked(){
+
+    document.getElementById("locked-section").style.display = "none";
+
+    document.getElementById("unlocked-section").style.display = "block";
+
+    document.getElementById("tabInput").value = "unlocked";
+}
+
+window.onload = function(){
+
+    const currentTab =
+        "{{ request.args.get('tab','locked') }}";
+
+    if(currentTab == "unlocked"){
+
+        showUnlocked();
+
+    }else{
+
+        showLocked();
+    }
 }
 
 </script>
