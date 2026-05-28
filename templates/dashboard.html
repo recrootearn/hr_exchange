@@ -2,6 +2,29 @@
 
 {% block content %}
 
+{% if current_user.credits < 5 %}
+
+<div class="alert alert-warning d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+    <div>
+
+        ⚠️ Your credits are running low.
+
+        Buy more credits to continue unlocking candidates.
+
+    </div>
+
+    <a href="/buy-credits"
+       class="btn btn-dark mt-2">
+
+        Buy Credits
+
+    </a>
+
+</div>
+
+{% endif %}
+
 <style>
 
 *{
@@ -407,10 +430,14 @@
             <div>Leads</div>
         </a>
 
-        <a href="/credits" class="quick-btn">
-            <i class="fas fa-coins"></i>
-            <div>Credits</div>
-        </a>
+        <a href="/buy-credits"
+           class="quick-btn">
+
+           <i class="fas fa-coins"></i>
+
+           <div>Buy Credits</div>
+
+        </a>   
 
     </div>
 
