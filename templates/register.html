@@ -38,7 +38,7 @@ body{
     #581c87
     );
 
-    font-family:Arial;
+    font-family:Arial,sans-serif;
 
     display:flex;
     justify-content:center;
@@ -46,6 +46,7 @@ body{
 
     padding:40px;
 
+    overflow-x:hidden;
     overflow-y:auto;
 }
 
@@ -85,6 +86,8 @@ body{
     margin-bottom:10px;
 
     color:white;
+
+    word-break:break-word;
 }
 
 .logo span{
@@ -98,6 +101,8 @@ body{
     color:#cbd5e1;
 
     margin-bottom:40px;
+
+    font-size:18px;
 }
 
 /* TITLE */
@@ -142,6 +147,8 @@ body{
     transform:translateY(-50%);
 
     color:#94a3b8;
+
+    z-index:2;
 }
 
 .form-control{
@@ -159,6 +166,8 @@ body{
     padding-left:50px;
 
     font-size:16px;
+
+    width:100%;
 }
 
 .form-control::placeholder{
@@ -175,6 +184,10 @@ body{
     0 0 0 4px rgba(168,85,247,0.25);
 
     border:none;
+}
+
+.form-control[type="file"]{
+    padding-top:16px;
 }
 
 /* SELECT */
@@ -256,6 +269,67 @@ select.form-control{
     to{
         opacity:1;
         transform:translateY(0);
+    }
+
+}
+
+/* MOBILE RESPONSIVE */
+
+@media (max-width:768px){
+
+    body{
+        padding:15px;
+        align-items:flex-start;
+    }
+
+    .register-box{
+
+        width:100%;
+        max-width:100%;
+
+        padding:25px;
+
+        border-radius:24px;
+
+        margin-top:20px;
+        margin-bottom:20px;
+    }
+
+    .logo{
+
+        font-size:28px;
+
+        line-height:1.3;
+    }
+
+    .subtitle{
+
+        font-size:15px;
+
+        margin-bottom:25px;
+    }
+
+    .title{
+
+        font-size:28px;
+
+        margin-bottom:30px;
+
+        line-height:1.4;
+    }
+
+    .form-control{
+
+        height:55px;
+
+        font-size:15px;
+    }
+
+    .register-btn{
+
+        height:58px;
+
+        font-size:18px;
     }
 
 }
@@ -425,26 +499,26 @@ select.form-control{
 
         <div class="form-group">
 
-<div class="form-group">
+            <label class="form-label">
 
-    <label class="form-label">
+                Profile Photo (Optional)
 
-        Profile Photo (Optional)
+            </label>
 
-    </label>
+            <div class="input-box">
 
-    <div class="input-box">
+                <i class="fas fa-image"></i>
 
-        <i class="fas fa-image"></i>
+                <input
+                type="file"
+                name="photo"
+                class="form-control">
 
-        <input
-        type="file"
-        name="photo"
-        class="form-control">
+            </div>
 
-    </div>
+        </div>
 
-</div>
+        <div class="form-group">
 
             <label class="form-label">Password</label>
 
