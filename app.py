@@ -20,8 +20,8 @@ app = Flask(__name__)
 
 resend.api_key = "re_QT3qQPqz_Ngn6WAnA4A2ykKbH9CZEs6Fz"
 
-RAZORPAY_KEY = "rzp_test_Sonv4Jdq96P0SJ"
-RAZORPAY_SECRET = "NiR9yKe5UiDtPAPQBPu5JnLG"
+RAZORPAY_KEY = "rzp_live_SukwF35NxDKD1h"
+RAZORPAY_SECRET = "ctp74whaDCaF5omzFqoEg6Ya"
 
 client = razorpay.Client(
     auth=(RAZORPAY_KEY, RAZORPAY_SECRET)
