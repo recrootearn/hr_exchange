@@ -854,8 +854,10 @@ def unlock(id):
 
         return redirect(request.referrer)
 
-    # no credits
-    if current_user.credits <= 0:
+    # CHECK TOTAL CREDITS
+    total_credits = current_user.credits + current_user.paid_credits
+
+    if total_credits <= 0:
 
         flash(
             "You don't have enough credits.",
@@ -887,28 +889,39 @@ def unlock(id):
 
     db.session.add(unlock)
 
-    # DEDUCT CREDIT
-    current_user.credits -= 1
-
-    # UPLOADER EARNING
+    # GET UPLOADER
     uploader = User.query.get(candidate.uploaded_by)
 
-    if uploader:
+    # =========================================
+    # USE PAID CREDIT FIRST
+    # =========================================
 
-        earning = 6
+    if current_user.paid_credits > 0:
 
-        uploader.wallet_balance += earning
+        current_user.paid_credits -= 1
 
-        earn = Earnings(
+        # uploader earns only on paid credits
+        if uploader:
 
-            user_id=uploader.id,
+            earning = 6
 
-            amount=earning,
+            uploader.wallet_balance += earning
 
-            reason=f"Candidate unlocked: {candidate.name}"
-        )
+            earn = Earnings(
 
-        db.session.add(earn)
+                user_id=uploader.id,
+
+                amount=earning,
+
+                reason=f"Candidate unlocked: {candidate.name}"
+            )
+
+            db.session.add(earn)
+
+    else:
+
+        # USE FREE CREDIT
+        current_user.credits -= 1
 
     # CREDIT HISTORY
     history = CreditHistory(
