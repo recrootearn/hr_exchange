@@ -89,61 +89,49 @@
 
 {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
 
-<div class="review-box mt-3 p-3"
-     style="
-     background:#f8fafc;
-     border-radius:14px;
-     ">
+<div class="review-box mt-3">
 
-    <strong>
-
+    <div class="review-header">
         ⭐ Reviews ({{ reviews|length }})
+    </div>
 
-    </strong>
+    <div class="reviews-scroll auto-scroll">
 
-    {% if reviews %}
+        {% if reviews %}
 
-        {% for r in reviews %}
+            {% for r in reviews %}
 
-            {% set reviewer = User.query.get(r.user_id) %}
+                {% set reviewer = User.query.get(r.user_id) %}
 
-            <div class="mt-3 p-2"
-                 style="
-                 background:white;
-                 border-radius:10px;
-                 ">
+                <div class="review-card">
 
-                <strong style="color:#2563eb;">
+                    <div class="review-user">
+                        {{ reviewer.first_name }}
+                    </div>
 
-                    {{ reviewer.first_name }}
+                    <div class="review-rating">
+                        {{ r.rating }}/5
+                    </div>
 
-                </strong>
-
-                <span class="badge bg-warning text-dark">
-
-                    ⭐ {{ r.rating }}/5
-
-                </span>
-
-                <div class="mt-2">
-
-                    {{ r.review }}
+                    <div class="review-text">
+                        {{ r.review }}
+                    </div>
 
                 </div>
 
+            {% endfor %}
+
+        {% else %}
+
+            <div class="text-muted">
+                No reviews yet
             </div>
 
-        {% endfor %}
+        {% endif %}
 
-    {% else %}
+    </div>
 
-        <div class="text-muted mt-2">
-
-            No reviews yet
-
-        </div>
-
-    {% endif %}
+</div>
 
 </div>
 
