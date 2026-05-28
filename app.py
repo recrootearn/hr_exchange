@@ -56,6 +56,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(300))
     profile_photo = db.Column(db.String(300))
     credits = db.Column(db.Integer, default=0)
+    paid_credits = db.Column(db.Integer, default=0)
     wallet_balance = db.Column(db.Float, default=0)
     upi_id = db.Column(db.String(200))
     bank_name = db.Column(db.String(200))
