@@ -1466,6 +1466,12 @@ def ticket_chat(id):
         replies=replies
     )
 
+@app.route('/buy-credits')
+@login_required
+def buy_credits_page():
+
+    return render_template('buy_credits.html')
+
 @app.route('/buy-credits/<int:amount>')
 @login_required
 def buy_credits(amount):
