@@ -246,7 +246,7 @@ MOBILE
             <button
             id="locked-tab"
             class="mini-tab active"
-            onclick="showLocked()">
+            onclick="window.location.href='/leads?tab=locked'">
 
                 <i class="fas fa-lock"></i>
 
@@ -257,7 +257,7 @@ MOBILE
             <button
             id="unlocked-tab"
             class="mini-tab"
-            onclick="showUnlocked()">
+            onclick="window.location.href='/leads?tab=unlocked'">
 
                 <i class="fas fa-lock-open"></i>
 
@@ -288,9 +288,8 @@ MOBILE
         <form method="GET">
 
     <input type="hidden"
-           name="tab"
-           id="tabInput"
-           value="locked">
+       name="tab"
+       value="{{ request.args.get('tab','locked') }}">
 
             <div class="filter-grid">
 
