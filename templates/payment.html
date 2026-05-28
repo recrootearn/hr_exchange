@@ -1,57 +1,218 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
-    <title>Payment</title>
+<meta charset="UTF-8">
 
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Buy Credits</title>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<style>
+
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+    linear-gradient(
+    135deg,
+    #0f172a,
+    #1e1b4b,
+    #581c87
+    );
+    font-family:Arial;
+}
+
+.payment-card{
+
+    width:90%;
+    max-width:420px;
+
+    background:white;
+
+    border-radius:30px;
+
+    padding:40px;
+
+    text-align:center;
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,0.3);
+}
+
+.logo{
+
+    font-size:36px;
+    font-weight:900;
+    margin-bottom:10px;
+    color:#111827;
+}
+
+.logo span{
+    color:#7c3aed;
+}
+
+.subtitle{
+    color:#6b7280;
+    margin-bottom:30px;
+}
+
+.amount{
+
+    font-size:48px;
+    font-weight:900;
+    color:#111827;
+
+    margin-bottom:8px;
+}
+
+.credit-text{
+
+    color:#6b7280;
+    margin-bottom:30px;
+}
+
+.pay-btn{
+
+    width:100%;
+    height:60px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:
+    linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+    );
+
+    color:white;
+
+    font-size:20px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+.pay-btn:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+    0 15px 35px rgba(124,58,237,0.35);
+}
+
+.secure{
+
+    margin-top:18px;
+    color:#6b7280;
+    font-size:14px;
+}
+
+</style>
 
 </head>
 
 <body>
 
-    <button id="rzp-button">
+<div class="payment-card">
 
-        Pay ₹{{ amount }}
+    <div class="logo">
+
+        RECROOT<span>EARN</span>
+
+    </div>
+
+    <div class="subtitle">
+
+        Secure Credit Purchase
+
+    </div>
+
+    <div class="amount">
+
+        ₹{{ amount }}
+
+    </div>
+
+    <div class="credit-text">
+
+        Buy {{ credits }} Credits
+
+    </div>
+
+    <button id="rzp-button"
+            class="pay-btn">
+
+        Pay Securely
 
     </button>
 
-    <script>
+    <div class="secure">
 
-        var options = {
+        🔒 Secured by Razorpay
 
-            "key": "{{ razorpay_key }}",
+    </div>
 
-            "amount": "{{ order.amount }}",
+</div>
 
-            "currency": "INR",
+<script>
 
-            "name": "HR Exchange",
+var options = {
 
-            "description": "Buy Credits",
+    "key": "{{ razorpay_key }}",
 
-            "order_id": "{{ order.id }}",
+    "amount": "{{ order['amount'] }}",
 
-            "handler": function (response){
+    "currency": "INR",
 
-                window.location.href="/payment-success";
+    "name": "RecrootEarn",
 
-            }
+    "description": "Credit Purchase",
 
-        };
+    "image": "https://recrootearn.com/static/logo.png",
 
-        var rzp1 = new Razorpay(options);
+    "order_id": "{{ order['id'] }}",
 
-        document.getElementById('rzp-button').onclick = function(e){
+    "handler": function (response){
 
-            rzp1.open();
+        window.location.href =
+        "/payment-success?"
+        + "payment_id=" + response.razorpay_payment_id
+        + "&order_id=" + response.razorpay_order_id
+        + "&signature=" + response.razorpay_signature;
 
-            e.preventDefault();
+    },
 
-        }
+    "theme": {
+        "color": "#7c3aed"
+    }
 
-    </script>
+};
+
+var rzp1 = new Razorpay(options);
+
+document.getElementById('rzp-button').onclick = function(e){
+
+    rzp1.open();
+
+    e.preventDefault();
+
+}
+
+</script>
 
 </body>
 
