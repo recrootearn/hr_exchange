@@ -456,56 +456,6 @@ MOBILE
 
 </div>
 
-<script>
-
-function showLocked(){
-
-    document
-    .getElementById("locked-section")
-    .classList.add("active-section");
-
-    document
-    .getElementById("unlocked-section")
-    .classList.remove("active-section");
-
-    document
-    .getElementById("locked-tab")
-    .classList.add("active");
-
-    document
-    .getElementById("unlocked-tab")
-    .classList.remove("active");
-
-}
-
-function showUnlocked(){
-
-    document
-    .getElementById("unlocked-section")
-    .classList.add("active-section");
-
-    document
-    .getElementById("locked-section")
-    .classList.remove("active-section");
-
-    document
-    .getElementById("unlocked-tab")
-    .classList.add("active");
-
-    document
-    .getElementById("locked-tab")
-    .classList.remove("active");
-
-}
-
-function toggleFilters(){
-
-    document
-    .getElementById("compactFilter")
-    .classList.toggle("active");
-
-}
-
 </script>
 
 {% endblock %}
