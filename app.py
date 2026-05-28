@@ -463,9 +463,17 @@ def locked():
 @login_required
 def leads():
 
-    candidates = Candidate.query.order_by(
-        Candidate.id.desc()
-    ).paginate(page=1, per_page=20)
+    designation = request.args.get('designation')
+
+    city = request.args.get('city')
+
+    industry = request.args.get('industry')
+
+    experience = request.args.get('experience')
+
+    sort = request.args.get('sort')
+
+    page = request.args.get('page', 1, type=int)
 
     unlocked = Unlock.query.filter_by(
         user_id=current_user.id
@@ -474,6 +482,57 @@ def leads():
     unlocked_ids = [
         u.candidate_id for u in unlocked
     ]
+
+    # MAIN QUERY
+
+    query = Candidate.query
+
+    # FILTERS
+
+    if designation:
+
+        query = query.filter(
+            Candidate.designation.contains(designation)
+        )
+
+    if city:
+
+        query = query.filter(
+            Candidate.city.contains(city)
+        )
+
+    if industry:
+
+        query = query.filter_by(
+            category=industry
+        )
+
+    if experience:
+
+        query = query.filter_by(
+            experience=experience
+        )
+
+    # SORT
+
+    if sort == 'old':
+
+        query = query.order_by(
+            Candidate.id.asc()
+        )
+
+    else:
+
+        query = query.order_by(
+            Candidate.id.desc()
+        )
+
+    # PAGINATION
+
+    candidates = query.paginate(
+        page=page,
+        per_page=20
+    )
 
     return render_template(
         'leads.html',
