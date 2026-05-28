@@ -643,71 +643,6 @@ body{
 
 }
 
-<style>
-
-.review-box{
-    background:#f8fafc;
-    border-radius:18px;
-    padding:16px;
-    overflow:hidden;
-    margin-top:15px;
-}
-
-.review-header{
-    font-weight:700;
-    margin-bottom:12px;
-    color:#1e293b;
-}
-
-.reviews-scroll{
-    display:flex;
-    gap:12px;
-    overflow-x:auto;
-    scroll-behavior:smooth;
-    padding-bottom:8px;
-    scrollbar-width:none;
-}
-
-.reviews-scroll::-webkit-scrollbar{
-    display:none;
-}
-
-.review-card{
-    min-width:220px;
-    max-width:220px;
-    background:white;
-    border-radius:16px;
-    padding:14px;
-    box-shadow:0 2px 10px rgba(0,0,0,0.05);
-    flex-shrink:0;
-    transition:0.3s;
-}
-
-.review-card:hover{
-    transform:translateY(-4px);
-}
-
-.review-user{
-    font-weight:700;
-    color:#2563eb;
-    margin-bottom:6px;
-}
-
-.review-rating{
-    font-size:13px;
-    background:#fef3c7;
-    display:inline-block;
-    padding:4px 10px;
-    border-radius:20px;
-    margin-bottom:10px;
-}
-
-.review-text{
-    font-size:14px;
-    color:#475569;
-    line-height:1.5;
-}
-
 </style>
 
 </head>
@@ -930,59 +865,6 @@ function toggleSidebar(){
     document
     .querySelector(".mobile-overlay")
     .classList.toggle("active");
-}
-
-<script>
-
-AOS.init({
-    duration:700,
-    once:true
-});
-
-window.addEventListener("load", function () {
-
-    const loader = document.getElementById("loader");
-
-    if(loader){
-        loader.style.opacity = "0";
-
-        setTimeout(function(){
-            loader.style.display = "none";
-        }, 500);
-    }
-
-    document.querySelectorAll('.auto-scroll').forEach(scrollBox => {
-
-        let scrollAmount = 0;
-
-        setInterval(() => {
-
-            scrollAmount += 240;
-
-            if (scrollAmount >= scrollBox.scrollWidth - scrollBox.clientWidth) {
-                scrollAmount = 0;
-            }
-
-            scrollBox.scrollTo({
-                left: scrollAmount,
-                behavior: 'smooth'
-            });
-
-        }, 2000);
-
-    });
-
-});
-
-function toggleSidebar(){
-
-    document
-    .querySelector(".sidebar")
-    ?.classList.toggle("active");
-
-    document
-    .querySelector(".mobile-overlay")
-    ?.classList.toggle("active");
 }
 
 </script>
