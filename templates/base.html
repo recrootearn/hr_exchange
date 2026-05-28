@@ -934,26 +934,28 @@ function toggleSidebar(){
 
 <script>
 
-document.querySelectorAll('.auto-scroll').forEach(scrollBox => {
+window.addEventListener("load", function () {
 
-    let scrollAmount = 0;
+    document.querySelectorAll('.auto-scroll').forEach(scrollBox => {
 
-    setInterval(() => {
+        let scrollAmount = 0;
 
-        scrollAmount += 240;
+        setInterval(() => {
 
-        if(scrollAmount >= scrollBox.scrollWidth - scrollBox.clientWidth){
+            scrollAmount += 240;
 
-            scrollAmount = 0;
+            if (scrollAmount >= scrollBox.scrollWidth - scrollBox.clientWidth) {
+                scrollAmount = 0;
+            }
 
-        }
+            scrollBox.scrollTo({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
 
-        scrollBox.scrollTo({
-            left: scrollAmount,
-            behavior: 'smooth'
-        });
+        }, 2000);
 
-    }, 2000);
+    });
 
 });
 
