@@ -91,50 +91,39 @@
 
 {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
 
-<div class="review-box mt-3 p-3"
-     style="
-     style="
-     background:#f8fafc;
-     border-radius:14px;
-     overflow-x:auto;
-     overflow-y:hidden;
-     white-space:nowrap;
-     "
+<div class="review-wrapper mt-3">
 
-    <strong>
+    <div class="review-title mb-2">
 
         ⭐ Reviews ({{ reviews|length }})
 
-    </strong>
+    </div>
 
     {% if reviews %}
+
+    <div class="review-slider">
 
         {% for r in reviews %}
 
             {% set reviewer = User.query.get(r.user_id) %}
 
-            <div class="mt-3 p-2"
-                 style="
-                 background:white;
-                 border-radius:10px;
-                 display:inline-block;
-                 vertical-align:top;
-                 width:260px;
-                 margin-right:12px;
-                 white-space:normal;
-                 "
+            <div class="review-card">
 
-                <strong style="color:#2563eb;">
+                <div class="d-flex justify-content-between">
 
-                    {{ reviewer.first_name }}
+                    <strong style="color:#2563eb;">
 
-                </strong>
+                        {{ reviewer.first_name if reviewer else 'HR User' }}
 
-                <span class="badge bg-warning text-dark">
+                    </strong>
 
-                    ⭐ {{ r.rating }}/5
+                    <span class="badge bg-warning text-dark">
 
-                </span>
+                        ⭐ {{ r.rating }}/5
+
+                    </span>
+
+                </div>
 
                 <div class="mt-2">
 
@@ -146,9 +135,11 @@
 
         {% endfor %}
 
+    </div>
+
     {% else %}
 
-        <div class="text-muted mt-2">
+        <div class="review-empty">
 
             No reviews yet
 
@@ -158,29 +149,91 @@
 
 </div>
 
-        <div class="action-buttons">
+<style>
 
-            <a href="/unlock/{{ c.id }}"
-               class="btn btn-primary unlock-btn"
-               data-candidate="{{ c.id }}">
+.review-wrapper{
 
-                <i class="fas fa-lock-open"></i>
+    background:#f8fafc;
 
-                Unlock Candidate
+    border-radius:14px;
 
-            </a>
+    padding:14px;
 
-        </div>
+    overflow:hidden;
+}
 
-    </div>
+.review-title{
 
-</div>
+    font-weight:700;
 
-{% endif %}
+    margin-bottom:10px;
+}
 
-{% endfor %}
+.review-slider{
 
-</div>
+    display:flex;
+
+    gap:12px;
+
+    overflow:hidden;
+
+    scroll-behavior:smooth;
+}
+
+.review-card{
+
+    min-width:260px;
+
+    max-width:260px;
+
+    background:white;
+
+    border-radius:12px;
+
+    border:1px solid #e5e7eb;
+
+    padding:14px;
+
+    flex-shrink:0;
+
+    font-size:14px;
+
+    color:#374151;
+}
+
+.review-empty{
+
+    color:#6b7280;
+}
+
+</style>
+
+<script>
+
+document.querySelectorAll('.review-slider').forEach(slider => {
+
+    let scrollAmount = 0;
+
+    setInterval(() => {
+
+        scrollAmount += 272;
+
+        if(scrollAmount >= slider.scrollWidth - slider.clientWidth){
+
+            scrollAmount = 0;
+
+        }
+
+        slider.scrollTo({
+            left: scrollAmount,
+            behavior: 'smooth'
+        });
+
+    }, 2000);
+
+});
+
+</script>
 
 <!-- PAGINATION -->
 
