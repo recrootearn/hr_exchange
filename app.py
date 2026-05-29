@@ -492,16 +492,17 @@ def leads():
 
     if tab == 'unlocked':
 
-        query = Candidate.query.filter(
-            Candidate.id.in_(unlocked_ids)
-        )
+    query = Candidate.query.filter(
+        Candidate.id.in_(unlocked_ids),
+        Candidate.uploaded_by != current_user.id
+    )
 
     else:
 
-        query = Candidate.query.filter(
-            ~Candidate.id.in_(unlocked_ids),
-            Candidate.uploaded_by != current_user.id
-        )
+    query = Candidate.query.filter(
+        ~Candidate.id.in_(unlocked_ids),
+        Candidate.uploaded_by != current_user.id
+    )
 
     # =========================
     # FILTERS
