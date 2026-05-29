@@ -421,9 +421,10 @@ def locked():
     # PAGINATION
 
     candidates = query.paginate(
-        page=page,
-        per_page=10
-    )
+    page=page,
+    per_page=10,
+    error_out=False
+)
 
     # AUTO MARK AS READ
 
