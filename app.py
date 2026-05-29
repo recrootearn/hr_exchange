@@ -536,7 +536,7 @@ def leads():
 
     candidates = query.paginate(
         page=page,
-        per_page=20
+        per_page=10
     )
 
     return render_template(
