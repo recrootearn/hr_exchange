@@ -558,12 +558,12 @@ def leads():
     )
 
     return render_template(
-        'leads.html',
-        candidates=candidates,
-        unlocked_ids=unlocked_ids,
-        tab=tab,
-        CandidateReview=CandidateReview,
-        User=User
+    'leads.html',
+    candidates=candidates,
+    unlocked_ids=unlocked_ids,
+    CandidateReview=CandidateReview,
+    User=User,
+    tab=request.args.get('tab', 'locked')
     )
 
 @app.route('/register', methods=['GET', 'POST'])

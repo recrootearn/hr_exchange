@@ -181,16 +181,7 @@
 
         {% if p %}
 
-            href="{{ url_for(
-    'leads',
-    tab='locked',
-    page=p,
-    designation=request.args.get('designation'),
-    city=request.args.get('city'),
-    industry=request.args.get('industry'),
-    experience=request.args.get('experience'),
-    sort=request.args.get('sort')
-) }}"
+            <a href="/leads?tab={{ tab }}&page={{ p }}"
                class="btn btn-sm {% if p == candidates.page %}btn-primary{% else %}btn-light{% endif %} mx-1 mb-2">
 
                 {{ p }}
