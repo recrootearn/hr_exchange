@@ -203,18 +203,6 @@ SEARCH BUTTON
 }
 
 /* =========================
-LEAD SECTION
-========================= */
-
-.lead-section{
-    display:none;
-}
-
-.active-section{
-    display:block;
-}
-
-/* =========================
 MOBILE
 ========================= */
 
@@ -432,25 +420,15 @@ MOBILE
 
     </div>
 
-    <!-- LOCKED SECTION -->
+    {% if tab == 'unlocked' %}
 
-    <div
-    id="locked-section"
-    class="lead-section active-section">
+    {% include 'unlocked.html' %}
 
-        {% include 'locked.html' %}
+{% else %}
 
-    </div>
+    {% include 'locked.html' %}
 
-    <!-- UNLOCKED SECTION -->
-
-    <div
-    id="unlocked-section"
-    class="lead-section">
-
-        {% include 'unlocked.html' %}
-
-    </div>
+{% endif %}
 
 </div>
 
