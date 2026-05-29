@@ -478,6 +478,10 @@ def leads():
 
     tab = request.args.get('tab', 'locked')
 
+    # =========================
+    # UNLOCKED IDS
+    # =========================
+
     unlocked = Unlock.query.filter_by(
         user_id=current_user.id
     ).all()
@@ -492,17 +496,17 @@ def leads():
 
     if tab == 'unlocked':
 
-    query = Candidate.query.filter(
-        Candidate.id.in_(unlocked_ids),
-        Candidate.uploaded_by != current_user.id
-    )
+        query = Candidate.query.filter(
+            Candidate.id.in_(unlocked_ids),
+            Candidate.uploaded_by != current_user.id
+        )
 
     else:
 
-    query = Candidate.query.filter(
-        ~Candidate.id.in_(unlocked_ids),
-        Candidate.uploaded_by != current_user.id
-    )
+        query = Candidate.query.filter(
+            Candidate.id.notin_(unlocked_ids),
+            Candidate.uploaded_by != current_user.id
+        )
 
     # =========================
     # FILTERS
@@ -558,13 +562,17 @@ def leads():
         error_out=False
     )
 
+    # =========================
+    # RENDER
+    # =========================
+
     return render_template(
-    'leads.html',
-    candidates=candidates,
-    unlocked_ids=unlocked_ids,
-    CandidateReview=CandidateReview,
-    User=User,
-    tab=request.args.get('tab', 'locked')
+        'leads.html',
+        candidates=candidates,
+        unlocked_ids=unlocked_ids,
+        CandidateReview=CandidateReview,
+        User=User,
+        tab=tab
     )
 
 @app.route('/register', methods=['GET', 'POST'])
