@@ -189,45 +189,43 @@
 
         <!-- REVIEWS -->
 
-        <div class="review-box mt-3 p-3"
-             style="
-             background:#f8fafc;
-             border-radius:14px;
-             overflow-x:auto;
-             overflow-y:hidden;
-             white-space:nowrap;
-             "
+        {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
 
-            {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
+        <div class="review-wrapper mt-3">
 
-            <strong>
+            <div class="review-title">
 
                 ⭐ Reviews ({{ reviews|length }})
 
-            </strong>
+            </div>
 
             {% if reviews %}
 
+            <div class="review-slider">
+
                 {% for r in reviews %}
 
-                    <<div class="mt-3 p-2"
-                          style="
-                          background:white;
-                          border-radius:10px;
-                          display:inline-block;
-                          vertical-align:top;
-                          width:260px;
-                          margin-right:12px;
-                          white-space:normal;
-                          "
+                    {% set reviewer = User.query.get(r.user_id) %}
 
-                        <strong>
+                    <div class="review-card">
 
-                            ⭐ {{ r.rating }}/5
+                        <div class="d-flex justify-content-between">
 
-                        </strong>
+                            <strong style="color:#2563eb;">
 
-                        <div class="mt-1">
+                                {{ reviewer.first_name if reviewer else 'HR User' }}
+
+                            </strong>
+
+                            <span class="badge bg-warning text-dark">
+
+                                ⭐ {{ r.rating }}/5
+
+                            </span>
+
+                        </div>
+
+                        <div class="mt-2">
 
                             {{ r.review }}
 
@@ -236,6 +234,8 @@
                     </div>
 
                 {% endfor %}
+
+            </div>
 
             {% else %}
 
@@ -253,67 +253,110 @@
 
 </div>
 
-<!-- REVIEWS -->
+<!-- REVIEW MODAL -->
 
-{% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
+<div class="modal fade"
+id="reviewModal{{ c.id }}"
+tabindex="-1">
 
-<div class="review-wrapper mt-3">
+    <div class="modal-dialog">
 
-    <div class="review-title mb-2">
+        <div class="modal-content">
 
-        ⭐ Reviews ({{ reviews|length }})
+            <div class="modal-header">
 
-    </div>
+                <h5 class="modal-title">
 
-    {% if reviews %}
+                    Add Review
 
-    <div class="review-slider">
+                </h5>
 
-        {% for r in reviews %}
-
-            {% set reviewer = User.query.get(r.user_id) %}
-
-            <div class="review-card">
-
-                <div class="d-flex justify-content-between">
-
-                    <strong style="color:#2563eb;">
-
-                        {{ reviewer.first_name if reviewer else 'HR User' }}
-
-                    </strong>
-
-                    <span class="badge bg-warning text-dark">
-
-                        ⭐ {{ r.rating }}/5
-
-                    </span>
-
-                </div>
-
-                <div class="mt-2">
-
-                    {{ r.review }}
-
-                </div>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
 
             </div>
 
-        {% endfor %}
+            <div class="modal-body">
 
-    </div>
+                <form method="POST"
+                      action="/add-review/{{ c.id }}">
 
-    {% else %}
+                    <div class="mb-3">
 
-        <div class="review-empty">
+                        <label>
 
-            No reviews yet
+                            Rating
+
+                        </label>
+
+                        <select
+                        name="rating"
+                        class="form-control">
+
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Good</option>
+                            <option value="3">3 - Average</option>
+                            <option value="2">2 - Poor</option>
+                            <option value="1">1 - Very Poor</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <textarea
+                        name="review"
+                        class="form-control"
+                        placeholder="Write review about candidate"
+                        required></textarea>
+
+                    </div>
+
+                    <button
+                    class="btn btn-primary w-100">
+
+                        Submit Review
+
+                    </button>
+
+                </form>
+
+            </div>
 
         </div>
 
-    {% endif %}
+    </div>
 
 </div>
+
+{% endfor %}
+
+</div>
+
+<!-- PAGINATION -->
+
+<div class="d-flex justify-content-center mt-4 mb-5 flex-wrap">
+
+    {% for p in candidates.iter_pages() %}
+
+        {% if p %}
+
+            <a href="/leads?tab={{ tab }}&page={{ p }}"
+               class="btn btn-sm {% if p == candidates.page %}btn-primary{% else %}btn-light{% endif %} mx-1 mb-2">
+
+                {{ p }}
+
+            </a>
+
+        {% endif %}
+
+    {% endfor %}
+
+</div>
+
+<!-- REVIEW CSS -->
 
 <style>
 
@@ -341,9 +384,18 @@
 
     gap:12px;
 
-    overflow:hidden;
+    overflow-x:auto;
+
+    overflow-y:hidden;
 
     scroll-behavior:smooth;
+
+    padding-bottom:5px;
+}
+
+.review-slider::-webkit-scrollbar{
+
+    display:none;
 }
 
 .review-card{
@@ -367,12 +419,9 @@
     color:#374151;
 }
 
-.review-empty{
-
-    color:#6b7280;
-}
-
 </style>
+
+<!-- AUTO SLIDE -->
 
 <script>
 
@@ -400,24 +449,3 @@ document.querySelectorAll('.review-slider').forEach(slider => {
 });
 
 </script>
-
-<!-- PAGINATION -->
-
-<div class="d-flex justify-content-center mt-4 mb-5 flex-wrap">
-
-    {% for p in candidates.iter_pages() %}
-
-        {% if p %}
-
-            <a href="/leads?tab={{ tab }}&page={{ p }}"
-               class="btn btn-sm {% if p == candidates.page %}btn-primary{% else %}btn-light{% endif %} mx-1 mb-2">
-
-                {{ p }}
-
-            </a>
-
-        {% endif %}
-
-    {% endfor %}
-
-</div>
