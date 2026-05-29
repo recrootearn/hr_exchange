@@ -476,6 +476,8 @@ def leads():
 
     page = request.args.get('page', 1, type=int)
 
+    tab = request.args.get('tab', 'locked')
+
     unlocked = Unlock.query.filter_by(
         user_id=current_user.id
     ).all()
@@ -484,11 +486,26 @@ def leads():
         u.candidate_id for u in unlocked
     ]
 
+    # =========================
     # MAIN QUERY
+    # =========================
 
-    query = Candidate.query
+    if tab == 'unlocked':
 
+        query = Candidate.query.filter(
+            Candidate.id.in_(unlocked_ids)
+        )
+
+    else:
+
+        query = Candidate.query.filter(
+            ~Candidate.id.in_(unlocked_ids),
+            Candidate.uploaded_by != current_user.id
+        )
+
+    # =========================
     # FILTERS
+    # =========================
 
     if designation:
 
@@ -514,7 +531,9 @@ def leads():
             experience=experience
         )
 
-    # SORT
+    # =========================
+    # SORTING
+    # =========================
 
     if sort == 'old':
 
@@ -528,17 +547,21 @@ def leads():
             Candidate.id.desc()
         )
 
+    # =========================
     # PAGINATION
+    # =========================
 
     candidates = query.paginate(
         page=page,
-        per_page=20
+        per_page=10,
+        error_out=False
     )
 
     return render_template(
         'leads.html',
         candidates=candidates,
         unlocked_ids=unlocked_ids,
+        tab=tab,
         CandidateReview=CandidateReview,
         User=User
     )

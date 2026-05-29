@@ -245,8 +245,8 @@ MOBILE
 
             <button
             id="locked-tab"
-            class="mini-tab active"
-            onclick="showLocked()">
+            class="mini-tab {% if tab == 'locked' %}active{% endif %}"
+            onclick="window.location.href='/leads?tab=locked'">
 
                <i class="fas fa-lock"></i>
 
@@ -256,8 +256,8 @@ MOBILE
 
             <button
             id="unlocked-tab"
-            class="mini-tab"
-            onclick="showUnlocked()">
+            class="mini-tab {% if tab == 'unlocked' %}active{% endif %}"
+            onclick="window.location.href='/leads?tab=unlocked'">
 
                <i class="fas fa-lock-open"></i>
 
@@ -455,36 +455,6 @@ MOBILE
 </div>
 
 <script>
-
-function showLocked(){
-
-    document.getElementById("locked-section")
-    .classList.add("active-section");
-
-    document.getElementById("unlocked-section")
-    .classList.remove("active-section");
-
-    document.getElementById("locked-tab")
-    .classList.add("active");
-
-    document.getElementById("unlocked-tab")
-    .classList.remove("active");
-}
-
-function showUnlocked(){
-
-    document.getElementById("unlocked-section")
-    .classList.add("active-section");
-
-    document.getElementById("locked-section")
-    .classList.remove("active-section");
-
-    document.getElementById("unlocked-tab")
-    .classList.add("active");
-
-    document.getElementById("locked-tab")
-    .classList.remove("active");
-}
 
 function toggleFilters(){
 
