@@ -58,83 +58,151 @@
 
             <!-- REVIEWS -->
 
-            {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
+{% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
 
-            <div class="review-box mt-3 p-3"
-                 style="
-                 background:#f8fafc;
-                 border-radius:14px;
-                 overflow-x:auto;
-                 overflow-y:hidden;
-                 white-space:nowrap;
-                 "
+<div class="review-wrapper mt-3">
 
-                <div class="d-flex justify-content-between align-items-center mb-2">
+    <div class="review-title mb-2">
 
-                    <strong>
-                        ⭐ Reviews ({{ reviews|length }})
+        ⭐ Reviews ({{ reviews|length }})
+
+    </div>
+
+    {% if reviews %}
+
+    <div class="review-slider">
+
+        {% for r in reviews %}
+
+            {% set reviewer = User.query.get(r.user_id) %}
+
+            <div class="review-card">
+
+                <div class="d-flex justify-content-between">
+
+                    <strong style="color:#2563eb;">
+
+                        {{ reviewer.first_name if reviewer else 'HR User' }}
+
                     </strong>
+
+                    <span class="badge bg-warning text-dark">
+
+                        ⭐ {{ r.rating }}/5
+
+                    </span>
 
                 </div>
 
-                {% if reviews %}
+                <div class="mt-2">
 
-                    {% for r in reviews %}
+                    {{ r.review }}
 
-                        {% set reviewer = User.query.get(r.user_id) %}
-
-                        <<div class="mt-3 p-2"
-                              style="
-                              background:white;
-                              border-radius:10px;
-                              display:inline-block;
-                              vertical-align:top;
-                              width:260px;
-                              margin-right:12px;
-                              white-space:normal;
-                              "
-
-                            <div class="d-flex justify-content-between">
-
-                                <strong style="color:#2563eb;">
-
-                                    {{ reviewer.first_name if reviewer else 'HR User' }}
-
-                                </strong>
-
-                                <span class="badge bg-warning text-dark">
-
-                                    ⭐ {{ r.rating }}/5
-
-                                </span>
-
-                            </div>
-
-                            <div class="mt-2"
-                                 style="
-                                 font-size:14px;
-                                 color:#374151;
-                                 ">
-
-                                {{ r.review }}
-
-                            </div>
-
-                        </div>
-
-                    {% endfor %}
-
-                {% else %}
-
-                    <div class="text-muted">
-
-                        No reviews yet
-
-                    </div>
-
-                {% endif %}
+                </div>
 
             </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+        <div class="review-empty">
+
+            No reviews yet
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<style>
+
+.review-wrapper{
+
+    background:#f8fafc;
+
+    border-radius:14px;
+
+    padding:14px;
+
+    overflow:hidden;
+}
+
+.review-title{
+
+    font-weight:700;
+
+    margin-bottom:10px;
+}
+
+.review-slider{
+
+    display:flex;
+
+    gap:12px;
+
+    overflow:hidden;
+
+    scroll-behavior:smooth;
+}
+
+.review-card{
+
+    min-width:260px;
+
+    max-width:260px;
+
+    background:white;
+
+    border-radius:12px;
+
+    border:1px solid #e5e7eb;
+
+    padding:14px;
+
+    flex-shrink:0;
+
+    font-size:14px;
+
+    color:#374151;
+}
+
+.review-empty{
+
+    color:#6b7280;
+}
+
+</style>
+
+<script>
+
+document.querySelectorAll('.review-slider').forEach(slider => {
+
+    let scrollAmount = 0;
+
+    setInterval(() => {
+
+        scrollAmount += 272;
+
+        if(scrollAmount >= slider.scrollWidth - slider.clientWidth){
+
+            scrollAmount = 0;
+
+        }
+
+        slider.scrollTo({
+            left: scrollAmount,
+            behavior: 'smooth'
+        });
+
+    }, 2000);
+
+});
+
+</script>
 
             <!-- DETAILS -->
 
