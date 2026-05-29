@@ -299,11 +299,16 @@ def home():
 @login_required
 def my_uploads():
 
-    candidates = Candidate.query.filter_by(
-        uploaded_by=current_user.id
-    ).order_by(
-        Candidate.created_at.desc()
-    ).all()
+    page = request.args.get('page', 1, type=int)
+
+candidates = Candidate.query.filter_by(
+    uploaded_by=current_user.id
+).order_by(
+    Candidate.created_at.desc()
+).paginate(
+    page=page,
+    per_page=10
+)
 
     return render_template(
         'my_uploads.html',
