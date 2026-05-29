@@ -21,8 +21,6 @@
 
 {% for c in candidates.items %}
 
-{% if c.id in unlocked_ids %}
-
 <div class="col-12">
 
     <div class="candidate-card">
@@ -137,8 +135,6 @@
 
         <div class="action-buttons">
 
-            <!-- CALL -->
-
             <a href="tel:{{ c.phone }}"
                class="btn btn-success btn-sm">
 
@@ -147,8 +143,6 @@
                 Call
 
             </a>
-
-            <!-- WHATSAPP -->
 
             <a href="https://wa.me/91{{ c.phone }}"
                target="_blank"
@@ -159,8 +153,6 @@
                 WhatsApp
 
             </a>
-
-            <!-- REVIEW -->
 
             <button
             class="btn btn-info btn-sm"
@@ -173,8 +165,6 @@
 
             </button>
 
-            <!-- REPORT FAKE -->
-
             <a href="/report-fake/{{ c.id }}"
                class="btn btn-danger btn-sm">
 
@@ -183,8 +173,6 @@
                 Report Fake
 
             </a>
-
-            <!-- WRONG EXPERIENCE -->
 
             <a href="/wrong-experience/{{ c.id }}"
                class="btn btn-warning btn-sm">
@@ -205,6 +193,8 @@
              style="
              background:#f8fafc;
              border-radius:16px;
+             max-height:220px;
+             overflow-y:auto;
              ">
 
             {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
@@ -350,8 +340,42 @@ tabindex="-1">
 
 </div>
 
-{% endif %}
-
 {% endfor %}
+
+</div>
+
+<!-- PAGINATION -->
+
+<div class="d-flex justify-content-center mt-4 mb-5 flex-wrap">
+
+    {% for p in candidates.iter_pages() %}
+
+        {% if p %}
+
+            <a href="{{ url_for(
+                'leads',
+                tab='unlocked',
+                page=p,
+                designation=request.args.get('designation'),
+                city=request.args.get('city'),
+                industry=request.args.get('industry'),
+                experience=request.args.get('experience'),
+                sort=request.args.get('sort')
+            ) }}"
+            class="btn btn-sm
+            {% if p == candidates.page %}
+                btn-primary
+            {% else %}
+                btn-light
+            {% endif %}
+            mx-1 mb-2">
+
+                {{ p }}
+
+            </a>
+
+        {% endif %}
+
+    {% endfor %}
 
 </div>
