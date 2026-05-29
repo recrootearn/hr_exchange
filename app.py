@@ -299,16 +299,11 @@ def home():
 @login_required
 def my_uploads():
 
-    page = request.args.get('page', 1, type=int)
-
     candidates = Candidate.query.filter_by(
         uploaded_by=current_user.id
     ).order_by(
         Candidate.created_at.desc()
-    ).paginate(
-        page=page,
-        per_page=10
-    )
+    ).all()
 
     return render_template(
         'my_uploads.html',
@@ -426,10 +421,9 @@ def locked():
     # PAGINATION
 
     candidates = query.paginate(
-    page=page,
-    per_page=10,
-    error_out=False
-)
+        page=page,
+        per_page=10
+    )
 
     # AUTO MARK AS READ
 
@@ -537,7 +531,7 @@ def leads():
 
     candidates = query.paginate(
         page=page,
-        per_page=10
+        per_page=20
     )
 
     return render_template(
