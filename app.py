@@ -319,6 +319,15 @@ def my_uploads():
         Unlock=Unlock
     )
 
+@app.route('/general-info')
+@login_required
+def general_info():
+    return render_template('general_info.html')
+
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
 # =========================
 # LOCKED CANDIDATES
 # =========================
