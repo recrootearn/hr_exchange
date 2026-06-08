@@ -877,6 +877,25 @@ function toggleSidebar(){
 
 </script>
 
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div style="
+position:fixed;
+top:20px;
+right:20px;
+background:#fff3cd;
+color:#856404;
+padding:12px 18px;
+border-radius:10px;
+box-shadow:0 4px 12px rgba(0,0,0,0.2);
+z-index:9999;
+font-weight:600;
+">
+    {{ messages[0] }}
+</div>
+{% endif %}
+{% endwith %}
+
 </body>
 
 </html>
