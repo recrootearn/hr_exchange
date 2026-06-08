@@ -1,3 +1,4 @@
+import uuid
 import razorpay
 from flask import send_file
 import random
@@ -62,6 +63,7 @@ class User(UserMixin, db.Model):
     bank_name = db.Column(db.String(200))
     account_number = db.Column(db.String(200))
     ifsc_code = db.Column(db.String(100))
+    session_token = db.Column(db.String(200))
 
     account_holder_name = db.Column(db.String(200))
     trust_score = db.Column(db.Integer, default=100)
@@ -683,21 +685,51 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        user = User.query.filter_by(username=request.form['username']).first()
-        if not user: return "Invalid Login"
-        if user.failed_logins >= 5: return "Blocked"
-        if not user.is_approved and user.username.upper() != "HARSHIT": return "Pending Approval"
 
-        if check_password_hash(user.password, request.form['password']):
-            user.failed_logins = 0
-            db.session.commit()
-            login_user(user)
-            return redirect(url_for('home'))
-        else:
-            user.failed_logins += 1
-            db.session.commit()
+    if request.method == 'POST':
+
+        user = User.query.filter_by(
+            username=request.form['username']
+        ).first()
+
+        if not user:
             return "Invalid Login"
+
+        if user.failed_logins >= 5:
+            return "Blocked"
+
+        if not user.is_approved and user.username.upper() != "HARSHIT":
+            return "Pending Approval"
+
+        if check_password_hash(
+            user.password,
+            request.form['password']
+        ):
+
+            user.failed_logins = 0
+
+            # SINGLE DEVICE LOGIN
+
+            token = str(uuid.uuid4())
+
+            user.session_token = token
+
+            db.session.commit()
+
+            login_user(user)
+
+            session['session_token'] = token
+
+            return redirect(url_for('home'))
+
+        else:
+
+            user.failed_logins += 1
+
+            db.session.commit()
+
+            return "Invalid Login"
+
     return render_template('login.html')
 
 @app.route('/logout')
@@ -1927,6 +1959,37 @@ def change_password():
         'change_password.html'
     )
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+# =========================
+# SINGLE DEVICE LOGIN CHECK
+# =========================
+
+@app.before_request
+def verify_single_device():
+
+    if current_user.is_authenticated:
+
+        db_token = current_user.session_token
+
+        current_session_token = session.get('session_token')
+
+        if db_token != current_session_token:
+
+            logout_user()
+
+            session.clear()
+
+            flash(
+                'Your account was logged in from another device.',
+                'warning'
+            )
+
+            return redirect(url_for('login'))
+
 if __name__ == '__main__':
 
     with app.app_context():
@@ -1938,7 +2001,3 @@ if __name__ == '__main__':
         debug=True
     )
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(host='0.0.0.0', port=5000, debug=True)
