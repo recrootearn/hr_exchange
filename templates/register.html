@@ -518,44 +518,87 @@ select.form-control{
 
         </div>
 
-        <div class="form-group">
+<div class="form-group">
 
-            <label class="form-label">Password</label>
+    <label class="form-label">Password</label>
 
-            <div class="input-box">
+    <div class="input-box">
 
-                <i class="fas fa-lock"></i>
+        <i class="fas fa-lock"></i>
 
-                <input
-                type="password"
-                name="password"
-                class="form-control"
-                placeholder="Create Password"
-                required>
-
-            </div>
-
-        </div>
-
-        <button class="register-btn">
-
-            Create Account
-
-        </button>
-
-    </form>
-
-    <div class="login-link">
-
-        Already have an account?
-
-        <a href="/login">
-
-            Login
-
-        </a>
+        <input
+        type="password"
+        name="password"
+        class="form-control"
+        placeholder="Create Password"
+        required>
 
     </div>
+
+</div>
+
+<!-- TERMS & PRIVACY -->
+
+<div style="
+background:#f8fafc;
+border:1px solid #e5e7eb;
+border-radius:14px;
+padding:15px;
+margin-top:15px;
+margin-bottom:20px;
+font-size:14px;
+line-height:1.6;
+">
+
+    <input
+    type="checkbox"
+    id="agree"
+    required
+    style="margin-right:8px;">
+
+    <label for="agree">
+
+        I agree to the
+
+        <a href="/terms"
+           target="_blank"
+           style="font-weight:600;">
+            Terms & Conditions
+        </a>
+
+        and
+
+        <a href="/privacy"
+           target="_blank"
+           style="font-weight:600;">
+            Privacy Policy
+        </a>
+
+        of RecrootEarn and confirm that the information provided by me is accurate.
+
+    </label>
+
+</div>
+
+<button class="register-btn">
+
+    Create Account
+
+</button>
+
+</form>
+
+<div class="login-link">
+
+    Already have an account?
+
+    <a href="/login">
+
+        Login
+
+    </a>
+
+</div>
 
 </div>
 
