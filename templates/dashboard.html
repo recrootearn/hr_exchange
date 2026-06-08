@@ -318,7 +318,7 @@
 @media(min-width:769px){
 
     .mobile-ui{
-        display:block;
+        display:none;
     }
 
 }
@@ -464,169 +464,57 @@
 
     </div>
 
-    <!-- FILTER -->
-
-    <div class="filter-scroll">
-
-        <button class="filter-chip">All</button>
-        <button class="filter-chip">IT</button>
-        <button class="filter-chip">Fresher</button>
-        <button class="filter-chip">Experienced</button>
-        <button class="filter-chip">Remote</button>
-
-    </div>
-
-    <!-- CANDIDATES -->
-
-    <div class="section-title">
-        Candidates
-    </div>
-
-    {% for c in candidates.items %}
-
-    <div class="candidate-card-modern">
-
-        <div class="candidate-header">
-
-            <div class="candidate-left">
-
-                <div class="candidate-avatar">
-                    {{ c.name[0] }}
-                </div>
-
-                <div>
-
-                    <div class="candidate-name">
-                        {{ c.name }}
-                    </div>
-
-                    <div class="candidate-role">
-                        {{ c.designation }}
-                    </div>
-
-                </div>
-
-            </div>
-
-            {% if c.experience == 'Experienced' %}
-
-            <span class="badge bg-success">
-                Experienced
-            </span>
-
-            {% else %}
-
-            <span class="badge bg-primary">
-                Fresher
-            </span>
-
-            {% endif %}
-
-        </div>
-
-        <div class="modern-pill-wrap">
-
-            <div class="modern-pill">
-                📍 {{ c.city }}
-            </div>
-
-            <div class="modern-pill">
-                💼 {{ c.category }}
-            </div>
-
-            <div class="modern-pill">
-
-                📞
-
-                {% if c.id in unlocked_ids %}
-                    {{ c.phone }}
-                {% else %}
-                    {{ c.phone[:2] }}XXXX{{ c.phone[-2:] }}
-                {% endif %}
-
-            </div>
-
-        </div>
-
-        <!-- REVIEWS -->
-
-        {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
-
-        {% if reviews %}
-
-        <div class="review-box">
-
-            <div class="review-slider auto-slider">
-
-                {% for r in reviews %}
-
-                {% set reviewer = User.query.get(r.user_id) %}
-
-                <div class="review-card">
-
-                    <div class="review-name">
-                        {{ reviewer.first_name }}
-                    </div>
-
-                    <div>
-                        ⭐ {{ r.rating }}/5
-                    </div>
-
-                    <div class="review-text">
-                        {{ r.review }}
-                    </div>
-
-                </div>
-
-                {% endfor %}
-
-            </div>
-
-        </div>
-
-        {% endif %}
-
-        <!-- BUTTON -->
-
-        {% if c.id in unlocked_ids %}
-
-            <button class="unlock-btn">
-                Already Unlocked
-            </button>
-
-        {% else %}
-
-            <a href="/unlock/{{ c.id }}">
-
-                <button class="unlock-btn">
-                    Unlock Candidate
-                </button>
-
-            </a>
-
-        {% endif %}
-
-    </div>
-
-    {% endfor %}
-
-</div>
-
-<script>
-
 /* LIVE NEWS */
 
 const firstNames = [
-"Aarav","Vivaan","Aditya","Vihaan",
-"Arjun","Reyansh","Sai","Krishna",
-"Ishaan","Rahul","Medhvi","Jyoti",
-"Shivani","Pradeep","Harshit"
+[
+"Harshit","Pranjal","Aarav","Vivaan","Aditya","Vihaan","Arjun","Reyansh","Krishna","Sai",
+"Ishaan","Atharv","Ananya","Diya","Aadhya","Myra","Kiara","Saanvi","Anika","Pari",
+"Riya","Priya","Neha","Shivani","Jyoti","Pooja","Kajal","Simran","Nisha","Sneha",
+"Rahul","Rohit","Aman","Akash","Mohit","Sumit","Nitin","Vikas","Abhishek","Ankit",
+"Raj","Ajay","Vijay","Deepak","Karan","Tarun","Manish","Sachin","Saurabh","Gaurav",
+"Mehul","Yash","Tushar","Pratik","Harsh","Lakshay","Shubham","Ayush","Nikhil","Rajat",
+"Payal","Komal","Muskan","Preeti","Aarti","Rashmi","Shweta","Sonam","Anjali","Ruchi",
+"Megha","Ishita","Tanvi","Khushi","Palak","Bhavna","Mansi","Nandini","Garima","Ritika",
+"Dev","Aryan","Kabir","Shaurya","Rudra","Dhruv","Om","Parth","Vedant","Kartik",
+"Raghav","Madhav","Yuvraj","Advik","Ayaan","Arnav","Pranav","Tejas","Keshav","Varun",
+"Anushka","Navya","Tanya","Mahima","Sakshi","Shruti","Pallavi","Vidhi","Ayesha","Zoya",
+"Fatima","Alisha","Sarah","Hina","Afreen","Noor","Sana","Nazia","Meher","Iqra",
+"Ujjwal","Pankaj","Dheeraj","Lokesh","Mukesh","Naresh","Rakesh","Mahesh","Ramesh","Sandeep",
+"Sunil","Anil","Kapil","Vinay","Naveen","Pradeep","Hemant","Yogesh","Ravindra","Bharat",
+"Chirag","Darshan","Jatin","Kunal","Mayank","Pulkit","Rituraj","Shrey","Vaibhav","Zeeshan",
+"Anu","Anamika","Charu","Divya","Ekta","Gauri","Heena","Jaya","Kiran","Lata",
+"Madhuri","Namrata","Ojasvi","Pinky","Radhika","Sarika","Trisha","Urvashi","Vaishali","Yamini",
+"Bhavya","Chetan","Devesh","Eshan","Farhan","Girish","Hitesh","Jignesh","Kamlesh","Lalit",
+"Monika","Nikita","Oviya","Prerna","Rupali","Sejal","Tanisha","Uma","Vandana","Yashika",
+"Anmol","Bhuvan","Chandan","Dinesh","Eklavya","Firoz","Ganesh","Harendra","Inder","Jayant"
+]
 ];
 
 const lastNames = [
-"Sharma","Verma","Patel","Jain",
-"Agarwal","Singh","Yadav","Gupta",
-"Soni","Mishra","Arora","Grover"
+[
+"Sharma","Verma","Patel","Jain","Gupta","Singh","Soni","Yadav","Agarwal","Mishra",
+"Tiwari","Dubey","Pandey","Tripathi","Shukla","Joshi","Kulkarni","Deshmukh","Chauhan","Rathore",
+"Rajput","Thakur","Rawat","Parmar","Solanki","Tomar","Sisodia","Bhati","Pawar","Chandel",
+"Malhotra","Arora","Khanna","Kapoor","Mehra","Bhatia","Anand","Chopra","Seth","Sachdeva",
+"Gill","Sandhu","Brar","Sidhu","Dhillon","Grewal","Sekhon","Mann","Bajwa","Pannu",
+"Patil","Gaikwad","Jadhav","Shinde","Kadam","Patil","More","Pawar","Chavan","Wagh",
+"Reddy","Naidu","Rao","Raju","Reddy","Chowdary","Goud","Murthy","Varma","Kumar",
+"Iyer","Iyengar","Nair","Menon","Pillai","Kurup","Nambiar","Warrier","Acharya","Bhat",
+"Das","Dutta","Banerjee","Mukherjee","Chatterjee","Bose","Ghosh","Roy","Sen","Paul",
+"Debnath","Biswas","Sarkar","Majumdar","Mitra","Bhattacharya","Pal","Kar","Datta","Saha",
+"Mahajan","Kohli","Nagpal","Ahuja","Tandon","Wadhwa","Luthra","Suri","Puri","Juneja",
+"Jindal","Mittal","Bansal","Goel","Goyal","Singhal","Kansal","Tayal","Bindal","Mangal",
+"Chaudhary","Choudhary","Beniwal","Dahiya","Malik","Sangwan","Jakhar","Sheoran","Punia","Ahlawat",
+"Kashyap","Nishad","Maurya","Kushwaha","Lodhi","Pal","Sengar","Baghel","Rajbhar","Bind",
+"Ansari","Khan","Sheikh","Pathan","Qureshi","Syed","Farooqui","Hashmi","Rizvi","Mirza",
+"Ali","Hussain","Beg","Abbasi","Usmani","Siddiqui","Kureshi","Memon","Saifi","Akhtar",
+"Chaudhari","Vyas","Trivedi","Pandya","Bhatt","Joshi","Modi","Mehta","Shah","Vora",
+"Thakkar","Gandhi","Dalal","Parekh","Desai","Patwa","Panchal","Makwana","Barot","Bhavsar",
+"Hegde","Shetty","Rai","Bhandari","Kamath","Poojary","Acharya","Alva","Naik","Karkera",
+"Pradhan","Behera","Mohanty","Nayak","Pattnaik","Samal","Das","Sahu","Lenka","Rout",
+"Saikia","Borah","Kalita","Barua","Hazarika","Gogoi","Deka","Phukan","Mahanta","Dasgupta"
+]
 ];
 
 function randomItem(arr){
