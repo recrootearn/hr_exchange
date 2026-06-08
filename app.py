@@ -332,6 +332,10 @@ def privacy():
 def terms():
     return render_template('terms.html')
 
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
 # =========================
 # LOCKED CANDIDATES
 # =========================
