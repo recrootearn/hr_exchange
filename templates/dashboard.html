@@ -318,7 +318,7 @@
 @media(min-width:769px){
 
     .mobile-ui{
-        display:block;
+        display:none;
     }
 
 }
@@ -617,7 +617,6 @@
 /* LIVE NEWS */
 
 const firstNames = [
-[
 "Harshit","Pranjal","Aarav","Vivaan","Aditya","Vihaan","Arjun","Reyansh","Krishna","Sai",
 "Ishaan","Atharv","Ananya","Diya","Aadhya","Myra","Kiara","Saanvi","Anika","Pari",
 "Riya","Priya","Neha","Shivani","Jyoti","Pooja","Kajal","Simran","Nisha","Sneha",
@@ -638,10 +637,9 @@ const firstNames = [
 "Bhavya","Chetan","Devesh","Eshan","Farhan","Girish","Hitesh","Jignesh","Kamlesh","Lalit",
 "Monika","Nikita","Oviya","Prerna","Rupali","Sejal","Tanisha","Uma","Vandana","Yashika",
 "Anmol","Bhuvan","Chandan","Dinesh","Eklavya","Firoz","Ganesh","Harendra","Inder","Jayant"
-]];
+];
 
 const lastNames = [
-[
 "Sharma","Verma","Patel","Jain","Gupta","Singh","Soni","Yadav","Agarwal","Mishra",
 "Tiwari","Dubey","Pandey","Tripathi","Shukla","Joshi","Kulkarni","Deshmukh","Chauhan","Rathore",
 "Rajput","Thakur","Rawat","Parmar","Solanki","Tomar","Sisodia","Bhati","Pawar","Chandel",
@@ -663,7 +661,6 @@ const lastNames = [
 "Hegde","Shetty","Rai","Bhandari","Kamath","Poojary","Acharya","Alva","Naik","Karkera",
 "Pradhan","Behera","Mohanty","Nayak","Pattnaik","Samal","Das","Sahu","Lenka","Rout",
 "Saikia","Borah","Kalita","Barua","Hazarika","Gogoi","Deka","Phukan","Mahanta","Dasgupta"
-]
 ];
 
 function randomItem(arr){
@@ -673,16 +670,28 @@ function randomItem(arr){
 function generateNews(){
 
     const fullName =
-        randomItem(firstNames)
-        + " " +
+        randomItem(firstNames) +
+        " " +
         randomItem(lastNames);
 
     const amount =
-        Math.floor(Math.random()*50000);
+        Math.floor(Math.random()*45000)+5000;
+
+    const actions = [
+
+        `earned ₹${amount.toLocaleString()} this week`,
+
+        `uploaded ${Math.floor(Math.random()*20)+1} candidates today`,
+
+        `unlocked ${Math.floor(Math.random()*15)+1} candidates`,
+
+        `earned ₹${amount.toLocaleString()} this month`
+
+    ];
 
     return `
     <div class="live-item">
-        🔥 HR ${fullName} earned ₹${amount.toLocaleString()} this week
+        🔥 HR ${fullName} ${randomItem(actions)}
     </div>
     `;
 }
