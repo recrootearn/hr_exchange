@@ -94,8 +94,19 @@
 @media(max-width:768px){
 
     .desktop-grid{
-        display:none;
+        grid-template-columns:repeat(2,1fr);
+        gap:12px;
     }
+
+    .stats-card{
+        padding:16px;
+    }
+
+    .stats-card h2{
+        font-size:26px;
+    }
+
+}
 
     .mobile-ui{
         display:block;
