@@ -382,237 +382,59 @@
 
 </div>
 
-<!-- MOBILE UI -->
+<!-- LIVE RECRUITER ACTIVITY -->
 
-<div class="mobile-ui">
-
-    <div class="dashboard-scroll">
-
-        <div class="mini-card">
-            <div class="icon-circle" style="background:#2563eb;">
-                <i class="fas fa-coins"></i>
-            </div>
-            <h6>Total Credits</h6>
-            <h3>{{ current_user.credits }}</h3>
-        </div>
-
-        <div class="mini-card">
-            <div class="icon-circle" style="background:#f59e0b;">
-                <i class="fas fa-wallet"></i>
-            </div>
-            <h6>Wallet</h6>
-            <h3>₹{{ current_user.wallet_balance }}</h3>
-        </div>
-
-        <div class="mini-card">
-            <div class="icon-circle" style="background:#059669;">
-                <i class="fas fa-upload"></i>
-            </div>
-            <h6>Uploads</h6>
-            <h3>{{ my_uploads_count }}</h3>
-        </div>
-
-        <div class="mini-card">
-            <div class="icon-circle" style="background:#7c3aed;">
-                <i class="fas fa-lock-open"></i>
-            </div>
-            <h6>Unlocked</h6>
-            <h3>{{ my_unlocks_count }}</h3>
-        </div>
-
-    </div>
-
-    <!-- QUICK ACTIONS -->
-
-    <div class="quick-actions">
-
-        <a href="/upload" class="quick-btn">
-            <i class="fas fa-upload"></i>
-            <div>Upload</div>
-        </a>
-
-        <a href="/wallet" class="quick-btn">
-            <i class="fas fa-wallet"></i>
-            <div>Wallet</div>
-        </a>
-
-        <a href="/leads" class="quick-btn">
-            <i class="fas fa-users"></i>
-            <div>Leads</div>
-        </a>
-
-        <a href="/buy-credits"
-           class="quick-btn">
-
-           <i class="fas fa-coins"></i>
-
-           <div>Buy Credits</div>
-
-        </a>   
-
-    </div>
-
-    <!-- LIVE BOX -->
-
-    <div class="live-box">
-
-        <div class="section-title">
-            🔥 Live Recruiter Activity
-        </div>
-
-        <div id="earning-news"></div>
-
-    </div>
-
-    <!-- FILTER -->
-
-    <div class="filter-scroll">
-
-        <button class="filter-chip">All</button>
-        <button class="filter-chip">IT</button>
-        <button class="filter-chip">Fresher</button>
-        <button class="filter-chip">Experienced</button>
-        <button class="filter-chip">Remote</button>
-
-    </div>
-
-    <!-- CANDIDATES -->
+<div class="live-box">
 
     <div class="section-title">
-        Candidates
+        🔥 Live Recruiter Activity
     </div>
 
-    {% for c in candidates.items %}
-
-    <div class="candidate-card-modern">
-
-        <div class="candidate-header">
-
-            <div class="candidate-left">
-
-                <div class="candidate-avatar">
-                    {{ c.name[0] }}
-                </div>
-
-                <div>
-
-                    <div class="candidate-name">
-                        {{ c.name }}
-                    </div>
-
-                    <div class="candidate-role">
-                        {{ c.designation }}
-                    </div>
-
-                </div>
-
-            </div>
-
-            {% if c.experience == 'Experienced' %}
-
-            <span class="badge bg-success">
-                Experienced
-            </span>
-
-            {% else %}
-
-            <span class="badge bg-primary">
-                Fresher
-            </span>
-
-            {% endif %}
-
-        </div>
-
-        <div class="modern-pill-wrap">
-
-            <div class="modern-pill">
-                📍 {{ c.city }}
-            </div>
-
-            <div class="modern-pill">
-                💼 {{ c.category }}
-            </div>
-
-            <div class="modern-pill">
-
-                📞
-
-                {% if c.id in unlocked_ids %}
-                    {{ c.phone }}
-                {% else %}
-                    {{ c.phone[:2] }}XXXX{{ c.phone[-2:] }}
-                {% endif %}
-
-            </div>
-
-        </div>
-
-        <!-- REVIEWS -->
-
-        {% set reviews = CandidateReview.query.filter_by(candidate_id=c.id).all() %}
-
-        {% if reviews %}
-
-        <div class="review-box">
-
-            <div class="review-slider auto-slider">
-
-                {% for r in reviews %}
-
-                {% set reviewer = User.query.get(r.user_id) %}
-
-                <div class="review-card">
-
-                    <div class="review-name">
-                        {{ reviewer.first_name }}
-                    </div>
-
-                    <div>
-                        ⭐ {{ r.rating }}/5
-                    </div>
-
-                    <div class="review-text">
-                        {{ r.review }}
-                    </div>
-
-                </div>
-
-                {% endfor %}
-
-            </div>
-
-        </div>
-
-        {% endif %}
-
-        <!-- BUTTON -->
-
-        {% if c.id in unlocked_ids %}
-
-            <button class="unlock-btn">
-                Already Unlocked
-            </button>
-
-        {% else %}
-
-            <a href="/unlock/{{ c.id }}">
-
-                <button class="unlock-btn">
-                    Unlock Candidate
-                </button>
-
-            </a>
-
-        {% endif %}
-
-    </div>
-
-    {% endfor %}
+    <div id="earning-news"></div>
 
 </div>
 
-<script>
+<!-- PROFILE COMPLETION -->
+
+<div class="live-box">
+
+    <div class="section-title">
+        🚀 Profile Status
+    </div>
+
+    <div class="live-item">
+        Complete your profile details to improve recruiter trust and visibility.
+    </div>
+
+</div>
+
+<!-- REFERRAL EARNINGS -->
+
+<div class="live-box">
+
+    <div class="section-title">
+        💰 Referral Earnings
+    </div>
+
+    <div class="live-item">
+        Invite recruiters and earn rewards when they purchase credits.
+    </div>
+
+</div>
+
+<!-- PLATFORM NOTICE -->
+
+<div class="live-box">
+
+    <div class="section-title">
+        📢 Platform Updates
+    </div>
+
+    <div class="live-item">
+        Welcome to RecrootEarn. Share candidates, unlock leads and grow your recruiter network.
+    </div>
+
+</div>
 
 /* LIVE NEWS */
 
