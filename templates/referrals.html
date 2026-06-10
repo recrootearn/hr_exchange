@@ -2,47 +2,225 @@
 
 {% block content %}
 
-<h2>🎁 Referral Program</h2>
+<style>
+
+.referral-hero{
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    padding:30px;
+    border-radius:24px;
+    margin-bottom:25px;
+}
+
+.referral-hero h1{
+    font-size:40px;
+    font-weight:800;
+    margin-top:10px;
+}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.stats-card{
+    background:white;
+    padding:24px;
+    border-radius:20px;
+    box-shadow:0 4px 18px rgba(0,0,0,.08);
+    text-align:center;
+}
+
+.stats-card h5{
+    color:#6b7280;
+    margin-bottom:10px;
+}
+
+.stats-card h2{
+    font-size:32px;
+    font-weight:800;
+}
+
+.live-box{
+    background:white;
+    padding:20px;
+    border-radius:20px;
+    margin-bottom:20px;
+    box-shadow:0 4px 18px rgba(0,0,0,.08);
+}
+
+.live-item{
+    background:#f3f4f6;
+    padding:12px;
+    border-radius:12px;
+    margin-bottom:10px;
+}
+
+.progress-bg{
+    background:#e5e7eb;
+    height:16px;
+    border-radius:30px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    height:100%;
+    background:linear-gradient(90deg,#10b981,#22c55e);
+}
+
+.share-btn{
+    background:#25D366;
+    color:white;
+    text-decoration:none;
+    padding:12px 20px;
+    border-radius:12px;
+    display:inline-block;
+    font-weight:600;
+}
+
+@media(max-width:768px){
+
+    .stats-grid{
+        grid-template-columns:repeat(1,1fr);
+    }
+
+    .referral-hero h1{
+        font-size:30px;
+    }
+
+}
+
+</style>
+
+<!-- HERO -->
+
+<div class="referral-hero">
+
+    <h2>🎁 Referral Rewards Program</h2>
+
+    <p>
+        Earn ₹200 when a referred recruiter purchases
+        a credit pack worth ₹500 or more.
+    </p>
+
+    <h1>{{ current_user.referral_code }}</h1>
+
+</div>
+
+<!-- STATS -->
+
+<div class="stats-grid">
+
+    <div class="stats-card">
+        <h5>Total Referrals</h5>
+        <h2>{{ current_user.total_referrals }}</h2>
+    </div>
+
+    <div class="stats-card">
+        <h5>Successful Referrals</h5>
+        <h2>{{ current_user.successful_referrals }}/10</h2>
+    </div>
+
+    <div class="stats-card">
+        <h5>Referral Earnings</h5>
+        <h2>₹{{ current_user.referral_earnings }}</h2>
+    </div>
+
+</div>
+
+<!-- REFERRAL LINK -->
 
 <div class="live-box">
 
-    <h4>Your Referral Code</h4>
-
-    <h2>{{ current_user.referral_code }}</h2>
-
-    <hr>
-
-    <h4>Your Referral Link</h4>
+    <h4>🔗 Your Referral Link</h4>
 
     <input
+        type="text"
         class="form-control"
         value="{{ referral_link }}"
         readonly>
 
-    <hr>
+    <br>
 
-    <h4>Total Referrals</h4>
+    <a
+        href="https://wa.me/?text=Join%20RecrootEarn%20using%20my%20referral%20link%20{{ referral_link }}"
+        target="_blank"
+        class="share-btn">
 
-    <h3>{{ current_user.total_referrals }}</h3>
+        📲 Share On WhatsApp
 
-    <hr>
+    </a>
 
-    <h4>Successful Referrals</h4>
+</div>
 
-    <h3>{{ current_user.successful_referrals }}/10</h3>
+<!-- PROGRESS -->
 
-    <hr>
+<div class="live-box">
 
-    <h4>Referral Earnings</h4>
+    <h4>🏆 Referral Progress</h4>
 
-    <h3>₹{{ current_user.referral_earnings }}</h3>
+    <div class="progress-bg">
 
-    <hr>
+        <div
+            class="progress-fill"
+            style="width:{{ (current_user.successful_referrals/10)*100 }}%;">
+        </div>
 
-    <p>
-        Earn ₹200 when a referred recruiter
-        purchases a credit pack worth ₹500+
+    </div>
+
+    <p style="margin-top:12px;">
+        {{ current_user.successful_referrals }}/10 Rewarded Referrals Completed
     </p>
+
+</div>
+
+<!-- RULES -->
+
+<div class="live-box">
+
+    <h4>💰 Reward Rules</h4>
+
+    <div class="live-item">
+        ✅ Share your referral code or referral link
+    </div>
+
+    <div class="live-item">
+        ✅ Recruiter registers using your referral
+    </div>
+
+    <div class="live-item">
+        ✅ Recruiter purchases ₹500+ credit pack
+    </div>
+
+    <div class="live-item">
+        ✅ You receive ₹200 in wallet
+    </div>
+
+    <div class="live-item">
+        ✅ Maximum 10 rewarded referrals
+    </div>
+
+</div>
+
+<!-- MOTIVATION -->
+
+<div class="live-box">
+
+    <h4>🚀 Potential Earnings</h4>
+
+    <div class="live-item">
+        1 Referral = ₹200
+    </div>
+
+    <div class="live-item">
+        5 Referrals = ₹1,000
+    </div>
+
+    <div class="live-item">
+        10 Referrals = ₹2,000
+    </div>
 
 </div>
 
