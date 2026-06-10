@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>🎁 Referral Program</h2>
+
+<div class="live-box">
+
+    <h4>Your Referral Code</h4>
+
+    <h2>{{ current_user.referral_code }}</h2>
+
+    <hr>
+
+    <h4>Your Referral Link</h4>
+
+    <input
+        class="form-control"
+        value="{{ referral_link }}"
+        readonly>
+
+    <hr>
+
+    <h4>Total Referrals</h4>
+
+    <h3>{{ current_user.total_referrals }}</h3>
+
+    <hr>
+
+    <h4>Successful Referrals</h4>
+
+    <h3>{{ current_user.successful_referrals }}/10</h3>
+
+    <hr>
+
+    <h4>Referral Earnings</h4>
+
+    <h3>₹{{ current_user.referral_earnings }}</h3>
+
+    <hr>
+
+    <p>
+        Earn ₹200 when a referred recruiter
+        purchases a credit pack worth ₹500+
+    </p>
+
+</div>
+
+{% endblock %}

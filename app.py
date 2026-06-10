@@ -1,3 +1,4 @@
+import random
 import uuid
 from flask import session
 from flask_login import logout_user, current_user
@@ -29,6 +30,9 @@ RAZORPAY_SECRET = "ctp74whaDCaF5omzFqoEg6Ya"
 client = razorpay.Client(
     auth=(RAZORPAY_KEY, RAZORPAY_SECRET)
 )
+
+def generate_referral_code():
+    return "RR" + str(random.randint(100000,999999))
 
 # =========================
 # CONFIG & DB SETUP
@@ -67,11 +71,26 @@ class User(UserMixin, db.Model):
     ifsc_code = db.Column(db.String(100))
     session_token = db.Column(db.String(200))
 
+
     account_holder_name = db.Column(db.String(200))
     trust_score = db.Column(db.Integer, default=100)
     is_admin = db.Column(db.Boolean, default=False)
     is_approved = db.Column(db.Boolean, default=False)
     failed_logins = db.Column(db.Integer, default=0)
+    referral_code = db.Column(db.String(20), unique=True)
+
+    referred_by = db.Column(db.String(20))
+
+    total_referrals = db.Column(db.Integer, default=0)
+
+    successful_referrals = db.Column(db.Integer, default=0)
+
+    referral_earnings = db.Column(db.Float, default=0)
+
+    referral_purchase_reward_given = db.Column(
+       db.Boolean,
+       default=False
+)
 
 class Candidate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -664,8 +683,29 @@ def register():
 
             profile_photo=profile_photo,
 
-            is_approved=True
+            is_approved=True,
+
+            referral_code=generate_referral_code()
+
         )
+
+        # REFERRAL CODE
+
+        entered_referral = request.form.get(
+            'referral_code'
+        )
+
+        if entered_referral:
+
+            referrer = User.query.filter_by(
+                referral_code=entered_referral
+            ).first()
+
+            if referrer:
+
+                user.referred_by = entered_referral
+
+                referrer.total_referrals += 1
 
         # MAKE HARSHIT ADMIN
 
@@ -684,6 +724,20 @@ def register():
         )
 
     return render_template('register.html')
+
+@app.route('/referrals')
+@login_required
+def referrals():
+
+    referral_link = (
+        "https://recrootearn.com/register?ref="
+        + current_user.referral_code
+    )
+
+    return render_template(
+        "referrals.html",
+        referral_link=referral_link
+    )
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -1697,6 +1751,36 @@ def payment_success():
     )
 
     db.session.add(history)
+
+    # REFERRAL REWARD
+
+    payment_amount = session.get(
+        'buy_amount',
+        0
+    )
+
+    if (
+        payment_amount >= 500 and
+        current_user.referred_by and
+        not current_user.referral_purchase_reward_given
+    ):
+
+        referrer = User.query.filter_by(
+            referral_code=current_user.referred_by
+        ).first()
+
+        if (
+            referrer and
+            referrer.successful_referrals < 10
+        ):
+
+            referrer.wallet_balance += 200
+
+            referrer.referral_earnings += 200
+
+            referrer.successful_referrals += 1
+
+            current_user.referral_purchase_reward_given = True
 
     db.session.commit()
 
