@@ -70,6 +70,105 @@
     font-weight:800;
 }
 
+/* LIVE BOX */
+
+.live-box{
+    background:white;
+    border-radius:24px;
+    padding:18px;
+    margin-bottom:20px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.08);
+}
+
+#earning-news{
+    max-height:350px;
+    overflow-y:auto;
+}
+
+.live-item{
+    background:#f9fafb;
+    border-radius:14px;
+    padding:12px;
+    margin-bottom:10px;
+    font-size:14px;
+}
+
+.section-title{
+    font-size:22px;
+    font-weight:800;
+    margin-bottom:18px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    .desktop-grid{
+        grid-template-columns:repeat(2,1fr);
+        gap:12px;
+    }
+
+    .stats-card{
+        padding:16px;
+    }
+
+    .stats-card h2{
+        font-size:26px;
+    }
+
+    .content{
+        padding:16px;
+    }
+
+}
+
+@media(max-width:1100px){
+
+    .desktop-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+</style>
+
+<!-- DESKTOP UI -->
+
+<div class="desktop-grid">
+
+    <div class="stats-card">
+        <h5>My Credits</h5>
+        <h2>{{ current_user.credits }}</h2>
+    </div>
+
+    <div class="stats-card">
+        <h5>Wallet Balance</h5>
+        <h2>₹{{ current_user.wallet_balance }}</h2>
+    </div>
+
+    <a href="/my-uploads"
+   style="text-decoration:none;
+          color:inherit;
+          display:block;">
+
+    <div class="stats-card"
+         style="cursor:pointer;">
+
+        <h5>My Uploads</h5>
+
+        <h2>{{ my_uploads_count }}</h2>
+
+    </div>
+
+</a>
+
+    <div class="stats-card">
+        <h5>Unlocked Candidates</h5>
+        <h2>{{ my_unlocks_count }}</h2>
+    </div>
+
+</div>
+
 <!-- RECRUITER RANK -->
 
 <div class="live-box">
@@ -198,112 +297,6 @@
 
     <div class="live-item">
         🥉 Neha Patel
-    </div>
-
-</div>
-
-/* LIVE BOX */
-
-.live-box{
-    background:white;
-    border-radius:24px;
-    padding:18px;
-    margin-bottom:20px;
-    box-shadow:0 4px 18px rgba(0,0,0,0.08);
-}
-
-#earning-news{
-    max-height:350px;
-    overflow-y:auto;
-}
-
-.live-item{
-    background:#f9fafb;
-    border-radius:14px;
-    padding:12px;
-    margin-bottom:10px;
-    font-size:14px;
-}
-
-.section-title{
-    font-size:22px;
-    font-weight:800;
-    margin-bottom:18px;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:768px){
-
-    .desktop-grid{
-        grid-template-columns:repeat(2,1fr);
-        gap:12px;
-    }
-
-    .stats-card{
-        padding:16px;
-    }
-
-    .stats-card h2{
-        font-size:26px;
-    }
-
-}
-
-    .mobile-ui{
-        display:block;
-    }
-
-    .content{
-        padding:16px;
-        padding-bottom:100px;
-    }
-
-}
-
-@media(max-width:1100px){
-
-    .desktop-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-}
-
-</style>
-
-<!-- DESKTOP UI -->
-
-<div class="desktop-grid">
-
-    <div class="stats-card">
-        <h5>My Credits</h5>
-        <h2>{{ current_user.credits }}</h2>
-    </div>
-
-    <div class="stats-card">
-        <h5>Wallet Balance</h5>
-        <h2>₹{{ current_user.wallet_balance }}</h2>
-    </div>
-
-    <a href="/my-uploads"
-   style="text-decoration:none;
-          color:inherit;
-          display:block;">
-
-    <div class="stats-card"
-         style="cursor:pointer;">
-
-        <h5>My Uploads</h5>
-
-        <h2>{{ my_uploads_count }}</h2>
-
-    </div>
-
-</a>
-
-    <div class="stats-card">
-        <h5>Unlocked Candidates</h5>
-        <h2>{{ my_unlocks_count }}</h2>
     </div>
 
 </div>
