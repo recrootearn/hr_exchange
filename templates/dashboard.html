@@ -70,6 +70,138 @@
     font-weight:800;
 }
 
+<!-- RECRUITER RANK -->
+
+<div class="live-box">
+
+    <div class="section-title">
+        🏆 Recruiter Rank
+    </div>
+
+    {% if my_uploads_count < 10 %}
+
+        <div class="live-item">
+            🥉 Beginner Recruiter
+        </div>
+
+        <div class="live-item">
+            Next Rank: Silver Recruiter (10 Uploads)
+        </div>
+
+    {% elif my_uploads_count < 50 %}
+
+        <div class="live-item">
+            🥈 Silver Recruiter
+        </div>
+
+        <div class="live-item">
+            Next Rank: Gold Recruiter (50 Uploads)
+        </div>
+
+    {% elif my_uploads_count < 100 %}
+
+        <div class="live-item">
+            🥇 Gold Recruiter
+        </div>
+
+        <div class="live-item">
+            Next Rank: Diamond Recruiter (100 Uploads)
+        </div>
+
+    {% elif my_uploads_count < 500 %}
+
+        <div class="live-item">
+            💎 Diamond Recruiter
+        </div>
+
+        <div class="live-item">
+            Next Rank: Elite Recruiter (500 Uploads)
+        </div>
+
+    {% else %}
+
+        <div class="live-item">
+            👑 Elite Recruiter
+        </div>
+
+    {% endif %}
+
+    <div class="live-item">
+        Total Uploads: {{ my_uploads_count }}
+    </div>
+
+</div>
+
+<!-- ACHIEVEMENTS -->
+
+<div class="live-box">
+
+    <div class="section-title">
+        🏅 Achievements
+    </div>
+
+    {% if my_uploads_count >= 1 %}
+        <div class="live-item">✅ First Upload</div>
+    {% endif %}
+
+    {% if my_uploads_count >= 10 %}
+        <div class="live-item">✅ 10 Upload Club</div>
+    {% endif %}
+
+    {% if my_uploads_count >= 50 %}
+        <div class="live-item">✅ 50 Upload Club</div>
+    {% endif %}
+
+    {% if my_uploads_count >= 100 %}
+        <div class="live-item">✅ 100 Upload Club</div>
+    {% endif %}
+
+    {% if my_uploads_count < 10 %}
+        <div class="live-item">🔒 10 Upload Club</div>
+    {% endif %}
+
+</div>
+
+<!-- DAILY MISSION -->
+
+<div class="live-box">
+
+    <div class="section-title">
+        🎯 Daily Mission
+    </div>
+
+    <div class="live-item">
+        Upload 3 Candidates Today
+    </div>
+
+    <div class="live-item">
+        Reward: +1 Bonus Credit
+    </div>
+
+</div>
+
+<!-- LEADERBOARD -->
+
+<div class="live-box">
+
+    <div class="section-title">
+        👑 Top Recruiters This Week
+    </div>
+
+    <div class="live-item">
+        🥇 Priya Sharma
+    </div>
+
+    <div class="live-item">
+        🥈 Rahul Verma
+    </div>
+
+    <div class="live-item">
+        🥉 Neha Patel
+    </div>
+
+</div>
+
 /* LIVE BOX */
 
 .live-box{
