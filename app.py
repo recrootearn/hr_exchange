@@ -729,6 +729,10 @@ def register():
 @login_required
 def referrals():
 
+    if not current_user.referral_code:
+        current_user.referral_code = generate_referral_code()
+        db.session.commit()
+
     referral_link = (
         "https://recrootearn.com/register?ref="
         + current_user.referral_code
