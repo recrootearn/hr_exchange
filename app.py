@@ -1930,13 +1930,22 @@ def admin_withdrawals():
         return "Access Denied"
 
     withdrawals = Withdrawal.query.order_by(
-        Withdrawal.created_at.desc()
+        Withdrawal.id.desc()
     ).all()
+
+    pending_count = Withdrawal.query.filter_by(
+        status="Pending"
+    ).count()
+
+    approved_count = Withdrawal.query.filter_by(
+        status="Approved"
+    ).count()
 
     return render_template(
         'admin_withdrawals.html',
         withdrawals=withdrawals,
-        User=User
+        pending_count=pending_count,
+        approved_count=approved_count
     )
 
 @app.route('/mark-paid/<int:id>')
