@@ -363,6 +363,35 @@ def contact():
 def about():
     return render_template('about.html')
 
+@app.route('/admin/referrals')
+@login_required
+def admin_referrals():
+
+    if not current_user.is_admin:
+        return "Access Denied"
+
+    users = User.query.filter(
+        User.referred_by != None
+    ).all()
+
+    referral_data = []
+
+    for user in users:
+
+        referrer = User.query.filter_by(
+            referral_code=user.referred_by
+        ).first()
+
+        referral_data.append({
+            "user": user,
+            "referrer": referrer
+        })
+
+    return render_template(
+        'admin_referrals.html',
+        referral_data=referral_data
+    )
+
 # =========================
 # LOCKED CANDIDATES
 # =========================

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>🎁 Referral Report</h2>
+
+<table class="table table-bordered">
+
+    <thead>
+
+        <tr>
+            <th>Referred User</th>
+            <th>Referrer Username</th>
+            <th>Referral Code</th>
+            <th>Reward Status</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% for row in referral_data %}
+
+        <tr>
+
+            <td>
+                {{ row.user.username }}
+            </td>
+
+            <td>
+                {% if row.referrer %}
+                    {{ row.referrer.username }}
+                {% else %}
+                    Unknown
+                {% endif %}
+            </td>
+
+            <td>
+                {{ row.user.referred_by }}
+            </td>
+
+            <td>
+
+                {% if row.user.referral_purchase_reward_given %}
+
+                    <span style="color:green;">
+                        ✅ Reward Given
+                    </span>
+
+                {% else %}
+
+                    <span style="color:orange;">
+                        ⏳ Registered Only
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}
