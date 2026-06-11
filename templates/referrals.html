@@ -107,6 +107,23 @@
 
     <h1>{{ current_user.referral_code }}</h1>
 
+    <button
+    onclick="navigator.clipboard.writeText('{{ current_user.referral_code }}')"
+    style="
+    background:white;
+    color:#2563eb;
+    border:none;
+    padding:10px 20px;
+    border-radius:12px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:10px;
+    ">
+
+   📋 Copy Referral Code
+
+</button>
+
 </div>
 
 <!-- STATS -->
@@ -173,6 +190,63 @@
     <p style="margin-top:12px;">
         {{ current_user.successful_referrals }}/10 Rewarded Referrals Completed
     </p>
+
+</div>
+
+<!-- REFERRAL HISTORY -->
+
+<div class="live-box">
+
+    <h4>👥 Referral History</h4>
+
+    {% if referred_users %}
+
+        {% for user in referred_users %}
+
+            <div class="live-item">
+
+                <strong>
+                    {{ user.first_name }} {{ user.last_name }}
+                </strong>
+
+                <br>
+
+                Username:
+                {{ user.username }}
+
+                <br><br>
+
+                {% if user.referral_purchase_reward_given %}
+
+                    <span style="
+                        color:#10b981;
+                        font-weight:bold;
+                    ">
+                        ✅ Purchased ₹500+ Pack
+                    </span>
+
+                {% else %}
+
+                    <span style="
+                        color:#f59e0b;
+                        font-weight:bold;
+                    ">
+                        ⏳ Registered Only
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="live-item">
+            No referrals yet.
+        </div>
+
+    {% endif %}
 
 </div>
 

@@ -638,7 +638,7 @@ def register():
 
             return "Username already exists"
 
-        # PHOTO UPLOAD (OPTIONAL)
+        # PHOTO UPLOAD
 
         photo = request.files.get('photo')
 
@@ -658,6 +658,20 @@ def register():
         else:
 
             profile_photo = "default.png"
+
+        # REFERRAL CHECK
+
+        entered_referral = request.form.get(
+            'referral_code'
+        )
+
+        referrer = None
+
+        if entered_referral:
+
+            referrer = User.query.filter_by(
+                referral_code=entered_referral
+            ).first()
 
         # CREATE USER
 
@@ -689,23 +703,13 @@ def register():
 
         )
 
-        # REFERRAL CODE
+        # SAVE WHO REFERRED THIS USER
 
-        entered_referral = request.form.get(
-            'referral_code'
-        )
+        if referrer:
 
-        if entered_referral:
+            user.referred_by = referrer.referral_code
 
-            referrer = User.query.filter_by(
-                referral_code=entered_referral
-            ).first()
-
-            if referrer:
-
-                user.referred_by = entered_referral
-
-                referrer.total_referrals += 1
+            referrer.total_referrals += 1
 
         # MAKE HARSHIT ADMIN
 
@@ -730,7 +734,9 @@ def register():
 def referrals():
 
     if not current_user.referral_code:
+
         current_user.referral_code = generate_referral_code()
+
         db.session.commit()
 
     referral_link = (
@@ -738,9 +744,14 @@ def referrals():
         + current_user.referral_code
     )
 
+    referred_users = User.query.filter_by(
+        referred_by=current_user.referral_code
+    ).all()
+
     return render_template(
-        "referrals.html",
-        referral_link=referral_link
+        'referrals.html',
+        referral_link=referral_link,
+        referred_users=referred_users
     )
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -1697,6 +1708,7 @@ def buy_credits_page():
 
     return render_template('buy_credits.html')
 
+
 @app.route('/buy-credits/<int:amount>')
 @login_required
 def buy_credits(amount):
@@ -1731,7 +1743,11 @@ def buy_credits(amount):
         "payment_capture": 1
     })
 
+    # SAVE PURCHASE INFO
+
     session['buy_credits'] = credits
+
+    session['buy_amount'] = amount
 
     return render_template(
         'payment.html',
@@ -1787,6 +1803,12 @@ def payment_success():
             current_user.referral_purchase_reward_given = True
 
     db.session.commit()
+
+    # PREVENT DUPLICATE REWARDS ON REFRESH
+
+    session.pop('buy_credits', None)
+
+    session.pop('buy_amount', None)
 
     return redirect('/credits')
 

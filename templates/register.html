@@ -525,10 +525,11 @@ select.form-control{
     </label>
 
     <input
-        type="text"
-        name="referral_code"
-        class="form-control"
-        placeholder="Enter Referral Code">
+    type="text"
+    name="referral_code"
+    class="form-control"
+    value="{{ request.args.get('ref','') }}"
+    placeholder="Referral Code (Optional)">
 
 </div>+
 
