@@ -10,7 +10,7 @@
 
         <div
             class="needle"
-            style="transform:translateX(-50%) rotate({{ gauge_degree }}deg);">
+            style="--final-angle:{{ gauge_degree }}deg;">
         </div>
 
         <div class="center-dot"></div>
@@ -22,6 +22,41 @@
     </div>
 
     <h2>{{ recruiter_rank }}</h2>
+
+<div class="rank-badges">
+
+    <span>🌱 Beginner</span>
+
+    <span>🥉 Bronze</span>
+
+    <span>🥈 Silver</span>
+
+    <span>🥇 Gold</span>
+
+    <span>💎 Platinum</span>
+
+    <span>👑 Elite</span>
+
+</div>
+
+<div style="margin-top:20px;">
+
+    <div style="
+        background:#f8fafc;
+        padding:15px;
+        border-radius:15px;
+        margin-top:10px;
+    ">
+
+        <h5 style="margin-bottom:10px;">
+            🎯 Next Level: {{ next_rank }}
+        </h5>
+
+        <h6>
+            {{ uploads_remaining }} Uploads Remaining
+        </h6>
+
+    </div>
 
 </div>
 
@@ -214,9 +249,24 @@
 
     transform-origin:bottom center;
 
-    z-index:10;
+    animation:warmup 2s ease forwards;
 
-    transition:2s ease;
+    z-index:10;
+}
+
+@keyframes warmup{
+
+    0%{
+        transform:translateX(-50%) rotate(-140deg);
+    }
+
+    50%{
+        transform:translateX(-50%) rotate(140deg);
+    }
+
+    100%{
+        transform:translateX(-50%) rotate(var(--final-angle));
+    }
 }
 
 .center-dot{
@@ -251,6 +301,32 @@
     font-weight:800;
 
     z-index:15;
+}
+
+.rank-badges{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin-top:15px;
+}
+
+.rank-badges span{
+
+    background:#f3f4f6;
+
+    padding:8px 14px;
+
+    border-radius:30px;
+
+    font-size:13px;
+
+    font-weight:700;
 }
 
 </style>
