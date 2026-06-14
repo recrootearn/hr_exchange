@@ -262,6 +262,42 @@ def home():
         ).all()
     ]
 
+    # RECRUITER RANK SYSTEM
+
+    total_uploads = Candidate.query.filter_by(
+        uploaded_by=current_user.id
+    ).count()
+
+    if total_uploads <= 100:
+
+        recruiter_rank = "Beginner Recruiter"
+        gauge_degree = -120
+
+    elif total_uploads <= 500:
+
+        recruiter_rank = "Bronze Recruiter"
+        gauge_degree = -70
+
+    elif total_uploads <= 1500:
+
+        recruiter_rank = "Silver Recruiter"
+        gauge_degree = -20
+
+    elif total_uploads <= 5000:
+
+        recruiter_rank = "Gold Recruiter"
+        gauge_degree = 40
+
+    elif total_uploads <= 10000:
+
+        recruiter_rank = "Platinum Recruiter"
+        gauge_degree = 90
+
+    else:
+
+        recruiter_rank = "Elite Recruiter"
+        gauge_degree = 140
+
     # HIDE OWN CANDIDATES
 
     query = Candidate.query.filter(
@@ -308,13 +344,23 @@ def home():
 
     return render_template(
         'dashboard.html',
+
         candidates=candidates,
+
         unlocked_ids=unlocked_ids,
-        my_uploads_count=Candidate.query.filter_by(
-            uploaded_by=current_user.id
-        ).count(),
+
+        my_uploads_count=total_uploads,
+
         my_unlocks_count=len(unlocked_ids),
+
+        recruiter_rank=recruiter_rank,
+
+        gauge_degree=gauge_degree,
+
+        total_uploads=total_uploads,
+
         CandidateReview=CandidateReview,
+
         User=User
     )
 

@@ -2,6 +2,29 @@
 
 {% block content %}
 
+<div class="rank-speedometer-card">
+
+    <h3>🏆 Recruiter Level</h3>
+
+    <div class="speedometer">
+
+        <div
+            class="needle"
+            style="transform:translateX(-50%) rotate({{ gauge_degree }}deg);">
+        </div>
+
+        <div class="center-dot"></div>
+
+        <div class="speed-value">
+            {{ total_uploads }}
+        </div>
+
+    </div>
+
+    <h2>{{ recruiter_rank }}</h2>
+
+</div>
+
 {% if current_user.credits < 5 %}
 
 <div class="alert alert-warning d-flex justify-content-between align-items-center flex-wrap mb-4">
@@ -128,6 +151,106 @@
         grid-template-columns:repeat(2,1fr);
     }
 
+}
+
+.rank-speedometer-card{
+
+    background:white;
+    border-radius:25px;
+    padding:25px;
+    text-align:center;
+    margin-bottom:25px;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+.speedometer{
+
+    position:relative;
+    width:260px;
+    height:260px;
+    margin:25px auto;
+
+    border-radius:50%;
+
+    background:
+    conic-gradient(
+        #ef4444 0deg 60deg,
+        #f97316 60deg 120deg,
+        #eab308 120deg 180deg,
+        #22c55e 180deg 240deg,
+        #2563eb 240deg 300deg,
+        #7c3aed 300deg 360deg
+    );
+}
+
+.speedometer::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:20px;
+    left:20px;
+
+    width:220px;
+    height:220px;
+
+    background:white;
+
+    border-radius:50%;
+}
+
+.needle{
+
+    position:absolute;
+
+    width:6px;
+    height:100px;
+
+    background:#111827;
+
+    left:50%;
+    bottom:50%;
+
+    transform-origin:bottom center;
+
+    z-index:10;
+
+    transition:2s ease;
+}
+
+.center-dot{
+
+    position:absolute;
+
+    width:20px;
+    height:20px;
+
+    background:#111827;
+
+    border-radius:50%;
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    z-index:20;
+}
+
+.speed-value{
+
+    position:absolute;
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    font-size:28px;
+    font-weight:800;
+
+    z-index:15;
 }
 
 </style>
