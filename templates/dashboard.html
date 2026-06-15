@@ -177,6 +177,43 @@ background:linear-gradient(
 border-radius:20px;
 }
 
+.rank-badge{
+    width:95px;
+    height:95px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    margin:auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:38px;
+
+    box-shadow:
+    0 0 15px rgba(37,99,235,.4),
+    0 0 30px rgba(124,58,237,.3);
+
+    animation:pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow{
+
+    0%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.08);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+
+}
+
 @media(min-width:768px){
 
     .dashboard-grid{
@@ -284,24 +321,19 @@ Complete all 3 tasks today and keep your streak alive 🚀
 
     <div style="text-align:center;">
 
-        <div style="
-            width:90px;
-            height:90px;
-            border-radius:50%;
-            background:linear-gradient(135deg,#2563eb,#7c3aed);
-            color:white;
-            margin:auto;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:34px;
-            box-shadow:0 10px 25px rgba(37,99,235,.25);
-        ">
-            🌱
-        </div>
+    <div class="rank-badge">
+        {{ recruiter_icon }}
+    </div>
 
-        <h2 style="margin-top:15px;">
-            {{ recruiter_rank }}
+        <h2 style="
+        margin-top:15px;
+        font-size:32px;
+        font-weight:800;
+        background:linear-gradient(90deg,#2563eb,#7c3aed);
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+        ">
+        {{ recruiter_rank }}
         </h2>
 
         <div class="progress-wrap">
@@ -311,9 +343,17 @@ Complete all 3 tasks today and keep your streak alive 🚀
             </div>
         </div>
 
-        <p style="font-weight:600;">
-            {{ total_uploads }} Uploads Completed
-        </p>
+        <div style="
+        display:inline-block;
+        padding:10px 18px;
+        background:#eef2ff;
+        color:#2563eb;
+        border-radius:50px;
+        font-weight:700;
+        margin-top:10px;
+        ">
+       🚀 {{ total_uploads }} Uploads Completed
+        </div>
 
         <p style="color:#6b7280;">
             🎯 {{ uploads_remaining }}
@@ -446,13 +486,20 @@ function generateNews(){
 `;
 }
 
-let html = "";
+function loadActivity(){
 
-for(let i=0;i<6;i++){
-    html += generateNews();
+    let html="";
+
+    for(let i=0;i<8;i++){
+        html += generateNews();
+    }
+
+    document.getElementById("earning-news").innerHTML = html;
 }
 
-document.getElementById("earning-news").innerHTML = html;
+loadActivity();
+
+setInterval(loadActivity,15000);
 
 </script>
 
