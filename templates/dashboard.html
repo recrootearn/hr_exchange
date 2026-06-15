@@ -404,71 +404,40 @@
 
 </div>
 
-<div class="rank-speedometer-card">
+<div class="live-box">
 
-    <h3>{{ recruiter_rank }}</h3>
+    <div class="section-title">
+        🏆 Recruiter Progress
+    </div>
 
-    <p style="color:#6b7280;">
-        {{ uploads_remaining }}
-        uploads needed to reach
-        {{ next_rank }}
+    <h4>{{ recruiter_rank }}</h4>
+
+    <p>
+        {{ total_uploads }} Uploads
     </p>
 
-    <div class="speedometer">
-
-    <span class="level beginner">🌱 Beginner</span>
-
-    <span class="level bronze">🥉 Bronze</span>
-
-    <span class="level silver">🥈 Silver</span>
-
-    <span class="level gold">🥇 Gold</span>
-
-    <span class="level platinum">💎 Platinum</span>
-
-    <span class="level elite">👑 Elite</span>
-
-    <div
-        class="needle"
-        style="--final-angle:{{ gauge_degree }}deg;">
-    </div>
-
-    <div class="center-dot"></div>
-
-    <div class="speed-value">
-
-        <div style="font-size:30px;font-weight:800;">
-            {{ total_uploads }}
-        </div>
-
-        <div style="font-size:12px;">
-            Uploads
-        </div>
-
-    </div>
-
-</div>
-
-<div style="margin-top:20px;">
-
     <div style="
-        background:#f8fafc;
-        padding:15px;
-        border-radius:15px;
-        margin-top:10px;
+        background:#e5e7eb;
+        height:14px;
+        border-radius:20px;
+        overflow:hidden;
+        margin:15px 0;
     ">
 
-        <h5 style="margin-bottom:10px;">
-            🎯 Next Level: {{ next_rank }}
-        </h5>
-
-        <h6>
-            {{ uploads_remaining }} Uploads Remaining
-        </h6>
+        <div style="
+            width:{{ ((total_uploads/(total_uploads+uploads_remaining))*100)|round }}%;
+            height:100%;
+            background:linear-gradient(90deg,#2563eb,#7c3aed);
+        ">
+        </div>
 
     </div>
 
-</div>
+    <p>
+        🎯 {{ uploads_remaining }}
+        uploads remaining for
+        {{ next_rank }}
+    </p>
 
 </div>
 
@@ -490,6 +459,38 @@
         Buy Credits
 
     </a>
+
+</div>
+
+<div class="live-box">
+
+    <div class="section-title">
+        🚀 Recruiter Journey
+    </div>
+
+    <div class="live-item">
+        🌱 Beginner Recruiter (0-100)
+    </div>
+
+    <div class="live-item">
+        🥉 Bronze Recruiter (101-500)
+    </div>
+
+    <div class="live-item">
+        🥈 Silver Recruiter (501-1500)
+    </div>
+
+    <div class="live-item">
+        🥇 Gold Recruiter (1501-5000)
+    </div>
+
+    <div class="live-item">
+        💎 Platinum Recruiter (5001-10000)
+    </div>
+
+    <div class="live-item">
+        👑 Elite Recruiter (10001+)
+    </div>
 
 </div>
 
