@@ -377,49 +377,65 @@ body{
 
     body{
         background:#ffffff;
-        overflow:auto;
+        overflow-x:hidden;
+        overflow-y:auto;
     }
 
-    /* Hide desktop left panel */
+    /* Hide desktop advertisement panel */
     .login-left{
-        display:none;
+        display:none !important;
     }
 
-    /* Full mobile login */
+    /* Full width container */
+    .login-wrapper{
+        width:100%;
+        min-height:100vh;
+        padding:0;
+        display:block;
+    }
+
     .login-box{
         width:100%;
         min-height:100vh;
+        display:block;
+        background:white;
         border-radius:0;
         box-shadow:none;
-        background:white;
     }
 
+    /* Instagram style login area */
     .login-right{
-        width:100%;
+        width:100% !important;
+        max-width:100% !important;
         min-height:100vh;
-        padding:35px 28px;
-        background:white;
+
+        padding:30px 25px;
+
+        margin:0 !important;
+
         border-radius:0;
+
+        background:white;
 
         display:flex;
         flex-direction:column;
         justify-content:center;
     }
 
-    /* RecrootEarn logo */
+    /* Mobile logo */
     .mobile-logo{
         display:block;
         text-align:center;
-        font-size:38px;
+        font-size:42px;
         font-weight:900;
         color:#0095f6;
         margin-bottom:35px;
     }
 
     .form-title{
-        font-size:34px;
         text-align:center;
-        margin-bottom:10px;
+        font-size:34px;
+        margin-bottom:8px;
     }
 
     .form-sub{
@@ -428,11 +444,15 @@ body{
         margin-bottom:35px;
     }
 
+    .input-label{
+        font-size:14px;
+    }
+
     .input-box input{
         height:52px;
-        border-radius:10px;
         border:1px solid #dbdbdb;
         background:#fafafa;
+        border-radius:10px;
         font-size:15px;
     }
 
@@ -445,7 +465,7 @@ body{
     }
 
     .login-links{
-        margin-top:18px;
+        margin-top:20px;
     }
 
     .login-links a{
@@ -454,7 +474,8 @@ body{
     }
 
     .bottom-text{
-        margin-top:30px;
+        margin-top:25px;
+        text-align:center;
     }
 }
 
@@ -558,11 +579,11 @@ body{
 
         <!-- RIGHT -->
 
-        <div class="mobile-logo">
-            RecrootEarn
-        </div>
-
         <div class="login-right">
+
+            <div class="mobile-logo">
+                RecrootEarn
+            </div>
 
             <div class="form-title">
 
