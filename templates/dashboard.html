@@ -2,91 +2,6 @@
 
 {% block content %}
 
-<div class="rank-speedometer-card">
-
-    <h3>🏆 Recruiter Level</h3>
-
-    <div class="speedometer">
-
-    <span class="level beginner">🌱 Beginner</span>
-
-    <span class="level bronze">🥉 Bronze</span>
-
-    <span class="level silver">🥈 Silver</span>
-
-    <span class="level gold">🥇 Gold</span>
-
-    <span class="level platinum">💎 Platinum</span>
-
-    <span class="level elite">👑 Elite</span>
-
-    <div
-        class="needle"
-        style="--final-angle:{{ gauge_degree }}deg;">
-    </div>
-
-    <div class="center-dot"></div>
-
-    <div class="speed-value">
-
-        <div style="font-size:30px;font-weight:800;">
-            {{ total_uploads }}
-        </div>
-
-        <div style="font-size:12px;">
-            Uploads
-        </div>
-
-    </div>
-
-</div>
-
-    <h2>{{ recruiter_rank }}</h2>
-
-<div style="margin-top:20px;">
-
-    <div style="
-        background:#f8fafc;
-        padding:15px;
-        border-radius:15px;
-        margin-top:10px;
-    ">
-
-        <h5 style="margin-bottom:10px;">
-            🎯 Next Level: {{ next_rank }}
-        </h5>
-
-        <h6>
-            {{ uploads_remaining }} Uploads Remaining
-        </h6>
-
-    </div>
-
-</div>
-
-{% if current_user.credits < 5 %}
-
-<div class="alert alert-warning d-flex justify-content-between align-items-center flex-wrap mb-4">
-
-    <div>
-
-        ⚠️ Your credits are running low.
-
-        Buy more credits to continue unlocking candidates.
-
-    </div>
-
-    <a href="/buy-credits"
-       class="btn btn-dark mt-2">
-
-        Buy Credits
-
-    </a>
-
-</div>
-
-{% endif %}
-
 <style>
 
 *{
@@ -396,7 +311,189 @@
     transform:translateY(-50%);
 }
 
+.hero-card{
+
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+
+    color:white;
+
+    border-radius:25px;
+
+    padding:25px;
+
+    margin-bottom:20px;
+
+    box-shadow:0 10px 30px rgba(37,99,235,.25);
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+}
+
+.hero-btn{
+
+    display:inline-block;
+
+    margin-top:15px;
+
+    background:white;
+
+    color:#2563eb;
+
+    padding:12px 18px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    font-weight:700;
+}
+
+.quick-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:15px;
+}
+
+.quick-grid .stats-card{
+
+    text-align:center;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.quick-grid .stats-card:hover{
+
+    transform:translateY(-3px);
+}
+
 </style>
+
+<div class="hero-card">
+
+    <div>
+        <h2>👋 Welcome, {{ current_user.first_name }}</h2>
+        <h4 style="margin-top:10px;">
+            {{ recruiter_rank }}
+        </h4>
+
+        <p>
+           📤 {{ total_uploads }} Uploads •
+           🔓 {{ my_unlocks_count }} Unlocks
+        </p>
+
+        <p>
+        🎯 {{ uploads_remaining }}
+        uploads to reach
+        {{ next_rank }}
+    </p>
+    </div>
+
+    <a href="/upload" class="hero-btn">
+        ➕ Upload Candidate
+    </a>
+
+</div>
+
+<div class="rank-speedometer-card">
+
+    <h3>{{ recruiter_rank }}</h3>
+
+    <p style="color:#6b7280;">
+        {{ uploads_remaining }}
+        uploads needed to reach
+        {{ next_rank }}
+    </p>
+
+    <div class="speedometer">
+
+    <span class="level beginner">🌱 Beginner</span>
+
+    <span class="level bronze">🥉 Bronze</span>
+
+    <span class="level silver">🥈 Silver</span>
+
+    <span class="level gold">🥇 Gold</span>
+
+    <span class="level platinum">💎 Platinum</span>
+
+    <span class="level elite">👑 Elite</span>
+
+    <div
+        class="needle"
+        style="--final-angle:{{ gauge_degree }}deg;">
+    </div>
+
+    <div class="center-dot"></div>
+
+    <div class="speed-value">
+
+        <div style="font-size:30px;font-weight:800;">
+            {{ total_uploads }}
+        </div>
+
+        <div style="font-size:12px;">
+            Uploads
+        </div>
+
+    </div>
+
+</div>
+
+<div style="margin-top:20px;">
+
+    <div style="
+        background:#f8fafc;
+        padding:15px;
+        border-radius:15px;
+        margin-top:10px;
+    ">
+
+        <h5 style="margin-bottom:10px;">
+            🎯 Next Level: {{ next_rank }}
+        </h5>
+
+        <h6>
+            {{ uploads_remaining }} Uploads Remaining
+        </h6>
+
+    </div>
+
+</div>
+
+</div>
+
+{% if current_user.credits < 5 %}
+
+<div class="alert alert-warning d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+    <div>
+
+        ⚠️ Your credits are running low.
+
+        Buy more credits to continue unlocking candidates.
+
+    </div>
+
+    <a href="/buy-credits"
+       class="btn btn-dark mt-2">
+
+        Buy Credits
+
+    </a>
+
+</div>
+
+{% endif %}
 
 <!-- DESKTOP UI -->
 
@@ -435,134 +532,74 @@
 
 </div>
 
-<!-- RECRUITER RANK -->
-
 <div class="live-box">
 
     <div class="section-title">
-        🏆 Recruiter Rank
+        ⚡ Quick Actions
     </div>
 
-    {% if my_uploads_count < 10 %}
+    <div class="quick-grid">
 
-        <div class="live-item">
-            🥉 Beginner Recruiter
-        </div>
+        <a href="/upload" class="stats-card"
+           style="text-decoration:none;color:inherit;text-align:center;">
 
-        <div class="live-item">
-            Next Rank: Silver Recruiter (10 Uploads)
-        </div>
+            <h2>➕</h2>
+            Upload
 
-    {% elif my_uploads_count < 50 %}
+        </a>
 
-        <div class="live-item">
-            🥈 Silver Recruiter
-        </div>
+        <a href="/leads" class="stats-card"
+           style="text-decoration:none;color:inherit;text-align:center;">
 
-        <div class="live-item">
-            Next Rank: Gold Recruiter (50 Uploads)
-        </div>
+            <h2>🔍</h2>
+            Leads
 
-    {% elif my_uploads_count < 100 %}
+        </a>
 
-        <div class="live-item">
-            🥇 Gold Recruiter
-        </div>
+        <a href="/buy-credits" class="stats-card"
+           style="text-decoration:none;color:inherit;text-align:center;">
 
-        <div class="live-item">
-            Next Rank: Diamond Recruiter (100 Uploads)
-        </div>
+            <h2>💳</h2>
+            Credits
 
-    {% elif my_uploads_count < 500 %}
+        </a>
 
-        <div class="live-item">
-            💎 Diamond Recruiter
-        </div>
+        <a href="/referrals" class="stats-card"
+           style="text-decoration:none;color:inherit;text-align:center;">
 
-        <div class="live-item">
-            Next Rank: Elite Recruiter (500 Uploads)
-        </div>
+            <h2>🎁</h2>
+            Referrals
 
-    {% else %}
+        </a>
 
-        <div class="live-item">
-            👑 Elite Recruiter
-        </div>
-
-    {% endif %}
-
-    <div class="live-item">
-        Total Uploads: {{ my_uploads_count }}
     </div>
 
 </div>
 
-<!-- ACHIEVEMENTS -->
-
 <div class="live-box">
 
     <div class="section-title">
-        🏅 Achievements
+        💰 Earnings Overview
     </div>
 
-    {% if my_uploads_count >= 1 %}
-        <div class="live-item">✅ First Upload</div>
-    {% endif %}
+    <div class="desktop-grid">
 
-    {% if my_uploads_count >= 10 %}
-        <div class="live-item">✅ 10 Upload Club</div>
-    {% endif %}
+        <div class="stats-card">
 
-    {% if my_uploads_count >= 50 %}
-        <div class="live-item">✅ 50 Upload Club</div>
-    {% endif %}
+            <h5>Wallet Earnings</h5>
 
-    {% if my_uploads_count >= 100 %}
-        <div class="live-item">✅ 100 Upload Club</div>
-    {% endif %}
+            <h2>₹{{ current_user.wallet_balance }}</h2>
 
-    {% if my_uploads_count < 10 %}
-        <div class="live-item">🔒 10 Upload Club</div>
-    {% endif %}
+        </div>
 
-</div>
+        <div class="stats-card">
 
-<!-- DAILY MISSION -->
+            <h5>Referral Earnings</h5>
 
-<div class="live-box">
+            <h2>₹{{ current_user.referral_earnings }}</h2>
 
-    <div class="section-title">
-        🎯 Daily Mission
-    </div>
+        </div>
 
-    <div class="live-item">
-        Upload 3 Candidates Today
-    </div>
-
-    <div class="live-item">
-        Reward: +1 Bonus Credit
-    </div>
-
-</div>
-
-<!-- LEADERBOARD -->
-
-<div class="live-box">
-
-    <div class="section-title">
-        👑 Top Recruiters This Week
-    </div>
-
-    <div class="live-item">
-        🥇 Priya Sharma
-    </div>
-
-    <div class="live-item">
-        🥈 Rahul Verma
-    </div>
-
-    <div class="live-item">
-        🥉 Neha Patel
     </div>
 
 </div>
@@ -576,87 +613,6 @@
     </div>
 
     <div id="earning-news"></div>
-
-</div>
-
-<!-- RECRUITER PROGRESS -->
-
-<div class="live-box">
-
-    <div class="section-title">
-        🚀 Recruiter Progress
-    </div>
-
-    <div class="live-item">
-        Level 2 Recruiter
-    </div>
-
-    <div style="
-        background:#e5e7eb;
-        height:12px;
-        border-radius:20px;
-        overflow:hidden;
-        margin-top:10px;
-    ">
-        <div style="
-            width:80%;
-            height:100%;
-            background:linear-gradient(90deg,#2563eb,#7c3aed);
-        ">
-        </div>
-    </div>
-
-    <p style="margin-top:10px;">
-        Upload 5 more candidates to reach Level 3.
-    </p>
-
-</div>
-
-<div class="live-box">
-
-    <div class="section-title">
-        🏆 Achievements
-    </div>
-
-    <div class="live-item">
-        ✅ First Upload Completed
-    </div>
-
-    <div class="live-item">
-        ✅ First Candidate Unlocked
-    </div>
-
-    <div class="live-item">
-        🔒 50 Upload Club
-    </div>
-
-    <div class="live-item">
-        🔒 Elite Recruiter
-    </div>
-
-</div>
-
-<div class="live-box">
-
-    <div class="section-title">
-        📊 Platform Statistics
-    </div>
-
-    <div class="live-item">
-        👥 Recruiters: 1,200+
-    </div>
-
-    <div class="live-item">
-        📄 Candidates: 1,50,000+
-    </div>
-
-    <div class="live-item">
-        🔓 Leads Unlocked: 5,00,000+
-    </div>
-
-    <div class="live-item">
-        💰 Total Earnings Shared: ₹10,00,000+
-    </div>
 
 </div>
 
