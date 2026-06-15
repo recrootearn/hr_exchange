@@ -245,6 +245,8 @@ def admin_only():
 @login_required
 def home():
 
+    from datetime import date
+
     industry = request.args.get('industry')
     designation = request.args.get('designation')
     city = request.args.get('city')
@@ -258,7 +260,9 @@ def home():
         ).all()
     ]
 
+    # ==========================
     # RECRUITER RANK SYSTEM
+    # ==========================
 
     total_uploads = Candidate.query.filter_by(
         uploaded_by=current_user.id
@@ -267,59 +271,68 @@ def home():
     if total_uploads <= 100:
 
         recruiter_rank = "🌱 Beginner Recruiter"
-        gauge_degree = -120
-
-        next_rank = "Bronze Recruiter"
-        uploads_remaining = 101 - total_uploads
+        next_rank = "🥉 Bronze Recruiter"
+        uploads_remaining = max(0, 101 - total_uploads)
 
     elif total_uploads <= 500:
 
         recruiter_rank = "🥉 Bronze Recruiter"
-        gauge_degree = -70
-
-        next_rank = "Silver Recruiter"
-        uploads_remaining = 501 - total_uploads
+        next_rank = "🥈 Silver Recruiter"
+        uploads_remaining = max(0, 501 - total_uploads)
 
     elif total_uploads <= 1500:
 
         recruiter_rank = "🥈 Silver Recruiter"
-        gauge_degree = -20
-
-        next_rank = "Gold Recruiter"
-        uploads_remaining = 1501 - total_uploads
+        next_rank = "🥇 Gold Recruiter"
+        uploads_remaining = max(0, 1501 - total_uploads)
 
     elif total_uploads <= 5000:
 
         recruiter_rank = "🥇 Gold Recruiter"
-        gauge_degree = 40
-
-        next_rank = "Platinum Recruiter"
-        uploads_remaining = 5001 - total_uploads
+        next_rank = "💎 Platinum Recruiter"
+        uploads_remaining = max(0, 5001 - total_uploads)
 
     elif total_uploads <= 10000:
 
         recruiter_rank = "💎 Platinum Recruiter"
-        gauge_degree = 90
-
-        next_rank = "Elite Recruiter"
-        uploads_remaining = 10001 - total_uploads
+        next_rank = "👑 Elite Recruiter"
+        uploads_remaining = max(0, 10001 - total_uploads)
 
     else:
 
         recruiter_rank = "👑 Elite Recruiter"
-        gauge_degree = 140
-
         next_rank = "Maximum Level Reached"
         uploads_remaining = 0
 
-    # HIDE OWN CANDIDATES
+    # ==========================
+    # DAILY STREAKS
+    # ==========================
+
+    today = date.today()
+
+    daily_login_completed = True
+
+    today_uploads = Candidate.query.filter(
+        Candidate.uploaded_by == current_user.id,
+        db.func.date(Candidate.created_at) == today
+    ).count()
+
+    daily_upload_completed = today_uploads >= 10
+
+    today_referrals = User.query.filter(
+        User.referred_by == current_user.referral_code
+    ).count()
+
+    daily_referral_completed = today_referrals > 0
+
+    # ==========================
+    # CANDIDATE LIST
+    # ==========================
 
     query = Candidate.query.filter(
         Candidate.is_fake == False,
         Candidate.uploaded_by != current_user.id
     )
-
-    # FILTERS
 
     if industry:
         query = query.filter_by(category=industry)
@@ -350,6 +363,10 @@ def home():
         per_page=10
     )
 
+    # ==========================
+    # DASHBOARD
+    # ==========================
+
     return render_template(
         'dashboard.html',
 
@@ -363,13 +380,19 @@ def home():
 
         recruiter_rank=recruiter_rank,
 
-        gauge_degree=gauge_degree,
-
         total_uploads=total_uploads,
 
         next_rank=next_rank,
 
         uploads_remaining=uploads_remaining,
+
+        daily_login_completed=daily_login_completed,
+
+        daily_upload_completed=daily_upload_completed,
+
+        daily_referral_completed=daily_referral_completed,
+
+        today_uploads=today_uploads,
 
         CandidateReview=CandidateReview,
 
