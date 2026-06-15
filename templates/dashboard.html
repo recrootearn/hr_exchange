@@ -8,36 +8,40 @@
 
     <div class="speedometer">
 
-        <div
-            class="needle"
-            style="--final-angle:{{ gauge_degree }}deg;">
+    <span class="level beginner">🌱 Beginner</span>
+
+    <span class="level bronze">🥉 Bronze</span>
+
+    <span class="level silver">🥈 Silver</span>
+
+    <span class="level gold">🥇 Gold</span>
+
+    <span class="level platinum">💎 Platinum</span>
+
+    <span class="level elite">👑 Elite</span>
+
+    <div
+        class="needle"
+        style="--final-angle:{{ gauge_degree }}deg;">
+    </div>
+
+    <div class="center-dot"></div>
+
+    <div class="speed-value">
+
+        <div style="font-size:30px;font-weight:800;">
+            {{ total_uploads }}
         </div>
 
-        <div class="center-dot"></div>
-
-        <div class="speed-value">
-            {{ total_uploads }}
+        <div style="font-size:12px;">
+            Uploads
         </div>
 
     </div>
 
-    <h2>{{ recruiter_rank }}</h2>
-
-<div class="rank-badges">
-
-    <span>🌱 Beginner</span>
-
-    <span>🥉 Bronze</span>
-
-    <span>🥈 Silver</span>
-
-    <span>🥇 Gold</span>
-
-    <span>💎 Platinum</span>
-
-    <span>👑 Elite</span>
-
 </div>
+
+    <h2>{{ recruiter_rank }}</h2>
 
 <div style="margin-top:20px;">
 
@@ -327,6 +331,69 @@
     font-size:13px;
 
     font-weight:700;
+}
+
+.level{
+
+    position:absolute;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    z-index:30;
+}
+
+.beginner{
+
+    bottom:10px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+}
+
+.bronze{
+
+    bottom:50px;
+
+    right:5px;
+}
+
+.silver{
+
+    top:50%;
+
+    right:-25px;
+
+    transform:translateY(-50%);
+}
+
+.gold{
+
+    top:50px;
+
+    left:85%;
+
+    transform:translateX(-50%);
+}
+
+.platinum{
+
+    top:10px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+}
+
+.elite{
+
+    top:50%;
+
+    left:-25px;
+
+    transform:translateY(-50%);
 }
 
 </style>
