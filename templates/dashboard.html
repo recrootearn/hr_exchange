@@ -88,15 +88,21 @@ display:grid;
 grid-template-columns:repeat(2,1fr);
 gap:15px;
 margin-bottom:20px;
+align-items:stretch;
 }
 
 .dash-card{
+    height:180px;
     padding:20px;
     border-radius:20px;
     color:white;
     box-shadow:0 8px 20px rgba(0,0,0,.12);
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+
     transition:.3s;
-    cursor:pointer;
 }
 
 .dash-card:hover{
@@ -120,20 +126,25 @@ background:#4c8bf5;
 }
 
 .dash-card h2{
-margin-top:10px;
-font-size:30px;
-font-weight:800;
+    margin:0;
+    font-size:42px;
+    font-weight:800;
+}
+
+.dash-card h5{
+    margin:0;
+    font-size:18px;
 }
 
 .mini-btn{
-display:inline-block;
-margin-top:10px;
-background:white;
-color:#111;
-padding:8px 12px;
-border-radius:10px;
-text-decoration:none;
-font-weight:700;
+    display:inline-block;
+    background:white;
+    color:#111;
+    padding:8px 12px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:700;
+    width:max-content;
 }
 
 .streak-item{
@@ -162,6 +173,18 @@ background:linear-gradient(
 #7c3aed
 );
 border-radius:20px;
+}
+
+@media(min-width:768px){
+
+    .dashboard-grid{
+        grid-template-columns:repeat(4,1fr);
+    }
+
+    .dash-card{
+        height:170px;
+    }
+
 }
 
 </style>
