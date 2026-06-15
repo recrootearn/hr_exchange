@@ -270,39 +270,57 @@ def home():
 
     if total_uploads <= 100:
 
-        recruiter_rank = "🌱 Beginner Recruiter"
-        next_rank = "🥉 Bronze Recruiter"
-        uploads_remaining = max(0, 101 - total_uploads)
+    recruiter_rank = "🌱 Beginner Recruiter"
+    recruiter_icon = "🌱"
+    rank_color = "#22c55e"
 
-    elif total_uploads <= 500:
+    next_rank = "Bronze Recruiter"
+    uploads_remaining = 101 - total_uploads
 
-        recruiter_rank = "🥉 Bronze Recruiter"
-        next_rank = "🥈 Silver Recruiter"
-        uploads_remaining = max(0, 501 - total_uploads)
+elif total_uploads <= 500:
 
-    elif total_uploads <= 1500:
+    recruiter_rank = "🥉 Bronze Recruiter"
+    recruiter_icon = "🥉"
+    rank_color = "#cd7f32"
 
-        recruiter_rank = "🥈 Silver Recruiter"
-        next_rank = "🥇 Gold Recruiter"
-        uploads_remaining = max(0, 1501 - total_uploads)
+    next_rank = "Silver Recruiter"
+    uploads_remaining = 501 - total_uploads
 
-    elif total_uploads <= 5000:
+elif total_uploads <= 1500:
 
-        recruiter_rank = "🥇 Gold Recruiter"
-        next_rank = "💎 Platinum Recruiter"
-        uploads_remaining = max(0, 5001 - total_uploads)
+    recruiter_rank = "🥈 Silver Recruiter"
+    recruiter_icon = "🥈"
+    rank_color = "#9ca3af"
 
-    elif total_uploads <= 10000:
+    next_rank = "Gold Recruiter"
+    uploads_remaining = 1501 - total_uploads
 
-        recruiter_rank = "💎 Platinum Recruiter"
-        next_rank = "👑 Elite Recruiter"
-        uploads_remaining = max(0, 10001 - total_uploads)
+elif total_uploads <= 5000:
 
-    else:
+    recruiter_rank = "🥇 Gold Recruiter"
+    recruiter_icon = "🥇"
+    rank_color = "#eab308"
 
-        recruiter_rank = "👑 Elite Recruiter"
-        next_rank = "Maximum Level Reached"
-        uploads_remaining = 0
+    next_rank = "Platinum Recruiter"
+    uploads_remaining = 5001 - total_uploads
+
+elif total_uploads <= 10000:
+
+    recruiter_rank = "💎 Platinum Recruiter"
+    recruiter_icon = "💎"
+    rank_color = "#06b6d4"
+
+    next_rank = "Elite Recruiter"
+    uploads_remaining = 10001 - total_uploads
+
+else:
+
+    recruiter_rank = "👑 Elite Recruiter"
+    recruiter_icon = "👑"
+    rank_color = "#7c3aed"
+
+    next_rank = "Maximum Level Reached"
+    uploads_remaining = 0
 
     # ==========================
     # DAILY STREAKS
@@ -371,6 +389,10 @@ def home():
         'dashboard.html',
 
         candidates=candidates,
+
+        recruiter_icon=recruiter_icon,
+
+        rank_color=rank_color,
 
         unlocked_ids=unlocked_ids,
 
