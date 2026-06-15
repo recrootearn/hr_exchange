@@ -37,19 +37,18 @@
 }
 
 .live-item{
-    background:#f8fafc;
+    background:linear-gradient(
+        135deg,
+        #f8fafc,
+        #eef4ff
+    );
     border-left:5px solid #4c8bf5;
-    border-radius:12px;
-    padding:14px;
+    border-radius:14px;
+    padding:15px;
     margin-bottom:12px;
     font-size:14px;
     font-weight:600;
-}
-
-.section-title{
-    font-size:22px;
-    font-weight:800;
-    margin-bottom:18px;
+    box-shadow:0 2px 10px rgba(0,0,0,.05);
 }
 
 /* RESPONSIVE */
@@ -86,23 +85,21 @@
 .dashboard-grid{
 display:grid;
 grid-template-columns:repeat(2,1fr);
-gap:15px;
+gap:10px;
 margin-bottom:20px;
 align-items:stretch;
 }
 
 .dash-card{
-    height:180px;
-    padding:20px;
-    border-radius:20px;
-    color:white;
-    box-shadow:0 8px 20px rgba(0,0,0,.12);
+height:140px;
+padding:16px;
+border-radius:20px;
+color:white;
+box-shadow:0 8px 20px rgba(0,0,0,.12);
 
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-
-    transition:.3s;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
 }
 
 .dash-card:hover{
@@ -126,14 +123,16 @@ background:#4c8bf5;
 }
 
 .dash-card h2{
-    margin:0;
-    font-size:42px;
-    font-weight:800;
+margin:0;
+font-size:28px;
+font-weight:800;
+line-height:1;
 }
 
 .dash-card h5{
-    margin:0;
-    font-size:18px;
+margin:0;
+font-size:16px;
+font-weight:600;
 }
 
 .mini-btn{
@@ -182,7 +181,8 @@ border-radius:20px;
     }
 
     .dash-card{
-        height:170px;
+        height:140px;
+        padding:18px;
     }
 
 }
@@ -205,19 +205,33 @@ border-radius:20px;
     <h2>₹{{ current_user.wallet_balance }}</h2>
 </div>
 
+<a href="/my-uploads"
+   style="text-decoration:none;color:white;">
+
 <div class="dash-card yellow">
     <h5>My Uploads</h5>
     <h2>{{ my_uploads_count }}</h2>
 </div>
+
+</a>
+
+<a href="/unlocked-candidates"
+   style="text-decoration:none;color:white;">
 
 <div class="dash-card blue">
     <h5>Unlocked Candidates</h5>
     <h2>{{ my_unlocks_count }}</h2>
 </div>
 
+</a>
+
 </div><div class="live-box"><div class="section-title">
     🔥 Daily Streaks
 </div>
+
+<p style="color:#6b7280;margin-bottom:15px;">
+Complete all 3 tasks today and keep your streak alive 🚀
+</p>
 
 <div class="streak-item">
     <span>Daily Login</span>
