@@ -367,53 +367,94 @@ body{
 
 }
 
+.mobile-logo{
+    display:block;
+}
+
 /* MOBILE */
 
 @media(max-width:992px){
 
     body{
-        background:#f5f6fa;
+        background:#ffffff;
         overflow:auto;
     }
 
-    .login-wrapper{
-        padding:0;
-        align-items:flex-start;
+    /* Hide desktop left panel */
+    .login-left{
+        display:none;
     }
 
+    /* Full mobile login */
     .login-box{
         width:100%;
         min-height:100vh;
-        display:flex;
-        flex-direction:column-reverse;
-        background:#f5f6fa;
-        box-shadow:none;
         border-radius:0;
+        box-shadow:none;
+        background:white;
     }
 
-    /* LOGIN FIRST */
     .login-right{
         width:100%;
+        min-height:100vh;
+        padding:35px 28px;
         background:white;
         border-radius:0;
-        padding:25px 20px 120px;
-        margin-top:0;
+
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
     }
 
-    /* FEATURES BELOW LOGIN */
-    .login-left{
-        width:100%;
-        min-height:auto;
-        padding:25px 20px;
-        border-radius:30px 30px 0 0;
-    }
-
-    .big-heading{
-        font-size:26px;
+    /* RecrootEarn logo */
+    .mobile-logo{
+        display:block;
+        text-align:center;
+        font-size:38px;
+        font-weight:900;
+        color:#0095f6;
+        margin-bottom:35px;
     }
 
     .form-title{
-        font-size:36px;
+        font-size:34px;
+        text-align:center;
+        margin-bottom:10px;
+    }
+
+    .form-sub{
+        text-align:center;
+        color:#8e8e8e;
+        margin-bottom:35px;
+    }
+
+    .input-box input{
+        height:52px;
+        border-radius:10px;
+        border:1px solid #dbdbdb;
+        background:#fafafa;
+        font-size:15px;
+    }
+
+    .login-btn{
+        height:50px;
+        border-radius:10px;
+        background:#0095f6;
+        font-size:16px;
+        font-weight:700;
+    }
+
+    .login-links{
+        margin-top:18px;
+    }
+
+    .login-links a{
+        color:#0095f6;
+        font-size:14px;
+    }
+
+    .bottom-text{
+        margin-top:30px;
     }
 }
 
@@ -516,6 +557,10 @@ body{
         </div>
 
         <!-- RIGHT -->
+
+        <div class="mobile-logo">
+            RecrootEarn
+        </div>
 
         <div class="login-right">
 
