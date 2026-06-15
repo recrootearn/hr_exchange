@@ -37,18 +37,21 @@
 }
 
 .live-item{
-    background:linear-gradient(
-        135deg,
-        #f8fafc,
-        #eef4ff
-    );
-    border-left:5px solid #4c8bf5;
-    border-radius:14px;
-    padding:15px;
+    background:white;
+    border-radius:15px;
+    padding:14px;
     margin-bottom:12px;
-    font-size:14px;
-    font-weight:600;
-    box-shadow:0 2px 10px rgba(0,0,0,.05);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+    border-left:5px solid #2563eb;
+}
+
+.section-title{
+    font-size:22px;
+    font-weight:800;
+    margin-bottom:18px;
 }
 
 /* RESPONSIVE */
@@ -271,30 +274,57 @@ Complete all 3 tasks today and keep your streak alive 🚀
     </span>
 </div>
 
-</div><div class="live-box"><div class="section-title">
-    🏆 Recruiter Level
 </div>
 
-<h3>{{ recruiter_rank }}</h3>
+<div class="live-box">
 
-<div class="progress-wrap">
+    <div class="section-title">
+        🏆 Recruiter Level
+    </div>
 
-    <div
-        class="progress-fill"
-        style="
-        width:{{ ((total_uploads/(total_uploads+uploads_remaining))*100)|round }}%;
+    <div style="text-align:center;">
+
+        <div style="
+            width:90px;
+            height:90px;
+            border-radius:50%;
+            background:linear-gradient(135deg,#2563eb,#7c3aed);
+            color:white;
+            margin:auto;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:34px;
+            box-shadow:0 10px 25px rgba(37,99,235,.25);
         ">
+            🌱
+        </div>
+
+        <h2 style="margin-top:15px;">
+            {{ recruiter_rank }}
+        </h2>
+
+        <div class="progress-wrap">
+            <div
+                class="progress-fill"
+                style="width:{% if uploads_remaining == 0 %}100{% else %}{{ ((total_uploads/(total_uploads+uploads_remaining))*100)|round }}{% endif %}%;">
+            </div>
+        </div>
+
+        <p style="font-weight:600;">
+            {{ total_uploads }} Uploads Completed
+        </p>
+
+        <p style="color:#6b7280;">
+            🎯 {{ uploads_remaining }}
+            uploads to reach
+            {{ next_rank }}
+        </p>
+
     </div>
 
 </div>
 
-<p>
-    🎯 {{ uploads_remaining }}
-    uploads remaining to reach
-    {{ next_rank }}
-</p>
-
-</div>
 <!-- LIVE RECRUITER ACTIVITY -->
 
 <div class="live-box">
@@ -385,10 +415,35 @@ function generateNews(){
     ];
 
     return `
-    <div class="live-item">
-        🔥 HR ${fullName} ${randomItem(actions)}
+<div class="live-item">
+
+    <div style="
+        width:45px;
+        height:45px;
+        border-radius:50%;
+        background:#2563eb;
+        color:white;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:20px;
+        flex-shrink:0;
+    ">
+        👨‍💼
     </div>
-    `;
+
+    <div>
+        <div style="font-weight:700;">
+            ${fullName}
+        </div>
+
+        <div style="font-size:13px;color:#6b7280;">
+            ${randomItem(actions)}
+        </div>
+    </div>
+
+</div>
+`;
 }
 
 let html = "";
