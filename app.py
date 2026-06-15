@@ -270,57 +270,57 @@ def home():
 
     if total_uploads <= 100:
 
-    recruiter_rank = "🌱 Beginner Recruiter"
-    recruiter_icon = "🌱"
-    rank_color = "#22c55e"
+        recruiter_rank = "🌱 Beginner Recruiter"
+        recruiter_icon = "🌱"
+        rank_color = "#22c55e"
 
-    next_rank = "Bronze Recruiter"
-    uploads_remaining = 101 - total_uploads
+        next_rank = "Bronze Recruiter"
+        uploads_remaining = 101 - total_uploads
 
-elif total_uploads <= 500:
+    elif total_uploads <= 500:
 
-    recruiter_rank = "🥉 Bronze Recruiter"
-    recruiter_icon = "🥉"
-    rank_color = "#cd7f32"
+        recruiter_rank = "🥉 Bronze Recruiter"
+        recruiter_icon = "🥉"
+        rank_color = "#cd7f32"
 
-    next_rank = "Silver Recruiter"
-    uploads_remaining = 501 - total_uploads
+        next_rank = "Silver Recruiter"
+        uploads_remaining = 501 - total_uploads
 
-elif total_uploads <= 1500:
+    elif total_uploads <= 1500:
 
-    recruiter_rank = "🥈 Silver Recruiter"
-    recruiter_icon = "🥈"
-    rank_color = "#9ca3af"
+        recruiter_rank = "🥈 Silver Recruiter"
+        recruiter_icon = "🥈"
+        rank_color = "#9ca3af"
 
-    next_rank = "Gold Recruiter"
-    uploads_remaining = 1501 - total_uploads
+        next_rank = "Gold Recruiter"
+        uploads_remaining = 1501 - total_uploads
 
-elif total_uploads <= 5000:
+    elif total_uploads <= 5000:
 
-    recruiter_rank = "🥇 Gold Recruiter"
-    recruiter_icon = "🥇"
-    rank_color = "#eab308"
+        recruiter_rank = "🥇 Gold Recruiter"
+        recruiter_icon = "🥇"
+        rank_color = "#eab308"
 
-    next_rank = "Platinum Recruiter"
-    uploads_remaining = 5001 - total_uploads
+        next_rank = "Platinum Recruiter"
+        uploads_remaining = 5001 - total_uploads
 
-elif total_uploads <= 10000:
+    elif total_uploads <= 10000:
 
-    recruiter_rank = "💎 Platinum Recruiter"
-    recruiter_icon = "💎"
-    rank_color = "#06b6d4"
+        recruiter_rank = "💎 Platinum Recruiter"
+        recruiter_icon = "💎"
+        rank_color = "#06b6d4"
 
-    next_rank = "Elite Recruiter"
-    uploads_remaining = 10001 - total_uploads
+        next_rank = "Elite Recruiter"
+        uploads_remaining = 10001 - total_uploads
 
-else:
+    else:
 
-    recruiter_rank = "👑 Elite Recruiter"
-    recruiter_icon = "👑"
-    rank_color = "#7c3aed"
+        recruiter_rank = "👑 Elite Recruiter"
+        recruiter_icon = "👑"
+        rank_color = "#7c3aed"
 
-    next_rank = "Maximum Level Reached"
-    uploads_remaining = 0
+        next_rank = "Maximum Level Reached"
+        uploads_remaining = 0
 
     # ==========================
     # DAILY STREAKS
@@ -390,34 +390,26 @@ else:
 
         candidates=candidates,
 
-        recruiter_icon=recruiter_icon,
-
-        rank_color=rank_color,
-
         unlocked_ids=unlocked_ids,
 
         my_uploads_count=total_uploads,
-
         my_unlocks_count=len(unlocked_ids),
 
         recruiter_rank=recruiter_rank,
+        recruiter_icon=recruiter_icon,
+        rank_color=rank_color,
 
         total_uploads=total_uploads,
-
         next_rank=next_rank,
-
         uploads_remaining=uploads_remaining,
 
         daily_login_completed=daily_login_completed,
-
         daily_upload_completed=daily_upload_completed,
-
         daily_referral_completed=daily_referral_completed,
 
         today_uploads=today_uploads,
 
         CandidateReview=CandidateReview,
-
         User=User
     )
 
