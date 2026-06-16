@@ -873,6 +873,8 @@ function toggleSidebar(){
 
 </script>
 
+{% if request.endpoint != 'login' %}
+
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 <div style="
@@ -891,6 +893,8 @@ font-weight:600;
 </div>
 {% endif %}
 {% endwith %}
+
+{% endif %}
 
 </body>
 
