@@ -120,9 +120,9 @@ body{
     background:
     linear-gradient(
     180deg,
-    #1e1b4b,
-    #4f46e5,
-    #7c3aed
+    #0057b8,
+    #0074e8,
+    #39d11f
     );
 
     padding:40px;
@@ -167,9 +167,12 @@ body{
 /* LOGO */
 
 .logo{
-    font-size:34px;
-    font-weight:900;
-    margin-bottom:5px;
+    margin-bottom:20px;
+}
+
+.logo img{
+    width:280px;
+    height:auto;
 }
 
 .logo span{
@@ -233,12 +236,12 @@ body{
 /* RIGHT */
 
 .login-right{
-    width:100%;
-    padding:0;
-    background:transparent;
+    width:50%;
+    padding:60px;
+    background:white;
 
     display:flex;
-    justify-content:flex-start;
+    justify-content:center;
     align-items:center;
 }
 
@@ -251,7 +254,7 @@ body{
 }
 
 .form-title span{
-    color:#7c3aed;
+    color:#0074e8;
 }
 
 .form-sub{
@@ -303,7 +306,7 @@ body{
 
 .input-box input:focus{
 
-    border-color:#7c3aed;
+    border-color:#0074e8;
 
     box-shadow:
     0 0 0 4px rgba(124,58,237,0.15);
@@ -317,7 +320,7 @@ body{
 
     width:100%;
 
-    height:px;
+    height:52px;
 
     border:none;
 
@@ -326,8 +329,8 @@ body{
     background:
     linear-gradient(
     135deg,
-    #4f46e5,
-    #9333ea
+    #0057b8,
+    #0074e8
     );
 
     color:white;
@@ -346,7 +349,7 @@ body{
     transform:translateY(-2px);
 
     box-shadow:
-    0 15px 30px rgba(124,58,237,0.35);
+    0 15px 30px rgba(124,58,232,0.35);
 }
 
 /* LINKS */
@@ -416,6 +419,15 @@ body{
     color:#6b7280;
     font-weight:600;
     margin-bottom:25px;
+}
+
+.mobile-card{
+    width:100%;
+    max-width:460px;
+}
+
+.mobile-logo{
+    display:none;
 }
 
 /* MOBILE */
@@ -502,7 +514,7 @@ body{
     .mobile-logo{
     display:block;
     text-align:center;
-    margin-bottom:15px;
+    margin-bottom:10px;
 }
 
     /* Titles */
@@ -565,6 +577,7 @@ body{
         display:none;
 }
 
+}
 </style>
 
 <div class="login-wrapper">
@@ -587,9 +600,7 @@ body{
             <div class="circle circle3"></div>
 
             <div class="logo">
-
-                RECROOT<span>EARN</span>
-
+                <img src="{{ url_for('static', filename='images/logo.png') }}">
             </div>
 
             <div class="logo-sub">
