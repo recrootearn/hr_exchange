@@ -410,6 +410,14 @@ body{
     height:auto;
 }
 
+.mobile-tagline{
+    text-align:center;
+    font-size:15px;
+    color:#6b7280;
+    font-weight:600;
+    margin-bottom:25px;
+}
+
 /* MOBILE */
 
 @media(max-width:992px){
@@ -530,11 +538,7 @@ body{
         height:50px;
         border:none;
         border-radius:14px;
-        background:linear-gradient(
-            135deg,
-            #4f46e5,
-            #9333ea
-        );
+        background:#0d63c9
         color:white;
         font-size:17px;
         font-weight:800;
@@ -549,7 +553,7 @@ body{
     }
 
     .login-links a{
-        color:#4f46e5;
+        color:#0d63c9;
         font-size:14px;
         font-weight:700;
     }
@@ -673,17 +677,9 @@ body{
     <img src="{{ url_for('static', filename='images/logo.png') }}">
 </div>
 
-        <div class="form-title">
-
-                Welcome <span>Back!</span>
-
-            </div>
-
-            <div class="form-sub">
-
-                Login to access your RecrootEarn account
-
-            </div>
+<div class="mobile-tagline">
+    Recruit • Connect • Earn
+</div>
 
             <form method="POST">
 
