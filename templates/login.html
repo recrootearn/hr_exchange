@@ -18,10 +18,7 @@ body{
 }
 
 .mobile-bg{
-    position:fixed;
-    inset:0;
-    overflow:hidden;
-    z-index:-1;
+    display:none;
 }
 
 .mobile-bg span{
@@ -412,6 +409,12 @@ body{
     display:none;
 }
 
+.mobile-logo img{
+    width:260px;
+    max-width:100%;
+    height:auto;
+}
+
 /* MOBILE */
 
 @media(max-width:992px){
@@ -430,6 +433,14 @@ body{
         );
     }
 
+.mobile-bg{
+    display:block;
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    z-index:-1;
+}
+
     /* Hide desktop section */
 
     .login-left{
@@ -440,8 +451,8 @@ body{
 
     .login-wrapper{
         width:100%;
-        min-height:100vh;
-        padding:20px;
+        height:100vh;
+        padding:15px;
         display:flex;
         justify-content:center;
         align-items:center;
@@ -474,25 +485,20 @@ body{
     /* Floating card */
 
     .mobile-card{
-        width:100%;
-        max-width:420px;
-        background:white;
-        border-radius:30px;
-        padding:30px 24px;
-        box-shadow:0 20px 50px rgba(0,0,0,.18);
-    }
+    width:100%;
+    max-width:420px;
+    background:white;
+    border-radius:28px;
+    padding:22px;
+}
 
     /* Logo */
 
     .mobile-logo{
-        display:block;
-        text-align:center;
-        font-size:42px;
-        font-weight:900;
-        color:white;
-        margin-bottom:25px;
-        text-shadow:0 4px 15px rgba(0,0,0,.25);
-    }
+    display:block;
+    text-align:center;
+    margin-bottom:15px;
+}
 
     /* Titles */
 
@@ -504,11 +510,8 @@ body{
     }
 
     .form-sub{
-        text-align:center;
-        color:#6b7280;
-        margin-bottom:30px;
-        font-size:16px;
-    }
+    margin-bottom:20px;
+}
 
     /* Inputs */
 
@@ -528,7 +531,7 @@ body{
     /* Button */
 
     .login-btn{
-        height:54px;
+        height:50px;
         border:none;
         border-radius:14px;
         background:linear-gradient(
@@ -675,8 +678,8 @@ body{
     <div class="mobile-card">
 
         <div class="mobile-logo">
-            RecrootEarn
-        </div>
+    <img src="{{ url_for('static', filename='images/logo.png') }}">
+</div>
 
         <div class="form-title">
 
