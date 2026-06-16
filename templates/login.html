@@ -404,11 +404,13 @@ body{
 }
 
 .mobile-logo{
-    display:none;
+    display:block;
+    text-align:center;
+    margin-bottom:15px;
 }
 
 .mobile-logo img{
-    width:180px;
+    width:260px;
     max-width:100%;
     height:auto;
 }
@@ -490,19 +492,20 @@ body{
     /* Login area */
 
     .login-right{
-        width:100%;
-        padding:0;
-        background:transparent;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-    }
+    width:50%;
+    padding:60px;
+    background:white;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
 
     /* Floating card */
 
     .mobile-card{
     width:100%;
-    max-width:420px;
+    max-width:460px;
     background:white;
     border-radius:28px;
     padding:18px;
@@ -598,16 +601,6 @@ body{
             <div class="circle circle1"></div>
             <div class="circle circle2"></div>
             <div class="circle circle3"></div>
-
-            <div class="logo">
-                <img src="{{ url_for('static', filename='images/logo.png') }}">
-            </div>
-
-            <div class="logo-sub">
-
-                Connect. Recruit. Earn.
-
-            </div>
 
             <div class="big-heading">
 
