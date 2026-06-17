@@ -92,6 +92,39 @@ class User(UserMixin, db.Model):
        default=False
 )
 
+class CandidateUser(UserMixin, db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    full_name = db.Column(db.String(150))
+
+    mobile = db.Column(db.String(20), unique=True)
+
+    email = db.Column(db.String(150), unique=True)
+
+    username = db.Column(db.String(100), unique=True)
+
+    password = db.Column(db.String(300))
+
+    city = db.Column(db.String(100))
+
+    experience = db.Column(db.String(100))
+
+    current_company = db.Column(db.String(200))
+
+    current_ctc = db.Column(db.String(50))
+
+    expected_ctc = db.Column(db.String(50))
+
+    profile_photo = db.Column(db.String(300))
+
+    resume_file = db.Column(db.String(300))
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
 class Candidate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
