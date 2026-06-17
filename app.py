@@ -886,6 +886,10 @@ def register():
 
     return render_template('register.html')
 
+@app.route('/candidate-register')
+def candidate_register():
+    return render_template('candidate_register.html')
+
 @app.route('/referrals')
 @login_required
 def referrals():
