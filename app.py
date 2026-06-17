@@ -890,6 +890,40 @@ def register():
 def candidate_register():
     return render_template('candidate_register.html')
 
+@app.route('/candidate-login', methods=['GET','POST'])
+def candidate_login():
+
+    if request.method == 'POST':
+
+        username = request.form['username']
+        password = request.form['password']
+
+        user = CandidateUser.query.filter_by(
+            username=username
+        ).first()
+
+        if user and user.password == password:
+
+            session['candidate_id'] = user.id
+
+            return redirect('/candidate-dashboard')
+
+        flash('Invalid Login')
+
+    return render_template('candidate_login.html')
+
+@app.route('/candidate-dashboard')
+def candidate_dashboard():
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    candidate = CandidateUser.query.get(
+        session['candidate_id']
+    )
+
+    return f"Welcome {candidate.full_name}"
+
 @app.route('/referrals')
 @login_required
 def referrals():
