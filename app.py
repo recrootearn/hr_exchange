@@ -886,8 +886,33 @@ def register():
 
     return render_template('register.html')
 
-@app.route('/candidate-register')
+@app.route('/candidate-register', methods=['GET','POST'])
 def candidate_register():
+
+    if request.method == 'POST':
+
+        full_name = request.form['full_name']
+        mobile = request.form['mobile']
+        email = request.form['email']
+
+        username = request.form['username']
+        password = request.form['password']
+
+        candidate = CandidateUser(
+            full_name=full_name,
+            mobile=mobile,
+            email=email,
+            username=username,
+            password=password
+        )
+
+        db.session.add(candidate)
+        db.session.commit()
+
+        flash('Registration Successful. Please Login.')
+
+        return redirect('/candidate-login')
+
     return render_template('candidate_register.html')
 
 @app.route('/candidate-login', methods=['GET','POST'])
