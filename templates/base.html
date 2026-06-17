@@ -691,78 +691,123 @@ body{
 
 </div>
 
-<!-- SIDEBAR -->
+<!-- SIDEBAR --><div class="sidebar"><div class="logo">
+    RecrootEarn
+</div>
 
-<div class="sidebar">
+<div class="logo-sub">
+    Recruit • Connect • Earn
+</div>
 
-    <div class="logo">
-        RecrootEarn
-    </div>
+{% if session.get('candidate_id') %}
 
-    <div class="logo-sub">
-        Recruiter Sharing Platform
-    </div>
+<!-- CANDIDATE MENU -->
 
-    <a href="/">
-        <i class="fas fa-chart-line"></i>
-        Dashboard
-    </a>
+<a href="/candidate-dashboard">
+    <i class="fas fa-home"></i>
+    Dashboard
+</a>
 
-    <a href="/leads">
-        <i class="fas fa-users"></i>
-        Leads
-    </a>
+<a href="/candidate-feed">
+    <i class="fas fa-briefcase"></i>
+    Job Feed
+</a>
 
-    <a href="/upload">
-        <i class="fas fa-upload"></i>
-        Upload Candidate
-    </a>
+<a href="/applied-jobs">
+    <i class="fas fa-file-alt"></i>
+    Applied Jobs
+</a>
 
-    <a href="/wallet">
-        <i class="fas fa-wallet"></i>
-        Wallet
-    </a>
+<a href="/candidate-profile">
+    <i class="fas fa-user"></i>
+    My Profile
+</a>
 
-    <a href="/profile">
-        <i class="fas fa-user"></i>
-        My Profile
-    </a>
+<a href="/candidate-logout">
+    <i class="fas fa-right-from-bracket"></i>
+    Logout
+</a>
 
-    <a href="/buy-credits" class="sidebar-link">
+{% else %}
 
+<!-- HR MENU -->
+
+<a href="/">
+    <i class="fas fa-chart-line"></i>
+    Dashboard
+</a>
+
+<a href="/leads">
+    <i class="fas fa-users"></i>
+    Leads
+</a>
+
+<a href="/upload">
+    <i class="fas fa-upload"></i>
+    Upload Candidate
+</a>
+
+<a href="/feed">
+    <i class="fas fa-rss"></i>
+    Job Feed
+</a>
+
+<a href="/post-job">
+    <i class="fas fa-plus-circle"></i>
+    Post Job
+</a>
+
+<a href="/my-jobs">
+    <i class="fas fa-briefcase"></i>
+    My Jobs
+</a>
+
+<a href="/wallet">
+    <i class="fas fa-wallet"></i>
+    Wallet
+</a>
+
+<a href="/profile">
+    <i class="fas fa-user"></i>
+    My Profile
+</a>
+
+<a href="/buy-credits">
     <i class="fas fa-coins"></i>
-
     Buy Credits
+</a>
 
-    </a>
+<a href="/support">
+    <i class="fas fa-headset"></i>
+    Support
+</a>
 
-    <a href="/support">
-        <i class="fas fa-headset"></i>
-        Support
-    </a>
+<a href="/general-info">
+    <i class="fas fa-circle-info"></i>
+    General Info
+</a>
 
-    <a href="/general-info" class="sidebar-link">
-        <i class="fas fa-circle-info"></i>
-        General Info
-    </a>
+<a href="/referrals">
+    🎁 Referrals
+</a>
 
-    <a href="/referrals">
-        🎁 Referrals
-    </a>
+{% if current_user.is_admin %}
 
-    {% if current_user.is_admin %}
+<a href="/admin">
+    <i class="fas fa-shield-alt"></i>
+    Admin Panel
+</a>
 
-    <a href="/admin">
-        <i class="fas fa-shield-alt"></i>
-        Admin Panel
-    </a>
+{% endif %}
 
-    {% endif %}
+<a href="/logout">
+    <i class="fas fa-right-from-bracket"></i>
+    Logout
+</a>
 
-    <a href="/logout">
-        <i class="fas fa-right-from-bracket"></i>
-        Logout
-    </a>
+{% endif %}
+
+</div>
 
 </div>
 

@@ -1148,6 +1148,13 @@ def job_applicants(job_id):
         CandidateUser=CandidateUser
     )
 
+@app.route('/candidate-logout')
+def candidate_logout():
+
+    session.pop('candidate_id', None)
+
+    return redirect('/candidate-login')
+
 @app.route('/referrals')
 @login_required
 def referrals():
