@@ -1,63 +1,140 @@
-<h2>Candidate Profile</h2>
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="candidate-card"><h2 class="mb-4">
+    Candidate Profile
+</h2>
 
 <form method="POST">
 
-<input type="text"
-name="city"
-placeholder="City"
-value="{{ candidate.city or '' }}">
+    <div class="mb-3">
 
-<br><br>
+        <label class="form-label">
+            City
+        </label>
 
-<input type="text"
-name="designation"
-placeholder="Designation"
-value="{{ candidate.designation or '' }}">
+        <input
+            type="text"
+            name="city"
+            class="form-control"
+            placeholder="City"
+            value="{{ candidate.city or '' }}">
 
-<br><br>
+    </div>
 
-<input type="text"
-name="experience"
-placeholder="Experience"
-value="{{ candidate.experience or '' }}">
+    <div class="mb-3">
 
-<br><br>
+        <label class="form-label">
+            Designation
+        </label>
 
-<input type="text"
-name="current_company"
-placeholder="Current Company"
-value="{{ candidate.current_company or '' }}">
+        <input
+            type="text"
+            name="designation"
+            class="form-control"
+            placeholder="Designation"
+            value="{{ candidate.designation or '' }}">
 
-<br><br>
+    </div>
 
-<input type="text"
-name="current_ctc"
-placeholder="Current CTC"
-value="{{ candidate.current_ctc or '' }}">
+    <div class="mb-3">
 
-<br><br>
+        <label class="form-label">
+            Experience
+        </label>
 
-<input type="text"
-name="expected_ctc"
-placeholder="Expected CTC"
-value="{{ candidate.expected_ctc or '' }}">
+        <input
+            type="text"
+            name="experience"
+            class="form-control"
+            placeholder="Experience"
+            value="{{ candidate.experience or '' }}">
 
-<br><br>
+    </div>
 
-<textarea
-name="skills"
-placeholder="Skills">{{ candidate.skills or '' }}</textarea>
+    <div class="mb-3">
 
-<br><br>
+        <label class="form-label">
+            Current Company
+        </label>
 
-<textarea
-name="about_me"
-placeholder="About Me">{{ candidate.about_me or '' }}</textarea>
+        <input
+            type="text"
+            name="current_company"
+            class="form-control"
+            placeholder="Current Company"
+            value="{{ candidate.current_company or '' }}">
 
-<br><br>
+    </div>
 
-<button type="submit">
-Save Profile
-</button>
+    <div class="mb-3">
+
+        <label class="form-label">
+            Current CTC
+        </label>
+
+        <input
+            type="text"
+            name="current_ctc"
+            class="form-control"
+            placeholder="Current CTC"
+            value="{{ candidate.current_ctc or '' }}">
+
+    </div>
+
+    <div class="mb-3">
+
+        <label class="form-label">
+            Expected CTC
+        </label>
+
+        <input
+            type="text"
+            name="expected_ctc"
+            class="form-control"
+            placeholder="Expected CTC"
+            value="{{ candidate.expected_ctc or '' }}">
+
+    </div>
+
+    <div class="mb-3">
+
+        <label class="form-label">
+            Skills
+        </label>
+
+        <textarea
+            name="skills"
+            class="form-control"
+            rows="4"
+            placeholder="Python, Excel, Recruitment, Sales, Marketing...">{{ candidate.skills or '' }}</textarea>
+
+    </div>
+
+    <div class="mb-3">
+
+        <label class="form-label">
+            About Me
+        </label>
+
+        <textarea
+            name="about_me"
+            class="form-control"
+            rows="5"
+            placeholder="Write a short introduction about yourself...">{{ candidate.about_me or '' }}</textarea>
+
+    </div>
+
+    <button
+        type="submit"
+        class="btn btn-primary btn-lg">
+
+        <i class="fas fa-save"></i>
+        Save Profile
+
+    </button>
 
 </form>
+
+</div>{% endblock %}
