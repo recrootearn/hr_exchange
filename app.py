@@ -1148,7 +1148,9 @@ def post_job():
 @login_required
 def my_jobs():
 
-    jobs = JobPost.query.filter_by(user_id=current_user.id).order_by(
+    jobs = JobPost.query.filter_by(
+        hr_id=current_user.id
+    ).order_by(
         JobPost.created_at.desc()
     ).all()
 
@@ -2122,7 +2124,6 @@ def profile():
         followers_count=followers_count,
         active_jobs_count=active_jobs_count
     )
-
 
 # =========================
 # CREDIT HISTORY
