@@ -2102,27 +2102,19 @@ def export_unlocked():
 def profile():
 
     jobs = JobPost.query.filter_by(
-        hr_id=current_user.id
+        user_id=current_user.id
     ).order_by(
         JobPost.created_at.desc()
     ).all()
 
-    post_count = len(jobs)
-
-    followers_count = HRFollower.query.filter_by(
-        hr_id=current_user.id
-    ).count()
-
-    active_jobs_count = JobPost.query.filter_by(
-        hr_id=current_user.id
-    ).count()
+    follower_count = 0
+    following_count = 0
 
     return render_template(
         'profile.html',
         jobs=jobs,
-        post_count=post_count,
-        followers_count=followers_count,
-        active_jobs_count=active_jobs_count
+        follower_count=follower_count,
+        following_count=following_count
     )
 
 # =========================
