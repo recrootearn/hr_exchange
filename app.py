@@ -2102,7 +2102,7 @@ def export_unlocked():
 def profile():
 
     jobs = JobPost.query.filter_by(
-        user_id=current_user.id
+        hr_id=current_user.id
     ).order_by(
         JobPost.created_at.desc()
     ).all()
