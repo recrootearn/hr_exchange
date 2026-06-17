@@ -79,6 +79,16 @@ class User(UserMixin, db.Model):
     failed_logins = db.Column(db.Integer, default=0)
     referral_code = db.Column(db.String(20), unique=True)
 
+    about_company = db.Column(db.Text)
+
+    company_logo = db.Column(db.String(300))
+
+    company_city = db.Column(db.String(100))
+
+    company_website = db.Column(db.String(300))
+
+    company_photos = db.Column(db.Text)
+
     referred_by = db.Column(db.String(20))
 
     total_referrals = db.Column(db.Integer, default=0)
@@ -224,6 +234,17 @@ class CandidateReview(db.Model):
         db.DateTime,
         default=datetime.utcnow
     )
+
+class HRFollower(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    hr_id = db.Column(db.Integer)
+
+    candidate_id = db.Column(db.Integer)
 
 class AdminLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -1029,6 +1050,23 @@ def candidate_profile():
     return render_template(
         'candidate_profile.html',
         candidate=candidate
+    )
+
+@app.route('/hr/<int:id>')
+def hr_profile(id):
+
+    hr = User.query.get_or_404(id)
+
+    jobs = JobPost.query.filter_by(
+        hr_id=hr.id
+    ).order_by(
+        JobPost.created_at.desc()
+    ).all()
+
+    return render_template(
+        'hr_profile.html',
+        hr=hr,
+        jobs=jobs
     )
 
 @app.route('/post-job', methods=['GET','POST'])

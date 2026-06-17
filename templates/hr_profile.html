@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="candidate-card">
+
+    <h2>
+        {{ hr.company }}
+    </h2>
+
+    <p>
+        {{ hr.company_city or '' }}
+    </p>
+
+    <p>
+        {{ hr.about_company or '' }}
+    </p>
+
+</div>
+
+<h3 class="mt-4">
+    Active Jobs
+</h3>
+
+{% for job in jobs %}
+
+<div class="candidate-card">
+
+    <h4>
+        {{ job.job_title }}
+    </h4>
+
+    <p>
+        {{ job.location }}
+    </p>
+
+    <p>
+        ₹ {{ job.salary }}
+    </p>
+
+</div>
+
+{% endfor %}
+
+{% endblock %}
