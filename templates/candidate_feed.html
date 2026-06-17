@@ -1,31 +1,79 @@
-<h2>Latest Jobs</h2>
+{% extends "base.html" %}
 
-{% for job in jobs %}
+{% block content %}
 
-<div style="border:1px solid #ddd;padding:15px;margin:15px;">
+<h2 class="mb-4">
+    Latest Jobs
+</h2>{% for job in jobs %}
 
-    <h3>{{ job.job_title }}</h3>
+<div class="candidate-card"><div class="candidate-top">
 
-    <p>{{ job.company_name }}</p>
+    <div>
 
-    <p>{{ job.location }}</p>
+        <div class="candidate-name">
+            {{ job.job_title }}
+        </div>
 
-    <p>₹ {{ job.salary }}</p>
+        <div class="candidate-role">
+            {{ job.company_name }}
+        </div>
 
-    <p>{{ job.description }}</p>
+    </div>
 
-    {% if job.image %}
-        <img
+    <span class="badge bg-success badge-custom">
+        ₹ {{ job.salary }}
+    </span>
+
+</div>
+
+{% if job.image %}
+
+<div class="mb-3">
+
+    <img
         src="/static/uploads/{{ job.image }}"
-        width="300">
-    {% endif %}
+        class="img-fluid rounded"
+        style="max-height:300px; width:100%; object-fit:cover;">
 
-    <br><br>
+</div>
 
-    <a href="/apply-job/{{ job.id }}">
-        Apply
+{% endif %}
+
+<div class="candidate-details">
+
+    <div class="detail-pill">
+        <i class="fas fa-location-dot"></i>
+        {{ job.location }}
+    </div>
+
+</div>
+
+<div class="mt-3">
+
+    <p>
+        {{ job.description }}
+    </p>
+
+</div>
+
+<div class="action-buttons">
+
+    <a href="/apply-job/{{ job.id }}"
+       class="btn btn-primary">
+
+        <i class="fas fa-paper-plane"></i>
+        Apply Now
+
     </a>
 
 </div>
 
-{% endfor %}
+</div>{% else %}
+
+<div class="stats-card text-center"><h4>No Jobs Available</h4>
+
+<p>Please check again later.</p>
+
+</div>{% endfor %}
+
+{% endblock %}
