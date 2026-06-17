@@ -1228,6 +1228,50 @@ def applied_jobs():
         JobPost=JobPost
     )
 
+@app.route('/feed')
+@login_required
+def feed():
+
+    jobs = JobPost.query.order_by(
+        JobPost.created_at.desc()
+    ).all()
+
+    return render_template(
+        'feed.html',
+        jobs=jobs
+    )
+
+@app.route('/my-applicants')
+@login_required
+def my_applicants():
+
+    jobs = JobPost.query.filter_by(
+        hr_id=current_user.id
+    ).all()
+
+    return render_template(
+        'my_applicants.html',
+        jobs=jobs,
+        JobApplication=JobApplication,
+        CandidateUser=CandidateUser
+    )
+
+@app.route('/edit-company-profile')
+@login_required
+def edit_company_profile():
+
+    return render_template(
+        'edit_company_profile.html'
+    )
+
+@app.route('/followers')
+@login_required
+def followers():
+
+    return render_template(
+        'followers.html'
+    )
+
 @app.route('/candidate-logout')
 def candidate_logout():
 
