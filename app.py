@@ -1091,6 +1091,20 @@ def apply_job(job_id):
 
     return redirect('/candidate-feed')
 
+@app.route('/job-applicants/<int:job_id>')
+@login_required
+def job_applicants(job_id):
+
+    applications = JobApplication.query.filter_by(
+        job_id=job_id
+    ).all()
+
+    return render_template(
+        'job_applicants.html',
+        applications=applications,
+        CandidateUser=CandidateUser
+    )
+
 @app.route('/referrals')
 @login_required
 def referrals():

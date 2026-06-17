@@ -1,0 +1,21 @@
+<h2>Applicants</h2>
+
+{% for app in applications %}
+
+{% set candidate = CandidateUser.query.get(app.candidate_id) %}
+
+<div style="border:1px solid #ddd;padding:15px;margin:15px;">
+
+    <h3>{{ candidate.full_name }}</h3>
+
+    <p>{{ candidate.mobile }}</p>
+
+    <p>{{ candidate.email }}</p>
+
+    <p>{{ candidate.city }}</p>
+
+    <p>{{ candidate.experience }}</p>
+
+</div>
+
+{% endfor %}
