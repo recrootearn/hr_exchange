@@ -120,6 +120,12 @@ class CandidateUser(UserMixin, db.Model):
 
     resume_file = db.Column(db.String(300))
 
+    designation = db.Column(db.String(200))
+
+    skills = db.Column(db.Text)
+
+    about_me = db.Column(db.Text)
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
@@ -985,6 +991,43 @@ def candidate_dashboard():
 
     return render_template(
         'candidate_dashboard.html',
+        candidate=candidate
+    )
+
+@app.route('/candidate-profile', methods=['GET','POST'])
+def candidate_profile():
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    candidate = CandidateUser.query.get(
+        session['candidate_id']
+    )
+
+    if request.method == 'POST':
+
+        candidate.city = request.form['city']
+
+        candidate.designation = request.form['designation']
+
+        candidate.experience = request.form['experience']
+
+        candidate.current_company = request.form['current_company']
+
+        candidate.current_ctc = request.form['current_ctc']
+
+        candidate.expected_ctc = request.form['expected_ctc']
+
+        candidate.skills = request.form['skills']
+
+        candidate.about_me = request.form['about_me']
+
+        db.session.commit()
+
+        flash("Profile Updated")
+
+    return render_template(
+        'candidate_profile.html',
         candidate=candidate
     )
 

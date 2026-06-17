@@ -1,0 +1,63 @@
+<h2>Candidate Profile</h2>
+
+<form method="POST">
+
+<input type="text"
+name="city"
+placeholder="City"
+value="{{ candidate.city or '' }}">
+
+<br><br>
+
+<input type="text"
+name="designation"
+placeholder="Designation"
+value="{{ candidate.designation or '' }}">
+
+<br><br>
+
+<input type="text"
+name="experience"
+placeholder="Experience"
+value="{{ candidate.experience or '' }}">
+
+<br><br>
+
+<input type="text"
+name="current_company"
+placeholder="Current Company"
+value="{{ candidate.current_company or '' }}">
+
+<br><br>
+
+<input type="text"
+name="current_ctc"
+placeholder="Current CTC"
+value="{{ candidate.current_ctc or '' }}">
+
+<br><br>
+
+<input type="text"
+name="expected_ctc"
+placeholder="Expected CTC"
+value="{{ candidate.expected_ctc or '' }}">
+
+<br><br>
+
+<textarea
+name="skills"
+placeholder="Skills">{{ candidate.skills or '' }}</textarea>
+
+<br><br>
+
+<textarea
+name="about_me"
+placeholder="About Me">{{ candidate.about_me or '' }}</textarea>
+
+<br><br>
+
+<button type="submit">
+Save Profile
+</button>
+
+</form>
