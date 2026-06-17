@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Candidate Dashboard</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial;
+    background:#f5f7fb;
+}
+
+.sidebar{
+    width:250px;
+    height:100vh;
+    position:fixed;
+    left:0;
+    top:0;
+
+    background:linear-gradient(
+        180deg,
+        #0057b8,
+        #0074e8,
+        #39d11f
+    );
+
+    color:white;
+}
+
+.logo{
+    padding:25px;
+    text-align:center;
+    font-size:28px;
+    font-weight:bold;
+}
+
+.menu a{
+    display:block;
+    color:white;
+    text-decoration:none;
+    padding:18px 25px;
+}
+
+.menu a:hover{
+    background:rgba(255,255,255,.15);
+}
+
+.content{
+    margin-left:250px;
+    padding:30px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <div class="logo">
+        RECROOTEARN
+    </div>
+
+    <div class="menu">
+
+        <a href="#">🏠 Feed</a>
+
+        <a href="#">📄 Applied Jobs</a>
+
+        <a href="#">👤 Profile</a>
+
+        <a href="/candidate-logout">🚪 Logout</a>
+
+    </div>
+
+</div>
+
+<div class="content">
+
+    <div class="card">
+
+        <h2>
+            Welcome {{ candidate.full_name }}
+        </h2>
+
+        <p>
+            Candidate Dashboard
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>

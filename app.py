@@ -947,7 +947,10 @@ def candidate_dashboard():
         session['candidate_id']
     )
 
-    return f"Welcome {candidate.full_name}"
+    return render_template(
+        'candidate_dashboard.html',
+        candidate=candidate
+    )
 
 @app.route('/referrals')
 @login_required
