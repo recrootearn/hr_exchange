@@ -4,43 +4,60 @@
 
 <div class="candidate-card">
 
-    <!-- TOP ACTIONS -->
+    <!-- TOP BUTTONS -->
 
     <div class="d-flex justify-content-between mb-4">
 
         <a href="/post-job" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Post Job
+            + Post Job
         </a>
 
-        <a href="/settings" class="btn btn-light">
-            <i class="fas fa-bars"></i>
+        <a href="/edit-profile" class="btn btn-outline-primary">
+            Edit Profile
         </a>
 
     </div>
 
-    <!-- PROFILE HEADER -->
+    <!-- PROFILE PHOTO -->
 
     <div class="text-center">
 
+        {% if current_user.profile_photo %}
+
         <img
         src="/static/uploads/{{ current_user.profile_photo }}"
-        onerror="this.src='https://via.placeholder.com/150'"
         style="
         width:140px;
         height:140px;
         border-radius:50%;
         object-fit:cover;
-        border:5px solid #2563eb;
+        border:4px solid #2563eb;
         ">
+
+        {% else %}
+
+        <div style="
+        width:140px;
+        height:140px;
+        border-radius:50%;
+        background:#e5e7eb;
+        margin:auto;
+        border:4px solid #2563eb;
+        ">
+        </div>
+
+        {% endif %}
 
     </div>
 
+    <!-- NAME -->
+
     <div class="text-center mt-3">
 
-        <h3 style="font-weight:700;">
+        <h2>
             {{ current_user.first_name }}
             {{ current_user.last_name }}
-        </h3>
+        </h2>
 
         <h5 class="text-muted">
             {{ current_user.company }}
@@ -48,13 +65,13 @@
 
     </div>
 
-    <!-- INSTAGRAM STATS -->
+    <!-- INSTAGRAM COUNTERS -->
 
     <div class="row text-center mt-4">
 
         <div class="col-4">
 
-            <h2>{{ post_count }}</h2>
+            <h3>{{ jobs|length }}</h3>
 
             <p>Posts</p>
 
@@ -62,7 +79,7 @@
 
         <div class="col-4">
 
-            <h2>{{ followers_count }}</h2>
+            <h3>0</h3>
 
             <p>Followers</p>
 
@@ -70,7 +87,7 @@
 
         <div class="col-4">
 
-            <h2>{{ following_count or 0 }}</h2>
+            <h3>0</h3>
 
             <p>Following</p>
 
@@ -88,19 +105,15 @@
 
         <br>
 
-        {{ current_user.about_company or "Add company description" }}
-
-        <br><br>
-
-        📍 {{ current_user.company_city or "City not added" }}
+        Recruitment Partner
 
         <br>
 
-        🌐 {{ current_user.company_website or "Website not added" }}
+        Hiring Across India
 
     </div>
 
-    <!-- BUTTONS -->
+    <!-- ACTION BUTTONS -->
 
     <div class="row mt-4">
 
@@ -117,8 +130,7 @@
 
         <div class="col-6">
 
-            <button
-            class="btn btn-outline-dark w-100">
+            <button class="btn btn-outline-dark w-100">
 
                 Share Profile
 
@@ -138,46 +150,31 @@
 
         <div class="col-4">
 
-            <a href="/profile"
-            class="text-decoration-none">
+            <i class="fas fa-th fa-lg"></i>
 
-                <i class="fas fa-th fa-lg"></i>
+            <br>
 
-                <br>
-
-                Posts
-
-            </a>
+            Posts
 
         </div>
 
         <div class="col-4">
 
-            <a href="/my-jobs"
-            class="text-decoration-none">
+            <i class="fas fa-briefcase fa-lg"></i>
 
-                <i class="fas fa-briefcase fa-lg"></i>
+            <br>
 
-                <br>
-
-                Jobs
-
-            </a>
+            Jobs
 
         </div>
 
         <div class="col-4">
 
-            <a href="/my-applicants"
-            class="text-decoration-none">
+            <i class="fas fa-users fa-lg"></i>
 
-                <i class="fas fa-users fa-lg"></i>
+            <br>
 
-                <br>
-
-                Applicants
-
-            </a>
+            Applicants
 
         </div>
 
@@ -185,53 +182,31 @@
 
 </div>
 
-<!-- POSTS SECTION -->
+<!-- POSTS -->
 
-<h4 class="mt-4 mb-3">
-    Recent Job Posts
+<h4 class="mt-4">
+    My Job Posts
 </h4>
-
-<div class="row">
 
 {% for job in jobs %}
 
-<div class="col-md-4 mb-3">
+<div class="candidate-card">
 
-    <div class="candidate-card">
+    <h5>{{ job.job_title }}</h5>
 
-        <h5>
-            {{ job.job_title }}
-        </h5>
+    <p>{{ job.location }}</p>
 
-        <p>
-            📍 {{ job.location }}
-        </p>
+    <p>₹ {{ job.salary }}</p>
 
-        <p>
-            ₹ {{ job.salary }}
-        </p>
+    <a href="/job-applicants/{{ job.id }}"
+    class="btn btn-primary">
 
-        <p>
-            {{ job.description[:120] }}
-        </p>
+        View Applicants
 
-        <div class="d-grid">
-
-            <a href="/job-applicants/{{ job.id }}"
-            class="btn btn-primary">
-
-                View Applicants
-
-            </a>
-
-        </div>
-
-    </div>
+    </a>
 
 </div>
 
 {% endfor %}
-
-</div>
 
 {% endblock %}
