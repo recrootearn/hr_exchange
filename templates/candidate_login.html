@@ -1,0 +1,771 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+body{
+    background:
+    linear-gradient(
+    135deg,
+    #0f172a,
+    #312e81,
+    #4c1d95
+    );
+
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+.mobile-bg{
+    display:none;
+}
+
+.mobile-bg span{
+    position:absolute;
+    border-radius:50%;
+    background:rgba(255,255,255,.12);
+}
+
+.mobile-bg span:nth-child(1){
+    width:220px;
+    height:220px;
+    top:-60px;
+    left:-80px;
+}
+
+.mobile-bg span:nth-child(2){
+    width:160px;
+    height:160px;
+    right:-40px;
+    top:200px;
+}
+
+.mobile-bg span:nth-child(3){
+    width:120px;
+    height:120px;
+    bottom:150px;
+    left:-40px;
+}
+
+.mobile-bg span:nth-child(4){
+    width:260px;
+    height:260px;
+    right:-100px;
+    bottom:-80px;
+}
+
+/* HIDE DESKTOP SIDEBAR */
+
+.sidebar{
+    display:none;
+}
+
+.topbar{
+    display:none;
+}
+
+.main{
+    margin-left:0 !important;
+}
+
+.content{
+    padding:0 !important;
+}
+
+/* WRAPPER */
+
+.login-wrapper{
+
+    width:100%;
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:10px;
+}
+
+/* LOGIN BOX */
+
+.login-box{
+
+    width:100%;
+
+    max-width:1180px;
+
+    min-height:92vh;
+
+    background:white;
+
+    border-radius:28px;
+
+    overflow:hidden;
+
+    display:flex;
+
+    box-shadow:
+    0 25px 60px rgba(0,0,0,0.35);
+}
+
+/* LEFT PANEL */
+
+.login-left{
+
+    width:50%;
+
+    background:
+    linear-gradient(
+    180deg,
+    #0057b8,
+    #0074e8,
+    #39d11f
+    );
+
+    padding:40px;
+
+    color:white;
+
+    position:relative;
+
+    overflow:hidden;
+}
+
+/* CIRCLES */
+
+.circle{
+    position:absolute;
+    border-radius:50%;
+    background:rgba(255,255,255,0.08);
+    animation:float 6s infinite ease-in-out;
+}
+
+.circle1{
+    width:180px;
+    height:180px;
+    top:-40px;
+    right:-40px;
+}
+
+.circle2{
+    width:100px;
+    height:100px;
+    bottom:50px;
+    left:-20px;
+}
+
+.circle3{
+    width:70px;
+    height:70px;
+    top:280px;
+    right:90px;
+}
+
+/* LOGO */
+
+.logo{
+    margin-bottom:20px;
+}
+
+.logo img{
+    width:280px;
+    height:auto;
+}
+
+.logo span{
+    color:#c084fc;
+}
+
+.logo-sub{
+    color:#ddd6fe;
+    margin-bottom:35px;
+    font-size:14px;
+}
+
+/* TEXT */
+
+.big-heading{
+    font-size:42px;
+    font-weight:900;
+    line-height:1.2;
+    margin-bottom:20px;
+}
+
+.big-heading span{
+    color:#c084fc;
+}
+
+.left-text{
+    color:#e5e7eb;
+    font-size:16px;
+    line-height:1.7;
+    margin-bottom:25px;
+}
+
+/* FEATURES */
+
+.feature-box{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:18px;
+    padding:14px;
+    border-radius:16px;
+    background:rgba(255,255,255,0.08);
+    transition:0.3s;
+}
+
+.feature-box:hover{
+    transform:translateX(5px);
+}
+
+.feature-icon{
+    width:50px;
+    height:50px;
+    border-radius:14px;
+    background:rgba(255,255,255,0.12);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:20px;
+}
+
+/* RIGHT */
+
+.login-right{
+    width:50%;
+    padding:60px;
+    background:white;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* TITLE */
+
+.form-title{
+    font-size:42px;
+    font-weight:900;
+    margin-bottom:5px;
+}
+
+.form-title span{
+    color:#0074e8;
+}
+
+.form-sub{
+    color:#6b7280;
+    margin-bottom:28px;
+    font-size:16px;
+}
+
+/* INPUT */
+
+.input-group-custom{
+    margin-bottom:14px;
+}
+
+.input-label{
+    font-weight:700;
+    margin-bottom:10px;
+    font-size:14px;
+}
+
+.input-box{
+    position:relative;
+}
+
+.input-box i{
+    position:absolute;
+    left:18px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#6b7280;
+}
+
+.input-box input{
+
+    width:100%;
+
+    height:48px;
+
+    border-radius:16px;
+
+    border:2px solid #e5e7eb;
+
+    padding-left:55px;
+
+    font-size:16px;
+
+    transition:0.3s;
+}
+
+.input-box input:focus{
+
+    border-color:#0074e8;
+
+    box-shadow:
+    0 0 0 4px rgba(124,58,237,0.15);
+
+    outline:none;
+}
+
+/* BUTTON */
+
+.login-btn{
+
+    width:100%;
+
+    height:52px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:
+    linear-gradient(
+    135deg,
+    #0057b8,
+    #0074e8
+    );
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:800;
+
+    transition:0.3s;
+
+    margin-top:8px;
+}
+
+.login-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 15px 30px rgba(124,58,232,0.35);
+}
+
+/* LINKS */
+
+.login-links{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-top:18px;
+}
+
+.login-links a{
+
+    text-decoration:none;
+
+    font-weight:700;
+
+    color:#0d63c9;
+
+    font-size:14px;
+}
+
+.bottom-text{
+
+    text-align:center;
+
+    margin-top:25px;
+
+    color:#9ca3af;
+
+    font-size:13px;
+}
+
+/* ANIMATION */
+
+@keyframes float{
+
+    0%{
+        transform:translateY(0px);
+    }
+
+    50%{
+        transform:translateY(-15px);
+    }
+
+    100%{
+        transform:translateY(0px);
+    }
+
+}
+
+.mobile-logo{
+    display:block;
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.mobile-logo img{
+    width:220px;
+    max-width:100%;
+    height:auto;
+}
+
+.mobile-tagline{
+    text-align:center;
+    font-size:15px;
+    color:#6b7280;
+    font-weight:600;
+    margin-bottom:25px;
+}
+
+.mobile-card{
+    width:100%;
+    max-width:500px;
+}
+
+/* MOBILE */
+
+@media(max-width:992px){
+
+    html,
+    body{
+        margin:0;
+        padding:0;
+        min-height:100vh;
+        overflow-x:hidden;
+        background:linear-gradient(
+            135deg,
+            #0057b8,
+            #0074e8,
+            #39d11f
+        );
+    }
+
+.mobile-bg{
+    display:block;
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    z-index:-1;
+}
+
+    /* Hide desktop section */
+
+    .login-left{
+        display:none !important;
+    }
+
+    /* Wrapper */
+
+    .login-wrapper{
+        width:100%;
+        min-height:100vh;
+        padding:10px;
+        overflow:hidden;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:transparent;
+    }
+
+    /* Remove desktop white container */
+
+    .login-box{
+        width:100%;
+        min-height:auto;
+        background:transparent;
+        border-radius:0;
+        box-shadow:none;
+        display:block;
+        overflow:visible;
+    }
+
+    /* Login area */
+
+    .login-right{
+    width:100% !important;
+    padding:0 !important;
+    background:transparent !important;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+    /* Floating card */
+
+    .mobile-card{
+    width:calc(100vw - 20px);
+    max-width:420px;
+    background:white;
+    border-radius:28px;
+    padding:22px;
+    box-sizing:border-box;
+}
+
+    /* Logo */
+
+    .mobile-logo{
+    display:block;
+    text-align:center;
+    margin-bottom:10px;
+}
+
+    /* Titles */
+
+    .form-title{
+        text-align:center;
+        font-size:26px;
+        font-weight:900;
+        margin-bottom:8px;
+    }
+
+    .form-sub{
+    margin-bottom:10px;
+}
+
+    /* Inputs */
+
+    .input-label{
+        font-size:14px;
+        font-weight:700;
+    }
+
+    .input-box input{
+        height:56px;
+        border:1px solid #d1d5db;
+        background:#fafafa;
+        border-radius:14px;
+        font-size:15px;
+    }
+
+    /* Button */
+
+    .login-btn{
+    width:100%;
+    height:52px !important;
+    background:#0d63c9 !important;
+    border:none !important;
+    border-radius:14px;
+    color:#fff !important;
+    font-size:18px;
+    font-weight:700;
+    box-shadow:none !important;
+}
+
+    /* Links */
+
+    .login-links{
+        gap:15px;
+        margin-top:18px;
+        display:flex;
+        justify-content:space-between;
+    }
+
+    .login-links a{
+        white-space:nowrap;
+        color:#0d63c9;
+        font-size:14px;
+        font-weight:700;
+    }
+
+    .bottom-text{
+        display:none;
+}
+
+}
+</style>
+
+<div class="login-wrapper">
+
+<div class="mobile-bg">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
+
+    <div class="login-box">
+
+        <!-- LEFT -->
+
+        <div class="login-left">
+
+            <div class="circle circle1"></div>
+            <div class="circle circle2"></div>
+            <div class="circle circle3"></div>
+
+            <div class="big-heading">
+
+                Find Talent.<br>
+
+                Close Opportunities.<br>
+
+                <span>Earn More.</span>
+
+            </div>
+
+            <div class="left-text">
+
+                RecrootEarn helps recruiters connect with the right candidates and grow their business.
+
+            </div>
+
+            <div class="feature-box">
+
+                <div class="feature-icon">
+
+                    <i class="fas fa-users"></i>
+
+                </div>
+
+                <div>
+
+                    <h6>Verified Candidates</h6>
+
+                    <small>Trusted recruiter network</small>
+
+                </div>
+
+            </div>
+
+            <div class="feature-box">
+
+                <div class="feature-icon">
+
+                    <i class="fas fa-briefcase"></i>
+
+                </div>
+
+                <div>
+
+                    <h6>Better Opportunities</h6>
+
+                    <small>High quality hiring leads</small>
+
+                </div>
+
+            </div>
+
+            <div class="feature-box">
+
+                <div class="feature-icon">
+
+                    <i class="fas fa-shield"></i>
+
+                </div>
+
+                <div>
+
+                    <h6>Secure Platform</h6>
+
+                    <small>Safe and reliable ecosystem</small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+
+        <div class="login-right">
+
+    <div class="mobile-card">
+
+        <div class="mobile-logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}">
+        </div>
+
+        <div class="mobile-tagline">
+            Recruit • Connect • Earn
+        </div>
+
+            <form method="POST">
+
+                <div class="input-group-custom">
+
+                    <div class="input-label">
+
+                        Username
+
+                    </div>
+
+                    <div class="input-box">
+
+                        <i class="fas fa-user"></i>
+
+                        <input
+                        type="text"
+                        name="username"
+                        placeholder="Enter username"
+                        required>
+
+                    </div>
+
+                </div>
+
+                <div class="input-group-custom">
+
+                    <div class="input-label">
+
+                        Password
+
+                    </div>
+
+                    <div class="input-box">
+
+                        <i class="fas fa-lock"></i>
+
+                        <input
+                        type="password"
+                        name="password"
+                        placeholder="Enter password"
+                        required>
+
+                    </div>
+
+                </div>
+
+                <button class="login-btn">
+
+                    Login
+
+                </button>
+
+            </form>
+
+            <div class="login-links">
+
+                <a href="/forgot-password">
+
+                    Forgot Password?
+
+                </a>
+
+                <a href="/register">
+
+                    Create Account
+
+                </a>
+
+            </div>
+
+            <div class="bottom-text">
+
+                Your data is 100% secure with us.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
