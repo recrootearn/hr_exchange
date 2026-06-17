@@ -237,14 +237,16 @@ class CandidateReview(db.Model):
 
 class HRFollower(db.Model):
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id = db.Column(db.Integer, primary_key=True)
 
     hr_id = db.Column(db.Integer)
 
     candidate_id = db.Column(db.Integer)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
 
 class AdminLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -1068,6 +1070,30 @@ def hr_profile(id):
         hr=hr,
         jobs=jobs
     )
+
+@app.route('/follow-hr/<int:hr_id>')
+def follow_hr(hr_id):
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    existing = HRFollower.query.filter_by(
+        hr_id=hr_id,
+        candidate_id=session['candidate_id']
+    ).first()
+
+    if not existing:
+
+        db.session.add(
+            HRFollower(
+                hr_id=hr_id,
+                candidate_id=session['candidate_id']
+            )
+        )
+
+        db.session.commit()
+
+    return redirect(request.referrer)
 
 @app.route('/post-job', methods=['GET','POST'])
 @login_required

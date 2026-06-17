@@ -9,37 +9,77 @@
     </h2>
 
     <p>
-        {{ hr.company_city or '' }}
+        📍 {{ hr.company_city or 'Location Not Added' }}
     </p>
 
     <p>
-        {{ hr.about_company or '' }}
+        {{ hr.about_company or 'No company description available.' }}
     </p>
+
+    <a href="/follow-hr/{{ hr.id }}"
+       class="btn btn-primary mt-3">
+
+        <i class="fas fa-user-plus"></i>
+        Follow Recruiter
+
+    </a>
 
 </div>
 
-<h3 class="mt-4">
+<h3 class="mt-4 mb-3">
     Active Jobs
 </h3>
 
-{% for job in jobs %}
+{% if jobs %}
+
+    {% for job in jobs %}
+
+    <div class="candidate-card">
+
+        <h4>
+            {{ job.job_title }}
+        </h4>
+
+        <p>
+            📍 {{ job.location }}
+        </p>
+
+        <p>
+            💰 ₹ {{ job.salary }}
+        </p>
+
+        <p>
+            {{ job.description }}
+        </p>
+
+        {% if job.image %}
+        <img
+            src="/static/uploads/{{ job.image }}"
+            class="img-fluid rounded mb-3"
+            style="max-height:250px;">
+        {% endif %}
+
+        <a href="/apply-job/{{ job.id }}"
+           class="btn btn-success">
+
+            Apply Job
+
+        </a>
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
 
 <div class="candidate-card">
 
-    <h4>
-        {{ job.job_title }}
-    </h4>
-
-    <p>
-        {{ job.location }}
-    </p>
-
-    <p>
-        ₹ {{ job.salary }}
-    </p>
+    <h5>
+        No Active Jobs Available
+    </h5>
 
 </div>
 
-{% endfor %}
+{% endif %}
 
 {% endblock %}
