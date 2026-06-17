@@ -1148,9 +1148,7 @@ def post_job():
 @login_required
 def my_jobs():
 
-    jobs = JobPost.query.filter_by(
-        hr_id=current_user.id
-    ).order_by(
+    jobs = JobPost.query.filter_by(user_id=current_user.id).order_by(
         JobPost.created_at.desc()
     ).all()
 
@@ -2101,8 +2099,28 @@ def export_unlocked():
 @login_required
 def profile():
 
+    jobs = JobPost.query.filter_by(
+        hr_id=current_user.id
+    ).order_by(
+        JobPost.created_at.desc()
+    ).all()
+
+    post_count = len(jobs)
+
+    followers_count = HRFollower.query.filter_by(
+        hr_id=current_user.id
+    ).count()
+
+    active_jobs_count = JobPost.query.filter_by(
+        hr_id=current_user.id
+    ).count()
+
     return render_template(
-        'profile.html'
+        'profile.html',
+        jobs=jobs,
+        post_count=post_count,
+        followers_count=followers_count,
+        active_jobs_count=active_jobs_count
     )
 
 
