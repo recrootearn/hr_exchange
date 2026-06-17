@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Job Feed</h2>
+
+{% for job in jobs %}
+
+<div class="candidate-card">
+
+    <h4>{{ job.job_title }}</h4>
+
+    <p>{{ job.company_name }}</p>
+
+    <p>{{ job.location }}</p>
+
+    <p>₹ {{ job.salary }}</p>
+
+</div>
+
+{% endfor %}
+
+{% endblock %}

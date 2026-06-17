@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="candidate-card">
+
+    <h2>Job Applicants</h2>
+
+    {% for applicant in applicants %}
+
+    <div class="candidate-card">
+
+        <h4>{{ applicant.full_name }}</h4>
+
+        <p>{{ applicant.city }}</p>
+
+        <p>{{ applicant.designation }}</p>
+
+        <p>{{ applicant.experience }}</p>
+
+    </div>
+
+    {% else %}
+
+    <p>No applicants yet.</p>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

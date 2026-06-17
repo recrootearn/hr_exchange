@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="candidate-card">
+
+<h2>Company Profile</h2>
+
+<form method="POST">
+
+    <input class="form-control mb-3"
+           name="company"
+           placeholder="Company Name"
+           value="{{ current_user.company or '' }}">
+
+    <input class="form-control mb-3"
+           name="company_city"
+           placeholder="Company City"
+           value="{{ current_user.company_city or '' }}">
+
+    <textarea class="form-control mb-3"
+              name="about_company"
+              placeholder="About Company">{{ current_user.about_company or '' }}</textarea>
+
+    <button class="btn btn-primary">
+        Save Profile
+    </button>
+
+</form>
+
+</div>
+
+{% endblock %}
