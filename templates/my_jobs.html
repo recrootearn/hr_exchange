@@ -1,0 +1,19 @@
+<h2>My Jobs</h2>
+
+{% for job in jobs %}
+
+<div>
+
+<h3>{{ job.job_title }}</h3>
+
+<p>{{ job.location }}</p>
+
+<p>{{ job.salary }}</p>
+
+<p>{{ job.description }}</p>
+
+</div>
+
+<hr>
+
+{% endfor %}

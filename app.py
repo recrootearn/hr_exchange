@@ -988,6 +988,70 @@ def candidate_dashboard():
         candidate=candidate
     )
 
+@app.route('/post-job', methods=['GET','POST'])
+@login_required
+def post_job():
+
+    if request.method == 'POST':
+
+        image_file = request.files.get('image')
+
+        image_name = ""
+
+        if image_file and image_file.filename:
+
+            image_name = secure_filename(
+                image_file.filename
+            )
+
+            image_file.save(
+                os.path.join(
+                    app.config['UPLOAD_FOLDER'],
+                    image_name
+                )
+            )
+
+        job = JobPost(
+
+            hr_id=current_user.id,
+
+            company_name=current_user.company,
+
+            job_title=request.form['job_title'],
+
+            location=request.form['location'],
+
+            salary=request.form['salary'],
+
+            description=request.form['description'],
+
+            image=image_name
+
+        )
+
+        db.session.add(job)
+
+        db.session.commit()
+
+        return redirect('/my-jobs')
+
+    return render_template('post_job.html')
+
+@app.route('/my-jobs')
+@login_required
+def my_jobs():
+
+    jobs = JobPost.query.filter_by(
+        hr_id=current_user.id
+    ).order_by(
+        JobPost.created_at.desc()
+    ).all()
+
+    return render_template(
+        'my_jobs.html',
+        jobs=jobs
+    )
+
 @app.route('/referrals')
 @login_required
 def referrals():
