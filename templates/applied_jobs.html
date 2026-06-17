@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    My Applied Jobs
+</h2>
+
+{% for application in applications %}
+
+{% set job = JobPost.query.get(application.job_id) %}
+
+<div class="candidate-card">
+
+    <h4>
+        {{ job.job_title }}
+    </h4>
+
+    <p>
+        {{ job.company_name }}
+    </p>
+
+    <p>
+        📍 {{ job.location }}
+    </p>
+
+    <p>
+        ₹ {{ job.salary }}
+    </p>
+
+</div>
+
+{% else %}
+
+<div class="stats-card">
+
+    <h4>No Applications Yet</h4>
+
+    <p>
+        Apply for jobs from the feed.
+    </p>
+
+</div>
+
+{% endfor %}
+
+{% endblock %}

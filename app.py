@@ -1148,6 +1148,22 @@ def job_applicants(job_id):
         CandidateUser=CandidateUser
     )
 
+@app.route('/applied-jobs')
+def applied_jobs():
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    applications = JobApplication.query.filter_by(
+        candidate_id=session['candidate_id']
+    ).all()
+
+    return render_template(
+        'applied_jobs.html',
+        applications=applications,
+        JobPost=JobPost
+    )
+
 @app.route('/candidate-logout')
 def candidate_logout():
 
