@@ -1052,6 +1052,45 @@ def my_jobs():
         jobs=jobs
     )
 
+@app.route('/candidate-feed')
+def candidate_feed():
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    jobs = JobPost.query.order_by(
+        JobPost.created_at.desc()
+    ).all()
+
+    return render_template(
+        'candidate_feed.html',
+        jobs=jobs
+    )
+
+@app.route('/apply-job/<int:job_id>')
+def apply_job(job_id):
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    existing = JobApplication.query.filter_by(
+        job_id=job_id,
+        candidate_id=session['candidate_id']
+    ).first()
+
+    if existing:
+        return "Already Applied"
+
+    application = JobApplication(
+        job_id=job_id,
+        candidate_id=session['candidate_id']
+    )
+
+    db.session.add(application)
+    db.session.commit()
+
+    return redirect('/candidate-feed')
+
 @app.route('/referrals')
 @login_required
 def referrals():

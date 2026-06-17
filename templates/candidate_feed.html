@@ -1,0 +1,31 @@
+<h2>Latest Jobs</h2>
+
+{% for job in jobs %}
+
+<div style="border:1px solid #ddd;padding:15px;margin:15px;">
+
+    <h3>{{ job.job_title }}</h3>
+
+    <p>{{ job.company_name }}</p>
+
+    <p>{{ job.location }}</p>
+
+    <p>₹ {{ job.salary }}</p>
+
+    <p>{{ job.description }}</p>
+
+    {% if job.image %}
+        <img
+        src="/static/uploads/{{ job.image }}"
+        width="300">
+    {% endif %}
+
+    <br><br>
+
+    <a href="/apply-job/{{ job.id }}">
+        Apply
+    </a>
+
+</div>
+
+{% endfor %}
