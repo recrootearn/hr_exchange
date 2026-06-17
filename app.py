@@ -125,6 +125,42 @@ class CandidateUser(UserMixin, db.Model):
         default=datetime.utcnow
     )
 
+class JobPost(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    hr_id = db.Column(db.Integer)
+
+    company_name = db.Column(db.String(200))
+
+    job_title = db.Column(db.String(200))
+
+    location = db.Column(db.String(200))
+
+    salary = db.Column(db.String(100))
+
+    description = db.Column(db.Text)
+
+    image = db.Column(db.String(300))
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+class JobApplication(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    job_id = db.Column(db.Integer)
+
+    candidate_id = db.Column(db.Integer)
+
+    applied_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
 class Candidate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
