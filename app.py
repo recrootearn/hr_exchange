@@ -2107,14 +2107,12 @@ def profile():
         JobPost.created_at.desc()
     ).all()
 
-    follower_count = 0
-    following_count = 0
-
     return render_template(
         'profile.html',
         jobs=jobs,
-        follower_count=follower_count,
-        following_count=following_count
+        posts_count=len(jobs),
+        followers_count=0,
+        following_count=0
     )
 
 # =========================
