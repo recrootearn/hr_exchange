@@ -2330,15 +2330,18 @@ def profile():
         JobPost.created_at.desc()
     ).all()
 
+    followers_count = Follow.query.filter_by(
+        followed_hr_id=current_user.id
+    ).count()
+
+    following_count = 0
+
     return render_template(
-    'profile.html',
-    jobs=jobs,
-    posts_count=len(jobs),
-    followers_count=followers_count,
-    following_count=0,
-    viewed_hr=hr,
-    is_company_view=True,
-    is_following=is_following
+        'profile.html',
+        jobs=jobs,
+        posts_count=len(jobs),
+        followers_count=followers_count,
+        following_count=following_count
     )
 
 # =========================
