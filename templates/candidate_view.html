@@ -5,7 +5,7 @@
 <style>
 
 .profile-box{
-    max-width:700px;
+    max-width:900px;
     margin:auto;
     background:#fff;
     border-radius:20px;
@@ -16,20 +16,21 @@
 .profile-top{
     display:flex;
     align-items:center;
-    gap:20px;
+    gap:25px;
 }
 
 .profile-pic{
-    width:110px;
-    height:110px;
+    width:120px;
+    height:120px;
     border-radius:50%;
     background:linear-gradient(135deg,#2563eb,#4f46e5);
     color:white;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:42px;
+    font-size:45px;
     font-weight:bold;
+    flex-shrink:0;
 }
 
 .profile-right{
@@ -39,17 +40,24 @@
 .profile-name{
     font-size:28px;
     font-weight:700;
+    color:#111827;
 }
 
-.profile-role{
+.profile-designation{
+    font-size:15px;
     color:#666;
-    font-size:16px;
+    margin-top:4px;
+}
+
+.profile-company{
+    font-size:14px;
+    color:#888;
 }
 
 .stats{
     display:flex;
-    gap:30px;
-    margin-top:15px;
+    gap:40px;
+    margin-top:18px;
 }
 
 .stats div{
@@ -59,17 +67,25 @@
 .stats strong{
     display:block;
     font-size:22px;
+    color:#111827;
 }
 
 .bio{
     margin-top:25px;
     line-height:1.8;
+    font-size:15px;
 }
 
 .action-buttons{
     display:flex;
     gap:10px;
     margin-top:25px;
+    flex-wrap:wrap;
+}
+
+.action-buttons .btn{
+    border-radius:12px;
+    font-weight:600;
 }
 
 @media(max-width:768px){
@@ -81,104 +97,117 @@
 
 .stats{
     justify-content:center;
+    gap:25px;
 }
 
 .action-buttons{
     flex-direction:column;
 }
 
+.action-buttons .btn{
+    width:100%;
 }
 
-</style>
+.profile-name{
+    font-size:24px;
+}
 
-<div class="profile-box">
+}
 
-    <div class="profile-top">
+</style><div class="profile-box"><div class="profile-top">
 
-        <div class="profile-pic">
-            {{ candidate.first_name[0] if candidate.first_name else "C" }}
-        </div>
-
-        <div class="profile-right">
-
-            <div class="profile-name">
-                {{ candidate.first_name }} {{ candidate.last_name }}
-            </div>
-
-            <div class="profile-role">
-                {{ candidate.designation or "Candidate" }}
-            </div>
-
-            <div class="stats">
-
-                <div>
-                    <strong>{{ followers_count }}</strong>
-                    Followers
-                </div>
-
-                <div>
-                    <strong>{{ candidate.experience or "0" }}</strong>
-                    Experience
-                </div>
-
-            </div>
-
-        </div>
-
+    <div class="profile-pic">
+        {{ candidate.first_name[0] if candidate.first_name else "C" }}
     </div>
 
-    <div class="bio">
+    <div class="profile-right">
 
-        <b>📍 City:</b>
-        {{ candidate.city or "Not Added" }}
+        <div class="profile-name">
+            {{ candidate.first_name }} {{ candidate.last_name }}
+        </div>
 
-        <br>
+        <div class="profile-designation">
+            {{ candidate.designation or "Candidate" }}
+        </div>
 
-        <b>💼 Company:</b>
-        {{ candidate.current_company or "Not Added" }}
+        <div class="profile-company">
+            {{ candidate.current_company or "" }}
+        </div>
 
-        <br>
+        <div class="stats">
 
-        <b>🎯 Expected CTC:</b>
-        {{ candidate.expected_ctc or "Not Added" }}
+            <div>
+                <strong>{{ followers_count }}</strong>
+                Followers
+            </div>
 
-        <br>
+            <div>
+                <strong>{{ following_count or 0 }}</strong>
+                Following
+            </div>
 
-        <b>🛠 Skills:</b>
-        {{ candidate.skills or "Not Added" }}
+            <div>
+                <strong>{{ candidate.experience or 0 }}</strong>
+                Years
+            </div>
 
-        <br>
-
-        <b>📝 About:</b>
-        {{ candidate.about_me or "Not Added" }}
-
-    </div>
-
-    <div class="action-buttons">
-
-        <a href="/follow-candidate/{{ candidate.id }}"
-        class="btn btn-primary">
-
-            Follow
-
-        </a>
-
-        <a href="tel:{{ candidate.mobile }}"
-        class="btn btn-success">
-
-            Call
-
-        </a>
-
-        <a href="https://wa.me/{{ candidate.mobile }}"
-        class="btn btn-success">
-
-            WhatsApp
-
-        </a>
+        </div>
 
     </div>
 
 </div>
 
-{% endblock %}
+<div class="bio">
+
+    📍 {{ candidate.city or "City Not Added" }}
+
+    <br>
+
+    💼 {{ candidate.current_company or "Company Not Added" }}
+
+    <br>
+
+    🎯 Expected CTC:
+    ₹{{ candidate.expected_ctc or "Not Added" }}
+
+    <br>
+
+    🛠 Skills:
+    {{ candidate.skills or "Not Added" }}
+
+    <br><br>
+
+    {{ candidate.about_me or "No description added yet." }}
+
+</div>
+
+<div class="action-buttons">
+
+    <a href="/follow-candidate/{{ candidate.id }}"
+    class="btn btn-primary">
+
+        Follow
+    </a>
+
+    <a href="tel:{{ candidate.mobile }}"
+    class="btn btn-success">
+
+        Call
+    </a>
+
+    <a href="https://wa.me/{{ candidate.mobile }}"
+    target="_blank"
+    class="btn btn-success">
+
+        WhatsApp
+    </a>
+
+    <a href="mailto:{{ candidate.email }}"
+    class="btn btn-outline-primary">
+
+        Email
+    </a>
+
+</div>
+
+</div>{% endblock %}
