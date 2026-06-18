@@ -1052,6 +1052,22 @@ def candidate_dashboard():
         candidate=candidate
     )
 
+@app.route('/candidate-support')
+def candidate_support():
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    return render_template('support.html')
+
+@app.route('/candidate-general-info')
+def candidate_general_info():
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    return render_template('general_info.html')
+
 @app.route('/candidate-profile')
 def candidate_profile():
 
