@@ -186,10 +186,14 @@
         <div class="d-flex gap-2 mt-3">
 
             <a href="/follow-hr/{{ hr.id }}"
-               class="btn btn-primary flex-fill">
+               class="btn {% if is_following %}btn-success{% else %}btn-primary{% endif %} flex-fill">
 
+            {% if is_following %}
+                ✓ Following
+            {% else %}
                 <i class="fas fa-user-plus"></i>
                 Follow
+            {% endif %}
 
             </a>
 
@@ -205,7 +209,7 @@
 
         {% for job in jobs %}
 
-        <a href="/feed/{{ job.id }}"
+        <a href="/candidate-feed?selected={{ job.id }}"
            class="post-item">
 
             {% if job.image %}

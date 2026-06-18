@@ -1214,11 +1214,24 @@ def company_profile(id):
         followed_hr_id=id
     ).count()
 
+    is_following = False
+
+    if 'candidate_id' in session:
+
+        existing_follow = Follow.query.filter_by(
+            follower_candidate_id=session['candidate_id'],
+            followed_hr_id=id
+        ).first()
+
+        if existing_follow:
+            is_following = True
+
     return render_template(
         'company_profile.html',
         hr=hr,
         jobs=jobs,
-        followers_count=followers_count
+        followers_count=followers_count,
+        is_following=is_following
     )
 
 @app.route('/candidate/<int:id>')
@@ -1240,7 +1253,7 @@ def view_candidates(id):
 @app.route('/follow-hr/<int:id>')
 def follow_hr(id):
 
-    if not session.get('candidate_id'):
+    if 'candidate_id' not in session:
         return redirect('/candidate-login')
 
     existing = Follow.query.filter_by(
@@ -1248,17 +1261,22 @@ def follow_hr(id):
         followed_hr_id=id
     ).first()
 
-    if not existing:
+    if existing:
 
-        follow = Follow(
-            follower_candidate_id=session['candidate_id'],
-            followed_hr_id=id
+        db.session.delete(existing)
+
+    else:
+
+        db.session.add(
+            Follow(
+                follower_candidate_id=session['candidate_id'],
+                followed_hr_id=id
+            )
         )
 
-        db.session.add(follow)
-        db.session.commit()
+    db.session.commit()
 
-    return redirect(request.referrer)
+    return redirect(f'/company/{id}')
 
 @app.route('/follow-candidate/<int:id>')
 @login_required
