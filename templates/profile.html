@@ -200,14 +200,23 @@
             🌐 {{ current_user.company_website }}
             {% endif %}
 
-        </div>
+        <div class="d-flex gap-2 mt-3">
 
-        <a href="/edit-profile"
-        class="btn btn-light edit-btn">
+    <a href="/edit-profile"
+    class="btn btn-light flex-fill">
 
-            Edit Profile
+        Edit Profile
 
-        </a>
+    </a>
+
+    <a href="/post-job"
+    class="btn btn-primary flex-fill">
+
+        + Post Job
+
+    </a>
+
+</div>
 
     </div>
 
@@ -222,7 +231,7 @@
 
         {% for job in jobs %}
 
-        <a href="/job-applicants/{{ job.id }}"
+        <a href="/post/{{ job.id }}"
         class="post-item">
 
             {% if job.image %}
