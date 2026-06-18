@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div style="max-width:700px;margin:auto;">
+
+{% for job in jobs %}
+
+<div id="post{{ job.id }}"
+class="candidate-card mb-4">
+
+    {% if job.image %}
+
+    <img
+    src="/static/uploads/{{ job.image }}"
+    style="
+    width:100%;
+    border-radius:12px;
+    ">
+
+    {% endif %}
+
+    <div class="p-3">
+
+        <h4>
+            {{ job.job_title }}
+        </h4>
+
+        <p>
+            📍 {{ job.location }}
+        </p>
+
+        <p>
+            ₹ {{ job.salary }}
+        </p>
+
+        <p>
+            {{ job.description }}
+        </p>
+
+        <a
+        href="/job-applicants/{{ job.id }}"
+        class="btn btn-primary">
+
+            View Applicants
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<script>
+
+window.onload = function(){
+
+    let target =
+    document.getElementById(
+        "post{{ selected_id }}"
+    );
+
+    if(target){
+
+        target.scrollIntoView({
+            behavior:'smooth',
+            block:'center'
+        });
+
+    }
+
+}
+
+</script>
+
+{% endblock %}
