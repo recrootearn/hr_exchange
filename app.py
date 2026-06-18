@@ -1052,13 +1052,41 @@ def candidate_dashboard():
         candidate=candidate
     )
 
-@app.route('/candidate-support')
+@app.route('/candidate-support', methods=['GET','POST'])
 def candidate_support():
 
     if 'candidate_id' not in session:
         return redirect('/candidate-login')
 
-    return render_template('support.html')
+    if request.method == 'POST':
+
+        ticket = SupportTicket(
+            user_id=session['candidate_id'],
+            subject=request.form['subject'],
+            message=request.form['message']
+        )
+
+        db.session.add(ticket)
+        db.session.commit()
+
+        flash('Support ticket submitted successfully')
+
+    page = request.args.get('page', 1, type=int)
+
+    tickets = SupportTicket.query.filter_by(
+        user_id=session['candidate_id']
+    ).order_by(
+        SupportTicket.created_at.desc()
+    ).paginate(
+        page=page,
+        per_page=10
+    )
+
+    return render_template(
+        'support.html',
+        tickets=tickets,
+        SupportReply=SupportReply
+    )
 
 @app.route('/candidate-general-info')
 def candidate_general_info():
