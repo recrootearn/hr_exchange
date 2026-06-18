@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.profile-box{
+    max-width:900px;
+    margin:auto;
+    background:#fff;
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.08);
+}
+
+.profile-top{
+    display:flex;
+    align-items:center;
+    gap:25px;
+}
+
+.profile-pic{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:45px;
+    font-weight:bold;
+    flex-shrink:0;
+}
+
+.profile-right{
+    flex:1;
+}
+
+.profile-name{
+    font-size:28px;
+    font-weight:700;
+    color:#111827;
+}
+
+.profile-designation{
+    font-size:15px;
+    color:#666;
+    margin-top:4px;
+}
+
+.profile-company{
+    font-size:14px;
+    color:#888;
+}
+
+.stats{
+    display:flex;
+    gap:40px;
+    margin-top:18px;
+}
+
+.stats div{
+    text-align:center;
+}
+
+.stats strong{
+    display:block;
+    font-size:22px;
+    color:#111827;
+}
+
+.bio{
+    margin-top:25px;
+    line-height:1.8;
+    font-size:15px;
+}
+
+.action-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:25px;
+    flex-wrap:wrap;
+}
+
+.action-buttons .btn{
+    border-radius:12px;
+    font-weight:600;
+}
+
+.section-title{
+    margin-top:30px;
+    padding-top:20px;
+    border-top:1px solid #e5e7eb;
+    font-weight:700;
+    letter-spacing:1px;
+    text-align:center;
+}
+
+@media(max-width:768px){
+
+.profile-top{
+    flex-direction:column;
+    text-align:center;
+}
+
+.stats{
+    justify-content:center;
+    gap:25px;
+}
+
+.action-buttons{
+    flex-direction:column;
+}
+
+.action-buttons .btn{
+    width:100%;
+}
+
+.profile-name{
+    font-size:24px;
+}
+
+}
+
+</style><div class="profile-box"><div class="profile-top">
+
+    <div class="profile-pic">
+        {{ candidate.first_name[0] if candidate.first_name else "C" }}
+    </div>
+
+    <div class="profile-right">
+
+        <div class="profile-name">
+            {{ candidate.first_name }}
+            {{ candidate.last_name }}
+        </div>
+
+        <div class="profile-designation">
+            {{ candidate.designation or "Candidate" }}
+        </div>
+
+        <div class="profile-company">
+            {{ candidate.current_company or "" }}
+        </div>
+
+        <div class="stats">
+
+            <div>
+                <strong>{{ followers_count }}</strong>
+                Followers
+            </div>
+
+            <div>
+                <strong>{{ following_count }}</strong>
+                Following
+            </div>
+
+            <div>
+                <strong>{{ candidate.experience or 0 }}</strong>
+                Years
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="bio">
+
+    📍 {{ candidate.city or "City Not Added" }}
+
+    <br>
+
+    💼 {{ candidate.current_company or "Company Not Added" }}
+
+    <br>
+
+    🎯 Expected CTC:
+    ₹{{ candidate.expected_ctc or "Not Added" }}
+
+    <br>
+
+    🛠 Skills:
+    {{ candidate.skills or "Not Added" }}
+
+    <br><br>
+
+    {{ candidate.about_me or "No description added yet." }}
+
+</div>
+
+<div class="action-buttons">
+
+    <a href="/edit-candidate-profile"
+    class="btn btn-primary">
+
+        <i class="fas fa-edit"></i>
+        Edit Profile
+
+    </a>
+
+</div>
+
+<div class="section-title">
+
+    PROFILE DETAILS
+
+</div>
+
+<div class="bio">
+
+    <b>Current CTC:</b>
+    ₹{{ candidate.current_ctc or "Not Added" }}
+
+    <br>
+
+    <b>Expected CTC:</b>
+    ₹{{ candidate.expected_ctc or "Not Added" }}
+
+    <br>
+
+    <b>Experience:</b>
+    {{ candidate.experience or "Not Added" }}
+
+    <br>
+
+    <b>Skills:</b>
+    {{ candidate.skills or "Not Added" }}
+
+</div>
+
+</div>{% endblock %}
