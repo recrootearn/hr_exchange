@@ -177,6 +177,34 @@ class JobApplication(db.Model):
         default=datetime.utcnow
     )
 
+class Follow(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    follower_candidate_id = db.Column(
+        db.Integer
+    )
+
+    follower_hr_id = db.Column(
+        db.Integer
+    )
+
+    followed_candidate_id = db.Column(
+        db.Integer
+    )
+
+    followed_hr_id = db.Column(
+        db.Integer
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
 class Candidate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
@@ -1071,26 +1099,84 @@ def hr_profile(id):
         jobs=jobs
     )
 
-@app.route('/follow-hr/<int:hr_id>')
-def follow_hr(hr_id):
+@app.route('/company/<int:id>')
+def company_profile(id):
 
-    if 'candidate_id' not in session:
+    hr = User.query.get_or_404(id)
+
+    jobs = JobPost.query.filter_by(
+        hr_id=id
+    ).order_by(
+        JobPost.created_at.desc()
+    ).all()
+
+    followers_count = Follow.query.filter_by(
+        followed_hr_id=id
+    ).count()
+
+    return render_template(
+        'company_profile.html',
+        hr=hr,
+        jobs=jobs,
+        followers_count=followers_count
+    )
+
+@app.route('/candidate/<int:id>')
+@login_required
+def candidate_profile(id):
+
+    candidate = CandidateUser.query.get_or_404(id)
+
+    followers_count = Follow.query.filter_by(
+        followed_candidate_id=id
+    ).count()
+
+    return render_template(
+        'candidate_view.html',
+        candidate=candidate,
+        followers_count=followers_count
+    )
+
+@app.route('/follow-hr/<int:id>')
+def follow_hr(id):
+
+    if not session.get('candidate_id'):
         return redirect('/candidate-login')
 
-    existing = HRFollower.query.filter_by(
-        hr_id=hr_id,
-        candidate_id=session['candidate_id']
+    existing = Follow.query.filter_by(
+        follower_candidate_id=session['candidate_id'],
+        followed_hr_id=id
     ).first()
 
     if not existing:
 
-        db.session.add(
-            HRFollower(
-                hr_id=hr_id,
-                candidate_id=session['candidate_id']
-            )
+        follow = Follow(
+            follower_candidate_id=session['candidate_id'],
+            followed_hr_id=id
         )
 
+        db.session.add(follow)
+        db.session.commit()
+
+    return redirect(request.referrer)
+
+@app.route('/follow-candidate/<int:id>')
+@login_required
+def follow_candidate(id):
+
+    existing = Follow.query.filter_by(
+        follower_hr_id=current_user.id,
+        followed_candidate_id=id
+    ).first()
+
+    if not existing:
+
+        follow = Follow(
+            follower_hr_id=current_user.id,
+            followed_candidate_id=id
+        )
+
+        db.session.add(follow)
         db.session.commit()
 
     return redirect(request.referrer)
