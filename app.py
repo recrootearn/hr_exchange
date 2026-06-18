@@ -1123,7 +1123,7 @@ def company_profile(id):
 
 @app.route('/candidate/<int:id>')
 @login_required
-def candidate_profile(id):
+def view_candidates(id):
 
     candidate = CandidateUser.query.get_or_404(id)
 
