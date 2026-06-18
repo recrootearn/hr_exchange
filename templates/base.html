@@ -394,6 +394,10 @@ body{
     display:none;
 }
 
+.candidate-desktop-menu{
+    display:block;
+}
+
 /* MOBILE RESPONSIVE */
 
 @media(max-width:768px){
@@ -405,6 +409,10 @@ body{
         top:0;
 
         transition:0.3s ease;
+    }
+
+    .candidate-desktop-menu{
+        display:none;
     }
 
     .sidebar.active{
@@ -647,17 +655,35 @@ body{
 
 <body class="page-transition">
 
-{% if current_user.is_authenticated %}
-
-<!-- MOBILE TOPBAR -->
+{% if session.get('candidate_id') %}
 
 <div class="mobile-topbar">
 
     <button class="menu-btn"
             onclick="toggleSidebar()">
-
         <i class="fas fa-bars"></i>
+    </button>
 
+    <div class="mobile-logo">
+        RecrootEarn
+    </div>
+
+    <div class="mobile-credit">
+        Candidate
+    </div>
+
+</div>
+
+<div class="mobile-overlay"
+     onclick="toggleSidebar()"></div>
+
+{% elif current_user.is_authenticated %}
+
+<div class="mobile-topbar">
+
+    <button class="menu-btn"
+            onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
     </button>
 
     <div class="mobile-logo">
@@ -669,8 +695,6 @@ body{
     </div>
 
 </div>
-
-<!-- OVERLAY -->
 
 <div class="mobile-overlay"
      onclick="toggleSidebar()"></div>
@@ -701,26 +725,38 @@ body{
 
 {% if session.get('candidate_id') %}
 
-<!-- CANDIDATE MENU -->
+<div class="candidate-desktop-menu">
 
-<a href="/candidate-dashboard">
-    <i class="fas fa-home"></i>
-    Dashboard
+    <a href="/candidate-dashboard">
+        <i class="fas fa-home"></i>
+        Dashboard
+    </a>
+
+    <a href="/candidate-feed">
+        <i class="fas fa-briefcase"></i>
+        Job Feed
+    </a>
+
+    <a href="/applied-jobs">
+        <i class="fas fa-file-alt"></i>
+        Applied Jobs
+    </a>
+
+    <a href="/candidate-profile">
+        <i class="fas fa-user"></i>
+        My Profile
+    </a>
+
+</div>
+
+<a href="/support">
+    <i class="fas fa-headset"></i>
+    Support
 </a>
 
-<a href="/candidate-feed">
-    <i class="fas fa-briefcase"></i>
-    Job Feed
-</a>
-
-<a href="/applied-jobs">
-    <i class="fas fa-file-alt"></i>
-    Applied Jobs
-</a>
-
-<a href="/candidate-profile">
-    <i class="fas fa-user"></i>
-    My Profile
+<a href="/general-info">
+    <i class="fas fa-circle-info"></i>
+    General Info
 </a>
 
 <a href="/candidate-logout">
@@ -834,7 +870,33 @@ body{
 
 <!-- MOBILE NAV -->
 
-{% if current_user.is_authenticated %}
+{% if session.get('candidate_id') %}
+
+<div class="bottom-nav">
+
+    <a href="/candidate-dashboard" class="nav-item">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
+
+    <a href="/candidate-feed" class="nav-item">
+        <i class="fas fa-briefcase"></i>
+        <span>Jobs</span>
+    </a>
+
+    <a href="/applied-jobs" class="nav-item">
+        <i class="fas fa-file-alt"></i>
+        <span>Applied</span>
+    </a>
+
+    <a href="/candidate-profile" class="nav-item">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+    </a>
+
+</div>
+
+{% elif current_user.is_authenticated %}
 
 <div class="bottom-nav">
 
