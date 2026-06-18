@@ -2,41 +2,119 @@
 
 {% block content %}
 
-<div style="max-width:700px;margin:auto;">
+<div style="max-width:700px;margin:auto;">{% for job in jobs %}
 
-{% for job in jobs %}
+<div id="post{{ job.id }}" class="candidate-card mb-4"><!-- HEADER -->
 
-<div id="post{{ job.id }}"
-class="candidate-card mb-4">
+<div style="
+display:flex;
+align-items:center;
+gap:12px;
+padding:15px;
+">
 
-    {% if job.image %}
-
-    <img
-    src="/static/uploads/{{ job.image }}"
-    style="
-    width:100%;
-    border-radius:12px;
+    <div style="
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    font-size:20px;
     ">
 
-    {% endif %}
+        {{ current_user.first_name[:1] }}
 
-    <div class="p-3">
+    </div>
 
-        <h4>
-            {{ job.job_title }}
-        </h4>
+    <div>
 
-        <p>
-            📍 {{ job.location }}
-        </p>
+        <div style="
+        font-weight:700;
+        font-size:16px;
+        ">
+            {{ current_user.first_name }}
+        </div>
 
-        <p>
-            ₹ {{ job.salary }}
-        </p>
+        <div style="
+        color:#6b7280;
+        font-size:13px;
+        ">
+            {{ current_user.company }}
+            •
+            {{ job.location }}
+        </div>
 
-        <p>
-            {{ job.description }}
-        </p>
+    </div>
+
+</div>
+
+<!-- IMAGE -->
+
+{% if job.image %}
+
+<img
+src="/static/uploads/{{ job.image }}"
+class="feed-image">
+
+{% endif %}
+
+<!-- CONTENT -->
+
+<div class="p-3">
+
+    <h5 style="font-weight:700;">
+        {{ job.job_title }}
+    </h5>
+
+    <div style="
+    color:#16a34a;
+    font-weight:700;
+    margin-bottom:10px;
+    ">
+        ₹ {{ job.salary }}
+    </div>
+
+    <!-- DESCRIPTION -->
+
+    <p style="margin-bottom:12px;">
+
+        {{ job.description[:120] }}
+
+        {% if job.description|length > 120 %}
+
+        <span id="dots{{ job.id }}">
+            ...
+        </span>
+
+        <span
+        id="more{{ job.id }}"
+        style="display:none;">
+
+            {{ job.description[120:] }}
+
+        </span>
+
+        <a href="#"
+           onclick="toggleText({{ job.id }});return false;">
+
+            See More
+
+        </a>
+
+        {% endif %}
+
+    </p>
+
+    <!-- ACTION BUTTONS -->
+
+    <div style="
+    display:flex;
+    gap:10px;
+    ">
 
         <a
         href="/job-applicants/{{ job.id }}"
@@ -46,15 +124,65 @@ class="candidate-card mb-4">
 
         </a>
 
+        <a
+        href="/edit-job/{{ job.id }}"
+        class="btn btn-outline-dark">
+
+            Edit
+
+        </a>
+
     </div>
 
 </div>
 
-{% endfor %}
+</div>{% endfor %}
 
-</div>
+</div><style>
 
-<script>
+.feed-image{
+
+    width:100%;
+    height:320px;
+
+    object-fit:cover;
+
+    border-top:1px solid #eee;
+    border-bottom:1px solid #eee;
+}
+
+.candidate-card{
+
+    overflow:hidden;
+}
+
+</style><script>
+
+function toggleText(id){
+
+    let more =
+    document.getElementById(
+        "more"+id
+    );
+
+    let dots =
+    document.getElementById(
+        "dots"+id
+    );
+
+    if(more.style.display==="none"){
+
+        more.style.display="inline";
+
+        dots.style.display="none";
+
+    }else{
+
+        more.style.display="none";
+
+        dots.style.display="inline";
+    }
+}
 
 window.onload = function(){
 
@@ -74,6 +202,4 @@ window.onload = function(){
 
 }
 
-</script>
-
-{% endblock %}
+</script>{% endblock %}
