@@ -1048,27 +1048,27 @@ def candidate_dashboard():
 @app.route('/candidate-profile')
 def candidate_profile():
 
-if 'candidate_id' not in session:
-    return redirect('/candidate-login')
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
 
-candidate = CandidateUser.query.get(
-    session['candidate_id']
-)
+    candidate = CandidateUser.query.get(
+        session['candidate_id']
+    )
 
-followers_count = Follow.query.filter_by(
-    followed_candidate_id=candidate.id
-).count()
+    followers_count = Follow.query.filter_by(
+        followed_candidate_id=candidate.id
+    ).count()
 
-following_count = Follow.query.filter_by(
-    follower_candidate_id=candidate.id
-).count()
+    following_count = Follow.query.filter_by(
+        follower_candidate_id=candidate.id
+    ).count()
 
-return render_template(
-    'candidate_profile_view.html',
-    candidate=candidate,
-    followers_count=followers_count,
-    following_count=following_count
-)
+    return render_template(
+        'candidate_profile_view.html',
+        candidate=candidate,
+        followers_count=followers_count,
+        following_count=following_count
+    )
 
 @app.route('/edit-candidate-profile', methods=['GET','POST'])
 def edit_candidate_profile():
