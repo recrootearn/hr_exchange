@@ -2,87 +2,245 @@
 
 {% block content %}
 
-<div class="candidate-card"><div class="candidate-profile">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <div class="avatar">
-        {{ candidate.full_name[:1].upper() }}
-    </div>
+<style>
 
-    <div>
+.candidate-card{
+    background:#fff;
+    border-radius:25px;
+    padding:25px;
+    box-shadow:0 4px 20px rgba(0,0,0,.08);
+}
 
-        <div class="candidate-name">
-            Welcome {{ candidate.full_name }}
+.candidate-profile{
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+
+.avatar{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    font-size:36px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.candidate-name{
+    font-size:20px;
+    font-weight:700;
+}
+
+.candidate-role{
+    color:#666;
+    text-transform:uppercase;
+}
+
+.stats-card{
+    background:#fff;
+    border-radius:25px;
+    padding:35px 20px;
+    margin-bottom:25px;
+    box-shadow:0 4px 20px rgba(0,0,0,.08);
+}
+
+.stats-card h3{
+    font-size:40px;
+    margin-bottom:15px;
+}
+
+.stats-card h4{
+    font-size:20px;
+    font-weight:700;
+    margin-bottom:10px;
+}
+
+.stats-card p{
+    color:#666;
+    margin-bottom:20px;
+}
+
+.mobile-nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:70px;
+    background:#fff;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    box-shadow:0 -3px 15px rgba(0,0,0,.12);
+    z-index:9999;
+}
+
+.mobile-nav a{
+    text-decoration:none;
+    color:#666;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    font-size:11px;
+    font-weight:600;
+}
+
+.mobile-nav i{
+    font-size:22px;
+    margin-bottom:4px;
+}
+
+.mobile-nav a.active{
+    color:#2563eb;
+}
+
+.page-wrapper{
+    padding-bottom:90px;
+}
+
+@media(min-width:769px){
+    .mobile-nav{
+        display:none;
+    }
+}
+
+</style>
+
+<div class="page-wrapper">
+
+    <div class="candidate-card">
+
+        <div class="candidate-profile">
+
+            <div class="avatar">
+                {{ candidate.full_name[:1].upper() }}
+            </div>
+
+            <div>
+
+                <div class="candidate-name">
+                    Welcome {{ candidate.full_name }}
+                </div>
+
+                <div class="candidate-role">
+                    Candidate Dashboard
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="candidate-role">
-            Candidate Dashboard
+    </div>
+
+    <div class="row mt-4">
+
+        <div class="col-md-4">
+
+            <div class="stats-card text-center">
+
+                <h3>
+                    <i class="fas fa-briefcase"></i>
+                </h3>
+
+                <h4>Jobs Feed</h4>
+
+                <p>
+                    Explore latest jobs posted by recruiters.
+                </p>
+
+                <a href="/candidate-feed"
+                   class="btn btn-primary">
+
+                    View Jobs
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="stats-card text-center">
+
+                <h3>
+                    <i class="fas fa-file-alt"></i>
+                </h3>
+
+                <h4>Applied Jobs</h4>
+
+                <p>
+                    Track all your job applications.
+                </p>
+
+                <a href="/applied-jobs"
+                   class="btn btn-success">
+
+                    View Applications
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="stats-card text-center">
+
+                <h3>
+                    <i class="fas fa-user"></i>
+                </h3>
+
+                <h4>Profile</h4>
+
+                <p>
+                    Complete your profile to attract recruiters.
+                </p>
+
+                <a href="/candidate-profile"
+                   class="btn btn-dark">
+
+                    My Profile
+
+                </a>
+
+            </div>
+
         </div>
 
     </div>
 
 </div>
 
-</div><div class="row mt-4"><div class="col-md-4">
+<div class="mobile-nav">
 
-    <div class="stats-card text-center">
+    <a href="/candidate-dashboard" class="active">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
 
-        <h3>
-            <i class="fas fa-briefcase"></i>
-        </h3>
+    <a href="/candidate-feed">
+        <i class="fas fa-briefcase"></i>
+        <span>Jobs</span>
+    </a>
 
-        <h4>Jobs Feed</h4>
+    <a href="/applied-jobs">
+        <i class="fas fa-file-alt"></i>
+        <span>Applied</span>
+    </a>
 
-        <p>Explore latest jobs posted by recruiters.</p>
-
-        <a href="/candidate-feed"
-           class="btn btn-primary">
-            View Jobs
-        </a>
-
-    </div>
-
-</div>
-
-<div class="col-md-4">
-
-    <div class="stats-card text-center">
-
-        <h3>
-            <i class="fas fa-file-alt"></i>
-        </h3>
-
-        <h4>Applied Jobs</h4>
-
-        <p>Track all your job applications.</p>
-
-        <a href="/applied-jobs"
-           class="btn btn-success">
-            View Applications
-        </a>
-
-    </div>
+    <a href="/candidate-profile">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+    </a>
 
 </div>
 
-<div class="col-md-4">
-
-    <div class="stats-card text-center">
-
-        <h3>
-            <i class="fas fa-user"></i>
-        </h3>
-
-        <h4>Profile</h4>
-
-        <p>Complete your profile to attract recruiters.</p>
-
-        <a href="/candidate-profile"
-           class="btn btn-dark">
-            Edit Profile
-        </a>
-
-    </div>
-
-</div>
-
-</div>{% endblock %}
+{% endblock %}
