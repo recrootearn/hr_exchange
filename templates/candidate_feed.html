@@ -6,7 +6,10 @@
     Latest Jobs
 </h2>{% for job in jobs %}
 
-<div class="candidate-card feed-card"><!-- HEADER -->
+{% for job in jobs %}
+
+<div id="post{{ job.id }}"
+     class="candidate-card feed-card"><!-- HEADER -->
 
 <div class="feed-header">
 
@@ -240,6 +243,26 @@ function toggleText(id){
         btn.innerHTML="See More";
 
     }
+}
+
+<script>
+
+window.onload=function(){
+
+    let target=
+    document.getElementById(
+        "post{{ selected_id }}"
+    );
+
+    if(target){
+
+        target.scrollIntoView({
+            behavior:'smooth',
+            block:'center'
+        });
+
+    }
+
 }
 
 </script>{% endblock %}

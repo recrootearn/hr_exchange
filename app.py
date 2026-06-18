@@ -1366,16 +1366,19 @@ def my_jobs():
 @app.route('/candidate-feed')
 def candidate_feed():
 
-    if 'candidate_id' not in session:
-        return redirect('/candidate-login')
-
     jobs = JobPost.query.order_by(
         JobPost.created_at.desc()
     ).all()
 
+    selected_id = request.args.get(
+        'selected',
+        type=int
+    )
+
     return render_template(
         'candidate_feed.html',
-        jobs=jobs
+        jobs=jobs,
+        selected_id=selected_id
     )
 
 @app.route('/apply-job/<int:job_id>')
