@@ -1103,7 +1103,7 @@ def edit_candidate_profile():
         flash("Profile Updated")
 
     return render_template(
-        'candidate_profile_view.html',
+        'edit_candidate_profile.html',
          candidate=candidate
     )
 
