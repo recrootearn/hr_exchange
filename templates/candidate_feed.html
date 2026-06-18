@@ -23,11 +23,18 @@
     <div>
 
         <div class="feed-company">
-            {{ job.company_name }}
+
+            <a href="/company/{{ job.hr_id }}"
+               style="text-decoration:none;color:inherit;">
+
+                {{ job.company_name }}
+
+            </a>
+
         </div>
 
         <div class="feed-meta">
-            HR Recruiter • {{ job.location }}
+            📍 {{ job.location }}
         </div>
 
     </div>
@@ -38,9 +45,13 @@
 
 {% if job.image %}
 
-<img
-src="/static/uploads/{{ job.image }}"
-class="feed-image">
+<a href="/company/{{ job.hr_id }}">
+
+    <img
+    src="/static/uploads/{{ job.image }}"
+    class="feed-image">
+
+</a>
 
 {% endif %}
 
@@ -55,8 +66,6 @@ class="feed-image">
     <div class="salary-tag">
         ₹ {{ job.salary }}
     </div>
-
-    <!-- DESCRIPTION -->
 
     <p class="mt-3">
 
@@ -77,6 +86,7 @@ class="feed-image">
         </span>
 
         <a href="#"
+           id="btn{{ job.id }}"
            onclick="toggleText({{ job.id }});return false;">
 
             See More
@@ -86,8 +96,6 @@ class="feed-image">
         {% endif %}
 
     </p>
-
-    <!-- ACTIONS -->
 
     <div class="feed-buttons">
 
@@ -122,102 +130,85 @@ class="feed-image">
 <style>
 
 .feed-card{
-
     overflow:hidden;
     padding:0 !important;
 }
 
 .feed-header{
-
     display:flex;
     align-items:center;
     gap:12px;
-
     padding:15px;
 }
 
 .feed-avatar{
-
-    width:50px;
-    height:50px;
-
+    width:52px;
+    height:52px;
     border-radius:50%;
-
     background:linear-gradient(
-    135deg,
-    #2563eb,
-    #7c3aed
+        135deg,
+        #2563eb,
+        #7c3aed
     );
-
     color:white;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
     font-size:20px;
     font-weight:700;
 }
 
 .feed-company{
-
     font-size:16px;
     font-weight:700;
 }
 
 .feed-meta{
-
     font-size:13px;
     color:#6b7280;
 }
 
 .feed-image{
-
     width:100%;
     height:320px;
-
     object-fit:cover;
-
     border-top:1px solid #eee;
     border-bottom:1px solid #eee;
 }
 
 .job-title{
-
     font-weight:700;
+    margin-bottom:10px;
 }
 
 .salary-tag{
-
     display:inline-block;
-
     background:#dcfce7;
-
     color:#15803d;
-
     padding:8px 14px;
-
     border-radius:20px;
-
     font-weight:700;
 }
 
 .feed-buttons{
-
     display:flex;
     gap:10px;
     margin-top:15px;
 }
 
+.feed-buttons .btn{
+    flex:1;
+    border-radius:12px;
+    font-weight:600;
+}
+
 @media(max-width:768px){
 
     .feed-image{
-
         height:260px;
     }
 
     .feed-buttons{
-
         flex-direction:row;
     }
 
@@ -228,24 +219,26 @@ class="feed-image">
 function toggleText(id){
 
     let more =
-    document.getElementById(
-        "more"+id
-    );
+    document.getElementById("more"+id);
 
     let dots =
-    document.getElementById(
-        "dots"+id
-    );
+    document.getElementById("dots"+id);
+
+    let btn =
+    document.getElementById("btn"+id);
 
     if(more.style.display==="none"){
 
         more.style.display="inline";
         dots.style.display="none";
+        btn.innerHTML="See Less";
 
     }else{
 
         more.style.display="none";
         dots.style.display="inline";
+        btn.innerHTML="See More";
+
     }
 }
 
