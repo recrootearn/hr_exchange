@@ -1272,20 +1272,20 @@ def followers():
         'followers.html'
     )
 
-@app.route('/post/<int:id>')
+@app.route('/feed/<int:id>')
 @login_required
-def view_post(id):
+def feed_post(id):
 
-    job = JobPost.query.get_or_404(id)
-
-    applicants = JobApplication.query.filter_by(
-        job_id=id
-    ).count()
+    jobs = JobPost.query.filter_by(
+        hr_id=current_user.id
+    ).order_by(
+        JobPost.created_at.desc()
+    ).all()
 
     return render_template(
-        'view_post.html',
-        job=job,
-        applicants=applicants
+        'feed_post.html',
+        jobs=jobs,
+        selected_id=id
     )
 
 @app.route('/candidate-logout')
