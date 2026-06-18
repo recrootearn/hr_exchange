@@ -1,21 +1,251 @@
-<h2>Applicants</h2>
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.page-title{
+
+    font-size:28px;
+    font-weight:700;
+
+    margin-bottom:25px;
+}
+
+.applicant-card{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    margin-bottom:18px;
+
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+
+    transition:.3s;
+}
+
+.applicant-card:hover{
+
+    transform:translateY(-2px);
+}
+
+.applicant-top{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+}
+
+.applicant-avatar{
+
+    width:70px;
+    height:70px;
+
+    border-radius:50%;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    font-size:24px;
+    font-weight:700;
+}
+
+.applicant-name{
+
+    font-size:20px;
+    font-weight:700;
+}
+
+.info-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(220px,1fr));
+
+    gap:12px;
+
+    margin-top:18px;
+}
+
+.info-box{
+
+    background:#f8fafc;
+
+    padding:12px;
+
+    border-radius:12px;
+}
+
+.action-buttons{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-top:20px;
+
+    flex-wrap:wrap;
+}
+
+.action-buttons a{
+
+    border-radius:10px;
+}
+
+.no-applicants{
+
+    background:white;
+
+    padding:40px;
+
+    border-radius:20px;
+
+    text-align:center;
+
+    color:#666;
+}
+
+</style>
+
+<h2 class="page-title">
+
+    👥 Job Applicants
+
+</h2>
+
+{% if applications %}
 
 {% for app in applications %}
 
 {% set candidate = CandidateUser.query.get(app.candidate_id) %}
 
-<div style="border:1px solid #ddd;padding:15px;margin:15px;">
+<div class="applicant-card">
 
-    <h3>{{ candidate.full_name }}</h3>
+    <div class="applicant-top">
 
-    <p>{{ candidate.mobile }}</p>
+        <div class="applicant-avatar">
 
-    <p>{{ candidate.email }}</p>
+            {{ candidate.full_name[0] }}
 
-    <p>{{ candidate.city }}</p>
+        </div>
 
-    <p>{{ candidate.experience }}</p>
+        <div>
+
+            <div class="applicant-name">
+
+                {{ candidate.full_name }}
+
+            </div>
+
+            <small class="text-muted">
+
+                Applied Candidate
+
+            </small>
+
+        </div>
+
+    </div>
+
+    <div class="info-grid">
+
+        <div class="info-box">
+
+            📱 {{ candidate.mobile }}
+
+        </div>
+
+        <div class="info-box">
+
+            📧 {{ candidate.email }}
+
+        </div>
+
+        <div class="info-box">
+
+            📍 {{ candidate.city or 'Not Added' }}
+
+        </div>
+
+        <div class="info-box">
+
+            💼 {{ candidate.experience or 'Not Added' }}
+
+        </div>
+
+    </div>
+
+    <div class="action-buttons">
+
+        <a href="tel:{{ candidate.mobile }}"
+        class="btn btn-success">
+
+            📞 Call
+
+        </a>
+
+        <a href="https://wa.me/91{{ candidate.mobile }}"
+        target="_blank"
+        class="btn btn-success">
+
+            WhatsApp
+
+        </a>
+
+        <a href="mailto:{{ candidate.email }}"
+        class="btn btn-primary">
+
+            Email
+
+        </a>
+
+        {% if candidate.resume_file %}
+
+        <a href="/static/uploads/{{ candidate.resume_file }}"
+        target="_blank"
+        class="btn btn-dark">
+
+            Resume
+
+        </a>
+
+        {% endif %}
+
+    </div>
 
 </div>
 
 {% endfor %}
+
+{% else %}
+
+<div class="no-applicants">
+
+    <h3>No Applicants Yet</h3>
+
+    <p>
+        Once candidates apply for this job,
+        they will appear here.
+    </p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
