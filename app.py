@@ -368,6 +368,13 @@ def admin_only():
 # =========================
 
 @app.route('/')
+def landing():
+
+    return render_template(
+        'index.html'
+    )
+
+@app.route('/dashboard')
 @login_required
 def home():
 
