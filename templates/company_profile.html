@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="insta-profile">
+
+    <div class="profile-header">
+
+        <div class="profile-row">
+
+            {% if hr.profile_photo %}
+
+            <img
+            src="/static/uploads/{{ hr.profile_photo }}"
+            class="profile-pic">
+
+            {% endif %}
+
+            <div class="profile-stats">
+
+                <div>
+                    <strong>{{ jobs|length }}</strong>
+                    Posts
+                </div>
+
+                <div>
+                    <strong>{{ followers_count }}</strong>
+                    Followers
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="profile-name">
+
+            {{ hr.first_name }}
+            {{ hr.last_name }}
+
+        </div>
+
+        <div class="company-name">
+
+            {{ hr.company }}
+
+        </div>
+
+        <div class="bio">
+
+            {{ hr.about_company or "" }}
+
+            <br>
+
+            📍 {{ hr.company_city or "" }}
+
+            <br>
+
+            🌐 {{ hr.company_website or "" }}
+
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+
+            <a href="/follow-hr/{{ hr.id }}"
+            class="btn btn-primary flex-fill">
+
+                Follow
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="posts-tab">
+
+        POSTS
+
+    </div>
+
+    <div class="post-grid">
+
+        {% for job in jobs %}
+
+        <a href="/feed/{{ job.id }}"
+        class="post-item">
+
+            {% if job.image %}
+
+            <img
+            src="/static/uploads/{{ job.image }}">
+
+            {% endif %}
+
+        </a>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
