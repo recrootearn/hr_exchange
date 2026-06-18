@@ -6,74 +6,108 @@
     Latest Jobs
 </h2>{% for job in jobs %}
 
-<div class="candidate-card"><div class="candidate-top">
+<div class="candidate-card feed-card"><!-- HEADER -->
+
+<div class="feed-header">
+
+    <div class="feed-avatar">
+
+        {% if job.company_name %}
+            {{ job.company_name[:1].upper() }}
+        {% else %}
+            R
+        {% endif %}
+
+    </div>
 
     <div>
 
-        <div class="candidate-name">
-            {{ job.job_title }}
+        <div class="feed-company">
+            {{ job.company_name }}
         </div>
 
-        <div class="candidate-role">
-            <a href="/hr/{{ job.hr_id }}">
-                {{ job.company_name }}
-            </a>
+        <div class="feed-meta">
+            HR Recruiter • {{ job.location }}
         </div>
 
     </div>
 
-    <span class="badge bg-success badge-custom">
-        ₹ {{ job.salary }}
-    </span>
-
 </div>
+
+<!-- IMAGE -->
 
 {% if job.image %}
 
-<div class="mb-3">
-
-    <img
-        src="/static/uploads/{{ job.image }}"
-        class="img-fluid rounded"
-        style="max-height:300px; width:100%; object-fit:cover;">
-
-</div>
+<img
+src="/static/uploads/{{ job.image }}"
+class="feed-image">
 
 {% endif %}
 
-<div class="candidate-details">
+<!-- CONTENT -->
 
-    <div class="detail-pill">
-        <i class="fas fa-location-dot"></i>
-        {{ job.location }}
+<div class="p-3">
+
+    <h4 class="job-title">
+        {{ job.job_title }}
+    </h4>
+
+    <div class="salary-tag">
+        ₹ {{ job.salary }}
     </div>
 
-</div>
+    <!-- DESCRIPTION -->
 
-<div class="mt-3">
+    <p class="mt-3">
 
-    <p>
-        {{ job.description }}
+        {{ job.description[:140] }}
+
+        {% if job.description|length > 140 %}
+
+        <span id="dots{{ job.id }}">
+            ...
+        </span>
+
+        <span
+        id="more{{ job.id }}"
+        style="display:none;">
+
+            {{ job.description[140:] }}
+
+        </span>
+
+        <a href="#"
+           onclick="toggleText({{ job.id }});return false;">
+
+            See More
+
+        </a>
+
+        {% endif %}
+
     </p>
 
-</div>
+    <!-- ACTIONS -->
 
-<div class="action-buttons">
+    <div class="feed-buttons">
 
-    <a href="/company/{{ job.hr_id }}"
-    class="btn btn-outline-primary mt-2">
+        <a href="/company/{{ job.hr_id }}"
+           class="btn btn-outline-primary">
 
-        View Company
+            <i class="fas fa-building"></i>
+            Company
 
-    </a>
+        </a>
 
-    <a href="/apply-job/{{ job.id }}"
-       class="btn btn-primary">
+        <a href="/apply-job/{{ job.id }}"
+           class="btn btn-primary">
 
-        <i class="fas fa-paper-plane"></i>
-        Apply Now
+            <i class="fas fa-paper-plane"></i>
+            Apply
 
-    </a>
+        </a>
+
+    </div>
 
 </div>
 
@@ -85,4 +119,134 @@
 
 </div>{% endfor %}
 
-{% endblock %}
+<style>
+
+.feed-card{
+
+    overflow:hidden;
+    padding:0 !important;
+}
+
+.feed-header{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    padding:15px;
+}
+
+.feed-avatar{
+
+    width:50px;
+    height:50px;
+
+    border-radius:50%;
+
+    background:linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+    );
+
+    color:white;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:20px;
+    font-weight:700;
+}
+
+.feed-company{
+
+    font-size:16px;
+    font-weight:700;
+}
+
+.feed-meta{
+
+    font-size:13px;
+    color:#6b7280;
+}
+
+.feed-image{
+
+    width:100%;
+    height:320px;
+
+    object-fit:cover;
+
+    border-top:1px solid #eee;
+    border-bottom:1px solid #eee;
+}
+
+.job-title{
+
+    font-weight:700;
+}
+
+.salary-tag{
+
+    display:inline-block;
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+    padding:8px 14px;
+
+    border-radius:20px;
+
+    font-weight:700;
+}
+
+.feed-buttons{
+
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+@media(max-width:768px){
+
+    .feed-image{
+
+        height:260px;
+    }
+
+    .feed-buttons{
+
+        flex-direction:row;
+    }
+
+}
+
+</style><script>
+
+function toggleText(id){
+
+    let more =
+    document.getElementById(
+        "more"+id
+    );
+
+    let dots =
+    document.getElementById(
+        "dots"+id
+    );
+
+    if(more.style.display==="none"){
+
+        more.style.display="inline";
+        dots.style.display="none";
+
+    }else{
+
+        more.style.display="none";
+        dots.style.display="inline";
+    }
+}
+
+</script>{% endblock %}
