@@ -1103,8 +1103,10 @@ def edit_candidate_profile():
         flash("Profile Updated")
 
     return render_template(
-        'candidate_profile.html',
-        candidate=candidate
+        'candidate_profile_view.html',
+         candidate=candidate,
+         followers_count=followers_count,
+         following_count=following_count
     )
 
 @app.route('/hr/<int:id>')
