@@ -1104,9 +1104,7 @@ def edit_candidate_profile():
 
     return render_template(
         'candidate_profile_view.html',
-         candidate=candidate,
-         followers_count=followers_count,
-         following_count=following_count
+         candidate=candidate
     )
 
 @app.route('/hr/<int:id>')
