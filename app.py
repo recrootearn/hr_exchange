@@ -2331,11 +2331,14 @@ def profile():
     ).all()
 
     return render_template(
-        'profile.html',
-        jobs=jobs,
-        posts_count=len(jobs),
-        followers_count=0,
-        following_count=0
+    'profile.html',
+    jobs=jobs,
+    posts_count=len(jobs),
+    followers_count=followers_count,
+    following_count=0,
+    viewed_hr=hr,
+    is_company_view=True,
+    is_following=is_following
     )
 
 # =========================
