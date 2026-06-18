@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div style="
+max-width:700px;
+margin:auto;
+background:white;
+border-radius:12px;
+overflow:hidden;
+">
+
+    {% if job.image %}
+
+    <img
+    src="/static/uploads/{{ job.image }}"
+    style="
+    width:100%;
+    max-height:500px;
+    object-fit:cover;
+    ">
+
+    {% endif %}
+
+    <div class="p-4">
+
+        <h3>{{ job.job_title }}</h3>
+
+        <p>
+            📍 {{ job.location }}
+        </p>
+
+        <p>
+            ₹ {{ job.salary }}
+        </p>
+
+        <hr>
+
+        <p>
+            {{ job.description }}
+        </p>
+
+        <hr>
+
+        <strong>
+            {{ applicants }} Applicants
+        </strong>
+
+        <br><br>
+
+        <a href="/job-applicants/{{ job.id }}"
+        class="btn btn-primary">
+
+            View Applicants
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
