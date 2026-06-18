@@ -1,17 +1,233 @@
-<form method="POST" enctype="multipart/form-data">
+{% extends "base.html" %}
 
-<input type="text" name="job_title" placeholder="Job Title" required>
+{% block content %}
 
-<input type="text" name="location" placeholder="Location" required>
+<style>
 
-<input type="text" name="salary" placeholder="Salary" required>
+.post-job-card{
 
-<textarea name="description" placeholder="Job Description"></textarea>
+    max-width:700px;
+    margin:auto;
 
-<input type="file" name="image">
+    background:white;
 
-<button type="submit">
-Post Job
-</button>
+    border-radius:20px;
 
-</form>
+    padding:25px;
+
+    box-shadow:0 5px 20px rgba(0,0,0,0.08);
+}
+
+.post-job-title{
+
+    text-align:center;
+
+    font-size:28px;
+
+    font-weight:700;
+
+    margin-bottom:25px;
+}
+
+.form-control,
+.form-select{
+
+    border-radius:12px !important;
+
+    padding:12px !important;
+}
+
+.upload-box{
+
+    border:2px dashed #d1d5db;
+
+    border-radius:15px;
+
+    padding:30px;
+
+    text-align:center;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.upload-box:hover{
+
+    border-color:#2563eb;
+}
+
+.submit-btn{
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #4f46e5
+    );
+
+    color:white;
+
+    font-weight:700;
+
+    font-size:16px;
+}
+
+.preview{
+
+    width:100%;
+
+    border-radius:12px;
+
+    margin-top:15px;
+
+    display:none;
+}
+
+</style>
+
+<div class="post-job-card">
+
+    <div class="post-job-title">
+
+        🚀 Create Job Post
+
+    </div>
+
+    <form method="POST"
+    enctype="multipart/form-data">
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Job Title
+            </label>
+
+            <input
+            type="text"
+            name="job_title"
+            class="form-control"
+            placeholder="Ex: HR Executive"
+            required>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Location
+            </label>
+
+            <input
+            type="text"
+            name="location"
+            class="form-control"
+            placeholder="Ex: Indore"
+            required>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Salary
+            </label>
+
+            <input
+            type="text"
+            name="salary"
+            class="form-control"
+            placeholder="Ex: ₹25,000 - ₹35,000"
+            required>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Job Description
+            </label>
+
+            <textarea
+            name="description"
+            rows="6"
+            class="form-control"
+            placeholder="Describe the role, responsibilities and requirements"></textarea>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Job Poster / Company Image
+            </label>
+
+            <label class="upload-box">
+
+                <i class="fas fa-image fa-2x mb-2"></i>
+
+                <br>
+
+                Click to Upload Image
+
+                <input
+                type="file"
+                name="image"
+                accept="image/*"
+                hidden
+                onchange="previewImage(event)">
+
+            </label>
+
+            <img
+            id="preview"
+            class="preview">
+
+        </div>
+
+        <button
+        type="submit"
+        class="submit-btn">
+
+            Post Job
+
+        </button>
+
+    </form>
+
+</div>
+
+<script>
+
+function previewImage(event){
+
+    let file = event.target.files[0];
+
+    if(file){
+
+        let reader = new FileReader();
+
+        reader.onload = function(e){
+
+            let preview =
+            document.getElementById("preview");
+
+            preview.src = e.target.result;
+
+            preview.style.display = "block";
+        };
+
+        reader.readAsDataURL(file);
+    }
+}
+
+</script>
+
+{% endblock %}
