@@ -294,11 +294,27 @@ class SupportReply(db.Model):
 
 class SupportTicket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+
     user_id = db.Column(db.Integer)
+
+    user_type = db.Column(
+        db.String(20),
+        default='hr'
+    )
+
     subject = db.Column(db.String(300))
+
     message = db.Column(db.Text)
-    status = db.Column(db.String(50), default='Open')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    status = db.Column(
+        db.String(50),
+        default='Open'
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
 
 class SeenLead(db.Model):
 
@@ -1058,10 +1074,15 @@ def candidate_support():
     if 'candidate_id' not in session:
         return redirect('/candidate-login')
 
+    candidate = CandidateUser.query.get(
+        session['candidate_id']
+    )
+
     if request.method == 'POST':
 
         ticket = SupportTicket(
-            user_id=session['candidate_id'],
+            user_id=candidate.id,
+            user_type='candidate',
             subject=request.form['subject'],
             message=request.form['message']
         )
@@ -1069,12 +1090,15 @@ def candidate_support():
         db.session.add(ticket)
         db.session.commit()
 
-        flash('Support ticket submitted successfully')
-
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get(
+        'page',
+        1,
+        type=int
+    )
 
     tickets = SupportTicket.query.filter_by(
-        user_id=session['candidate_id']
+        user_id=candidate.id,
+        user_type='candidate'
     ).order_by(
         SupportTicket.created_at.desc()
     ).paginate(
@@ -2372,6 +2396,7 @@ def support():
 
         ticket = SupportTicket(
             user_id=current_user.id,
+            user_type='hr',
             subject=request.form['subject'],
             message=request.form['message']
         )
