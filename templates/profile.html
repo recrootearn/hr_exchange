@@ -4,249 +4,243 @@
 
 <style>
 
+.content{
+    padding:0 !important;
+}
+
 .insta-profile{
-    max-width:900px;
-    margin:auto;
-    background:#fff;
-    border-radius:20px;
+    width:100%;
+    background:white;
+}
+
+/* HEADER */
+
+.profile-header{
     padding:20px;
 }
 
-.profile-top{
+.profile-row{
     display:flex;
-    gap:25px;
     align-items:center;
+    gap:20px;
 }
 
 .profile-pic{
-    width:110px;
-    height:110px;
+    width:95px;
+    height:95px;
     border-radius:50%;
     object-fit:cover;
     border:3px solid #2563eb;
 }
 
-.profile-right{
+.profile-stats{
     flex:1;
-}
-
-.company-name{
-    font-size:26px;
-    font-weight:700;
-    margin-bottom:15px;
-}
-
-.stats{
     display:flex;
-    gap:30px;
-    margin-bottom:15px;
+    justify-content:space-around;
 }
 
-.stats div{
+.profile-stats div{
     text-align:center;
 }
 
-.stats strong{
+.profile-stats strong{
     display:block;
     font-size:20px;
+    font-weight:700;
+}
+
+.profile-name{
+    margin-top:15px;
+    font-size:18px;
+    font-weight:700;
+}
+
+.company-name{
+    font-size:15px;
+    color:#666;
 }
 
 .bio{
     margin-top:10px;
+    line-height:1.5;
+    font-size:14px;
 }
 
-.action-btns{
-    display:flex;
-    gap:10px;
+.edit-btn{
+    width:100%;
     margin-top:15px;
+    border-radius:8px;
 }
+
+/* POSTS TAB */
+
+.posts-tab{
+    border-top:1px solid #ddd;
+    text-align:center;
+    padding:12px;
+    font-weight:700;
+    letter-spacing:1px;
+}
+
+/* GRID */
 
 .post-grid{
     display:grid;
     grid-template-columns:repeat(3,1fr);
-    gap:10px;
-    margin-top:25px;
+    gap:2px;
 }
 
-.post-card{
-    border:1px solid #ddd;
-    border-radius:12px;
+.post-item{
+    aspect-ratio:1/1;
     overflow:hidden;
-    background:#fff;
+    position:relative;
 }
 
-.post-card img{
+.post-item img{
     width:100%;
-    height:220px;
+    height:100%;
     object-fit:cover;
 }
 
-.post-info{
-    padding:10px;
-}
+/* DESKTOP */
 
-.post-info h6{
-    margin:0;
-    font-weight:bold;
-}
+@media(min-width:768px){
 
-.section-title{
-    margin-top:30px;
-    margin-bottom:15px;
-    text-align:center;
-    font-weight:700;
-    letter-spacing:2px;
-}
+    .insta-profile{
+        max-width:935px;
+        margin:auto;
+    }
 
-@media(max-width:768px){
+    .profile-header{
+        padding:40px;
+    }
 
-.profile-top{
-    flex-direction:column;
-    text-align:center;
-}
+    .profile-pic{
+        width:150px;
+        height:150px;
+    }
 
-.stats{
-    justify-content:center;
-}
+    .profile-name{
+        font-size:24px;
+    }
 
-.post-grid{
-    grid-template-columns:repeat(2,1fr);
-}
+    .company-name{
+        font-size:18px;
+    }
 
-.post-card img{
-    height:160px;
-}
+    .bio{
+        font-size:15px;
+    }
+
+    .edit-btn{
+        width:250px;
+    }
 
 }
 
-</style><div class="insta-profile"><div class="profile-top">
+</style>
 
-    {% if current_user.profile_photo %}
-    <img
-    src="/static/uploads/{{ current_user.profile_photo }}"
-    class="profile-pic">
-    {% else %}
-    <img
-    src="https://via.placeholder.com/300"
-    class="profile-pic">
-    {% endif %}
+<div class="insta-profile">
 
-    <div class="profile-right">
+    <div class="profile-header">
+
+        <div class="profile-row">
+
+            {% if current_user.profile_photo %}
+                <img
+                src="/static/uploads/{{ current_user.profile_photo }}"
+                class="profile-pic">
+            {% else %}
+                <img
+                src="https://via.placeholder.com/300"
+                class="profile-pic">
+            {% endif %}
+
+            <div class="profile-stats">
+
+                <div>
+                    <strong>{{ posts_count }}</strong>
+                    Posts
+                </div>
+
+                <div>
+                    <strong>{{ followers_count }}</strong>
+                    Followers
+                </div>
+
+                <div>
+                    <strong>{{ following_count }}</strong>
+                    Following
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="profile-name">
+            {{ current_user.first_name }}
+            {{ current_user.last_name }}
+        </div>
 
         <div class="company-name">
             {{ current_user.company }}
         </div>
 
-        <div class="stats">
-
-            <div>
-                <strong>{{ posts_count }}</strong>
-                Posts
-            </div>
-
-            <div>
-                <strong>{{ followers_count }}</strong>
-                Followers
-            </div>
-
-            <div>
-                <strong>{{ following_count }}</strong>
-                Following
-            </div>
-
-        </div>
-
         <div class="bio">
 
-            <strong>
-            {{ current_user.first_name }}
-            {{ current_user.last_name }}
-            </strong>
+            {{ current_user.about_company or "Hiring Across India" }}
 
             <br>
 
-            {{ current_user.about_company or "Add company description" }}
+            📍 {{ current_user.company_city or "India" }}
 
             <br>
 
-            📍 {{ current_user.company_city or "City not added" }}
-
-            <br>
-
-            🌐 {{ current_user.company_website or "Website not added" }}
+            {% if current_user.company_website %}
+            🌐 {{ current_user.company_website }}
+            {% endif %}
 
         </div>
 
-        <div class="action-btns">
+        <a href="/edit-profile"
+        class="btn btn-light edit-btn">
 
-            <a href="/edit-profile"
-            class="btn btn-outline-primary">
+            Edit Profile
 
-                Edit Profile
+        </a>
 
-            </a>
+    </div>
 
-            <a href="/post-job"
-            class="btn btn-primary">
+    <div class="posts-tab">
 
-                + Post Job
+        <i class="fas fa-th"></i>
+        POSTS
 
-            </a>
+    </div>
 
-        </div>
+    <div class="post-grid">
+
+        {% for job in jobs %}
+
+        <a href="/job-applicants/{{ job.id }}"
+        class="post-item">
+
+            {% if job.image %}
+
+                <img src="/static/uploads/{{ job.image }}">
+
+            {% else %}
+
+                <img src="https://via.placeholder.com/500x500?text=JOB">
+
+            {% endif %}
+
+        </a>
+
+        {% endfor %}
 
     </div>
 
 </div>
 
-<h5 class="section-title">
-    POSTS
-</h5>
-
-<div class="post-grid">
-
-    {% for job in jobs %}
-
-    <div class="post-card">
-
-        {% if job.image %}
-
-        <img
-        src="/static/uploads/{{ job.image }}">
-
-        {% else %}
-
-        <img
-        src="https://via.placeholder.com/500x500?text=RECROOTEARN">
-
-        {% endif %}
-
-        <div class="post-info">
-
-            <h6>
-                {{ job.job_title }}
-            </h6>
-
-            <small>
-                {{ job.location }}
-            </small>
-
-            <br><br>
-
-            <a
-            href="/job-applicants/{{ job.id }}"
-            class="btn btn-sm btn-primary">
-
-                View Applicants
-
-            </a>
-
-        </div>
-
-    </div>
-
-    {% endfor %}
-
-</div>
-
-</div>{% endblock %}
+{% endblock %}
