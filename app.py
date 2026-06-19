@@ -413,6 +413,15 @@ def inject_notifications():
 
             unread_notifications = Notification.query.filter_by(
                 user_id=current_user.id,
+                user_type='hr',
+                is_read=False
+            ).count()
+
+        elif 'candidate_id' in session:
+
+            unread_notifications = Notification.query.filter_by(
+                user_id=session['candidate_id'],
+                user_type='candidate',
                 is_read=False
             ).count()
 
@@ -1139,6 +1148,7 @@ def candidate_support():
 
         notification = Notification(
             user_id=candidate.id,
+            user_type="candidate",
             message="Support ticket submitted successfully",
             link="/candidate-support",
             type="support",
@@ -1337,9 +1347,10 @@ def follow_hr(id):
 
         notification = Notification(
             user_id=id,
+            user_type="hr",
             message=f"{candidate.full_name} unfollowed you",
             link=f"/candidate/{candidate.id}",
-            image=candidate.profile_photo
+            image=candidate.profile_photo,
             type="unfollow"
         )
 
@@ -1356,9 +1367,10 @@ def follow_hr(id):
 
         notification = Notification(
             user_id=id,
+            user_type="hr",
             message=f"{candidate.full_name} started following you",
             link=f"/candidate/{candidate.id}",
-            image=candidate.profile_photo
+            image=candidate.profile_photo,
             type="follow"
 
         )
@@ -1395,7 +1407,26 @@ def follow_candidate(id):
 def notifications():
 
     notifications = Notification.query.filter_by(
-        user_id=current_user.id
+        user_id=current_user.id,
+        user_type="hr"
+    ).order_by(
+        Notification.created_at.desc()
+    ).all()
+
+    return render_template(
+        'notifications.html',
+        notifications=notifications
+    )
+
+@app.route('/candidate-notifications')
+def candidate_notifications():
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    notifications = Notification.query.filter_by(
+        user_id=session['candidate_id'],
+        user_type='candidate'
     ).order_by(
         Notification.created_at.desc()
     ).all()
@@ -1516,9 +1547,10 @@ def apply_job(job_id):
 
     notification = Notification(
         user_id=job.hr_id,
+        user_type="hr",
         message=f"{candidate.full_name} applied for {job.job_title}",
         link=f"/candidate/{candidate.id}",
-        image=candidate.profile_photo
+        image=candidate.profile_photo,
         type="job_apply"
     )
 
@@ -1618,6 +1650,29 @@ def open_notification(id):
         return redirect(n.link)
 
     return redirect('/notifications')
+
+@app.route('/candidate-notification/<int:id>')
+def open_candidate_notification(id):
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    n = Notification.query.get_or_404(id)
+
+    if (
+        n.user_id != session['candidate_id']
+        or n.user_type != 'candidate'
+    ):
+        return redirect('/candidate-notifications')
+
+    n.is_read = True
+
+    db.session.commit()
+
+    if n.link:
+        return redirect(n.link)
+
+    return redirect('/candidate-notifications')
 
 @app.template_filter('timeago')
 def timeago(dt):
@@ -2273,6 +2328,7 @@ def reply_ticket(id):
 
         notification = Notification(
             user_id=ticket.user_id,
+            user_type=ticket.user_type,
             message=f"Support replied to your ticket: {ticket.subject}",
             link=f"/support",
             type="support",
@@ -2616,6 +2672,7 @@ def support():
 
         notification = Notification(
             user_id=current_user.id,
+            user_type="hr",
             message="Support ticket submitted successfully",
             link=f"/ticket/{ticket.id}",
             type="support",
