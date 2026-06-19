@@ -2,46 +2,181 @@
 
 {% block content %}
 
-<h2 class="mb-4">
-    My Applied Jobs
+<style>
+
+.page-title{
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.job-card{
+    background:#fff;
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:16px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+    border:1px solid #eee;
+    transition:.3s;
+}
+
+.job-card:hover{
+    transform:translateY(-2px);
+}
+
+.job-title{
+    font-size:20px;
+    font-weight:700;
+    color:#111827;
+    margin-bottom:8px;
+}
+
+.company{
+    color:#2563eb;
+    font-weight:600;
+    margin-bottom:10px;
+}
+
+.info{
+    color:#6b7280;
+    margin-bottom:6px;
+    font-size:14px;
+}
+
+.applied-badge{
+    display:inline-block;
+    margin-top:12px;
+    background:#dcfce7;
+    color:#15803d;
+    padding:8px 14px;
+    border-radius:50px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.empty-box{
+    background:white;
+    border-radius:20px;
+    padding:40px 20px;
+    text-align:center;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
+
+.empty-box h4{
+    margin-top:15px;
+    font-size:22px;
+}
+
+.empty-box p{
+    color:#6b7280;
+}
+
+.feed-btn{
+    display:inline-block;
+    margin-top:15px;
+    background:#2563eb;
+    color:white;
+    padding:12px 24px;
+    text-decoration:none;
+    border-radius:10px;
+    font-weight:600;
+}
+
+.stats-row{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.stats-card{
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:white;
+    padding:20px;
+    border-radius:18px;
+    text-align:center;
+}
+
+.stats-card h3{
+    margin:0;
+    font-size:30px;
+}
+
+.stats-card p{
+    margin:5px 0 0;
+    opacity:.9;
+}
+
+</style>
+
+<h2 class="page-title">
+    📄 My Applied Jobs
 </h2>
+
+<div class="stats-row">
+    <div class="stats-card">
+        <h3>{{ applications|length }}</h3>
+        <p>Total Applications</p>
+    </div>
+</div>
+
+{% if applications %}
 
 {% for application in applications %}
 
 {% set job = JobPost.query.get(application.job_id) %}
 
-<div class="candidate-card">
+<div class="job-card">
 
-    <h4>
+    <div class="job-title">
         {{ job.job_title }}
-    </h4>
+    </div>
 
-    <p>
-        {{ job.company_name }}
-    </p>
+    <div class="company">
+        🏢 {{ job.company_name }}
+    </div>
 
-    <p>
+    <div class="info">
         📍 {{ job.location }}
-    </p>
+    </div>
 
-    <p>
-        ₹ {{ job.salary }}
-    </p>
+    <div class="info">
+        💰 ₹ {{ job.salary }}
+    </div>
 
-</div>
+    <div class="info">
+        🕒 Applied on:
+        {{ application.applied_at.strftime('%d %b %Y') }}
+    </div>
 
-{% else %}
-
-<div class="stats-card">
-
-    <h4>No Applications Yet</h4>
-
-    <p>
-        Apply for jobs from the feed.
-    </p>
+    <span class="applied-badge">
+        ✅ Application Submitted
+    </span>
 
 </div>
 
 {% endfor %}
+
+{% else %}
+
+<div class="empty-box">
+
+    <div style="font-size:60px;">
+        📭
+    </div>
+
+    <h4>No Applications Yet</h4>
+
+    <p>
+        Start applying for jobs and track them here.
+    </p>
+
+    <a href="/candidate-feed" class="feed-btn">
+        Browse Jobs
+    </a>
+
+</div>
+
+{% endif %}
 
 {% endblock %}
