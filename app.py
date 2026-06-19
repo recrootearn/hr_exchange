@@ -178,6 +178,8 @@ class Notification(db.Model):
 
     is_read = db.Column(db.Boolean, default=False)
 
+    type = db.Column(db.String(30))
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
