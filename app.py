@@ -193,19 +193,6 @@ class Notification(db.Model):
         default=datetime.utcnow
     )
 
-class JobApplication(db.Model):
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    job_id = db.Column(db.Integer)
-
-    candidate_id = db.Column(db.Integer)
-
-    applied_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
-    )
-
 class Follow(db.Model):
 
     id = db.Column(
