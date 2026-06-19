@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.job-container{
+
+    max-width:900px;
+    margin:auto;
+}
+
+.job-card{
+
+    background:white;
+
+    border-radius:24px;
+
+    overflow:hidden;
+
+    box-shadow:0 8px 24px rgba(0,0,0,.08);
+}
+
+.job-image{
+
+    width:100%;
+    height:380px;
+
+    object-fit:cover;
+}
+
+.job-body{
+
+    padding:25px;
+}
+
+.company-header{
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    margin-bottom:20px;
+}
+
+.company-logo{
+
+    width:70px;
+    height:70px;
+
+    border-radius:50%;
+
+    overflow:hidden;
+
+    background:#f3f4f6;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:28px;
+    font-weight:700;
+
+    color:#2563eb;
+}
+
+.company-logo img{
+
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.company-name{
+
+    font-size:22px;
+    font-weight:700;
+}
+
+.company-city{
+
+    color:#6b7280;
+    font-size:14px;
+}
+
+.job-title{
+
+    font-size:30px;
+    font-weight:800;
+
+    margin-bottom:15px;
+}
+
+.salary-box{
+
+    display:inline-block;
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+    padding:10px 18px;
+
+    border-radius:25px;
+
+    font-weight:700;
+
+    margin-bottom:20px;
+}
+
+.info-box{
+
+    display:flex;
+    flex-wrap:wrap;
+
+    gap:12px;
+
+    margin-bottom:25px;
+}
+
+.info-pill{
+
+    background:#f3f4f6;
+
+    padding:10px 16px;
+
+    border-radius:25px;
+
+    font-size:14px;
+}
+
+.job-description{
+
+    line-height:1.8;
+
+    font-size:15px;
+
+    color:#374151;
+}
+
+.action-buttons{
+
+    margin-top:30px;
+
+    display:flex;
+    gap:12px;
+}
+
+.action-buttons .btn{
+
+    flex:1;
+
+    border-radius:14px;
+
+    padding:12px;
+
+    font-weight:700;
+}
+
+@media(max-width:768px){
+
+    .job-image{
+
+        height:240px;
+    }
+
+    .job-body{
+
+        padding:18px;
+    }
+
+    .company-logo{
+
+        width:55px;
+        height:55px;
+    }
+
+    .company-name{
+
+        font-size:18px;
+    }
+
+    .job-title{
+
+        font-size:22px;
+    }
+
+    .action-buttons{
+
+        flex-direction:column;
+    }
+
+}
+
+</style>
+
+<div class="job-container">
+
+    <div class="job-card">
+
+        {% if job.image %}
+
+        <img
+        src="/static/uploads/{{ job.image }}"
+        class="job-image">
+
+        {% endif %}
+
+        <div class="job-body">
+
+            <div class="company-header">
+
+                <div class="company-logo">
+
+                    {% if hr.profile_photo %}
+
+                    <img
+                    src="/static/uploads/{{ hr.profile_photo }}">
+
+                    {% else %}
+
+                    {{ hr.company[:1].upper() }}
+
+                    {% endif %}
+
+                </div>
+
+                <div>
+
+                    <div class="company-name">
+
+                        {{ hr.company }}
+
+                    </div>
+
+                    <div class="company-city">
+
+                        📍 {{ job.location }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="job-title">
+
+                {{ job.job_title }}
+
+            </div>
+
+            <div class="salary-box">
+
+                ₹ {{ job.salary }}
+
+            </div>
+
+            <div class="info-box">
+
+                <div class="info-pill">
+                    💼 {{ job.job_title }}
+                </div>
+
+                <div class="info-pill">
+                    📍 {{ job.location }}
+                </div>
+
+                <div class="info-pill">
+                    🕒 {{ job.created_at.strftime('%d %b %Y') }}
+                </div>
+
+            </div>
+
+            <h5 class="mb-3">
+                Job Description
+            </h5>
+
+            <div class="job-description">
+
+                {{ job.description }}
+
+            </div>
+
+            <div class="action-buttons">
+
+                <a href="/company/{{ hr.id }}"
+                   class="btn btn-outline-primary">
+
+                    <i class="fas fa-building"></i>
+                    Company Profile
+
+                </a>
+
+                {% if session.get('candidate_id') %}
+
+                <a href="/apply-job/{{ job.id }}"
+                   class="btn btn-primary">
+
+                    <i class="fas fa-paper-plane"></i>
+                    Apply Now
+
+                </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

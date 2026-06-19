@@ -1310,8 +1310,7 @@ def company_profile(id):
         is_following=is_following
     )
 
-@app.route('/candidate/<int:id>')
-@login_required
+@app.route('/candidate/<int:id>')S
 def view_candidates(id):
 
     candidate = CandidateUser.query.get_or_404(id)
@@ -1504,6 +1503,19 @@ def post_job():
         return redirect('/my-jobs')
 
     return render_template('post_job.html')
+
+@app.route('/job/<int:id>')
+def view_job(id):
+
+    job = JobPost.query.get_or_404(id)
+
+    hr = User.query.get(job.hr_id)
+
+    return render_template(
+        'job_details.html',
+        job=job,
+        hr=hr
+    )
 
 @app.route('/my-jobs')
 @login_required
