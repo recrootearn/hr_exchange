@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3 class="mb-4">
+    Notifications
+</h3>
+
+{% for n in notifications %}
+
+<div class="candidate-card mb-3">
+
+    {{ n.message }}
+
+</div>
+
+{% else %}
+
+<div class="candidate-card">
+
+    No notifications yet
+
+</div>
+
+{% endfor %}
+
+{% endblock %}
