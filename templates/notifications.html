@@ -120,7 +120,16 @@ Notifications
 
 </h2>{% for n in notifications %}
 
-<a href="/notification/{{ n.id }}"
+<a {% if session.get('candidate_id') %}
+
+href="/candidate-notification/{{ n.id }}"
+
+{% else %}
+
+href="/notification/{{ n.id }}"
+
+{% endif %}
+
 class="notification-card {% if not n.is_read %}unread{% endif %}">
 
 <div class="notif-avatar">
