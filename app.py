@@ -1312,7 +1312,7 @@ def follow_hr(id):
         notification = Notification(
             user_id=id,
             message=f"{candidate.full_name} unfollowed you",
-            link=f"/candidate-profile/{candidate.id}",
+            link=f"/candidate/{candidate.id}",
             image=candidate.profile_photo
         )
 
@@ -1330,7 +1330,7 @@ def follow_hr(id):
         notification = Notification(
             user_id=id,
             message=f"{candidate.full_name} started following you",
-            link=f"/candidate-profile/{candidate.id}",
+            link=f"/candidate/{candidate.id}",
             image=candidate.profile_photo
         )
 
@@ -1488,7 +1488,7 @@ def apply_job(job_id):
     notification = Notification(
         user_id=job.hr_id,
         message=f"{candidate.full_name} applied for {job.job_title}",
-        link=f"/job-applicants/{job.id}",
+        link=f"/candidate/{candidate.id}",
         image=candidate.profile_photo
     )
 
