@@ -179,6 +179,8 @@ class Notification(db.Model):
     is_read = db.Column(db.Boolean, default=False)
 
     type = db.Column(db.String(30))
+   
+    user_type = db.Column(db.String(20))
 
     created_at = db.Column(
         db.DateTime,
@@ -1130,7 +1132,29 @@ def candidate_support():
         )
 
         db.session.add(ticket)
+
+        db.session.flush()  # generates ticket.id
+
+        # NOTIFICATION
+
+        notification = Notification(
+            user_id=candidate.id,
+            message="Support ticket submitted successfully",
+            link="/candidate-support",
+            type="support",
+            is_read=False
+        )
+
+        db.session.add(notification)
+
         db.session.commit()
+
+        flash(
+            "Support ticket submitted successfully",
+            "success"
+        )
+
+        return redirect('/candidate-support')
 
     page = request.args.get(
         'page',
@@ -1316,6 +1340,7 @@ def follow_hr(id):
             message=f"{candidate.full_name} unfollowed you",
             link=f"/candidate/{candidate.id}",
             image=candidate.profile_photo
+            type="unfollow"
         )
 
         db.session.add(notification)
@@ -1334,6 +1359,8 @@ def follow_hr(id):
             message=f"{candidate.full_name} started following you",
             link=f"/candidate/{candidate.id}",
             image=candidate.profile_photo
+            type="follow"
+
         )
 
         db.session.add(notification)
@@ -1492,6 +1519,7 @@ def apply_job(job_id):
         message=f"{candidate.full_name} applied for {job.job_title}",
         link=f"/candidate/{candidate.id}",
         image=candidate.profile_photo
+        type="job_apply"
     )
 
     db.session.add(notification)
@@ -2219,7 +2247,6 @@ def user_reply(id):
     return redirect('/support')
 
 @app.route('/reply-ticket/<int:id>', methods=['POST'])
-
 @login_required
 def reply_ticket(id):
 
@@ -2239,9 +2266,27 @@ def reply_ticket(id):
     ticket = SupportTicket.query.get(id)
 
     if ticket:
+
         ticket.status = "Answered"
 
+        # NOTIFICATION
+
+        notification = Notification(
+            user_id=ticket.user_id,
+            message=f"Support replied to your ticket: {ticket.subject}",
+            link=f"/support",
+            type="support",
+            is_read=False
+        )
+
+        db.session.add(notification)
+
     db.session.commit()
+
+    flash(
+        "Reply sent successfully",
+        "success"
+    )
 
     return redirect('/admin/support')
 
@@ -2565,9 +2610,34 @@ def support():
 
         db.session.add(ticket)
 
+        db.session.flush()  # generates ticket.id
+
+        # NOTIFICATION
+
+        notification = Notification(
+            user_id=current_user.id,
+            message="Support ticket submitted successfully",
+            link=f"/ticket/{ticket.id}",
+            type="support",
+            is_read=False
+        )
+
+        db.session.add(notification)
+
         db.session.commit()
 
-    page = request.args.get('page', 1, type=int)
+        flash(
+            "Support ticket submitted successfully",
+            "success"
+        )
+
+        return redirect('/support')
+
+    page = request.args.get(
+        'page',
+        1,
+        type=int
+    )
 
     tickets = SupportTicket.query.filter_by(
         user_id=current_user.id
