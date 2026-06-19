@@ -1323,6 +1323,21 @@ def follow_candidate(id):
 
     return redirect(request.referrer)
 
+@app.route('/notifications')
+@login_required
+def notifications():
+
+    notifications = Notification.query.filter_by(
+        user_id=current_user.id
+    ).order_by(
+        Notification.created_at.desc()
+    ).all()
+
+    return render_template(
+        'notifications.html',
+        notifications=notifications
+    )
+
 @app.route('/post-job', methods=['GET','POST'])
 @login_required
 def post_job():
