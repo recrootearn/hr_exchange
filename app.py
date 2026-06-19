@@ -164,6 +164,30 @@ class JobPost(db.Model):
         default=datetime.utcnow
     )
 
+class Notification(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
+    message = db.Column(
+        db.Text,
+        nullable=False
+    )
+
+    is_read = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
 class JobApplication(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
