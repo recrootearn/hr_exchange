@@ -586,6 +586,27 @@ def home():
         User=User
     )
 
+@app.context_processor
+def inject_notifications():
+
+    unread_notifications = 0
+
+    try:
+
+        if current_user.is_authenticated:
+
+            unread_notifications = Notification.query.filter_by(
+                user_id=current_user.id,
+                is_read=False
+            ).count()
+
+    except:
+        pass
+
+    return dict(
+        unread_notifications=unread_notifications
+    )
+
 @app.route('/my-uploads')
 @login_required
 def my_uploads():
