@@ -860,7 +860,7 @@ body{
 
            <i class="far fa-bell"></i>
 
-           {% if unread_notifications > 0 %}
+           {% if unread_notifications|default(0) > 0 %}
            <span style="
                position:absolute;
                top:-3px;
