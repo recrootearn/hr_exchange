@@ -1478,6 +1478,26 @@ def post_job():
         )
 
         db.session.add(job)
+        db.session.commit()
+
+        # NOTIFY FOLLOWERS
+
+        followers = Follow.query.filter_by(
+            followed_hr_id=current_user.id
+        ).all()
+
+        for f in followers:
+
+            notification = Notification(
+                user_id=f.follower_candidate_id,
+                user_type="candidate",
+                type="job_post",
+                message=f"{current_user.company} posted a new job: {job.job_title}",
+                link=f"/job/{job.id}",
+                image=image_name
+            )
+
+            db.session.add(notification)
 
         db.session.commit()
 
