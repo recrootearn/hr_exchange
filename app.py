@@ -166,9 +166,21 @@ class JobPost(db.Model):
 
 class JobApplication(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    candidate_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    job_id = db.Column(db.Integer, db.ForeignKey('job.id'))
-    applied_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey('candidate_user.id')
+    )
+
+    job_id = db.Column(
+        db.Integer,
+        db.ForeignKey('job_post.id')
+    )
+
+    applied_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
 
 class Notification(db.Model):
 
