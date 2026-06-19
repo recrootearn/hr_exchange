@@ -1554,10 +1554,21 @@ def candidate_feed():
         type=int
     )
 
+    applied_jobs = []
+
+    if 'candidate_id' in session:
+
+        applications = JobApplication.query.filter_by(
+            candidate_id=session['candidate_id']
+        ).all()
+
+        applied_jobs = [a.job_id for a in applications]
+
     return render_template(
         'candidate_feed.html',
         jobs=jobs,
-        selected_id=selected_id
+        selected_id=selected_id,
+        applied_jobs=applied_jobs
     )
 
 @app.route('/apply-job/<int:job_id>')
