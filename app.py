@@ -168,20 +168,15 @@ class Notification(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(
-        db.Integer,
-        nullable=False
-    )
+    user_id = db.Column(db.Integer, nullable=False)
 
-    message = db.Column(
-        db.Text,
-        nullable=False
-    )
+    message = db.Column(db.Text)
 
-    is_read = db.Column(
-        db.Boolean,
-        default=False
-    )
+    link = db.Column(db.String(300))
+
+    image = db.Column(db.String(300))
+
+    is_read = db.Column(db.Boolean, default=False)
 
     created_at = db.Column(
         db.DateTime,
@@ -1316,7 +1311,9 @@ def follow_hr(id):
 
         notification = Notification(
             user_id=id,
-            message=f"{candidate.full_name} unfollowed you"
+            message=f"{candidate.full_name} unfollowed you",
+            link=f"/candidate-profile/{candidate.id}",
+            image=candidate.profile_photo
         )
 
         db.session.add(notification)
@@ -1332,7 +1329,9 @@ def follow_hr(id):
 
         notification = Notification(
             user_id=id,
-            message=f"{candidate.full_name} started following you"
+            message=f"{candidate.full_name} started following you",
+            link=f"/candidate-profile/{candidate.id}",
+            image=candidate.profile_photo
         )
 
         db.session.add(notification)
@@ -1480,8 +1479,6 @@ def apply_job(job_id):
 
     db.session.add(application)
 
-    # NOTIFICATION
-
     job = JobPost.query.get(job_id)
 
     candidate = CandidateUser.query.get(
@@ -1490,7 +1487,9 @@ def apply_job(job_id):
 
     notification = Notification(
         user_id=job.hr_id,
-        message=f"{candidate.full_name} applied for {job.job_title}"
+        message=f"{candidate.full_name} applied for {job.job_title}",
+        link=f"/job-applicants/{job.id}",
+        image=candidate.profile_photo
     )
 
     db.session.add(notification)
