@@ -1316,7 +1316,7 @@ def follow_hr(id):
 
         notification = Notification(
             user_id=id,
-            message=f"{candidate.first_name} unfollowed you"
+            message=f"{candidate.name} unfollowed you"
         )
 
         db.session.add(notification)
@@ -1332,7 +1332,7 @@ def follow_hr(id):
 
         notification = Notification(
             user_id=id,
-            message=f"{candidate.first_name} started following you"
+            message=f"{candidate.name} started following you"
         )
 
         db.session.add(notification)
