@@ -2,10 +2,6 @@
 
 {% block content %}
 
-<h2 class="mb-4">
-    Latest Jobs
-</h2>
-
 {% for job in jobs %}
 
 <div id="post{{ job.id }}"
@@ -112,13 +108,28 @@
 
             </a>
 
+            {% if job.id in applied_jobs %}
+
+            <button
+                class="btn btn-success"
+                disabled>
+
+                <i class="fas fa-check-circle"></i>
+                Applied
+
+            </button>
+
+            {% else %}
+
             <a href="/apply-job/{{ job.id }}"
                class="btn btn-primary">
 
                 <i class="fas fa-paper-plane"></i>
-                Apply
+                Apply Now
 
             </a>
+
+            {% endif %}
 
         </div>
 
@@ -212,6 +223,11 @@
     flex:1;
     border-radius:12px;
     font-weight:600;
+}
+
+.btn-success{
+    background:#16a34a !important;
+    border-color:#16a34a !important;
 }
 
 @media(max-width:768px){
