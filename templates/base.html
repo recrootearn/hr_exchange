@@ -668,9 +668,31 @@ body{
         RecrootEarn
     </div>
 
-    <div class="mobile-credit">
-        Candidate
-    </div>
+    <a href="/notifications"
+       class="mobile-credit"
+    style="text-decoration:none;position:relative;">
+
+         <i class="fas fa-bell"></i>
+
+         {% if unread_notifications|default(0) > 0 %}
+         <span style="
+             position:absolute;
+             top:-5px;
+             right:-5px;
+             background:red;
+             color:white;
+             border-radius:50%;
+             width:18px;
+             height:18px;
+             font-size:10px;
+             display:flex;
+             align-items:center;
+             justify-content:center;">
+             {{ unread_notifications }}
+        </span>
+        {% endif %}
+
+    </a>
 
 </div>
 
@@ -690,9 +712,31 @@ body{
         RecrootEarn
     </div>
 
-    <div class="mobile-credit">
-        {{ current_user.credits }}
-    </div>
+    <a href="/notifications"
+       class="mobile-credit"
+    style="text-decoration:none;position:relative;">
+
+         <i class="fas fa-bell"></i>
+
+         {% if unread_notifications|default(0) > 0 %}
+         <span style="
+             position:absolute;
+             top:-5px;
+             right:-5px;
+             background:red;
+             color:white;
+             border-radius:50%;
+             width:18px;
+             height:18px;
+             font-size:10px;
+             display:flex;
+             align-items:center;
+             justify-content:center;">
+             {{ unread_notifications }}
+        </span>
+        {% endif %}
+
+    </a>
 
 </div>
 
@@ -768,7 +812,7 @@ body{
 
 <!-- HR MENU -->
 
-<a href="/">
+<a href="/dashboard">
     <i class="fas fa-chart-line"></i>
     Dashboard
 </a>
@@ -926,7 +970,7 @@ body{
 
 <div class="bottom-nav">
 
-    <a href="/" class="nav-item">
+    <a href="/dashboard" class="nav-item">
         <i class="fas fa-home"></i>
         <span>Home</span>
     </a>
