@@ -1310,7 +1310,7 @@ def company_profile(id):
         is_following=is_following
     )
 
-@app.route('/candidate/<int:id>')S
+@app.route('/candidate/<int:id>')
 def view_candidates(id):
 
     candidate = CandidateUser.query.get_or_404(id)
