@@ -422,31 +422,7 @@ def inject_notifications():
 
     return dict(
         unread_notifications=unread_notifications
-    )<a href="/notifications"
-       class="mobile-credit"
-    style="text-decoration:none;position:relative;">
-
-         <i class="fas fa-bell"></i>
-
-         {% if unread_notifications|default(0) > 0 %}
-         <span style="
-             position:absolute;
-             top:-5px;
-             right:-5px;
-             background:red;
-             color:white;
-             border-radius:50%;
-             width:18px;
-             height:18px;
-             font-size:10px;
-             display:flex;
-             align-items:center;
-             justify-content:center;">
-             {{ unread_notifications }}
-        </span>
-        {% endif %}
-
-    </a>
+    )
 
 # =========================
 # USER ROUTES
