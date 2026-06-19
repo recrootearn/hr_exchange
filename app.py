@@ -1566,6 +1566,55 @@ def candidate_feed():
         applied_jobs=applied_jobs
     )
 
+@app.route('/discover-hr')
+def discover_hr():
+
+    city = request.args.get('city', '')
+
+    query = User.query.filter_by(
+        is_approved=True
+    )
+
+    if city:
+        query = query.filter(
+            User.company_city.contains(city)
+        )
+
+    hrs = query.order_by(
+        User.id.desc()
+    ).all()
+
+    return render_template(
+        'discover_hr.html',
+        hrs=hrs,
+        city=city,
+        Follow=Follow
+    )
+
+@app.route('/discover-candidates')
+@login_required
+def discover_candidates():
+
+    city = request.args.get('city', '')
+
+    query = CandidateUser.query
+
+    if city:
+        query = query.filter(
+            CandidateUser.city.contains(city)
+        )
+
+    candidates = query.order_by(
+        CandidateUser.id.desc()
+    ).all()
+
+    return render_template(
+        'discover_candidates.html',
+        candidates=candidates,
+        city=city,
+        Follow=Follow
+    )
+
 @app.route('/apply-job/<int:job_id>')
 def apply_job(job_id):
 
