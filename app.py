@@ -1572,6 +1572,46 @@ def followers():
         'followers.html'
     )
 
+@app.route('/notification/<int:id>')
+@login_required
+def open_notification(id):
+
+    n = Notification.query.get_or_404(id)
+
+    if n.user_id != current_user.id:
+        return redirect('/notifications')
+
+    n.is_read = True
+    db.session.commit()
+
+    if n.link:
+        return redirect(n.link)
+
+    return redirect('/notifications')
+
+@app.template_filter('timeago')
+def timeago(dt):
+
+    now = datetime.utcnow()
+
+    diff = now - dt
+
+    seconds = diff.total_seconds()
+
+    if seconds < 60:
+        return "Just now"
+
+    if seconds < 3600:
+        return f"{int(seconds/60)}m ago"
+
+    if seconds < 86400:
+        return f"{int(seconds/3600)}h ago"
+
+    if seconds < 604800:
+        return f"{int(seconds/86400)}d ago"
+
+    return dt.strftime("%d %b %Y")
+
 @app.route('/feed/<int:id>')
 @login_required
 def feed_post(id):

@@ -32,6 +32,13 @@
     transform:translateY(-2px);
 }
 
+.unread{
+
+    border-left:4px solid #2563eb;
+
+    background:#f8fbff;
+}
+
 .notif-avatar{
 
     width:55px;
@@ -58,12 +65,6 @@
     object-fit:cover;
 }
 
-.notif-avatar i{
-
-    font-size:22px;
-    color:#6b7280;
-}
-
 .notif-content{
 
     flex:1;
@@ -73,7 +74,6 @@
 
     font-size:15px;
     font-weight:600;
-    color:#111827;
 }
 
 .notif-time{
@@ -82,6 +82,24 @@
     color:#6b7280;
 
     margin-top:4px;
+}
+
+.notif-icon{
+
+    width:36px;
+    height:36px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#eef2ff;
+
+    color:#2563eb;
+
+    font-size:16px;
 }
 
 .empty-box{
@@ -97,59 +115,84 @@
     box-shadow:0 4px 12px rgba(0,0,0,.06);
 }
 
-</style>
+</style><h2 class="mb-4"><i class="fas fa-bell"></i>
+Notifications
 
-<h2 class="mb-4">
-    Notifications
-</h2>
+</h2>{% for n in notifications %}
 
-{% for n in notifications %}
+<a href="/notification/{{ n.id }}"
+class="notification-card {% if not n.is_read %}unread{% endif %}">
 
-<a href="{{ n.link or '#' }}"
-   class="notification-card">
+<div class="notif-avatar">
 
-    <div class="notif-avatar">
+    {% if n.image %}
 
-        {% if n.image %}
+        <img src="/static/uploads/{{ n.image }}">
 
-            <img src="/static/uploads/{{ n.image }}">
+    {% else %}
 
-        {% else %}
+        <i class="fas fa-user"></i>
 
-            <i class="fas fa-user"></i>
-
-        {% endif %}
-
-    </div>
-
-    <div class="notif-content">
-
-        <div class="notif-text">
-            {{ n.message }}
-        </div>
-
-        <div class="notif-time">
-
-            {{ n.created_at.strftime('%d %b %Y %I:%M %p') }}
-
-        </div>
-
-    </div>
-
-</a>
-
-{% else %}
-
-<div class="empty-box">
-
-    <h5>No notifications yet</h5>
-
-    <p class="text-muted mb-0">
-        Follow, applications and other activity will appear here.
-    </p>
+    {% endif %}
 
 </div>
 
-{% endfor %}
+<div class="notif-content">
+
+    <div class="notif-text">
+
+        {{ n.message }}
+
+    </div>
+
+    <div class="notif-time">
+
+        {{ n.created_at|timeago }}
+
+    </div>
+
+</div>
+
+<div class="notif-icon">
+
+    {% if n.type == "follow" %}
+
+        <i class="fas fa-user-plus"></i>
+
+    {% elif n.type == "job_apply" %}
+
+        <i class="fas fa-briefcase"></i>
+
+    {% elif n.type == "message" %}
+
+        <i class="fas fa-comment"></i>
+
+    {% elif n.type == "support" %}
+
+        <i class="fas fa-headset"></i>
+
+    {% elif n.type == "credit" %}
+
+        <i class="fas fa-coins"></i>
+
+    {% else %}
+
+        <i class="fas fa-bell"></i>
+
+    {% endif %}
+
+</div>
+
+</a>{% else %}
+
+<div class="empty-box"><h5>No notifications yet</h5>
+
+<p class="text-muted mb-0">
+
+    Follows, job applications, support replies and messages will appear here.
+
+</p>
+
+</div>{% endfor %}
 
 {% endblock %}
