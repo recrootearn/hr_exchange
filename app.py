@@ -422,7 +422,31 @@ def inject_notifications():
 
     return dict(
         unread_notifications=unread_notifications
-    )
+    )<a href="/notifications"
+       class="mobile-credit"
+    style="text-decoration:none;position:relative;">
+
+         <i class="fas fa-bell"></i>
+
+         {% if unread_notifications|default(0) > 0 %}
+         <span style="
+             position:absolute;
+             top:-5px;
+             right:-5px;
+             background:red;
+             color:white;
+             border-radius:50%;
+             width:18px;
+             height:18px;
+             font-size:10px;
+             display:flex;
+             align-items:center;
+             justify-content:center;">
+             {{ unread_notifications }}
+        </span>
+        {% endif %}
+
+    </a>
 
 # =========================
 # USER ROUTES
@@ -1306,9 +1330,20 @@ def follow_hr(id):
         followed_hr_id=id
     ).first()
 
+    candidate = CandidateUser.query.get(
+        session['candidate_id']
+    )
+
     if existing:
 
         db.session.delete(existing)
+
+        notification = Notification(
+            user_id=id,
+            message=f"{candidate.first_name} unfollowed you"
+        )
+
+        db.session.add(notification)
 
     else:
 
@@ -1318,6 +1353,13 @@ def follow_hr(id):
                 followed_hr_id=id
             )
         )
+
+        notification = Notification(
+            user_id=id,
+            message=f"{candidate.first_name} started following you"
+        )
+
+        db.session.add(notification)
 
     db.session.commit()
 
@@ -1461,6 +1503,22 @@ def apply_job(job_id):
     )
 
     db.session.add(application)
+
+    # NOTIFICATION
+
+    job = JobPost.query.get(job_id)
+
+    candidate = CandidateUser.query.get(
+        session['candidate_id']
+    )
+
+    notification = Notification(
+        user_id=job.hr_id,
+        message=f"{candidate.first_name} applied for {job.job_title}"
+    )
+
+    db.session.add(notification)
+
     db.session.commit()
 
     return redirect('/candidate-feed')
