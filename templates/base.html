@@ -469,10 +469,19 @@ body{
     }
 
     .mobile-logo{
+        position:absolute;
+        left:50%;
+        transform:translateX(-50%);
 
-        font-size:20px;
-        font-weight:800;
-        color:#2563eb;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .mobile-logo img{
+        height:42px;
+        width:auto;
+        object-fit:contain;
     }
 
     .mobile-credit{
@@ -691,7 +700,8 @@ body{
     </button>
 
     <div class="mobile-logo">
-        RecrootEarn
+        <img src="{{ url_for('static', filename='images/logo.png') }}"
+         alt="RecrootEarn">
     </div>
 
     <a href="/candidate-notifications"
