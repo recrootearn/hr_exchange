@@ -43,21 +43,19 @@ body{
 /* PAGE ANIMATION */
 
 .page-transition{
-    animation:fadePage 0.5s ease;
+    animation: instagramSlide 0.20s ease;
 }
 
-@keyframes fadePage{
-
+@keyframes instagramSlide{
     from{
         opacity:0;
-        transform:translateY(10px);
+        transform:translateY(8px);
     }
 
     to{
         opacity:1;
-        transform:translateY(0px);
+        transform:translateY(0);
     }
-
 }
 
 /* SPLASH SCREEN */
@@ -758,20 +756,6 @@ body{
      onclick="toggleSidebar()"></div>
 
 {% endif %}
-
-<!-- LOADER -->
-
-<div id="loader">
-
-    <div class="loader-content">
-
-        <h1>RecrootEarn</h1>
-
-        <p>Connecting Recruiters 🚀</p>
-
-    </div>
-
-</div>
 
 <!-- SIDEBAR --><div class="sidebar"><div class="logo">
     RecrootEarn
