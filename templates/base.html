@@ -1004,32 +1004,32 @@ body{
 
 <div class="bottom-nav">
 
-<a href="/dashboard" class="nav-btn active">
+<a href="/dashboard" class="nav-btn">
     <i class="fas fa-home"></i>
     <span>Home</span>
 </a>
 
-<a href="/discover-candidates" class="nav-btn active">
+<a href="/discover-candidates" class="nav-btn">
     <i class="fas fa-compass"></i>
     <span>Discover</span>
 </a>
 
-<a href="/unlocked" class="nav-btn active">
+<a href="/unlocked" class="nav-btn">
     <i class="fas fa-users"></i>
     <span>Leads</span>
 </a>
 
-<a href="/upload" class="nav-btn active">
+<a href="/upload" class="nav-btn">
     <i class="fas fa-upload"></i>
     <span>Upload</span>
 </a>
 
-<a href="/wallet" class="nav-btn active">
+<a href="/wallet" class="nav-btn">
     <i class="fas fa-wallet"></i>
     <span>Wallet</span>
 </a>
 
-<a href="/profile" class="nav-btn active">
+<a href="/profile" class="nav-btn">
     <i class="fas fa-user"></i>
     <span>Profile</span>
 </a>
@@ -1105,20 +1105,15 @@ font-weight:600;
 
 <script>
 
-const navBtns =
-document.querySelectorAll('.nav-btn');
+const currentPath = window.location.pathname;
 
-navBtns.forEach(btn=>{
+document.querySelectorAll(".nav-btn").forEach(btn => {
 
-btn.addEventListener('click',()=>{
+    if(btn.getAttribute("href") === currentPath){
 
-navBtns.forEach(x=>
-x.classList.remove('active')
-);
+        btn.classList.add("active");
 
-btn.classList.add('active');
-
-});
+    }
 
 });
 
