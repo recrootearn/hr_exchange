@@ -4,6 +4,12 @@
 
 <style>
 
+html,
+body{
+    width:100%;
+    overflow-x:hidden;
+}
+
 body{
     background:
     linear-gradient(
@@ -15,6 +21,7 @@ body{
 
     min-height:100vh;
     overflow-x:hidden;
+    width:100%;
 }
 
 .mobile-bg{
@@ -76,17 +83,15 @@ body{
 /* WRAPPER */
 
 .login-wrapper{
-
     width:100%;
-    min-height:100vh;
-
+    min-height:100dvh;
+    padding:16px;
     display:flex;
-
     justify-content:center;
-
     align-items:center;
-
-    padding:10px;
+    overflow:hidden;
+    box-sizing:border-box;
+    background:transparent;
 }
 
 /* LOGIN BOX */
@@ -500,12 +505,13 @@ body{
     /* Floating card */
 
     .mobile-card{
-    width:calc(100vw - 20px);
+    width:100%;
     max-width:420px;
     background:white;
     border-radius:28px;
-    padding:22px;
+    padding:24px;
     box-sizing:border-box;
+    overflow:hidden;
 }
 
     /* Logo */
@@ -586,8 +592,11 @@ body{
 }
 
 .login-logo img{
-    width:220px;
+    width:240px;
+    max-width:100%;
     height:auto;
+    display:block;
+    margin:auto;
 }
 
 </style>
@@ -688,6 +697,20 @@ body{
         <div class="login-right">
 
     <div class="mobile-card">
+
+    <div style="text-align:center;margin-bottom:15px;">
+             <a href="/"
+                style="
+                display:inline-block;
+                padding:8px 18px;
+                border-radius:30px;
+                background:#eef4ff;
+                color:#0b5ed7;
+                text-decoration:none;
+                font-weight:600;">
+                ← Back to Home
+             </a>
+    </div>
 
         <div class="login-logo">
             <img src="{{ url_for('static', filename='images/logo.png') }}">
