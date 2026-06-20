@@ -547,63 +547,63 @@ body{
 
 .bottom-nav{
     position:fixed;
-    bottom:0;
-    left:0;
-    width:100%;
-    height:90px;
-    background:#fff;
+    bottom:15px;
+    left:50%;
+    transform:translateX(-50%);
+    width:95%;
+    max-width:450px;
+
+    background:#2563eb;
+
+    border-radius:40px;
+
+    padding:10px;
+
     display:flex;
-    overflow-x:auto;
-    scroll-snap-type:x mandatory;
-    scrollbar-width:none;
+    justify-content:space-between;
+    align-items:center;
+
     z-index:9999;
-    box-shadow:0 -5px 20px rgba(0,0,0,.08);
+
+    box-shadow:0 8px 25px rgba(0,0,0,.15);
 }
 
-.bottom-nav::-webkit-scrollbar{
+.nav-btn{
+    width:44px;
+    height:44px;
+
+    border-radius:25px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:white;
+    text-decoration:none;
+
+    transition:.3s;
+}
+
+.nav-btn span{
     display:none;
 }
 
-.nav-item{
-    min-width:90px;
-    flex-shrink:0;
-    scroll-snap-align:center;
-
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-
-    text-decoration:none;
-    color:#6b7280;
-
-    transition:.25s;
+.nav-btn.active{
+    width:auto;
+    padding:0 18px;
+    background:white;
+    color:#2563eb;
+    gap:8px;
 }
 
-.nav-item i{
-    width:46px;
-    height:46px;
-    border-radius:50%;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:#f3f4f6;
-    font-size:20px;
+.nav-btn.active span{
+    display:block;
+    font-size:14px;
+    font-weight:700;
 }
 
-.nav-item.active i{
-    width:62px;
-    height:62px;
-    background:linear-gradient(135deg,#2563eb,#4f46e5);
-    color:white;
-    transform:translateY(-10px);
-}
-
-.nav-item span{
-    font-size:11px;
-    margin-top:5px;
+.nav-btn i{
+    font-size:18px;
 }
 
 .candidate-card{
@@ -1002,36 +1002,36 @@ body{
 
 {% elif current_user.is_authenticated %}
 
-<div class="bottom-nav" id="bottomNav">
+<div class="bottom-nav">
 
-<a class="nav-item active" href="/dashboard">
-<i class="fas fa-home"></i>
-<span>Home</span>
+<a href="/dashboard" class="nav-btn active">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
 </a>
 
-<a class="nav-item" href="/leads">
-<i class="fas fa-users"></i>
-<span>Leads</span>
+<a href="/discover-candidates" class="nav-btn">
+    <i class="fas fa-compass"></i>
+    <span>Discover</span>
 </a>
 
-<a class="nav-item" href="/discover-candidates">
-<i class="fas fa-compass"></i>
-<span>Discover</span>
+<a href="/unlocked" class="nav-btn">
+    <i class="fas fa-users"></i>
+    <span>People</span>
 </a>
 
-<a class="nav-item" href="/upload-candidate">
-<i class="fas fa-upload"></i>
-<span>Upload</span>
+<a href="/upload" class="nav-btn">
+    <i class="fas fa-upload"></i>
+    <span>Upload</span>
 </a>
 
-<a class="nav-item" href="/wallet">
-<i class="fas fa-wallet"></i>
-<span>Wallet</span>
+<a href="/wallet" class="nav-btn">
+    <i class="fas fa-wallet"></i>
+    <span>Wallet</span>
 </a>
 
-<a class="nav-item" href="/profile">
-<i class="fas fa-user"></i>
-<span>Profile</span>
+<a href="/profile" class="nav-btn">
+    <i class="fas fa-user"></i>
+    <span>Profile</span>
 </a>
 
 </div>
@@ -1104,14 +1104,24 @@ font-weight:600;
 {% endif %}
 
 <script>
-const items = document.querySelectorAll('.nav-item');
 
-items.forEach(item=>{
-    item.addEventListener('click',()=>{
-        items.forEach(i=>i.classList.remove('active'));
-        item.classList.add('active');
-    });
+const navBtns =
+document.querySelectorAll('.nav-btn');
+
+navBtns.forEach(btn=>{
+
+btn.addEventListener('click',()=>{
+
+navBtns.forEach(x=>
+x.classList.remove('active')
+);
+
+btn.classList.add('active');
+
 });
+
+});
+
 </script>
 
 </body>
