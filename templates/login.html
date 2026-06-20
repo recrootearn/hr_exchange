@@ -410,10 +410,11 @@ body{
 }
 
 .mobile-logo img{
-    width:170px;
+    width:100%;
     height:auto;
     display:block;
-    margin:auto;
+    margin:0 auto;
+    object-fit:contain;
 }
 
 .mobile-tagline{
@@ -512,9 +513,10 @@ body{
     /* Logo */
 
     .mobile-logo{
-    display:block;
-    text-align:center;
-    margin-bottom:10px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:20px;
 }
 
     /* Titles */
