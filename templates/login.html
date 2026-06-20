@@ -410,17 +410,18 @@ body{
 }
 
 .mobile-logo img{
-    width:220px;
-    max-width:100%;
+    width:170px;
     height:auto;
+    display:block;
+    margin:auto;
 }
 
 .mobile-tagline{
     text-align:center;
-    font-size:15px;
+    font-size:14px;
     color:#6b7280;
     font-weight:600;
-    margin-bottom:25px;
+    margin-bottom:15px;
 }
 
 .mobile-card{
@@ -500,11 +501,11 @@ body{
     /* Floating card */
 
     .mobile-card{
-    width:calc(100vw - 20px);
+    width:calc(100vw - 30px);
     max-width:420px;
     background:white;
-    border-radius:28px;
-    padding:22px;
+    border-radius:32px;
+    padding:30px 22px;
     box-sizing:border-box;
 }
 
@@ -680,10 +681,6 @@ body{
 
         <div class="mobile-logo">
             <img src="{{ url_for('static', filename='images/logo.png') }}">
-        </div>
-
-        <div class="mobile-tagline">
-            Recruit • Connect • Earn
         </div>
 
             <form method="POST">
