@@ -25,6 +25,8 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 
 app = Flask(__name__)
 
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
+
 resend.api_key = "re_QT3qQPqz_Ngn6WAnA4A2ykKbH9CZEs6Fz"
 
 RAZORPAY_KEY = "rzp_live_SukwF35NxDKD1h"
