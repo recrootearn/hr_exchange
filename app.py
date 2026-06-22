@@ -81,6 +81,10 @@ class User(UserMixin, db.Model):
     is_approved = db.Column(db.Boolean, default=False)
     failed_logins = db.Column(db.Integer, default=0)
     last_login = db.Column(db.DateTime)
+    is_deleted = db.Column(
+        db.Boolean,
+        default=False
+    )
     referral_code = db.Column(db.String(20), unique=True)
 
     about_company = db.Column(db.Text)
@@ -716,6 +720,36 @@ def admin_referrals():
         'admin_referrals.html',
         referral_data=referral_data
     )
+
+@app.route('/admin/delete-user/<int:user_id>')
+@login_required
+def admin_delete_user(user_id):
+
+    user = User.query.get_or_404(user_id)
+
+    user.is_deleted = True
+
+    db.session.commit()
+
+    flash("HR deleted successfully")
+
+    return redirect(url_for('admin_users'))
+
+from werkzeug.security import generate_password_hash
+
+@app.route('/admin/reset-password/<int:user_id>')
+@login_required
+def admin_reset_password(user_id):
+
+    user = User.query.get_or_404(user_id)
+
+    user.password = generate_password_hash("123456")
+
+    db.session.commit()
+
+    flash("Password reset to 123456")
+
+    return redirect(url_for('admin_users'))
 
 # =========================
 # LOCKED CANDIDATES
@@ -1912,6 +1946,9 @@ def login():
 
         if not user:
             return "Invalid Login"
+
+        if user.is_deleted:
+            return "Account Deleted"
 
         if user.failed_logins >= 5:
             return "Blocked"
