@@ -9,14 +9,16 @@
 
 <style>
 
-html,
-body{
+html,body{
     margin:0;
     padding:0;
     width:100%;
     height:100%;
     overflow:hidden;
     background:#0B5ED7;
+
+    opacity:1;
+    transition:opacity .5s ease;
 }
 
 .splash{
@@ -76,11 +78,17 @@ body{
 
 const video = document.getElementById("intro");
 
-video.addEventListener("ended", function(){
+video.onended = function(){
 
-    window.location.href="/home";
+    document.body.style.opacity = "0";
 
-});
+    setTimeout(function(){
+
+        window.location.href = "/home";
+
+    },500);
+
+};
 
 </script>
 
