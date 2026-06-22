@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>RECROOTEARN</title>
 
@@ -18,141 +14,171 @@
     box-sizing:border-box;
 }
 
-html,
 body{
-    width:100%;
-    height:100%;
+    width:100vw;
+    height:100vh;
     overflow:hidden;
-    background:#0B5ED7;
-}
-
-body{
+    background:#0860DF;
     display:flex;
     justify-content:center;
     align-items:center;
-    font-family:Arial,sans-serif;
+    font-family:Arial, sans-serif;
 }
 
-.logo-container{
+.logo-wrapper{
     position:relative;
-    width:100%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
+    text-align:center;
 }
 
 .logo{
-    font-size:clamp(42px,8vw,120px);
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    font-size:clamp(40px,8vw,90px);
     font-weight:900;
-    text-transform:uppercase;
-    line-height:1;
-    text-align:center;
-    white-space:nowrap;
-
-    text-shadow:
-        0 0 10px rgba(255,255,255,.25),
-        0 0 25px rgba(255,255,255,.15);
+    letter-spacing:-2px;
 }
 
-.white{
-    color:white;
+.recroot{
+    color:#fff;
+    opacity:0;
+    animation:showRecroot .8s forwards;
 }
 
-.green{
-    color:#5AC43D;
+@keyframes showRecroot{
+    from{
+        opacity:0;
+        transform:scale(.8);
+    }
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+.earn{
+    color:#73D13D;
+    text-shadow:0 0 15px rgba(115,209,61,.4);
+}
+
+.earn span{
+    display:inline-block;
+    opacity:0;
+}
+
+.earn span:nth-child(1){
+    animation:flyIn .6s forwards;
+    animation-delay:.8s;
+}
+
+.earn span:nth-child(2){
+    animation:flyIn .6s forwards;
+    animation-delay:1.1s;
+}
+
+.earn span:nth-child(3){
+    animation:flyIn .6s forwards;
+    animation-delay:1.4s;
+}
+
+.earn span:nth-child(4){
+    animation:flyIn .6s forwards;
+    animation-delay:1.7s;
+}
+
+@keyframes flyIn{
+    from{
+        opacity:0;
+        transform:translate(120px,-120px) rotate(-20deg);
+    }
+    to{
+        opacity:1;
+        transform:translate(0,0) rotate(0);
+    }
 }
 
 .eyes{
     position:absolute;
-    top:-40px;
+    top:-70px;
     left:50%;
     transform:translateX(-50%);
-    width:140px;
-    height:20px;
+    opacity:0;
+    animation:showEyes .3s forwards;
+    animation-delay:2s;
+}
+
+@keyframes showEyes{
+    to{
+        opacity:1;
+    }
 }
 
 .eye{
-    width:32px;
-    height:16px;
-    border-top:5px solid #111;
+    width:45px;
+    height:22px;
+    border-top:6px solid #111;
     border-radius:50%;
-    position:absolute;
+    display:inline-block;
+    margin:0 18px;
     animation:blink 4s infinite;
 }
 
-.eye.left{
-    left:20px;
-}
-
-.eye.right{
-    right:20px;
-}
-
 @keyframes blink{
-
     0%,45%,55%,100%{
         transform:scaleY(1);
     }
 
     50%{
-        transform:scaleY(.1);
+        transform:scaleY(.15);
     }
-
 }
 
-.sparkle{
+.spark{
     position:absolute;
-    width:6px;
-    height:6px;
+    width:8px;
+    height:8px;
     background:white;
     border-radius:50%;
+    opacity:0;
     box-shadow:0 0 12px white;
-    animation:float 2s infinite ease-in-out;
 }
 
 .s1{
-    top:-10px;
-    right:140px;
+    top:10px;
+    right:150px;
+    animation:sparkle 2s infinite;
+    animation-delay:2.2s;
 }
 
 .s2{
     top:-20px;
     right:100px;
-    animation-delay:.2s;
+    animation:sparkle 2s infinite;
+    animation-delay:2.5s;
 }
 
 .s3{
-    top:20px;
+    top:35px;
     right:70px;
-    animation-delay:.4s;
+    animation:sparkle 2s infinite;
+    animation-delay:2.8s;
 }
 
 .s4{
-    top:-10px;
-    right:30px;
-    animation-delay:.6s;
+    top:65px;
+    right:130px;
+    animation:sparkle 2s infinite;
+    animation-delay:3.1s;
 }
 
 .s5{
-    top:15px;
-    right:-10px;
-    animation-delay:.8s;
+    top:20px;
+    right:20px;
+    animation:sparkle 2s infinite;
+    animation-delay:3.4s;
 }
 
-.s6{
-    top:50px;
-    right:100px;
-    animation-delay:1s;
-}
-
-.s7{
-    top:60px;
-    right:50px;
-    animation-delay:1.2s;
-}
-
-@keyframes float{
+@keyframes sparkle{
 
     0%{
         opacity:0;
@@ -161,7 +187,7 @@ body{
 
     50%{
         opacity:1;
-        transform:scale(1.3);
+        transform:scale(1.5);
     }
 
     100%{
@@ -171,72 +197,69 @@ body{
 
 }
 
-.corner-star{
+.star{
     position:fixed;
-    right:20px;
-    bottom:20px;
-    font-size:30px;
-    color:rgba(255,255,255,.4);
+    right:25px;
+    bottom:25px;
+    color:white;
+    opacity:.45;
+    font-size:45px;
     animation:twinkle 2s infinite;
 }
 
 @keyframes twinkle{
 
     50%{
-        opacity:.2;
+        opacity:.15;
         transform:scale(.8);
     }
 
 }
 
 </style>
-
 </head>
 
 <body>
 
-<div class="logo-container">
+<div class="logo-wrapper">
 
     <div class="eyes">
-
-        <div class="eye left"></div>
-
-        <div class="eye right"></div>
-
+        <span class="eye"></span>
+        <span class="eye"></span>
     </div>
 
     <div class="logo">
 
-        <span class="white">
+        <span class="recroot">
             RECROOT
         </span>
 
-        <span class="green">
-            EARN
+        <span class="earn">
+            <span>E</span>
+            <span>A</span>
+            <span>R</span>
+            <span>N</span>
         </span>
 
     </div>
 
-    <div class="sparkle s1"></div>
-    <div class="sparkle s2"></div>
-    <div class="sparkle s3"></div>
-    <div class="sparkle s4"></div>
-    <div class="sparkle s5"></div>
-    <div class="sparkle s6"></div>
-    <div class="sparkle s7"></div>
+    <div class="spark s1"></div>
+    <div class="spark s2"></div>
+    <div class="spark s3"></div>
+    <div class="spark s4"></div>
+    <div class="spark s5"></div>
 
 </div>
+
+<div class="star">✦</div>
 
 <script>
 
 setTimeout(function(){
-
-    window.location.href = "/home";
-
-},6000);
+    window.location.href="/login";
+},7000);
 
 </script>
 
 </body>
-
 </html>
