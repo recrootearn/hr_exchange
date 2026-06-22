@@ -731,6 +731,10 @@ def admin_delete_user(user_id):
 
     user.is_deleted = True
 
+    user.email = f"deleted_{user.id}@deleted.com"
+    user.mobile = f"deleted_{user.id}"
+    user.username = f"deleted_{user.id}"
+
     db.session.commit()
 
     flash("HR deleted successfully")
