@@ -450,6 +450,13 @@ def inject_notifications():
 def landing():
 
     return render_template(
+        'splash.html'
+    )
+
+@app.route('/home')
+def home_page():
+
+    return render_template(
         'index.html'
     )
 
