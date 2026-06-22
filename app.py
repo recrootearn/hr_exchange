@@ -2667,6 +2667,18 @@ def export_candidate_users():
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
+@app.route('/admin/candidate/<int:id>')
+def admin_view_candidate(id):
+    pass
+
+@app.route('/admin/candidate/<int:id>/edit')
+def admin_edit_candidate(id):
+    pass
+
+@app.route('/admin/candidate/<int:id>/delete')
+def admin_delete_candidate(id):
+    pass
+
 # =========================
 # START APP
 # =========================
