@@ -2560,6 +2560,43 @@ def admin_logs():
         logs=logs
     )
 
+@app.route('/admin/candidate-users')
+@login_required
+def admin_candidate_users():
+
+    if not admin_only():
+        return "Access Denied"
+
+    name = request.args.get('name', '')
+    city = request.args.get('city', '')
+    mobile = request.args.get('mobile', '')
+
+    query = CandidateUser.query
+
+    if name:
+        query = query.filter(
+            CandidateUser.full_name.contains(name)
+        )
+
+    if city:
+        query = query.filter(
+            CandidateUser.city.contains(city)
+        )
+
+    if mobile:
+        query = query.filter(
+            CandidateUser.mobile.contains(mobile)
+        )
+
+    candidates = query.order_by(
+        CandidateUser.id.desc()
+    ).all()
+
+    return render_template(
+        'admin_candidate_users.html',
+        candidates=candidates
+    )
+
 # =========================
 # START APP
 # =========================

@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3 class="mb-4">
+    Manage Candidate Users
+</h3>
+
+<form method="GET" class="row g-2 mb-4">
+
+    <div class="col-md-3">
+        <input
+            type="text"
+            name="name"
+            class="form-control"
+            placeholder="Search Name"
+            value="{{ request.args.get('name','') }}">
+    </div>
+
+    <div class="col-md-3">
+        <input
+            type="text"
+            name="mobile"
+            class="form-control"
+            placeholder="Search Mobile"
+            value="{{ request.args.get('mobile','') }}">
+    </div>
+
+    <div class="col-md-3">
+        <input
+            type="text"
+            name="city"
+            class="form-control"
+            placeholder="Search City"
+            value="{{ request.args.get('city','') }}">
+    </div>
+
+    <div class="col-md-3">
+        <button class="btn btn-primary w-100">
+            Search
+        </button>
+    </div>
+
+</form>
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-hover">
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+<th>Photo</th>
+<th>Name</th>
+<th>Mobile</th>
+<th>Email</th>
+<th>City</th>
+<th>Designation</th>
+<th>Experience</th>
+<th>Current Company</th>
+<th>Current CTC</th>
+<th>Expected CTC</th>
+<th>Skills</th>
+<th>Resume</th>
+<th>Joined</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for c in candidates %}
+
+<tr>
+
+<td>{{ c.id }}</td>
+
+<td>
+{% if c.profile_photo %}
+<img src="{{ url_for('static',
+filename='uploads/' + c.profile_photo) }}"
+width="50">
+{% endif %}
+</td>
+
+<td>{{ c.full_name }}</td>
+
+<td>{{ c.mobile }}</td>
+
+<td>{{ c.email }}</td>
+
+<td>{{ c.city }}</td>
+
+<td>{{ c.designation }}</td>
+
+<td>{{ c.experience }}</td>
+
+<td>{{ c.current_company }}</td>
+
+<td>{{ c.current_ctc }}</td>
+
+<td>{{ c.expected_ctc }}</td>
+
+<td>{{ c.skills }}</td>
+
+<td>
+
+{% if c.resume_file %}
+
+<a href="{{ url_for('static',
+filename='uploads/' + c.resume_file) }}"
+target="_blank">
+
+View Resume
+
+</a>
+
+{% endif %}
+
+</td>
+
+<td>{{ c.created_at.strftime('%d-%m-%Y') }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}
