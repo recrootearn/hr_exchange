@@ -1,3 +1,4 @@
+import logging
 import random
 import uuid
 from flask import session
@@ -1938,17 +1939,17 @@ def login():
             username=username
         ).first()
 
-        print("LOGIN USERNAME =", repr(username))
-        print("USER =", user)
+        logging.warning(f"LOGIN USERNAME = {repr(username)}")
+        logging.warning(f"USER = {user}")
 
         print("USERNAME =", request.form['username'])
 
         if user:
-            print("FOUND USER =", user.username)
+            logging.warning(f"FOUND USER = {user.username}")
             print("APPROVED =", user.is_approved)
             print("FAILED LOGINS =", user.failed_logins)
         else:
-            print("USER NOT FOUND")
+            logging.warning("USER NOT FOUND")
 
         if not user:
             return "Invalid Login"
