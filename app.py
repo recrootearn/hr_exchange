@@ -1892,6 +1892,15 @@ def login():
             username=request.form['username']
         ).first()
 
+        print("USERNAME =", request.form['username'])
+
+        if user:
+            print("FOUND USER =", user.username)
+            print("APPROVED =", user.is_approved)
+            print("FAILED LOGINS =", user.failed_logins)
+        else:
+            print("USER NOT FOUND")
+
         if not user:
             return "Invalid Login"
 
