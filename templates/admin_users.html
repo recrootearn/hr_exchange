@@ -2,64 +2,260 @@
 
 {% block content %}
 
-<h2 class="mb-4">All HR Users</h2>
+<div class="container-fluid">
 
-<a href="/export-unlocked"
-class="btn btn-success mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    Export Excel
+        <h2>All HR Users</h2>
 
-</a>
+        <a href="/export-unlocked"
+           class="btn btn-success">
 
-<table class="table table-bordered table-striped">
+            Export Excel
 
-    <tr>
+        </a>
 
-        <th>ID</th>
+    </div>
 
-        <th>Name</th>
+    <form method="GET" class="row g-2 mb-4">
 
-        <th>Company</th>
+        <div class="col-md-3">
 
-        <th>Mobile</th>
+            <input
+                type="text"
+                name="name"
+                class="form-control"
+                placeholder="Search Name"
+                value="{{ request.args.get('name','') }}">
 
-        <th>Credits</th>
+        </div>
 
-        <th>Trust Score</th>
+        <div class="col-md-3">
 
-        <th>Action</th>
+            <input
+                type="text"
+                name="mobile"
+                class="form-control"
+                placeholder="Search Mobile"
+                value="{{ request.args.get('mobile','') }}">
 
-    </tr>
+        </div>
 
-    {% for user in users %}
+        <div class="col-md-3">
 
-    <tr>
+            <input
+                type="text"
+                name="city"
+                class="form-control"
+                placeholder="Search City"
+                value="{{ request.args.get('city','') }}">
 
-        <td>{{ user.id }}</td>
+        </div>
 
-        <td>{{ user.first_name }}</td>
+        <div class="col-md-2">
 
-        <td>{{ user.company }}</td>
+            <select
+                name="sort"
+                class="form-control">
 
-        <td>{{ user.mobile }}</td>
+                <option value="new">
+                    Newest First
+                </option>
 
-        <td>{{ user.credits }}</td>
+                <option value="old">
+                    Oldest First
+                </option>
 
-        <td>{{ user.trust_score }}</td>
+            </select>
 
-        <td>
+        </div>
 
-            <a href="/ban-user/{{ user.id }}"
-               class="btn btn-danger btn-sm">
-               Ban
-            </a>
+        <div class="col-md-1">
 
-        </td>
+            <button class="btn btn-primary w-100">
 
-    </tr>
+                Search
 
-    {% endfor %}
+            </button>
 
-</table>
+        </div>
+
+    </form>
+
+    <div class="mb-3">
+
+        <span class="badge bg-primary">
+
+            Total HR Users :
+            {{ users|length }}
+
+        </span>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Company</th>
+                            <th>Mobile</th>
+                            <th>Email</th>
+                            <th>City</th>
+                            <th>HR Type</th>
+                            <th>Credits</th>
+                            <th>Trust Score</th>
+                            <th>Wallet</th>
+                            <th>Last Login</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for user in users %}
+
+                        <tr>
+
+                            <td>{{ user.id }}</td>
+
+                            <td>
+                                {{ user.first_name }}
+                                {{ user.last_name }}
+                            </td>
+
+                            <td>
+                                {{ user.username }}
+                            </td>
+
+                            <td>
+                                {{ user.company }}
+                            </td>
+
+                            <td>
+                                {{ user.mobile }}
+                            </td>
+
+                            <td>
+                                {{ user.email }}
+                            </td>
+
+                            <td>
+                                {{ user.company_city }}
+                            </td>
+
+                            <td>
+                                {{ user.hr_type }}
+                            </td>
+
+                            <td>
+                                {{ user.credits }}
+                            </td>
+
+                            <td>
+                                {{ user.trust_score }}
+                            </td>
+
+                            <td>
+                                ₹{{ user.wallet_balance }}
+                            </td>
+
+                            <td>
+
+                                {% if user.last_login %}
+
+                                    {{ user.last_login.strftime('%d-%m-%Y %H:%M') }}
+
+                                {% else %}
+
+                                    Never
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if user.is_deleted %}
+
+                                <span class="badge bg-danger">
+
+                                    Deleted
+
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-success">
+
+                                    Active
+
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if not user.is_deleted %}
+
+                                <a
+                                href="/admin/delete-user/{{ user.id }}"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this HR account?')">
+
+                                    Delete
+
+                                </a>
+
+                                {% else %}
+
+                                <span class="badge bg-secondary">
+
+                                    Deleted
+
+                                </span>
+
+                                {% endif %}
+
+                                <a
+                                href="/admin/reset-password/{{ user.id }}"
+                                class="btn btn-warning btn-sm mt-1">
+
+                                    Reset Password
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 {% endblock %}
