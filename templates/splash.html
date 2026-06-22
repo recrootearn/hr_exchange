@@ -45,7 +45,7 @@ body{
         object-fit:contain;
 
         /* Move video upward only on mobile */
-        transform:translateY(-15%);
+        transform:translateY(-12%);
     }
 
 }
@@ -74,11 +74,13 @@ body{
 
 <script>
 
-setTimeout(function(){
+const video = document.getElementById("intro");
 
-    window.location.href="{{ next_page }}";
+video.addEventListener("ended", function(){
 
-},10000);
+    window.location.href="/home";
+
+});
 
 </script>
 
