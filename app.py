@@ -1932,7 +1932,7 @@ def login():
 
     if request.method == 'POST':
 
-        username = request.form['username'].strip().upper()
+        username = request.form['username'].strip()
         password = request.form['password'].strip()
 
         user = User.query.filter_by(
