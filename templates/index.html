@@ -197,6 +197,14 @@ body{
 
 </div>
 
+<script>
+
+if (performance.getEntriesByType("navigation")[0].type === "reload") {
+    window.location.href = "/splash?next=/home";
+}
+
+</script>
+
 </body>
 
 </html>
