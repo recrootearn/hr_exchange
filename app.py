@@ -2592,9 +2592,15 @@ def admin_candidate_users():
         CandidateUser.id.desc()
     ).all()
 
+    total_candidates = CandidateUser.query.count()
+
+    total_applications = JobApplication.query.count()
+
     return render_template(
         'admin_candidate_users.html',
-        candidates=candidates
+        candidates=candidates,
+        total_candidates=total_candidates,
+        total_applications=total_applications
     )
 
 # =========================

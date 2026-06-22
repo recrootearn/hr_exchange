@@ -2,135 +2,218 @@
 
 {% block content %}
 
-<h3 class="mb-4">
-    Manage Candidate Users
-</h3>
+<div class="container-fluid">
 
-<form method="GET" class="row g-2 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <div class="col-md-3">
-        <input
-            type="text"
-            name="name"
-            class="form-control"
-            placeholder="Search Name"
-            value="{{ request.args.get('name','') }}">
+        <h3>
+            Manage Candidate Users
+        </h3>
+
+        <a href="/admin/candidate-users/export"
+           class="btn btn-success">
+
+            <i class="fas fa-file-excel"></i>
+            Export Excel
+
+        </a>
+
     </div>
 
-    <div class="col-md-3">
-        <input
-            type="text"
-            name="mobile"
-            class="form-control"
-            placeholder="Search Mobile"
-            value="{{ request.args.get('mobile','') }}">
+    <form method="GET" class="row g-2 mb-4">
+
+        <div class="col-md-3">
+
+            <input
+                type="text"
+                name="name"
+                class="form-control"
+                placeholder="Search Name"
+                value="{{ request.args.get('name','') }}">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <input
+                type="text"
+                name="mobile"
+                class="form-control"
+                placeholder="Search Mobile"
+                value="{{ request.args.get('mobile','') }}">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <input
+                type="text"
+                name="city"
+                class="form-control"
+                placeholder="Search City"
+                value="{{ request.args.get('city','') }}">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <button class="btn btn-primary w-100">
+
+                <i class="fas fa-search"></i>
+                Search
+
+            </button>
+
+        </div>
+
+    </form>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Photo</th>
+                            <th>Name</th>
+                            <th>Mobile</th>
+                            <th>Email</th>
+                            <th>Username</th>
+                            <th>City</th>
+                            <th>Designation</th>
+                            <th>Experience</th>
+                            <th>Current Company</th>
+                            <th>Current CTC</th>
+                            <th>Expected CTC</th>
+                            <th>Skills</th>
+                            <th>About</th>
+                            <th>Resume</th>
+                            <th>Applied Jobs</th>
+                            <th>Joined</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for c in candidates %}
+
+                        <tr>
+
+                            <td>{{ c.id }}</td>
+
+                            <td>
+
+                                {% if c.profile_photo %}
+
+                                <img
+                                    src="{{ url_for('static', filename='uploads/' + c.profile_photo) }}"
+                                    style="width:60px;height:60px;border-radius:50%;object-fit:cover;">
+
+                                {% else %}
+
+                                <span class="text-muted">
+                                    No Photo
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>{{ c.full_name }}</td>
+
+                            <td>{{ c.mobile }}</td>
+
+                            <td>{{ c.email }}</td>
+
+                            <td>{{ c.username }}</td>
+
+                            <td>{{ c.city }}</td>
+
+                            <td>{{ c.designation }}</td>
+
+                            <td>{{ c.experience }}</td>
+
+                            <td>{{ c.current_company }}</td>
+
+                            <td>{{ c.current_ctc }}</td>
+
+                            <td>{{ c.expected_ctc }}</td>
+
+                            <td style="min-width:250px;">
+                                {{ c.skills }}
+                            </td>
+
+                            <td style="min-width:250px;">
+                                {{ c.about_me }}
+                            </td>
+
+                            <td>
+
+                                {% if c.resume_file %}
+
+                                <a
+                                    href="{{ url_for('static', filename='uploads/' + c.resume_file) }}"
+                                    target="_blank"
+                                    class="btn btn-sm btn-primary">
+
+                                    View Resume
+
+                                </a>
+
+                                {% else %}
+
+                                <span class="text-muted">
+                                    No Resume
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% set applied_count = JobApplication.query.filter_by(candidate_id=c.id).count() %}
+
+                                <span class="badge bg-success">
+
+                                    {{ applied_count }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                {% if c.created_at %}
+
+                                    {{ c.created_at.strftime('%d-%m-%Y') }}
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
     </div>
-
-    <div class="col-md-3">
-        <input
-            type="text"
-            name="city"
-            class="form-control"
-            placeholder="Search City"
-            value="{{ request.args.get('city','') }}">
-    </div>
-
-    <div class="col-md-3">
-        <button class="btn btn-primary w-100">
-            Search
-        </button>
-    </div>
-
-</form>
-
-<div class="table-responsive">
-
-<table class="table table-bordered table-hover">
-
-<thead>
-
-<tr>
-
-<th>ID</th>
-<th>Photo</th>
-<th>Name</th>
-<th>Mobile</th>
-<th>Email</th>
-<th>City</th>
-<th>Designation</th>
-<th>Experience</th>
-<th>Current Company</th>
-<th>Current CTC</th>
-<th>Expected CTC</th>
-<th>Skills</th>
-<th>Resume</th>
-<th>Joined</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{% for c in candidates %}
-
-<tr>
-
-<td>{{ c.id }}</td>
-
-<td>
-{% if c.profile_photo %}
-<img src="{{ url_for('static',
-filename='uploads/' + c.profile_photo) }}"
-width="50">
-{% endif %}
-</td>
-
-<td>{{ c.full_name }}</td>
-
-<td>{{ c.mobile }}</td>
-
-<td>{{ c.email }}</td>
-
-<td>{{ c.city }}</td>
-
-<td>{{ c.designation }}</td>
-
-<td>{{ c.experience }}</td>
-
-<td>{{ c.current_company }}</td>
-
-<td>{{ c.current_ctc }}</td>
-
-<td>{{ c.expected_ctc }}</td>
-
-<td>{{ c.skills }}</td>
-
-<td>
-
-{% if c.resume_file %}
-
-<a href="{{ url_for('static',
-filename='uploads/' + c.resume_file) }}"
-target="_blank">
-
-View Resume
-
-</a>
-
-{% endif %}
-
-</td>
-
-<td>{{ c.created_at.strftime('%d-%m-%Y') }}</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
 
 </div>
 
