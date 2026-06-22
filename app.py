@@ -139,6 +139,8 @@ class CandidateUser(UserMixin, db.Model):
 
     about_me = db.Column(db.Text)
 
+    is_deleted = db.Column(db.Boolean, default=False)
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
@@ -1097,20 +1099,39 @@ def candidate_login():
 
     if request.method == 'POST':
 
-        username = request.form['username']
+        username = request.form['username'].strip()
         password = request.form['password']
 
         user = CandidateUser.query.filter_by(
             username=username
         ).first()
 
+        # Candidate blocked by admin
+        if user and user.is_deleted:
+
+            flash(
+                'This account has been disabled by Admin. Please create a new account.',
+                'danger'
+            )
+
+            return redirect('/candidate-register')
+
+        # Normal login
         if user and user.password == password:
 
             session['candidate_id'] = user.id
 
+            flash(
+                'Login Successful',
+                'success'
+            )
+
             return redirect('/candidate-dashboard')
 
-        flash('Invalid Login')
+        flash(
+            'Invalid Username or Password',
+            'danger'
+        )
 
     return render_template('candidate_login.html')
 
@@ -2667,17 +2688,25 @@ def export_candidate_users():
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
-@app.route('/admin/candidate/<int:id>')
-def admin_view_candidate(id):
-    pass
-
-@app.route('/admin/candidate/<int:id>/edit')
-def admin_edit_candidate(id):
-    pass
-
 @app.route('/admin/candidate/<int:id>/delete')
+@login_required
 def admin_delete_candidate(id):
-    pass
+
+    if not admin_only():
+        return "Access Denied"
+
+    candidate = CandidateUser.query.get_or_404(id)
+
+    candidate.is_deleted = True
+
+    db.session.commit()
+
+    flash(
+        "Candidate marked as deleted successfully",
+        "success"
+    )
+
+    return redirect('/admin/candidate-users')
 
 # =========================
 # START APP
