@@ -460,6 +460,16 @@ def home_page():
         'index.html'
     )
 
+@app.route('/splash')
+def splash():
+
+    next_page = request.args.get('next', '/home')
+
+    return render_template(
+        'splash.html',
+        next_page=next_page
+    )
+
 @app.route('/dashboard')
 @login_required
 def home():
