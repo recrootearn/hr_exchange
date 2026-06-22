@@ -1,33 +1,192 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>RECROOTEARN</title>
 
 <style>
 
-html,body{
+*{
     margin:0;
     padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#0860DF;
+    background:#0B5ED7;
 }
 
-.splash{
-    width:100vw;
-    height:100vh;
+body{
     display:flex;
     justify-content:center;
     align-items:center;
-    background:#0860DF;
+    font-family:Arial,sans-serif;
 }
 
-#intro{
+.logo-container{
+    position:relative;
     width:100%;
-    height:100%;
-    object-fit:contain;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+}
+
+.logo{
+    font-size:clamp(42px,8vw,120px);
+    font-weight:900;
+    text-transform:uppercase;
+    line-height:1;
+    text-align:center;
+    white-space:nowrap;
+
+    text-shadow:
+        0 0 10px rgba(255,255,255,.25),
+        0 0 25px rgba(255,255,255,.15);
+}
+
+.white{
+    color:white;
+}
+
+.green{
+    color:#5AC43D;
+}
+
+.eyes{
+    position:absolute;
+    top:-40px;
+    left:50%;
+    transform:translateX(-50%);
+    width:140px;
+    height:20px;
+}
+
+.eye{
+    width:32px;
+    height:16px;
+    border-top:5px solid #111;
+    border-radius:50%;
+    position:absolute;
+    animation:blink 4s infinite;
+}
+
+.eye.left{
+    left:20px;
+}
+
+.eye.right{
+    right:20px;
+}
+
+@keyframes blink{
+
+    0%,45%,55%,100%{
+        transform:scaleY(1);
+    }
+
+    50%{
+        transform:scaleY(.1);
+    }
+
+}
+
+.sparkle{
+    position:absolute;
+    width:6px;
+    height:6px;
+    background:white;
+    border-radius:50%;
+    box-shadow:0 0 12px white;
+    animation:float 2s infinite ease-in-out;
+}
+
+.s1{
+    top:-10px;
+    right:140px;
+}
+
+.s2{
+    top:-20px;
+    right:100px;
+    animation-delay:.2s;
+}
+
+.s3{
+    top:20px;
+    right:70px;
+    animation-delay:.4s;
+}
+
+.s4{
+    top:-10px;
+    right:30px;
+    animation-delay:.6s;
+}
+
+.s5{
+    top:15px;
+    right:-10px;
+    animation-delay:.8s;
+}
+
+.s6{
+    top:50px;
+    right:100px;
+    animation-delay:1s;
+}
+
+.s7{
+    top:60px;
+    right:50px;
+    animation-delay:1.2s;
+}
+
+@keyframes float{
+
+    0%{
+        opacity:0;
+        transform:scale(.2);
+    }
+
+    50%{
+        opacity:1;
+        transform:scale(1.3);
+    }
+
+    100%{
+        opacity:0;
+        transform:translateY(-15px) scale(.2);
+    }
+
+}
+
+.corner-star{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    font-size:30px;
+    color:rgba(255,255,255,.4);
+    animation:twinkle 2s infinite;
+}
+
+@keyframes twinkle{
+
+    50%{
+        opacity:.2;
+        transform:scale(.8);
+    }
+
 }
 
 </style>
@@ -36,29 +195,48 @@ html,body{
 
 <body>
 
-<div class="splash">
+<div class="logo-container">
 
-    <video
-        id="intro"
-        autoplay
-        muted
-        playsinline>
+    <div class="eyes">
 
-        <source
-        src="{{ url_for('static', filename='videos/intro.mp4') }}"
-        type="video/mp4">
+        <div class="eye left"></div>
 
-    </video>
+        <div class="eye right"></div>
+
+    </div>
+
+    <div class="logo">
+
+        <span class="white">
+            RECROOT
+        </span>
+
+        <span class="green">
+            EARN
+        </span>
+
+    </div>
+
+    <div class="sparkle s1"></div>
+    <div class="sparkle s2"></div>
+    <div class="sparkle s3"></div>
+    <div class="sparkle s4"></div>
+    <div class="sparkle s5"></div>
+    <div class="sparkle s6"></div>
+    <div class="sparkle s7"></div>
 
 </div>
 
 <script>
 
 setTimeout(function(){
-    window.location.href="/home";
-},10000);
+
+    window.location.href = "/home";
+
+},6000);
 
 </script>
 
 </body>
+
 </html>
