@@ -1,263 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>RECROOTEARN</title>
 
 <style>
 
-*{
+html,
+body{
     margin:0;
     padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    width:100vw;
-    height:100vh;
+    width:100%;
+    height:100%;
     overflow:hidden;
-    background:#0860DF;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-family:Arial, sans-serif;
+    background:#0B5ED7;
 }
 
-.logo-wrapper{
-    position:relative;
-    text-align:center;
-}
-
-.logo{
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
-    font-size:clamp(40px,8vw,90px);
-    font-weight:900;
-    letter-spacing:-2px;
-}
-
-.recroot{
-    color:#fff;
-    opacity:0;
-    animation:showRecroot .8s forwards;
-}
-
-@keyframes showRecroot{
-    from{
-        opacity:0;
-        transform:scale(.8);
-    }
-    to{
-        opacity:1;
-        transform:scale(1);
-    }
-}
-
-.earn{
-    color:#73D13D;
-    text-shadow:0 0 15px rgba(115,209,61,.4);
-}
-
-.earn span{
-    display:inline-block;
-    opacity:0;
-}
-
-.earn span:nth-child(1){
-    animation:flyIn .6s forwards;
-    animation-delay:.8s;
-}
-
-.earn span:nth-child(2){
-    animation:flyIn .6s forwards;
-    animation-delay:1.1s;
-}
-
-.earn span:nth-child(3){
-    animation:flyIn .6s forwards;
-    animation-delay:1.4s;
-}
-
-.earn span:nth-child(4){
-    animation:flyIn .6s forwards;
-    animation-delay:1.7s;
-}
-
-@keyframes flyIn{
-    from{
-        opacity:0;
-        transform:translate(120px,-120px) rotate(-20deg);
-    }
-    to{
-        opacity:1;
-        transform:translate(0,0) rotate(0);
-    }
-}
-
-.eyes{
-    position:absolute;
-    top:-70px;
-    left:50%;
-    transform:translateX(-50%);
-    opacity:0;
-    animation:showEyes .3s forwards;
-    animation-delay:2s;
-}
-
-@keyframes showEyes{
-    to{
-        opacity:1;
-    }
-}
-
-.eye{
-    width:45px;
-    height:22px;
-    border-top:6px solid #111;
-    border-radius:50%;
-    display:inline-block;
-    margin:0 18px;
-    animation:blink 4s infinite;
-}
-
-@keyframes blink{
-    0%,45%,55%,100%{
-        transform:scaleY(1);
-    }
-
-    50%{
-        transform:scaleY(.15);
-    }
-}
-
-.spark{
-    position:absolute;
-    width:8px;
-    height:8px;
-    background:white;
-    border-radius:50%;
-    opacity:0;
-    box-shadow:0 0 12px white;
-}
-
-.s1{
-    top:10px;
-    right:150px;
-    animation:sparkle 2s infinite;
-    animation-delay:2.2s;
-}
-
-.s2{
-    top:-20px;
-    right:100px;
-    animation:sparkle 2s infinite;
-    animation-delay:2.5s;
-}
-
-.s3{
-    top:35px;
-    right:70px;
-    animation:sparkle 2s infinite;
-    animation-delay:2.8s;
-}
-
-.s4{
-    top:65px;
-    right:130px;
-    animation:sparkle 2s infinite;
-    animation-delay:3.1s;
-}
-
-.s5{
-    top:20px;
-    right:20px;
-    animation:sparkle 2s infinite;
-    animation-delay:3.4s;
-}
-
-@keyframes sparkle{
-
-    0%{
-        opacity:0;
-        transform:scale(.2);
-    }
-
-    50%{
-        opacity:1;
-        transform:scale(1.5);
-    }
-
-    100%{
-        opacity:0;
-        transform:translateY(-15px) scale(.2);
-    }
-
-}
-
-.star{
+#intro{
     position:fixed;
-    right:25px;
-    bottom:25px;
-    color:white;
-    opacity:.45;
-    font-size:45px;
-    animation:twinkle 2s infinite;
-}
+    top:0;
+    left:0;
 
-@keyframes twinkle{
+    width:100%;
+    height:100%;
 
-    50%{
-        opacity:.15;
-        transform:scale(.8);
-    }
+    object-fit:contain;
 
+    background:#0B5ED7;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div class="logo-wrapper">
+<video
+    id="intro"
+    autoplay
+    muted
+    playsinline>
 
-    <div class="eyes">
-        <span class="eye"></span>
-        <span class="eye"></span>
-    </div>
+    <source
+        src="{{ url_for('static', filename='intro.mp4') }}"
+        type="video/mp4">
 
-    <div class="logo">
-
-        <span class="recroot">
-            RECROOT
-        </span>
-
-        <span class="earn">
-            <span>E</span>
-            <span>A</span>
-            <span>R</span>
-            <span>N</span>
-        </span>
-
-    </div>
-
-    <div class="spark s1"></div>
-    <div class="spark s2"></div>
-    <div class="spark s3"></div>
-    <div class="spark s4"></div>
-    <div class="spark s5"></div>
-
-</div>
-
-<div class="star">✦</div>
+</video>
 
 <script>
 
-setTimeout(function(){
-    window.location.href="/login";
-},7000);
+const video = document.getElementById("intro");
+
+video.onended = function(){
+
+    window.location.href = "/home";
+
+};
 
 </script>
 
