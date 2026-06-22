@@ -80,6 +80,7 @@ class User(UserMixin, db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     is_approved = db.Column(db.Boolean, default=False)
     failed_logins = db.Column(db.Integer, default=0)
+    last_login = db.Column(db.DateTime)
     referral_code = db.Column(db.String(20), unique=True)
 
     about_company = db.Column(db.Text)
@@ -985,8 +986,10 @@ def register():
 
         # CHECK USERNAME
 
+        username = request.form['username'].strip().upper()
+
         if User.query.filter_by(
-            username=request.form['username']
+            username=username
         ).first():
 
             return "Username already exists"
@@ -1888,9 +1891,15 @@ def login():
 
     if request.method == 'POST':
 
+        username = request.form['username'].strip().upper()
+        password = request.form['password'].strip()
+
         user = User.query.filter_by(
-            username=request.form['username']
+            username=username
         ).first()
+
+        print("LOGIN USERNAME =", repr(username))
+        print("USER =", user)
 
         print("USERNAME =", request.form['username'])
 
@@ -1912,10 +1921,12 @@ def login():
 
         if check_password_hash(
             user.password,
-            request.form['password']
+            password
         ):
 
             user.failed_logins = 0
+
+            user.last_login = datetime.utcnow()
 
             # SINGLE DEVICE LOGIN
 
