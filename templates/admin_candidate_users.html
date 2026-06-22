@@ -10,6 +10,17 @@
             Manage Candidate Users
         </h3>
 
+        <div class="mb-3">
+
+            <span class="badge bg-primary">
+
+                Total Candidates :
+                {{ total_candidates }}
+
+            </span>
+
+        </div>
+
         <a href="/admin/candidate-users/export"
            class="btn btn-success">
 
@@ -84,6 +95,8 @@
                             <th>Skills</th>
                             <th>About</th>
                             <th>Resume</th>
+                            <th>Status</th>
+                            <th>Actions</th>
                             <th>Applied Jobs</th>
                             <th>Joined</th>
                         </tr>
@@ -168,7 +181,44 @@
                             </td>
 
                             <td>
-                                -
+
+                            {% if c.is_deleted %}
+
+                            <span class="badge bg-danger">
+                            Blocked
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-success">
+                            Active
+                            </span>
+
+                            {% endif %}
+
+                            </td>
+
+                            <td>
+
+                            {% if not c.is_deleted %}
+
+                            <a
+                            href="/admin/candidate/{{ c.id }}/delete"
+                            class="btn btn-danger btn-sm"
+                            onclick="return confirm('Are you sure you want to disable this candidate account?')">
+
+                            Delete
+
+                            </a>
+
+                            {% else %}
+
+                            <span class="badge bg-secondary">
+                            Disabled
+                            </span>
+
+                            {% endif %}
+
                             </td>
 
                             <td>
