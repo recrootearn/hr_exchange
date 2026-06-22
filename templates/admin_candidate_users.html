@@ -23,47 +23,37 @@
     <form method="GET" class="row g-2 mb-4">
 
         <div class="col-md-3">
-
             <input
                 type="text"
                 name="name"
                 class="form-control"
                 placeholder="Search Name"
                 value="{{ request.args.get('name','') }}">
-
         </div>
 
         <div class="col-md-3">
-
             <input
                 type="text"
                 name="mobile"
                 class="form-control"
                 placeholder="Search Mobile"
                 value="{{ request.args.get('mobile','') }}">
-
         </div>
 
         <div class="col-md-3">
-
             <input
                 type="text"
                 name="city"
                 class="form-control"
                 placeholder="Search City"
                 value="{{ request.args.get('city','') }}">
-
         </div>
 
         <div class="col-md-3">
-
             <button class="btn btn-primary w-100">
-
                 <i class="fas fa-search"></i>
                 Search
-
             </button>
-
         </div>
 
     </form>
@@ -79,7 +69,6 @@
                     <thead class="table-dark">
 
                         <tr>
-
                             <th>ID</th>
                             <th>Photo</th>
                             <th>Name</th>
@@ -97,7 +86,6 @@
                             <th>Resume</th>
                             <th>Applied Jobs</th>
                             <th>Joined</th>
-
                         </tr>
 
                     </thead>
@@ -180,23 +168,13 @@
                             </td>
 
                             <td>
-
-                                {% set applied_count = JobApplication.query.filter_by(candidate_id=c.id).count() %}
-
-                                <span class="badge bg-success">
-
-                                    {{ applied_count }}
-
-                                </span>
-
+                                -
                             </td>
 
                             <td>
 
                                 {% if c.created_at %}
-
                                     {{ c.created_at.strftime('%d-%m-%Y') }}
-
                                 {% endif %}
 
                             </td>
