@@ -14,6 +14,9 @@ from flask import Flask, render_template, request, redirect, session, url_for, f
 import os
 from datetime import datetime
 import pandas as pd
+from openpyxl import Workbook
+from flask import send_file
+import io
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
@@ -2601,6 +2604,67 @@ def admin_candidate_users():
         candidates=candidates,
         total_candidates=total_candidates,
         total_applications=total_applications
+    )
+
+@app.route('/admin/candidate-users/export')
+@login_required
+def export_candidate_users():
+
+    if not admin_only():
+        return "Access Denied"
+
+    wb = Workbook()
+    ws = wb.active
+
+    ws.title = "Candidate Users"
+
+    ws.append([
+        "ID",
+        "Name",
+        "Mobile",
+        "Email",
+        "City",
+        "Designation",
+        "Experience",
+        "Current Company",
+        "Current CTC",
+        "Expected CTC",
+        "Skills",
+        "Joined Date"
+    ])
+
+    candidates = CandidateUser.query.order_by(
+        CandidateUser.id.desc()
+    ).all()
+
+    for c in candidates:
+
+        ws.append([
+            c.id,
+            c.full_name,
+            c.mobile,
+            c.email,
+            c.city,
+            c.designation,
+            c.experience,
+            c.current_company,
+            c.current_ctc,
+            c.expected_ctc,
+            c.skills,
+            c.created_at.strftime('%d-%m-%Y')
+        ])
+
+    output = io.BytesIO()
+
+    wb.save(output)
+
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="candidate_users.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
 # =========================
