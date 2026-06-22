@@ -160,6 +160,95 @@ body{
 
 </div>
 
+<script>
+
+document.querySelector('input[name="photo"]').addEventListener(
+'change',
+function(e){
+
+    let file = e.target.files[0];
+
+    if(!file) return;
+
+    let reader = new FileReader();
+
+    reader.onload = function(event){
+
+        let img = new Image();
+
+        img.onload = function(){
+
+            let canvas =
+            document.createElement('canvas');
+
+            let maxSize = 800;
+
+            let width = img.width;
+            let height = img.height;
+
+            if(width > height){
+
+                if(width > maxSize){
+                    height *= maxSize / width;
+                    width = maxSize;
+                }
+
+            }else{
+
+                if(height > maxSize){
+                    width *= maxSize / height;
+                    height = maxSize;
+                }
+
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            let ctx = canvas.getContext('2d');
+
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                width,
+                height
+            );
+
+            canvas.toBlob(function(blob){
+
+                let compressedFile =
+                new File(
+                    [blob],
+                    file.name,
+                    {
+                        type:'image/jpeg'
+                    }
+                );
+
+                let dt =
+                new DataTransfer();
+
+                dt.items.add(compressedFile);
+
+                document.querySelector(
+                    'input[name="photo"]'
+                ).files = dt.files;
+
+            },'image/jpeg',0.8);
+
+        };
+
+        img.src = event.target.result;
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+</script>
+
 </body>
 
 </html>
