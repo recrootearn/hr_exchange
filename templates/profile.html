@@ -228,16 +228,15 @@
 
 <a href="/feed/{{ job.id }}" class="post-item">
 
-    {% set img = job.images if job.images else job.image %}
+    {% if job.images is not none and job.images != "" %}
 
-    {% if img %}
+        {% set first_image = job.images.split(',')[0] %}
 
-        {% if ',' in img %}
-            {% set first_image = img.split(',')[0] %}
-            <img src="/static/uploads/{{ first_image }}">
-        {% else %}
-            <img src="/static/uploads/{{ img }}">
-        {% endif %}
+        <img src="/static/uploads/{{ first_image }}">
+
+    {% elif job.image is not none and job.image != "" %}
+
+        <img src="/static/uploads/{{ job.image }}">
 
     {% else %}
 
