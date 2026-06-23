@@ -234,11 +234,12 @@
         <a href="/feed/{{ job.id }}"
         class="post-item">
 
-            {% if job.image %}
-
-                <img src="/static/uploads/{{ job.image }}">
-
-            {% else %}
+            {% if job.images %}
+                {% set first_image = job.images.split(',')[0] %}
+                <img src="/static/uploads/{{ first_image }}">
+        {% elif job.image %}
+            <img src="/static/uploads/{{ job.image }}">
+        {% endif %}
 
                 <img src="https://via.placeholder.com/500x500?text=JOB">
 
