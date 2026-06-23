@@ -214,9 +214,7 @@
 
             {% if job.images %}
 
-                {% set first_image = job.images.split(',')[0] %}
-
-                <img src="/static/uploads/{{ first_image }}">
+                <img src="/static/uploads/{{ job.images.split(',')[0] }}">
 
             {% elif job.image %}
 
