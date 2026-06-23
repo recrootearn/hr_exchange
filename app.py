@@ -1051,7 +1051,7 @@ def leads():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
 
-if request.method == 'POST':
+    if request.method == 'POST':
 
     # CHECK USERNAME
 
@@ -1229,7 +1229,7 @@ return render_template(
 @app.route('/candidate-register', methods=['GET','POST'])
 def candidate_register():
 
-if request.method == 'POST':
+    if request.method == 'POST':
 
     full_name = request.form['full_name']
 
