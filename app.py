@@ -2159,9 +2159,6 @@ def login():
                 username=login_id
             ).first()
 
-        logging.warning(f"LOGIN USERNAME = {repr(username)}")
-        logging.warning(f"USER = {user}")
-
         print("USERNAME =", request.form['username'])
 
         if user:
