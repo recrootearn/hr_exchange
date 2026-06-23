@@ -82,12 +82,25 @@
     aspect-ratio:1/1;
     overflow:hidden;
     position:relative;
+    background:#f5f5f5;
 }
 
 .post-item img{
     width:100%;
     height:100%;
     object-fit:cover;
+}
+
+.action-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+.action-buttons .btn{
+    flex:1;
+    border-radius:10px;
+    font-weight:600;
 }
 
 @media(min-width:768px){
@@ -117,7 +130,6 @@
     .bio{
         font-size:15px;
     }
-
 }
 
 </style>
@@ -176,25 +188,24 @@
 
             📍 {{ current_user.company_city or "India" }}
 
-            <br>
-
             {% if current_user.company_website %}
+            <br>
             🌐 {{ current_user.company_website }}
             {% endif %}
 
         </div>
 
-        <div class="d-flex gap-2 mt-3">
+        <div class="action-buttons">
 
             <a href="/edit-profile"
-               class="btn btn-light flex-fill">
+               class="btn btn-light">
 
                 Edit Profile
 
             </a>
 
             <a href="/post-job"
-               class="btn btn-primary flex-fill">
+               class="btn btn-primary">
 
                 + Post Job
 
@@ -218,25 +229,19 @@
         <a href="/feed/{{ job.id }}"
            class="post-item">
 
-            {% if job.images and job.images != '' %}
+            {% if job.images %}
 
                 {% set first_image = job.images.split(',')[0] %}
 
-                <img
-                src="/static/uploads/{{ first_image }}"
-                alt="Job Image">
+                <img src="/static/uploads/{{ first_image }}">
 
-            {% elif job.image and job.image != '' %}
+            {% elif job.image %}
 
-                <img
-                src="/static/uploads/{{ job.image }}"
-                alt="Job Image">
+                <img src="/static/uploads/{{ job.image }}">
 
             {% else %}
 
-                <img
-                src="https://via.placeholder.com/500x500?text=JOB"
-                alt="No Image">
+                <img src="https://via.placeholder.com/500x500?text=JOB">
 
             {% endif %}
 
