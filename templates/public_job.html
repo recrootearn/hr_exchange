@@ -1,0 +1,19 @@
+{% if session.get('candidate_id') %}
+
+<a href="/apply-job/{{ job.id }}"
+   class="btn btn-primary">
+
+    Apply Now
+
+</a>
+
+{% else %}
+
+<a href="/candidate-login?next=/apply-job/{{ job.id }}"
+   class="btn btn-primary">
+
+    Login To Apply
+
+</a>
+
+{% endif %}

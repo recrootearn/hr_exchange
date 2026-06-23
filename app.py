@@ -1912,6 +1912,11 @@ def apply_job(job_id):
 
     db.session.commit()
 
+    next_page = request.args.get('next')
+
+    if next_page:
+        return redirect(next_page)
+
     return redirect('/candidate-feed')
 
 @app.route('/job-applicants/<int:job_id>')
@@ -3005,6 +3010,20 @@ def admin_delete_candidate(id):
     )
 
     return redirect('/admin/candidate-users')
+
+@app.route('/job/<int:job_id>')
+def job_share(job_id):
+    return redirect(f'/job-details/{job_id}')
+
+@app.route('/job/<int:job_id>')
+def public_job(job_id):
+
+    job = Job.query.get_or_404(job_id)
+
+    return render_template(
+        'public_job.html',
+        job=job
+    )
 
 # =========================
 # START APP
