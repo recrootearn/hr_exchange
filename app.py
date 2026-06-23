@@ -317,6 +317,19 @@ class HRFollower(db.Model):
         default=datetime.utcnow
     )
 
+class CandidateContactUnlock(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    hr_id = db.Column(db.Integer)
+
+    candidate_user_id = db.Column(db.Integer)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
 class AdminLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     action = db.Column(db.String(300))
@@ -1401,6 +1414,7 @@ def company_profile(id):
     )
 
 @app.route('/candidate/<int:id>')
+@login_required
 def view_candidates(id):
 
     candidate = CandidateUser.query.get_or_404(id)
@@ -1409,10 +1423,31 @@ def view_candidates(id):
         followed_candidate_id=id
     ).count()
 
+    is_following = Follow.query.filter_by(
+        follower_hr_id=current_user.id,
+        followed_candidate_id=id
+    ).first()
+
+    contact_unlocked = CandidateContactUnlock.query.filter_by(
+    hr_id=current_user.id,
+    candidate_user_id=id
+    ).first()
+
+    has_applied = JobApplication.query.join(
+        JobPost,
+        JobPost.id == JobApplication.job_id
+    ).filter(
+        JobApplication.candidate_id == candidate.id,
+        JobPost.hr_id == current_user.id
+    ).first()
+
     return render_template(
         'candidate_view.html',
         candidate=candidate,
-        followers_count=followers_count
+        followers_count=followers_count,
+        is_following=is_following,
+    contact_unlocked=contact_unlocked,
+        has_applied=has_applied
     )
 
 @app.route('/follow-hr/<int:id>')
@@ -1479,7 +1514,11 @@ def follow_candidate(id):
         followed_candidate_id=id
     ).first()
 
-    if not existing:
+    if existing:
+
+        db.session.delete(existing)
+
+    else:
 
         follow = Follow(
             follower_hr_id=current_user.id,
@@ -1487,7 +1526,54 @@ def follow_candidate(id):
         )
 
         db.session.add(follow)
-        db.session.commit()
+
+    db.session.commit()
+
+    return redirect(request.referrer)
+
+@app.route('/unlock-contact/<int:id>')
+@login_required
+def unlock_contact(id):
+
+    existing = CandidateContactUnlock.query.filter_by(
+        hr_id=current_user.id,
+        candidate_user_id=id
+    ).first()
+
+    if existing:
+
+        flash("Already unlocked")
+
+        return redirect(request.referrer)
+
+    if current_user.credits < 2:
+
+        flash("Need 2 credits")
+
+        return redirect(request.referrer)
+
+    current_user.credits -= 2
+
+    db.session.add(
+
+        CandidateContactUnlock(
+            hr_id=current_user.id,
+            candidate_user_id=id
+        )
+    )
+
+    db.session.add(
+
+        CreditHistory(
+            user_id=current_user.id,
+            amount=-2,
+            action="Unlocked Candidate Contact"
+        )
+    )
+
+    db.session.commit()
+
+    flash("Contact unlocked successfully")
 
     return redirect(request.referrer)
 

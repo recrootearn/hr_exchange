@@ -183,30 +183,48 @@
 
 <div class="action-buttons">
 
-    <a href="/follow-candidate/{{ candidate.id }}"
-    class="btn btn-primary">
+    {% if is_following %}
 
+    <a href="/follow-candidate/{{ candidate.id }}"
+       class="btn btn-success">
+        Following ✓
+    </a>
+
+    {% else %}
+
+    <a href="/follow-candidate/{{ candidate.id }}"
+       class="btn btn-primary">
         Follow
     </a>
 
+    {% endif %}
+
+    {% if contact_unlocked or has_applied %}
+
     <a href="tel:{{ candidate.mobile }}"
     class="btn btn-success">
-
-        Call
+    Call
     </a>
 
     <a href="https://wa.me/{{ candidate.mobile }}"
     target="_blank"
     class="btn btn-success">
-
-        WhatsApp
+    WhatsApp
     </a>
 
     <a href="mailto:{{ candidate.email }}"
-    class="btn btn-outline-primary">
-
-        Email
+    class="btn btn-primary">
+    Email
     </a>
+
+    {% else %}
+
+    <a href="/unlock-contact/{{ candidate.id }}"
+    class="btn btn-warning">
+    Unlock Contact (2 Credits)
+    </a>
+
+{% endif %}
 
 </div>
 
