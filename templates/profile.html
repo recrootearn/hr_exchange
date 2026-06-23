@@ -224,39 +224,32 @@
 
     <div class="post-grid">
 
-        {% for job in jobs %}
+{% for job in jobs %}
 
-        <a href="/feed/{{ job.id }}"
-           class="post-item">
+<a href="/feed/{{ job.id }}" class="post-item">
 
-            {% if job.images %}
+    {% set img = job.images if job.images else job.image %}
 
-                {% set first_image = job.images.split(',')[0] %}
+    {% if img %}
 
-                <img src="/static/uploads/{{ first_image }}">
+        {% if ',' in img %}
+            {% set first_image = img.split(',')[0] %}
+            <img src="/static/uploads/{{ first_image }}">
+        {% else %}
+            <img src="/static/uploads/{{ img }}">
+        {% endif %}
 
-            {% set img = job.images or job.image %}
+    {% else %}
 
-            {% if img %}
+        <img src="https://via.placeholder.com/500x500?text=JOB">
 
-                {% if ',' in img %}
-                    {% set first_image = img.split(',')[0] %}
-                    <img src="/static/uploads/{{ first_image }}">
-                {% else %}
-                    <img src="/static/uploads/{{ img }}">
-                {% endif %}
+    {% endif %}
 
-            {% else %}
+</a>
 
-                <img src="https://via.placeholder.com/500x500?text=JOB">
+{% endfor %}
 
-            {% endif %}
-
-        </a>
-
-        {% endfor %}
-
-    </div>
+</div>
 
 </div>
 

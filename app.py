@@ -170,7 +170,7 @@ class JobPost(db.Model):
 
     description = db.Column(db.Text)
 
-    image = db.column(db.Text)
+    image = db.Column(db.Text)
 
     images = db.Column(db.Text)
 
