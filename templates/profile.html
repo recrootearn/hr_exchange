@@ -13,8 +13,6 @@
     background:white;
 }
 
-/* HEADER */
-
 .profile-header{
     padding:20px;
 }
@@ -66,14 +64,6 @@
     font-size:14px;
 }
 
-.edit-btn{
-    width:100%;
-    margin-top:15px;
-    border-radius:8px;
-}
-
-/* POSTS TAB */
-
 .posts-tab{
     border-top:1px solid #ddd;
     text-align:center;
@@ -81,8 +71,6 @@
     font-weight:700;
     letter-spacing:1px;
 }
-
-/* GRID */
 
 .post-grid{
     display:grid;
@@ -101,8 +89,6 @@
     height:100%;
     object-fit:cover;
 }
-
-/* DESKTOP */
 
 @media(min-width:768px){
 
@@ -130,10 +116,6 @@
 
     .bio{
         font-size:15px;
-    }
-
-    .edit-btn{
-        width:250px;
     }
 
 }
@@ -200,23 +182,25 @@
             🌐 {{ current_user.company_website }}
             {% endif %}
 
+        </div>
+
         <div class="d-flex gap-2 mt-3">
 
-    <a href="/edit-profile"
-    class="btn btn-light flex-fill">
+            <a href="/edit-profile"
+               class="btn btn-light flex-fill">
 
-        Edit Profile
+                Edit Profile
 
-    </a>
+            </a>
 
-    <a href="/post-job"
-    class="btn btn-primary flex-fill">
+            <a href="/post-job"
+               class="btn btn-primary flex-fill">
 
-        + Post Job
+                + Post Job
 
-    </a>
+            </a>
 
-</div>
+        </div>
 
     </div>
 
@@ -232,16 +216,27 @@
         {% for job in jobs %}
 
         <a href="/feed/{{ job.id }}"
-        class="post-item">
+           class="post-item">
 
-            {% if job.images %}
+            {% if job.images and job.images != '' %}
+
                 {% set first_image = job.images.split(',')[0] %}
-                <img src="/static/uploads/{{ first_image }}">
-        {% elif job.image %}
-            <img src="/static/uploads/{{ job.image }}">
-        {% endif %}
 
-                <img src="https://via.placeholder.com/500x500?text=JOB">
+                <img
+                src="/static/uploads/{{ first_image }}"
+                alt="Job Image">
+
+            {% elif job.image and job.image != '' %}
+
+                <img
+                src="/static/uploads/{{ job.image }}"
+                alt="Job Image">
+
+            {% else %}
+
+                <img
+                src="https://via.placeholder.com/500x500?text=JOB"
+                alt="No Image">
 
             {% endif %}
 
