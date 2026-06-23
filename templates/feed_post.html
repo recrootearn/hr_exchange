@@ -56,9 +56,51 @@ padding:15px;
 
 {% if job.image %}
 
-<img
-src="/static/uploads/{{ job.image }}"
-class="feed-image">
+{% if job.images %}
+
+<div id="carousel{{ job.id }}"
+     class="carousel slide"
+     data-bs-ride="carousel">
+
+    <div class="carousel-inner">
+
+        {% for img in job.images.split(',') %}
+
+        <div class="carousel-item {% if loop.first %}active{% endif %}">
+
+            <img
+                src="/static/uploads/{{ img }}"
+                class="feed-image">
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% if job.images.split(',')|length > 1 %}
+
+    <button class="carousel-control-prev"
+            type="button"
+            data-bs-target="#carousel{{ job.id }}"
+            data-bs-slide="prev">
+
+        <span class="carousel-control-prev-icon"></span>
+
+    </button>
+
+    <button class="carousel-control-next"
+            type="button"
+            data-bs-target="#carousel{{ job.id }}"
+            data-bs-slide="next">
+
+        <span class="carousel-control-next-icon"></span>
+
+    </button>
+
+    {% endif %}
+
+</div>
 
 {% endif %}
 
