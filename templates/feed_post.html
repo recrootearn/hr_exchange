@@ -54,8 +54,6 @@ padding:15px;
 
 <!-- IMAGE -->
 
-{% if job.image %}
-
 {% if job.images %}
 
 <div id="carousel{{ job.id }}"
@@ -68,9 +66,8 @@ padding:15px;
 
         <div class="carousel-item {% if loop.first %}active{% endif %}">
 
-            <img
-                src="/static/uploads/{{ img }}"
-                class="feed-image">
+            <img src="/static/uploads/{{ img }}"
+                 class="feed-image">
 
         </div>
 
@@ -99,6 +96,15 @@ padding:15px;
     </button>
 
     {% endif %}
+
+</div>
+
+{% elif job.image %}
+
+<img src="/static/uploads/{{ job.image }}"
+     class="feed-image">
+
+{% endif %}
 
 </div>
 
