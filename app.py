@@ -2010,6 +2010,32 @@ def open_notification(id):
 
     return redirect('/notifications')
 
+@app.route('/edit-job/<int:job_id>', methods=['GET','POST'])
+def edit_job(job_id):
+
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    job = Job.query.get_or_404(job_id)
+
+    if request.method == 'POST':
+
+        job.job_title = request.form['job_title']
+        job.salary = request.form['salary']
+        job.location = request.form['location']
+        job.description = request.form['description']
+
+        db.session.commit()
+
+        flash("Job updated successfully")
+
+        return redirect('/feed')
+
+    return render_template(
+        'edit_job.html',
+        job=job
+    )
+
 @app.route('/candidate-notification/<int:id>')
 def open_candidate_notification(id):
 
