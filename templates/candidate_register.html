@@ -105,7 +105,7 @@ body{
         Candidate Registration
     </div>
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
 
         <div class="mb-3">
             <input
@@ -145,6 +145,20 @@ body{
             required>
 
             <small id="usernameStatus"></small>
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">
+            Resume (Optional)
+            </label>
+
+            <input
+            type="file"
+            name="resume_file"
+        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+            class="form-control">
+
         </div>
 
         <div class="mb-3">

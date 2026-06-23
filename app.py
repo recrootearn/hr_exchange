@@ -104,6 +104,9 @@ class User(UserMixin, db.Model):
 
     total_referrals = db.Column(db.Integer, default=0)
 
+    msme_certificate = db.Column(db.String(255))
+    gumasta_certificate = db.Column(db.String(255))
+
     successful_referrals = db.Column(db.Integer, default=0)
 
     referral_earnings = db.Column(db.Float, default=0)
@@ -146,6 +149,8 @@ class CandidateUser(UserMixin, db.Model):
     skills = db.Column(db.Text)
 
     about_me = db.Column(db.Text)
+
+    resume_file = db.Column(db.String(255))
 
     is_deleted = db.Column(db.Boolean, default=False)
 
@@ -1046,223 +1051,295 @@ def leads():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
 
-    if request.method == 'POST':
+if request.method == 'POST':
 
-        # CHECK USERNAME
+    # CHECK USERNAME
 
-        username = request.form['username'].strip().upper()
+    username = request.form['username'].strip().upper()
 
-        mobile = request.form['mobile'].strip()
+    mobile = request.form['mobile'].strip()
 
-        existing_hr = User.query.filter_by(
-            username=username
-        ).first()
+    existing_hr = User.query.filter_by(
+        username=username
+    ).first()
 
-        existing_candidate = CandidateUser.query.filter_by(
-            username=username
-        ).first()
+    existing_candidate = CandidateUser.query.filter_by(
+        username=username
+    ).first()
 
-        if existing_hr or existing_candidate:
+    if existing_hr or existing_candidate:
 
-            flash("Username already exists")
+        flash("Username already exists")
 
-            return redirect('/register')
+        return redirect('/register')
 
-        existing_hr_mobile = User.query.filter_by(
-            mobile=mobile
-        ).first()
+    existing_hr_mobile = User.query.filter_by(
+        mobile=mobile
+    ).first()
 
-        existing_candidate_mobile = CandidateUser.query.filter_by(
-            mobile=mobile
-        ).first()
+    existing_candidate_mobile = CandidateUser.query.filter_by(
+        mobile=mobile
+    ).first()
 
-        if existing_hr_mobile or existing_candidate_mobile:
+    if existing_hr_mobile or existing_candidate_mobile:
 
-            flash("Mobile number already exists")
+        flash("Mobile number already exists")
 
-            return redirect('/register')
+        return redirect('/register')
 
-        if User.query.filter_by(
-            username=username
-        ).first():
+    # PROFILE PHOTO
 
-            return "Username already exists"
+    photo = request.files.get('photo')
 
-        # PHOTO UPLOAD
+    if photo and photo.filename != "":
 
-        photo = request.files.get('photo')
+        filename = secure_filename(
+            photo.filename
+        )
 
-        if photo and photo.filename != "":
-
-            filename = secure_filename(photo.filename)
-
-            photo.save(
-                os.path.join(
-                    app.config['UPLOAD_FOLDER'],
-                    filename
-                )
+        photo.save(
+            os.path.join(
+                app.config['UPLOAD_FOLDER'],
+                filename
             )
-
-            profile_photo = filename
-
-        else:
-
-            profile_photo = "default.png"
-
-        # REFERRAL CHECK
-
-        entered_referral = request.form.get(
-            'referral_code'
         )
 
-        referrer = None
+        profile_photo = filename
 
-        if entered_referral:
+    else:
 
-            referrer = User.query.filter_by(
-                referral_code=entered_referral
-            ).first()
+        profile_photo = "default.png"
 
-        # CREATE USER
+    # MSME CERTIFICATE (OPTIONAL)
 
-        user = User(
+    msme_name = ""
 
-            first_name=request.form['first_name'],
+    msme_file = request.files.get(
+        'msme_certificate'
+    )
 
-            last_name=request.form['last_name'],
+    if msme_file and msme_file.filename:
 
-            mobile=request.form['mobile'],
-
-            email=request.form['email'],
-
-            company=request.form['company'],
-
-            hr_type=request.form['hr_type'],
-
-            username=request.form['username'],
-
-            password=generate_password_hash(
-                request.form['password']
-            ),
-
-            profile_photo=profile_photo,
-
-            is_approved=True,
-
-            referral_code=generate_referral_code()
-
+        msme_name = secure_filename(
+            msme_file.filename
         )
 
-        # SAVE WHO REFERRED THIS USER
-
-        if referrer:
-
-            user.referred_by = referrer.referral_code
-
-            referrer.total_referrals += 1
-
-        # MAKE HARSHIT ADMIN
-
-        if request.form['username'].upper() == "HARSHIT":
-
-            user.is_admin = True
-
-            user.is_approved = True
-
-        db.session.add(user)
-
-        db.session.commit()
-
-        return render_template(
-            'register_success.html'
+        msme_file.save(
+            os.path.join(
+                app.config['UPLOAD_FOLDER'],
+                msme_name
+            )
         )
 
-    return render_template('register.html')
+    # GUMASTA CERTIFICATE (OPTIONAL)
+
+    gumasta_name = ""
+
+    gumasta_file = request.files.get(
+        'gumasta_certificate'
+    )
+
+    if gumasta_file and gumasta_file.filename:
+
+        gumasta_name = secure_filename(
+            gumasta_file.filename
+        )
+
+        gumasta_file.save(
+            os.path.join(
+                app.config['UPLOAD_FOLDER'],
+                gumasta_name
+            )
+        )
+
+    # REFERRAL CHECK
+
+    entered_referral = request.form.get(
+        'referral_code'
+    )
+
+    referrer = None
+
+    if entered_referral:
+
+        referrer = User.query.filter_by(
+            referral_code=entered_referral
+        ).first()
+
+    # CREATE USER
+
+    user = User(
+
+        first_name=request.form['first_name'],
+
+        last_name=request.form['last_name'],
+
+        mobile=mobile,
+
+        email=request.form['email'],
+
+        company=request.form['company'],
+
+        hr_type=request.form['hr_type'],
+
+        username=username,
+
+        password=generate_password_hash(
+            request.form['password']
+        ),
+
+        profile_photo=profile_photo,
+
+        msme_certificate=msme_name,
+
+        gumasta_certificate=gumasta_name,
+
+        is_approved=True,
+
+        referral_code=generate_referral_code()
+
+    )
+
+    if referrer:
+
+        user.referred_by = (
+            referrer.referral_code
+        )
+
+        referrer.total_referrals += 1
+
+    if username == "HARSHIT":
+
+        user.is_admin = True
+
+        user.is_approved = True
+
+    db.session.add(user)
+
+    db.session.commit()
+
+    return render_template(
+        'register_success.html'
+    )
+
+return render_template(
+    'register.html'
+)
 
 @app.route('/candidate-register', methods=['GET','POST'])
 def candidate_register():
 
-    if request.method == 'POST':
+if request.method == 'POST':
 
-        full_name = request.form['full_name']
+    full_name = request.form['full_name']
 
-        mobile = request.form['mobile'].strip()
+    mobile = request.form['mobile'].strip()
 
-        email = request.form['email']
+    email = request.form['email']
 
-        username = request.form['username'].strip().upper()
+    username = request.form['username'].strip().upper()
 
-        password = request.form['password']
+    password = request.form['password']
 
-        # CHECK USERNAME IN HR TABLE
+    # -------------------------
+    # CHECK USERNAME
+    # -------------------------
 
-        existing_hr = User.query.filter_by(
-            username=username
-        ).first()
+    existing_hr = User.query.filter_by(
+        username=username
+    ).first()
 
-        # CHECK USERNAME IN CANDIDATE TABLE
+    existing_candidate = CandidateUser.query.filter_by(
+        username=username
+    ).first()
 
-        existing_candidate = CandidateUser.query.filter_by(
-            username=username
-        ).first()
-
-        if existing_hr or existing_candidate:
-
-            flash(
-                'Username already exists. Please choose another username.',
-                'danger'
-            )
-
-            return redirect('/candidate-register')
-
-        # CHECK MOBILE IN HR TABLE
-
-        existing_hr_mobile = User.query.filter_by(
-            mobile=mobile
-        ).first()
-
-        # CHECK MOBILE IN CANDIDATE TABLE
-
-        existing_candidate_mobile = CandidateUser.query.filter_by(
-            mobile=mobile
-        ).first()
-
-        if existing_hr_mobile or existing_candidate_mobile:
-
-            flash(
-                'Mobile number already exists.',
-                'danger'
-            )
-
-            return redirect('/candidate-register')
-
-        candidate = CandidateUser(
-
-            full_name=full_name,
-
-            mobile=mobile,
-
-            email=email,
-
-            username=username,
-
-            password=password
-        )
-
-        db.session.add(candidate)
-
-        db.session.commit()
+    if existing_hr or existing_candidate:
 
         flash(
-            'Registration Successful. Please Login.',
-            'success'
+            'Username already exists. Please choose another username.',
+            'danger'
         )
 
-        return redirect('/candidate-login')
+        return redirect('/candidate-register')
 
-    return render_template(
-        'candidate_register.html'
+    # -------------------------
+    # CHECK MOBILE
+    # -------------------------
+
+    existing_hr_mobile = User.query.filter_by(
+        mobile=mobile
+    ).first()
+
+    existing_candidate_mobile = CandidateUser.query.filter_by(
+        mobile=mobile
+    ).first()
+
+    if existing_hr_mobile or existing_candidate_mobile:
+
+        flash(
+            'Mobile number already exists.',
+            'danger'
+        )
+
+        return redirect('/candidate-register')
+
+    # -------------------------
+    # RESUME UPLOAD (OPTIONAL)
+    # -------------------------
+
+    resume_name = ""
+
+    resume_file = request.files.get(
+        'resume_file'
     )
+
+    if resume_file and resume_file.filename:
+
+        resume_name = secure_filename(
+            resume_file.filename
+        )
+
+        resume_file.save(
+            os.path.join(
+                app.config['UPLOAD_FOLDER'],
+                resume_name
+            )
+        )
+
+    # -------------------------
+    # CREATE CANDIDATE
+    # -------------------------
+
+    candidate = CandidateUser(
+
+        full_name=full_name,
+
+        mobile=mobile,
+
+        email=email,
+
+        username=username,
+
+        password=password,
+
+        resume_file=resume_name
+
+    )
+
+    db.session.add(candidate)
+
+    db.session.commit()
+
+    flash(
+        'Registration Successful. Please Login.',
+        'success'
+    )
+
+    return redirect('/candidate-login')
+
+return render_template(
+    'candidate_register.html'
+)
 
 @app.route('/candidate-login', methods=['GET','POST'])
 def candidate_login():
