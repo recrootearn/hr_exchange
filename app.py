@@ -170,7 +170,7 @@ class JobPost(db.Model):
 
     description = db.Column(db.Text)
 
-    image = db.Column(db.Text)
+    images = db.Column(db.Text)
 
     created_at = db.Column(
         db.DateTime,
@@ -245,6 +245,14 @@ class Follow(db.Model):
         db.DateTime,
         default=datetime.utcnow
     )
+
+class JobImage(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    job_id = db.Column(db.Integer)
+
+    image = db.Column(db.String(300))
 
 class Candidate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
