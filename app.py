@@ -1042,6 +1042,36 @@ def register():
 
         username = request.form['username'].strip().upper()
 
+        mobile = request.form['mobile'].strip()
+
+        existing_hr = User.query.filter_by(
+            username=username
+        ).first()
+
+        existing_candidate = CandidateUser.query.filter_by(
+            username=username
+        ).first()
+
+        if existing_hr or existing_candidate:
+
+            flash("Username already exists")
+
+            return redirect('/register')
+
+        existing_hr_mobile = User.query.filter_by(
+            mobile=mobile
+        ).first()
+
+        existing_candidate_mobile = CandidateUser.query.filter_by(
+            mobile=mobile
+        ).first()
+
+        if existing_hr_mobile or existing_candidate_mobile:
+
+            flash("Mobile number already exists")
+
+            return redirect('/register')
+
         if User.query.filter_by(
             username=username
         ).first():
@@ -1145,28 +1175,84 @@ def candidate_register():
     if request.method == 'POST':
 
         full_name = request.form['full_name']
-        mobile = request.form['mobile']
+
+        mobile = request.form['mobile'].strip()
+
         email = request.form['email']
 
-        username = request.form['username']
+        username = request.form['username'].strip().upper()
+
         password = request.form['password']
 
+        # CHECK USERNAME IN HR TABLE
+
+        existing_hr = User.query.filter_by(
+            username=username
+        ).first()
+
+        # CHECK USERNAME IN CANDIDATE TABLE
+
+        existing_candidate = CandidateUser.query.filter_by(
+            username=username
+        ).first()
+
+        if existing_hr or existing_candidate:
+
+            flash(
+                'Username already exists. Please choose another username.',
+                'danger'
+            )
+
+            return redirect('/candidate-register')
+
+        # CHECK MOBILE IN HR TABLE
+
+        existing_hr_mobile = User.query.filter_by(
+            mobile=mobile
+        ).first()
+
+        # CHECK MOBILE IN CANDIDATE TABLE
+
+        existing_candidate_mobile = CandidateUser.query.filter_by(
+            mobile=mobile
+        ).first()
+
+        if existing_hr_mobile or existing_candidate_mobile:
+
+            flash(
+                'Mobile number already exists.',
+                'danger'
+            )
+
+            return redirect('/candidate-register')
+
         candidate = CandidateUser(
+
             full_name=full_name,
+
             mobile=mobile,
+
             email=email,
+
             username=username,
+
             password=password
         )
 
         db.session.add(candidate)
+
         db.session.commit()
 
-        flash('Registration Successful. Please Login.')
+        flash(
+            'Registration Successful. Please Login.',
+            'success'
+        )
 
         return redirect('/candidate-login')
 
-    return render_template('candidate_register.html')
+    return render_template(
+        'candidate_register.html'
+    )
 
 @app.route('/candidate-login', methods=['GET','POST'])
 def candidate_login():
@@ -2013,17 +2099,65 @@ def referrals():
         referred_users=referred_users
     )
 
+from flask import jsonify
+
+@app.route('/check-username')
+def check_username():
+
+    username = request.args.get(
+        'username',
+        ''
+    ).strip().upper()
+
+    hr = User.query.filter_by(
+        username=username
+    ).first()
+
+    candidate = CandidateUser.query.filter_by(
+        username=username
+    ).first()
+
+    return jsonify({
+        "exists": bool(hr or candidate)
+    })
+
+@app.route('/check-mobile')
+def check_mobile():
+
+    mobile = request.args.get(
+        'mobile',
+        ''
+    ).strip()
+
+    hr = User.query.filter_by(
+        mobile=mobile
+    ).first()
+
+    candidate = CandidateUser.query.filter_by(
+        mobile=mobile
+    ).first()
+
+    return jsonify({
+        "exists": bool(hr or candidate)
+    })
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
     if request.method == 'POST':
 
-        username = request.form['username'].strip()
+        login_id = request.form['username'].strip()
         password = request.form['password'].strip()
 
         user = User.query.filter_by(
-            username=username
+            mobile=login_id
         ).first()
+
+        if not user:
+
+            user = User.query.filter_by(
+                username=login_id
+            ).first()
 
         logging.warning(f"LOGIN USERNAME = {repr(username)}")
         logging.warning(f"USER = {user}")

@@ -123,6 +123,8 @@ body{
             name="mobile"
             placeholder="Mobile Number"
             required>
+
+            <small id="mobileStatus"></small>
         </div>
 
         <div class="mb-3">
@@ -141,6 +143,8 @@ body{
             name="username"
             placeholder="Username"
             required>
+
+            <small id="usernameStatus"></small>
         </div>
 
         <div class="mb-3">
@@ -164,6 +168,62 @@ body{
     </div>
 
 </div>
+
+<script>
+
+document.querySelector('[name="username"]').addEventListener('blur', function(){
+
+    fetch('/check-username?username=' + this.value)
+
+    .then(r => r.json())
+
+    .then(data => {
+
+        const s = document.getElementById('usernameStatus');
+
+        if(data.exists){
+
+            s.innerHTML = '❌ Username already taken';
+            s.style.color = 'red';
+
+        }else{
+
+            s.innerHTML = '✅ Username available';
+            s.style.color = 'green';
+
+        }
+
+    });
+
+});
+
+document.querySelector('[name="mobile"]').addEventListener('blur', function(){
+
+    fetch('/check-mobile?mobile=' + this.value)
+
+    .then(r => r.json())
+
+    .then(data => {
+
+        const s = document.getElementById('mobileStatus');
+
+        if(data.exists){
+
+            s.innerHTML = '❌ Mobile already registered';
+            s.style.color = 'red';
+
+        }else{
+
+            s.innerHTML = '✅ Mobile available';
+            s.style.color = 'green';
+
+        }
+
+    });
+
+});
+
+</script>
 
 </body>
 </html>
