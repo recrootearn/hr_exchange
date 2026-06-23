@@ -2011,12 +2011,14 @@ def open_notification(id):
     return redirect('/notifications')
 
 @app.route('/edit-job/<int:job_id>', methods=['GET','POST'])
+@login_required
 def edit_job(job_id):
 
-    if 'user_id' not in session:
-        return redirect('/login')
+    job = JobPost.query.get_or_404(job_id)
 
-    job = Job.query.get_or_404(job_id)
+    # only owner can edit
+    if job.hr_id != current_user.id:
+        return "Access Denied"
 
     if request.method == 'POST':
 
@@ -2025,11 +2027,26 @@ def edit_job(job_id):
         job.location = request.form['location']
         job.description = request.form['description']
 
+        image = request.files.get('image')
+
+        if image and image.filename:
+
+            filename = secure_filename(image.filename)
+
+            image.save(
+                os.path.join(
+                    app.config['UPLOAD_FOLDER'],
+                    filename
+                )
+            )
+
+            job.image = filename
+
         db.session.commit()
 
         flash("Job updated successfully")
 
-        return redirect('/feed')
+        return redirect('/my-jobs')
 
     return render_template(
         'edit_job.html',
@@ -3044,7 +3061,7 @@ def job_share(job_id):
 @app.route('/job/<int:job_id>')
 def public_job(job_id):
 
-    job = Job.query.get_or_404(job_id)
+    job = JobPost.query.get_or_404(job_id)
 
     return render_template(
         'public_job.html',
