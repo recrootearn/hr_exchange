@@ -235,9 +235,16 @@
 
                 <img src="/static/uploads/{{ first_image }}">
 
-            {% elif job.image %}
+            {% set img = job.images or job.image %}
 
-                <img src="/static/uploads/{{ job.image }}">
+            {% if img %}
+
+                {% if ',' in img %}
+                    {% set first_image = img.split(',')[0] %}
+                    <img src="/static/uploads/{{ first_image }}">
+                {% else %}
+                    <img src="/static/uploads/{{ img }}">
+                {% endif %}
 
             {% else %}
 
