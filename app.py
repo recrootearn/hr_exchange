@@ -170,7 +170,7 @@ class JobPost(db.Model):
 
     description = db.Column(db.Text)
 
-    image = db.Column(db.String(300))
+    image = db.Column(db.Text)
 
     created_at = db.Column(
         db.DateTime,
@@ -1703,22 +1703,26 @@ def post_job():
 
     if request.method == 'POST':
 
-        image_file = request.files.get('image')
+        files = request.files.getlist('images')
 
-        image_name = ""
+        saved_images = []
 
-        if image_file and image_file.filename:
+        for file in files:
 
-            image_name = secure_filename(
-                image_file.filename
-            )
+            if file and file.filename:
 
-            image_file.save(
-                os.path.join(
-                    app.config['UPLOAD_FOLDER'],
-                    image_name
+                filename = secure_filename(
+                    file.filename
                 )
-            )
+
+                file.save(
+                    os.path.join(
+                        app.config['UPLOAD_FOLDER'],
+                        filename
+                    )
+                )
+
+                saved_images.append(filename)
 
         job = JobPost(
 
@@ -1734,7 +1738,7 @@ def post_job():
 
             description=request.form['description'],
 
-            image=image_name
+            images=",".join(saved_images)
 
         )
 
@@ -1747,15 +1751,28 @@ def post_job():
             followed_hr_id=current_user.id
         ).all()
 
+        first_image = (
+            saved_images[0]
+            if len(saved_images) > 0
+            else ""
+        )
+
         for f in followers:
 
             notification = Notification(
+
                 user_id=f.follower_candidate_id,
+
                 user_type="candidate",
+
                 type="job_post",
+
                 message=f"{current_user.company} posted a new job: {job.job_title}",
+
                 link=f"/job/{job.id}",
-                image=image_name
+
+                image=first_image
+
             )
 
             db.session.add(notification)

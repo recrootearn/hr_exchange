@@ -5,229 +5,272 @@
 <style>
 
 .post-job-card{
-
-    max-width:700px;
+    max-width:800px;
     margin:auto;
-
     background:white;
-
-    border-radius:20px;
-
-    padding:25px;
-
-    box-shadow:0 5px 20px rgba(0,0,0,0.08);
+    border-radius:24px;
+    padding:30px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
 
 .post-job-title{
-
     text-align:center;
-
-    font-size:28px;
-
+    font-size:30px;
     font-weight:700;
-
     margin-bottom:25px;
 }
 
-.form-control,
-.form-select{
-
-    border-radius:12px !important;
-
-    padding:12px !important;
+.form-control{
+    border-radius:14px !important;
+    padding:14px !important;
 }
 
 .upload-box{
-
-    border:2px dashed #d1d5db;
-
-    border-radius:15px;
-
-    padding:30px;
-
+    border:2px dashed #2563eb;
+    border-radius:18px;
+    padding:35px;
     text-align:center;
-
     cursor:pointer;
-
     transition:.3s;
+    color:#2563eb;
+    font-weight:600;
 }
 
 .upload-box:hover{
-
-    border-color:#2563eb;
+    background:#f8fbff;
 }
 
 .submit-btn{
-
     width:100%;
-
-    padding:14px;
-
+    height:55px;
     border:none;
-
-    border-radius:12px;
-
+    border-radius:14px;
+    font-weight:700;
+    color:white;
+    font-size:17px;
     background:linear-gradient(
         135deg,
         #2563eb,
         #4f46e5
     );
+}
 
+#preview-container{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:20px;
+}
+
+.img-box{
+    width:120px;
+    height:120px;
+    position:relative;
+}
+
+.img-box img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:14px;
+    border:1px solid #e5e7eb;
+}
+
+.remove-btn{
+    position:absolute;
+    top:-8px;
+    right:-8px;
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    background:#ef4444;
     color:white;
-
-    font-weight:700;
-
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-weight:bold;
     font-size:16px;
 }
 
-.preview{
-
-    width:100%;
-
-    border-radius:12px;
-
-    margin-top:15px;
-
-    display:none;
+.image-count{
+    margin-top:10px;
+    font-size:14px;
+    color:#6b7280;
 }
 
-</style>
+</style><div class="post-job-card"><div class="post-job-title">
+    🚀 Create Job Post
+</div>
 
-<div class="post-job-card">
-
-    <div class="post-job-title">
-
-        🚀 Create Job Post
-
-    </div>
-
-    <form method="POST"
+<form
+    method="POST"
     enctype="multipart/form-data">
 
-        <div class="mb-3">
+    <div class="mb-3">
 
-            <label class="form-label">
-                Job Title
-            </label>
+        <label class="form-label">
+            Job Title
+        </label>
 
-            <input
+        <input
             type="text"
             name="job_title"
             class="form-control"
-            placeholder="Ex: HR Executive"
             required>
 
-        </div>
+    </div>
 
-        <div class="mb-3">
+    <div class="mb-3">
 
-            <label class="form-label">
-                Location
-            </label>
+        <label class="form-label">
+            Location
+        </label>
 
-            <input
+        <input
             type="text"
             name="location"
             class="form-control"
-            placeholder="Ex: Indore"
             required>
 
-        </div>
+    </div>
 
-        <div class="mb-3">
+    <div class="mb-3">
 
-            <label class="form-label">
-                Salary
-            </label>
+        <label class="form-label">
+            Salary
+        </label>
 
-            <input
+        <input
             type="text"
             name="salary"
             class="form-control"
-            placeholder="Ex: ₹25,000 - ₹35,000"
             required>
 
-        </div>
+    </div>
 
-        <div class="mb-3">
+    <div class="mb-3">
 
-            <label class="form-label">
-                Job Description
-            </label>
+        <label class="form-label">
+            Job Description
+        </label>
 
-            <textarea
+        <textarea
             name="description"
             rows="6"
             class="form-control"
-            placeholder="Describe the role, responsibilities and requirements"></textarea>
+            required></textarea>
 
+    </div>
+
+    <div class="mb-4">
+
+        <label class="form-label">
+            Job Posters / Company Images
+        </label>
+
+        <input
+            type="file"
+            id="images"
+            name="images"
+            multiple
+            accept="image/*"
+            hidden>
+
+        <label
+            for="images"
+            class="upload-box">
+
+            <i class="fas fa-images fa-2x"></i>
+
+            <br><br>
+
+            Click To Upload Multiple Images
+
+        </label>
+
+        <div class="image-count">
+            You can upload multiple posters.
         </div>
 
-        <div class="mb-3">
+        <div id="preview-container"></div>
 
-            <label class="form-label">
-                Job Poster / Company Image
-            </label>
+    </div>
 
-            <label class="upload-box">
-
-                <i class="fas fa-image fa-2x mb-2"></i>
-
-                <br>
-
-                Click to Upload Image
-
-                <input
-                type="file"
-                name="image"
-                accept="image/*"
-                hidden
-                onchange="previewImage(event)">
-
-            </label>
-
-            <img
-            id="preview"
-            class="preview">
-
-        </div>
-
-        <button
+    <button
         type="submit"
         class="submit-btn">
 
-            Post Job
+        Post Job
 
-        </button>
+    </button>
 
-    </form>
+</form>
 
-</div>
+</div><script>
 
-<script>
+let selectedFiles=[];
 
-function previewImage(event){
+document
+.getElementById('images')
+.addEventListener('change',function(e){
 
-    let file = event.target.files[0];
+    selectedFiles=[
+        ...selectedFiles,
+        ...e.target.files
+    ];
 
-    if(file){
+    renderPreview();
 
-        let reader = new FileReader();
+});
 
-        reader.onload = function(e){
+function renderPreview(){
 
-            let preview =
-            document.getElementById("preview");
+    let container=
+    document.getElementById(
+        'preview-container'
+    );
 
-            preview.src = e.target.result;
+    container.innerHTML='';
 
-            preview.style.display = "block";
+    selectedFiles.forEach((file,index)=>{
+
+        let reader=new FileReader();
+
+        reader.onload=function(ev){
+
+            container.innerHTML += `
+
+            <div class="img-box">
+
+                <img src="${ev.target.result}">
+
+                <span
+                    class="remove-btn"
+                    onclick="removeImage(${index})">
+
+                    ×
+
+                </span>
+
+            </div>
+
+            `;
+
         };
 
         reader.readAsDataURL(file);
-    }
+
+    });
+
 }
 
-</script>
+function removeImage(index){
 
-{% endblock %}
+    selectedFiles.splice(index,1);
+
+    renderPreview();
+
+}
+
+</script>{% endblock %}
