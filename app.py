@@ -1680,7 +1680,7 @@ def follow_hr(id):
 def follow_hr_user(id):
 
     if current_user.id == id:
-        return redirect('/discover-candidates')
+        return redirect(f'/company/{id}')
 
     existing = Follow.query.filter_by(
         follower_hr_id=current_user.id,
@@ -1702,7 +1702,7 @@ def follow_hr_user(id):
 
     db.session.commit()
 
-    return redirect('/discover-candidates')
+    return redirect(f'/company/{id}')
 
 @app.route('/follow-candidate/<int:id>')
 @login_required
