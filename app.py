@@ -248,6 +248,10 @@ class Follow(db.Model):
         db.Integer
     )
 
+    followed_hr_id = db.Column(
+        db.Integer
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
@@ -1962,8 +1966,8 @@ def discover_candidates():
 
     if city:
         hr_query = hr_query.filter(
-            User.company.contains(city)
-        )
+            User.company_city.contains(city)
+    )
 
     hrs = hr_query.order_by(
         User.id.desc()

@@ -227,10 +227,19 @@
 
     </a>
 
-    <a href="/follow/{{ hr.id }}"
+    {% set hr_following = Follow.query.filter_by(
+    follower_hr_id=current_user.id,
+        followed_hr_id=hr.id
+    ).first() %}
+
+    <a href="/follow-hr/{{ hr.id }}"
        class="btn-follow">
 
-       Follow HR
+       {% if hr_following %}
+           Following
+       {% else %}
+           Follow HR
+       {% endif %}
 
     </a>
 
@@ -289,10 +298,19 @@
 
     </a>
 
+    {% set is_following = Follow.query.filter_by(
+    follower_hr_id=current_user.id,
+    followed_candidate_id=candidate.id
+    ).first() %}
+
     <a href="/follow-candidate/{{ candidate.id }}"
        class="btn-follow">
 
-       Follow Candidate
+       {% if is_following %}
+           Following
+       {% else %}
+           Follow Candidate
+       {% endif %}
 
     </a>
 
@@ -323,11 +341,11 @@ function showSection(type,btn){
     if(type==='all'){
 
         hrs.forEach(x=>{
-            x.style.display='block';
+            x.style.display='';
         });
 
         candidates.forEach(x=>{
-            x.style.display='block';
+            x.style.display='';
         });
 
     }
@@ -335,7 +353,7 @@ function showSection(type,btn){
     if(type==='hr'){
 
         hrs.forEach(x=>{
-            x.style.display='block';
+            x.style.display='';
         });
 
         candidates.forEach(x=>{
@@ -351,7 +369,7 @@ function showSection(type,btn){
         });
 
         candidates.forEach(x=>{
-            x.style.display='block';
+            x.style.display='';
         });
 
     }
