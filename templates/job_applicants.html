@@ -80,9 +80,10 @@
 
 {% for app in applications %}
 
-{% if app.candidate_id %}
+{% if candidate %}
 
 {% set candidate = CandidateUser.query.get(app.candidate_id) %}
+{% set hr = User.query.get(app.candidate_id) %}
 
 <div class="applicant-card"><div class="applicant-top">
 
@@ -171,7 +172,7 @@
 
 </div>{% endif %}
 
-{% if app.applicant_hr_id %}
+{% if elif hr %}
 
 {% set hr = User.query.get(app.applicant_hr_id) %}
 

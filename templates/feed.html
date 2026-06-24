@@ -2,120 +2,374 @@
 
 {% block content %}
 
-<style>
-
-.feed-title{
-    font-size:32px;
-    font-weight:700;
-    margin-bottom:25px;
-}
-
-.job-card{
-    background:white;
-    border-radius:20px;
-    padding:20px;
-    margin-bottom:20px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-}
-
-.job-title{
-    font-size:26px;
-    font-weight:700;
-    margin-bottom:8px;
-}
-
-.company-name{
-    font-size:20px;
-    color:#374151;
-    margin-bottom:15px;
-}
-
-.job-info{
-    margin-bottom:10px;
-    color:#4b5563;
-    font-size:16px;
-}
-
-.job-buttons{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-top:20px;
-}
-
-.job-buttons a{
-    flex:1;
-    min-width:120px;
-}
-
-.no-jobs{
-    background:white;
-    padding:40px;
-    text-align:center;
-    border-radius:20px;
-}
-
-</style><h2 class="feed-title">
-    Job Feed
-</h2>{% if jobs %}
-
 {% for job in jobs %}
 
-<div class="job-card"><div class="job-title">
-    {{ job.job_title }}
+<div id="post{{ job.id }}"
+     class="candidate-card feed-card">
+
+    <!-- HEADER -->
+
+    <div class="feed-header">
+
+        <div class="feed-avatar">
+
+            {% if job.company_name %}
+                {{ job.company_name[:1].upper() }}
+            {% else %}
+                R
+            {% endif %}
+
+        </div>
+
+        <div>
+
+            <div class="feed-company">
+
+                <a href="/company/{{ job.hr_id }}"
+                   style="text-decoration:none;color:inherit;">
+
+                    {{ job.company_name }}
+
+                </a>
+
+            </div>
+
+            <div class="feed-meta">
+                📍 {{ job.location }}
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- IMAGE -->
+
+    {% if job.images %}
+
+    <a href="/company/{{ job.hr_id }}">
+
+        <div id="carousel{{ job.id }}"
+     class="carousel slide">
+
+    <div class="carousel-inner">
+
+        {% for img in job.images.split(',') %}
+
+        <div class="carousel-item {% if loop.first %}active{% endif %}">
+
+            <img
+            src="/static/uploads/{{ img }}"
+            class="feed-image">
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <button
+    class="carousel-control-prev"
+    type="button"
+    data-bs-target="#carousel{{ job.id }}"
+    data-bs-slide="prev">
+
+        <span class="carousel-control-prev-icon"></span>
+
+    </button>
+
+    <button
+    class="carousel-control-next"
+    type="button"
+    data-bs-target="#carousel{{ job.id }}"
+    data-bs-slide="next">
+
+        <span class="carousel-control-next-icon"></span>
+
+    </button>
+
 </div>
-
-<div class="company-name">
-    {{ job.company_name }}
-</div>
-
-<div class="job-info">
-    📍 {{ job.location }}
-</div>
-
-<div class="job-info">
-    💰 ₹ {{ job.salary }}
-</div>
-
-{% if job.description %}
-
-<div class="job-info">
-    {{ job.description[:200] }}
-</div>
-
-{% endif %}
-
-<div class="job-buttons">
-
-    <a href="/company/{{ job.hr_id }}"
-       class="btn btn-secondary">
-
-        View Company
 
     </a>
 
-    <a href="/apply-job/{{ job.id }}"
-       class="btn btn-success">
+    {% endif %}
 
-        Apply Job
+    <!-- CONTENT -->
 
-    </a>
+    <div class="p-3">
 
-    <a href="/share-job/{{ job.id }}"
-       class="btn btn-primary">
+        <h4 class="job-title">
+            {{ job.job_title }}
+        </h4>
 
-        Share Job
+        <div class="salary-tag">
+            ₹ {{ job.salary }}
+        </div>
 
-    </a>
+        <p class="mt-3">
+
+            {{ job.description[:140] }}
+
+            {% if job.description|length > 140 %}
+
+            <span id="dots{{ job.id }}">
+                ...
+            </span>
+
+            <span
+            id="more{{ job.id }}"
+            style="display:none;">
+
+                {{ job.description[140:] }}
+
+            </span>
+
+            <a href="#"
+               id="btn{{ job.id }}"
+               onclick="toggleText({{ job.id }});return false;">
+
+                See More
+
+            </a>
+
+            {% endif %}
+
+        </p>
+
+        <div class="feed-buttons">
+
+            <a href="/company/{{ job.hr_id }}"
+               class="btn btn-outline-primary">
+
+                <i class="fas fa-building"></i>
+                Company
+
+            </a>
+
+            {% if job.id in applied_jobs %}
+
+            <button
+                class="btn btn-success"
+                disabled>
+
+                <i class="fas fa-check-circle"></i>
+                Applied
+
+            </button>
+
+            {% else %}
+
+            <a href="/apply-job/{{ job.id }}"
+               class="btn btn-primary">
+
+                <i class="fas fa-paper-plane"></i>
+                Apply Now
+
+            </a>
+
+            {% endif %}
+
+            <a href="https://wa.me/?text={{ request.url_root }}job/{{ job.id }}"
+                target="_blank"
+                class="btn btn-success">
+
+                 <i class="fab fa-whatsapp"></i>
+                 Share
+
+            </a>
+
+        </div>
+
+    </div>
 
 </div>
-
-</div>{% endfor %}
 
 {% else %}
 
-<div class="no-jobs"><h4>No Jobs Found</h4>
+<div class="stats-card text-center">
 
-</div>{% endif %}
+    <h4>No Jobs Available</h4>
+
+    <p>Please check again later.</p>
+
+</div>
+
+{% endfor %}
+
+<style>
+
+.feed-card{
+    background:#fff;
+    border-radius:20px;
+    overflow:hidden;
+    margin-bottom:25px;
+    padding:0 !important;
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
+    border:1px solid #eee;
+}
+
+.feed-header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 16px;
+}
+
+.feed-avatar{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #7c3aed
+    );
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    font-weight:700;
+}
+
+.feed-company{
+    font-size:16px;
+    font-weight:700;
+}
+
+.feed-meta{
+    font-size:13px;
+    color:#6b7280;
+}
+
+.feed-image{
+    width:100%;
+    height:auto;
+    display:block;
+    object-fit:contain;
+    background:#fff;
+}
+
+.job-title{
+    font-weight:700;
+    margin-bottom:10px;
+}
+
+.salary-tag{
+    display:inline-block;
+    background:#dcfce7;
+    color:#15803d;
+    padding:8px 14px;
+    border-radius:20px;
+    font-weight:700;
+}
+
+.feed-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+
+.feed-buttons .btn{
+    flex:1;
+    height:50px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:6px;
+
+    border-radius:14px;
+    font-weight:600;
+
+    padding:0;
+}
+
+.feed-buttons .btn i{
+    font-size:16px;
+}
+
+.btn-success{
+    background:#16a34a !important;
+    border-color:#16a34a !important;
+}
+
+@media(max-width:768px){
+
+    .feed-image{
+        width:100%;
+        height:auto;
+        max-height:none;
+    }
+
+    .feed-buttons{
+        gap:8px;
+    }
+
+    .feed-buttons .btn{
+        height:48px;
+        font-size:14px;
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+}
+
+</style>
+
+<script>
+
+function toggleText(id){
+
+    let more =
+    document.getElementById("more"+id);
+
+    let dots =
+    document.getElementById("dots"+id);
+
+    let btn =
+    document.getElementById("btn"+id);
+
+    if(more.style.display==="none"){
+
+        more.style.display="inline";
+        dots.style.display="none";
+        btn.innerHTML="See Less";
+
+    }else{
+
+        more.style.display="none";
+        dots.style.display="inline";
+        btn.innerHTML="See More";
+
+    }
+
+}
+
+</script>
+
+<script>
+
+window.onload=function(){
+
+    let target=
+    document.getElementById(
+        "post{{ selected_id }}"
+    );
+
+    if(target){
+
+        target.scrollIntoView({
+            behavior:'smooth',
+            block:'center'
+        });
+
+    }
+
+}
+
+</script>
 
 {% endblock %}

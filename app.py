@@ -2051,36 +2051,80 @@ def discover_candidates():
     )
 
 @app.route('/apply-job/<int:job_id>')
-@login_required
 def apply_job(job_id):
 
-    job = JobPost.query.get_or_404(job_id)
-
-    if job.hr_id == current_user.id:
-        return redirect('/feed')
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
 
     existing = JobApplication.query.filter_by(
-        job_id=job.id,
-        applicant_hr_id=current_user.id
+        job_id=job_id,
+        candidate_id=session['candidate_id']
+    ).first()
+
+    if existing:
+        return "Already Applied"
+
+    application = JobApplication(
+        job_id=job_id,
+        candidate_id=session['candidate_id']
+    )
+
+    db.session.add(application)
+
+    job = JobPost.query.get(job_id)
+
+    candidate = CandidateUser.query.get(
+        session['candidate_id']
+    )
+
+    notification = Notification(
+        user_id=job.hr_id,
+        user_type="hr",
+        message=f"{candidate.full_name} applied for {job.job_title}",
+        link=f"/candidate/{candidate.id}",
+        image=candidate.profile_photo,
+        type="job_apply"
+    )
+
+    db.session.add(notification)
+
+    db.session.commit()
+
+    next_page = request.args.get('next')
+
+    if next_page:
+        return redirect(next_page)
+
+    return redirect('/candidate-feed')
+
+@app.route('/apply-job-hr/<int:id>')
+@login_required
+def apply_job_hr(id):
+
+    existing = JobApplication.query.filter_by(
+        candidate_id=current_user.id,
+        job_id=id
     ).first()
 
     if existing:
         return redirect('/feed')
 
     application = JobApplication(
-        job_id=job.id,
-        applicant_hr_id=current_user.id
+        candidate_id=current_user.id,
+        job_id=id
     )
 
     db.session.add(application)
 
+    job = JobPost.query.get(id)
+
     notification = Notification(
         user_id=job.hr_id,
-        user_type="hr",
-        message=f"{current_user.company} applied for your job",
-        link="/my-applicants",
+        user_type='hr',
+        message=f'{current_user.first_name} applied for your job',
+        link=f'/job-applicants/{id}',
         image=current_user.profile_photo,
-        type="job_application"
+        type='job_application'
     )
 
     db.session.add(notification)
@@ -2129,9 +2173,19 @@ def feed():
         JobPost.created_at.desc()
     ).all()
 
+    applications = JobApplication.query.filter_by(
+        candidate_id=current_user.id
+    ).all()
+
+    applied_jobs = [
+        app.job_id
+        for app in applications
+    ]
+
     return render_template(
         'feed.html',
-        jobs=jobs
+        jobs=jobs,
+        applied_jobs=applied_jobs
     )
 
 @app.route('/my-applicants')
