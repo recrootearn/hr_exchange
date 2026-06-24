@@ -2146,7 +2146,7 @@ def my_applicants():
         'my_applicants.html',
         jobs=jobs,
         JobApplication=JobApplication,
-        CandidateUser=CandidateUser
+        CandidateUser=CandidateUser,
         User=User
     )
 
