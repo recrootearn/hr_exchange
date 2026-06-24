@@ -217,19 +217,16 @@ label{
 @media(max-width:768px){
 
     .mobile-swipe{
-        display:flex;
-        overflow-x:auto;
+        display:flex !important;
+        flex-wrap:nowrap !important;
+        overflow-x:scroll !important;
         scroll-snap-type:x mandatory;
         -webkit-overflow-scrolling:touch;
-        gap:15px;
-    }
-
-    .mobile-swipe::-webkit-scrollbar{
-        display:none;
     }
 
     .mobile-page{
-        min-width:100%;
+        flex:0 0 100%;
+        width:100%;
         scroll-snap-align:start;
     }
 
@@ -237,11 +234,11 @@ label{
 
 </style>
 
-<div class="row g-4 mobile-swipe">
+<div class="mobile-swipe">
 
     <!-- SINGLE UPLOAD -->
 
-    <div class="col-lg-6 mobile-page">
+    <div class="mobile-page">
 
         <div class="card-box">
 
@@ -361,7 +358,7 @@ label{
 
     <!-- BULK UPLOAD -->
 
-    <div class="col-lg-6 mobile-page">
+    <div class="mobile-page">
 
         <div class="card-box">
 
