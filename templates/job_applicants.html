@@ -28,11 +28,7 @@
     width:70px;
     height:70px;
     border-radius:50%;
-    background:linear-gradient(
-        135deg,
-        #2563eb,
-        #4f46e5
-    );
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
     color:white;
     display:flex;
     justify-content:center;
@@ -48,8 +44,7 @@
 
 .info-grid{
     display:grid;
-    grid-template-columns:
-    repeat(auto-fit,minmax(220px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
     gap:12px;
     margin-top:18px;
 }
@@ -74,194 +69,126 @@
     text-align:center;
 }
 
-</style><h2 class="page-title">
+</style>
+
+<h2 class="page-title">
     👥 Job Applicants
-</h2>{% if applications %}
+</h2>
 
-{% for app in applications %}
+{% if applications %}
 
-{% if candidate %}
+    {% for app in applications %}
 
-{% set candidate = CandidateUser.query.get(app.candidate_id) %}
-{% set hr = User.query.get(app.candidate_id) %}
+        {% set candidate = CandidateUser.query.get(app.candidate_id) %}
 
-<div class="applicant-card"><div class="applicant-top">
+        {% if candidate %}
 
-    <div class="applicant-avatar">
-        {{ candidate.full_name[0] }}
-    </div>
+        <div class="applicant-card">
 
-    <div>
+            <div class="applicant-top">
 
-        <div class="applicant-name">
-            {{ candidate.full_name }}
+                <div class="applicant-avatar">
+                    {{ candidate.full_name[0] }}
+                </div>
+
+                <div>
+
+                    <div class="applicant-name">
+                        {{ candidate.full_name }}
+                    </div>
+
+                    <small class="text-muted">
+                        Candidate Applicant
+                    </small>
+
+                </div>
+
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-box">
+                    📱 {{ candidate.mobile }}
+                </div>
+
+                <div class="info-box">
+                    📧 {{ candidate.email }}
+                </div>
+
+                <div class="info-box">
+                    📍 {{ candidate.city or 'Not Added' }}
+                </div>
+
+                <div class="info-box">
+                    💼 {{ candidate.experience or 'Not Added' }}
+                </div>
+
+            </div>
+
+            <div class="action-buttons">
+
+                <a href="/candidate/{{ candidate.id }}"
+                   class="btn btn-primary">
+
+                    View Profile
+
+                </a>
+
+                <a href="tel:{{ candidate.mobile }}"
+                   class="btn btn-success">
+
+                    📞 Call
+
+                </a>
+
+                <a href="https://wa.me/91{{ candidate.mobile }}"
+                   target="_blank"
+                   class="btn btn-success">
+
+                    WhatsApp
+
+                </a>
+
+                <a href="mailto:{{ candidate.email }}"
+                   class="btn btn-info">
+
+                    Email
+
+                </a>
+
+                {% if candidate.resume_file %}
+
+                <a href="/static/uploads/{{ candidate.resume_file }}"
+                   target="_blank"
+                   class="btn btn-dark">
+
+                    Resume
+
+                </a>
+
+                {% endif %}
+
+            </div>
+
         </div>
 
-        <small class="text-muted">
-            Candidate Applicant
-        </small>
+        {% endif %}
 
-    </div>
-
-</div>
-
-<div class="info-grid">
-
-    <div class="info-box">
-        📱 {{ candidate.mobile }}
-    </div>
-
-    <div class="info-box">
-        📧 {{ candidate.email }}
-    </div>
-
-    <div class="info-box">
-        📍 {{ candidate.city or 'Not Added' }}
-    </div>
-
-    <div class="info-box">
-        💼 {{ candidate.experience or 'Not Added' }}
-    </div>
-
-</div>
-
-<div class="action-buttons">
-
-    <a href="/candidate/{{ candidate.id }}"
-       class="btn btn-primary">
-
-       View Profile
-
-    </a>
-
-    <a href="tel:{{ candidate.mobile }}"
-       class="btn btn-success">
-
-       📞 Call
-
-    </a>
-
-    <a href="https://wa.me/91{{ candidate.mobile }}"
-       target="_blank"
-       class="btn btn-success">
-
-       WhatsApp
-
-    </a>
-
-    <a href="mailto:{{ candidate.email }}"
-       class="btn btn-info">
-
-       Email
-
-    </a>
-
-    {% if candidate.resume_file %}
-
-    <a href="/static/uploads/{{ candidate.resume_file }}"
-       target="_blank"
-       class="btn btn-dark">
-
-       Resume
-
-    </a>
-
-    {% endif %}
-
-</div>
-
-</div>{% endif %}
-
-{% if elif hr %}
-
-{% set hr = User.query.get(app.applicant_hr_id) %}
-
-<div class="applicant-card"><div class="applicant-top">
-
-    <div class="applicant-avatar">
-        {{ hr.first_name[0] }}
-    </div>
-
-    <div>
-
-        <div class="applicant-name">
-            {{ hr.first_name }} {{ hr.last_name }}
-        </div>
-
-        <small class="text-muted">
-            HR Applicant
-        </small>
-
-    </div>
-
-</div>
-
-<div class="info-grid">
-
-    <div class="info-box">
-        🏢 {{ hr.company }}
-    </div>
-
-    <div class="info-box">
-        📱 {{ hr.mobile }}
-    </div>
-
-    <div class="info-box">
-        📧 {{ hr.email }}
-    </div>
-
-    <div class="info-box">
-        📍 {{ hr.company_city or 'Not Added' }}
-    </div>
-
-</div>
-
-<div class="action-buttons">
-
-    <a href="/company/{{ hr.id }}"
-       class="btn btn-primary">
-
-       View Profile
-
-    </a>
-
-    <a href="tel:{{ hr.mobile }}"
-       class="btn btn-success">
-
-       📞 Call
-
-    </a>
-
-    <a href="https://wa.me/91{{ hr.mobile }}"
-       target="_blank"
-       class="btn btn-success">
-
-       WhatsApp
-
-    </a>
-
-    <a href="mailto:{{ hr.email }}"
-       class="btn btn-info">
-
-       Email
-
-    </a>
-
-</div>
-
-</div>{% endif %}
-
-{% endfor %}
+    {% endfor %}
 
 {% else %}
 
-<div class="no-applicants"><h3>No Applicants Yet</h3>
+<div class="no-applicants">
 
-<p>
-    Once candidates or HRs apply,
-    they will appear here.
-</p>
+    <h3>No Applicants Yet</h3>
 
-</div>{% endif %}
+    <p>
+        Once candidates apply for this job,
+        they will appear here.
+    </p>
+
+</div>
+
+{% endif %}
 
 {% endblock %}

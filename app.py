@@ -2144,7 +2144,8 @@ def job_applicants(job_id):
     return render_template(
         'job_applicants.html',
         applications=applications,
-        CandidateUser=CandidateUser
+        CandidateUser=CandidateUser,
+        User=User
     )
 
 @app.route('/applied-jobs')
