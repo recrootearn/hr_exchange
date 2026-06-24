@@ -214,13 +214,34 @@ label{
     transition:all 0.3s ease;
 }
 
+@media(max-width:768px){
+
+    .mobile-swipe{
+        display:flex;
+        overflow-x:auto;
+        scroll-snap-type:x mandatory;
+        -webkit-overflow-scrolling:touch;
+        gap:15px;
+    }
+
+    .mobile-swipe::-webkit-scrollbar{
+        display:none;
+    }
+
+    .mobile-page{
+        min-width:100%;
+        scroll-snap-align:start;
+    }
+
+}
+
 </style>
 
-<div class="row g-4">
+<div class="row g-4 mobile-swipe">
 
     <!-- SINGLE UPLOAD -->
 
-    <div class="col-lg-6">
+    <div class="col-lg-6 mobile-page">
 
         <div class="card-box">
 
@@ -340,7 +361,7 @@ label{
 
     <!-- BULK UPLOAD -->
 
-    <div class="col-lg-6">
+    <div class="col-lg-6 mobile-page">
 
         <div class="card-box">
 
