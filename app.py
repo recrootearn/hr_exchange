@@ -1666,19 +1666,16 @@ def follow_hr(id):
     return redirect(f'/company/{id}')
 
 @app.route('/follow-hr-user/<int:id>')
+@login_required
 def follow_hr_user(id):
 
-    if 'user_id' not in session:
-        return redirect('/login')
+    if current_user.id == id:
+        return redirect('/discover-candidates')
 
     existing = Follow.query.filter_by(
-        follower_hr_id=session['user_id'],
+        follower_hr_id=current_user.id,
         followed_hr_id=id
     ).first()
-
-    hr = User.query.get(
-        session['user_id']
-    )
 
     if existing:
 
@@ -1688,7 +1685,7 @@ def follow_hr_user(id):
 
         db.session.add(
             Follow(
-                follower_hr_id=session['user_id'],
+                follower_hr_id=current_user.id,
                 followed_hr_id=id
             )
         )
@@ -1993,7 +1990,8 @@ def discover_candidates():
     # HRS
 
     hr_query = User.query.filter(
-        User.is_admin == False
+    User.is_admin == False,
+    User.id != current_user.id
     )
 
     if city:
