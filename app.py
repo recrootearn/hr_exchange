@@ -2141,6 +2141,13 @@ def job_applicants(job_id):
         job_id=job_id
     ).all()
 
+    for app in applications:
+        print(
+            "ID:", app.id,
+            "candidate_id:", app.candidate_id,
+            "applicant_hr_id:", app.applicant_hr_id
+        )
+
     return render_template(
         'job_applicants.html',
         applications=applications,
