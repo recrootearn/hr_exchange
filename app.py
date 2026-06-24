@@ -2102,7 +2102,7 @@ def apply_job(job_id):
 def apply_job_hr(id):
 
     existing = JobApplication.query.filter_by(
-        candidate_id=current_user.id,
+        applicant_hr_id=current_user.id,
         job_id=id
     ).first()
 
@@ -2110,7 +2110,7 @@ def apply_job_hr(id):
         return redirect('/feed')
 
     application = JobApplication(
-        candidate_id=current_user.id,
+        applicant_hr_id=current_user.id,
         job_id=id
     )
 
@@ -2175,7 +2175,7 @@ def feed():
     ).all()
 
     applications = JobApplication.query.filter_by(
-        candidate_id=current_user.id
+        applicant_hr_id=current_user.id
     ).all()
 
     applied_jobs = [
