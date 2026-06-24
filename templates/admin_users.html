@@ -116,6 +116,8 @@
                             <th>Credits</th>
                             <th>Trust Score</th>
                             <th>Wallet</th>
+                            <th>MSME</th>
+                            <th>Gumasta</th>
                             <th>Last Login</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -175,15 +177,71 @@
 
                             <td>
 
-                                {% if user.last_login %}
+                                {% if user.msme_certificate %}
 
-                                    {{ user.last_login.strftime('%d-%m-%Y %H:%M') }}
+                                    <span class="badge bg-success">
+                                        Uploaded
+                                    </span>
+
+                                    <br>
+
+                                    <a href="/static/uploads/{{ user.msme_certificate }}"
+                                       target="_blank"
+                                       class="btn btn-success btn-sm mt-1">
+
+                                        View
+
+                                    </a>
 
                                 {% else %}
 
-                                    Never
+                                    <span class="badge bg-danger">
+                                        Not Uploaded
+                                    </span>
 
                                 {% endif %}
+
+                             </td>
+
+                             <td>
+
+                                 {% if user.gumasta_certificate %}
+
+                                     <span class="badge bg-success">
+                                         Uploaded
+                                     </span>
+
+                                     <br>
+
+                                     <a href="/static/uploads/{{ user.gumasta_certificate }}"
+                                        target="_blank"
+                                        class="btn btn-primary btn-sm mt-1">
+
+                                         View
+
+                                     </a>
+
+                                 {% else %}
+
+                                     <span class="badge bg-danger">
+                                         Not Uploaded
+                                     </span>
+
+                                 {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                 {% if user.last_login %}
+
+                             {{ user.last_login.strftime('%d-%m-%Y %H:%M') }}
+
+                                 {% else %}
+
+                                     Never
+
+                                 {% endif %}
 
                             </td>
 
