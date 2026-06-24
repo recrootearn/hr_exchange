@@ -197,6 +197,11 @@ class JobApplication(db.Model):
         db.ForeignKey('job_post.id')
     )
 
+    applicant_hr_id = db.Column(
+        db.Integer,
+        nullable=True
+    )
+
     applied_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
@@ -2046,51 +2051,43 @@ def discover_candidates():
     )
 
 @app.route('/apply-job/<int:job_id>')
+@login_required
 def apply_job(job_id):
 
-    if 'candidate_id' not in session:
-        return redirect('/candidate-login')
+    job = JobPost.query.get_or_404(job_id)
+
+    if job.hr_id == current_user.id:
+        return redirect('/feed')
 
     existing = JobApplication.query.filter_by(
-        job_id=job_id,
-        candidate_id=session['candidate_id']
+        job_id=job.id,
+        applicant_hr_id=current_user.id
     ).first()
 
     if existing:
-        return "Already Applied"
+        return redirect('/feed')
 
     application = JobApplication(
-        job_id=job_id,
-        candidate_id=session['candidate_id']
+        job_id=job.id,
+        applicant_hr_id=current_user.id
     )
 
     db.session.add(application)
 
-    job = JobPost.query.get(job_id)
-
-    candidate = CandidateUser.query.get(
-        session['candidate_id']
-    )
-
     notification = Notification(
         user_id=job.hr_id,
         user_type="hr",
-        message=f"{candidate.full_name} applied for {job.job_title}",
-        link=f"/candidate/{candidate.id}",
-        image=candidate.profile_photo,
-        type="job_apply"
+        message=f"{current_user.company} applied for your job",
+        link="/my-applicants",
+        image=current_user.profile_photo,
+        type="job_application"
     )
 
     db.session.add(notification)
 
     db.session.commit()
 
-    next_page = request.args.get('next')
-
-    if next_page:
-        return redirect(next_page)
-
-    return redirect('/candidate-feed')
+    return redirect('/feed')
 
 @app.route('/job-applicants/<int:job_id>')
 @login_required
@@ -2126,7 +2123,9 @@ def applied_jobs():
 @login_required
 def feed():
 
-    jobs = JobPost.query.order_by(
+    jobs = JobPost.query.filter(
+        JobPost.hr_id != current_user.id
+    ).order_by(
         JobPost.created_at.desc()
     ).all()
 
@@ -2148,6 +2147,7 @@ def my_applicants():
         jobs=jobs,
         JobApplication=JobApplication,
         CandidateUser=CandidateUser
+        User=User
     )
 
 @app.route('/edit-company-profile')
@@ -3351,6 +3351,21 @@ def admin_delete_candidate(id):
 @app.route('/job/<int:job_id>')
 def job_share(job_id):
     return redirect(f'/job-details/{job_id}')
+
+@app.route('/share-job/<int:job_id>')
+@login_required
+def share_job(job_id):
+
+    job = JobPost.query.get_or_404(job_id)
+
+    share_link = (
+        request.host_url.rstrip('/')
+        + f"/job/{job.id}"
+    )
+
+    return redirect(
+        f"https://wa.me/?text=Job Opening: {job.title}%0A{share_link}"
+    )
 
 @app.route('/job/<int:job_id>')
 def public_job(job_id):

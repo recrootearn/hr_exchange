@@ -5,254 +5,262 @@
 <style>
 
 .page-title{
-
     font-size:28px;
     font-weight:700;
-
     margin-bottom:25px;
 }
 
 .applicant-card{
-
     background:white;
-
     border-radius:18px;
-
     padding:20px;
-
     margin-bottom:18px;
-
     box-shadow:0 5px 20px rgba(0,0,0,.08);
-
-    transition:.3s;
-}
-
-.applicant-card:hover{
-
-    transform:translateY(-2px);
 }
 
 .applicant-top{
-
     display:flex;
-
     align-items:center;
-
     gap:15px;
 }
 
 .applicant-avatar{
-
     width:70px;
     height:70px;
-
     border-radius:50%;
-
     background:linear-gradient(
         135deg,
         #2563eb,
         #4f46e5
     );
-
     color:white;
-
     display:flex;
-
     justify-content:center;
     align-items:center;
-
     font-size:24px;
     font-weight:700;
 }
 
 .applicant-name{
-
     font-size:20px;
     font-weight:700;
 }
 
 .info-grid{
-
     display:grid;
-
     grid-template-columns:
     repeat(auto-fit,minmax(220px,1fr));
-
     gap:12px;
-
     margin-top:18px;
 }
 
 .info-box{
-
     background:#f8fafc;
-
     padding:12px;
-
     border-radius:12px;
 }
 
 .action-buttons{
-
     display:flex;
-
     gap:10px;
-
     margin-top:20px;
-
     flex-wrap:wrap;
 }
 
-.action-buttons a{
-
-    border-radius:10px;
-}
-
 .no-applicants{
-
     background:white;
-
     padding:40px;
-
     border-radius:20px;
-
     text-align:center;
-
-    color:#666;
 }
 
-</style>
-
-<h2 class="page-title">
-
+</style><h2 class="page-title">
     👥 Job Applicants
-
-</h2>
-
-{% if applications %}
+</h2>{% if applications %}
 
 {% for app in applications %}
 
+{% if app.candidate_id %}
+
 {% set candidate = CandidateUser.query.get(app.candidate_id) %}
 
-<div class="applicant-card">
+<div class="applicant-card"><div class="applicant-top">
 
-    <div class="applicant-top">
-
-        <div class="applicant-avatar">
-
-            {{ candidate.full_name[0] }}
-
-        </div>
-
-        <div>
-
-            <div class="applicant-name">
-
-                {{ candidate.full_name }}
-
-            </div>
-
-            <small class="text-muted">
-
-                Applied Candidate
-
-            </small>
-
-        </div>
-
+    <div class="applicant-avatar">
+        {{ candidate.full_name[0] }}
     </div>
 
-    <div class="info-grid">
+    <div>
 
-        <div class="info-box">
-
-            📱 {{ candidate.mobile }}
-
+        <div class="applicant-name">
+            {{ candidate.full_name }}
         </div>
 
-        <div class="info-box">
-
-            📧 {{ candidate.email }}
-
-        </div>
-
-        <div class="info-box">
-
-            📍 {{ candidate.city or 'Not Added' }}
-
-        </div>
-
-        <div class="info-box">
-
-            💼 {{ candidate.experience or 'Not Added' }}
-
-        </div>
-
-        <a href="/candidate/{{ candidate.id }}"
-        class="btn btn-primary mt-2">
-
-            View Profile
-
-        </a>
-
-    </div>
-
-    <div class="action-buttons">
-
-        <a href="tel:{{ candidate.mobile }}"
-        class="btn btn-success">
-
-            📞 Call
-
-        </a>
-
-        <a href="https://wa.me/91{{ candidate.mobile }}"
-        target="_blank"
-        class="btn btn-success">
-
-            WhatsApp
-
-        </a>
-
-        <a href="mailto:{{ candidate.email }}"
-        class="btn btn-primary">
-
-            Email
-
-        </a>
-
-        {% if candidate.resume_file %}
-
-        <a href="/static/uploads/{{ candidate.resume_file }}"
-        target="_blank"
-        class="btn btn-dark">
-
-            Resume
-
-        </a>
-
-        {% endif %}
+        <small class="text-muted">
+            Candidate Applicant
+        </small>
 
     </div>
 
 </div>
+
+<div class="info-grid">
+
+    <div class="info-box">
+        📱 {{ candidate.mobile }}
+    </div>
+
+    <div class="info-box">
+        📧 {{ candidate.email }}
+    </div>
+
+    <div class="info-box">
+        📍 {{ candidate.city or 'Not Added' }}
+    </div>
+
+    <div class="info-box">
+        💼 {{ candidate.experience or 'Not Added' }}
+    </div>
+
+</div>
+
+<div class="action-buttons">
+
+    <a href="/candidate/{{ candidate.id }}"
+       class="btn btn-primary">
+
+       View Profile
+
+    </a>
+
+    <a href="tel:{{ candidate.mobile }}"
+       class="btn btn-success">
+
+       📞 Call
+
+    </a>
+
+    <a href="https://wa.me/91{{ candidate.mobile }}"
+       target="_blank"
+       class="btn btn-success">
+
+       WhatsApp
+
+    </a>
+
+    <a href="mailto:{{ candidate.email }}"
+       class="btn btn-info">
+
+       Email
+
+    </a>
+
+    {% if candidate.resume_file %}
+
+    <a href="/static/uploads/{{ candidate.resume_file }}"
+       target="_blank"
+       class="btn btn-dark">
+
+       Resume
+
+    </a>
+
+    {% endif %}
+
+</div>
+
+</div>{% endif %}
+
+{% if app.applicant_hr_id %}
+
+{% set hr = User.query.get(app.applicant_hr_id) %}
+
+<div class="applicant-card"><div class="applicant-top">
+
+    <div class="applicant-avatar">
+        {{ hr.first_name[0] }}
+    </div>
+
+    <div>
+
+        <div class="applicant-name">
+            {{ hr.first_name }} {{ hr.last_name }}
+        </div>
+
+        <small class="text-muted">
+            HR Applicant
+        </small>
+
+    </div>
+
+</div>
+
+<div class="info-grid">
+
+    <div class="info-box">
+        🏢 {{ hr.company }}
+    </div>
+
+    <div class="info-box">
+        📱 {{ hr.mobile }}
+    </div>
+
+    <div class="info-box">
+        📧 {{ hr.email }}
+    </div>
+
+    <div class="info-box">
+        📍 {{ hr.company_city or 'Not Added' }}
+    </div>
+
+</div>
+
+<div class="action-buttons">
+
+    <a href="/company/{{ hr.id }}"
+       class="btn btn-primary">
+
+       View Profile
+
+    </a>
+
+    <a href="tel:{{ hr.mobile }}"
+       class="btn btn-success">
+
+       📞 Call
+
+    </a>
+
+    <a href="https://wa.me/91{{ hr.mobile }}"
+       target="_blank"
+       class="btn btn-success">
+
+       WhatsApp
+
+    </a>
+
+    <a href="mailto:{{ hr.email }}"
+       class="btn btn-info">
+
+       Email
+
+    </a>
+
+</div>
+
+</div>{% endif %}
 
 {% endfor %}
 
 {% else %}
 
-<div class="no-applicants">
+<div class="no-applicants"><h3>No Applicants Yet</h3>
 
-    <h3>No Applicants Yet</h3>
+<p>
+    Once candidates or HRs apply,
+    they will appear here.
+</p>
 
-    <p>
-        Once candidates apply for this job,
-        they will appear here.
-    </p>
-
-</div>
-
-{% endif %}
+</div>{% endif %}
 
 {% endblock %}

@@ -2,22 +2,120 @@
 
 {% block content %}
 
-<h2>Job Feed</h2>
+<style>
+
+.feed-title{
+    font-size:32px;
+    font-weight:700;
+    margin-bottom:25px;
+}
+
+.job-card{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
+
+.job-title{
+    font-size:26px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.company-name{
+    font-size:20px;
+    color:#374151;
+    margin-bottom:15px;
+}
+
+.job-info{
+    margin-bottom:10px;
+    color:#4b5563;
+    font-size:16px;
+}
+
+.job-buttons{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:20px;
+}
+
+.job-buttons a{
+    flex:1;
+    min-width:120px;
+}
+
+.no-jobs{
+    background:white;
+    padding:40px;
+    text-align:center;
+    border-radius:20px;
+}
+
+</style><h2 class="feed-title">
+    Job Feed
+</h2>{% if jobs %}
 
 {% for job in jobs %}
 
-<div class="candidate-card">
+<div class="job-card"><div class="job-title">
+    {{ job.job_title }}
+</div>
 
-    <h4>{{ job.job_title }}</h4>
+<div class="company-name">
+    {{ job.company_name }}
+</div>
 
-    <p>{{ job.company_name }}</p>
+<div class="job-info">
+    📍 {{ job.location }}
+</div>
 
-    <p>{{ job.location }}</p>
+<div class="job-info">
+    💰 ₹ {{ job.salary }}
+</div>
 
-    <p>₹ {{ job.salary }}</p>
+{% if job.description %}
+
+<div class="job-info">
+    {{ job.description[:200] }}
+</div>
+
+{% endif %}
+
+<div class="job-buttons">
+
+    <a href="/company/{{ job.hr_id }}"
+       class="btn btn-secondary">
+
+        View Company
+
+    </a>
+
+    <a href="/apply-job/{{ job.id }}"
+       class="btn btn-success">
+
+        Apply Job
+
+    </a>
+
+    <a href="/share-job/{{ job.id }}"
+       class="btn btn-primary">
+
+        Share Job
+
+    </a>
 
 </div>
 
-{% endfor %}
+</div>{% endfor %}
+
+{% else %}
+
+<div class="no-jobs"><h4>No Jobs Found</h4>
+
+</div>{% endif %}
 
 {% endblock %}
