@@ -1665,6 +1665,38 @@ def follow_hr(id):
 
     return redirect(f'/company/{id}')
 
+@app.route('/follow-hr-user/<int:id>')
+def follow_hr_user(id):
+
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    existing = Follow.query.filter_by(
+        follower_hr_id=session['user_id'],
+        followed_hr_id=id
+    ).first()
+
+    hr = User.query.get(
+        session['user_id']
+    )
+
+    if existing:
+
+        db.session.delete(existing)
+
+    else:
+
+        db.session.add(
+            Follow(
+                follower_hr_id=session['user_id'],
+                followed_hr_id=id
+            )
+        )
+
+    db.session.commit()
+
+    return redirect('/discover-candidates')
+
 @app.route('/follow-candidate/<int:id>')
 @login_required
 def follow_candidate(id):
