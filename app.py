@@ -1679,8 +1679,10 @@ def follow_hr(id):
 @login_required
 def follow_hr_user(id):
 
+    # Prevent self-follow
+
     if current_user.id == id:
-        return redirect('/discover-candidates')
+        return redirect(f'/company/{id}')
 
     existing = Follow.query.filter_by(
         follower_hr_id=current_user.id,
@@ -1688,9 +1690,22 @@ def follow_hr_user(id):
     ).first()
 
     if existing:
+
         db.session.delete(existing)
 
+        notification = Notification(
+            user_id=id,
+            user_type="hr",
+            message=f"{current_user.first_name} {current_user.last_name} unfollowed you",
+            link=f"/company/{current_user.id}",
+            image=current_user.profile_photo,
+            type="unfollow"
+        )
+
+        db.session.add(notification)
+
     else:
+
         db.session.add(
             Follow(
                 follower_hr_id=current_user.id,
@@ -1698,9 +1713,20 @@ def follow_hr_user(id):
             )
         )
 
+        notification = Notification(
+            user_id=id,
+            user_type="hr",
+            message=f"{current_user.first_name} {current_user.last_name} started following you",
+            link=f"/company/{current_user.id}",
+            image=current_user.profile_photo,
+            type="follow"
+        )
+
+        db.session.add(notification)
+
     db.session.commit()
 
-    return redirect('/discover-candidates')
+    return redirect(request.referrer)
 
 @app.route('/follow-candidate/<int:id>')
 @login_required
