@@ -1565,6 +1565,16 @@ def company_profile(id):
         if existing_follow:
             is_following = True
 
+    elif 'user_id' in session:
+
+        existing_follow = Follow.query.filter_by(
+            follower_hr_id=session['user_id'],
+            followed_hr_id=id
+        ).first()
+
+        if existing_follow:
+            is_following = True
+
     return render_template(
         'company_profile.html',
         hr=hr,
