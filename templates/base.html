@@ -664,6 +664,14 @@ body{
 
 }
 
+@media(max-width:768px){
+
+    .mobile-hide-hr{
+        display:none !important;
+    }
+
+}
+
 .content{
     animation: contentFade .18s ease;
 }
@@ -830,22 +838,22 @@ body{
 
 <!-- HR MENU -->
 
-<a href="/dashboard">
+<a href="/dashboard" class="mobile-hide-hr">
     <i class="fas fa-chart-line"></i>
     Dashboard
 </a>
 
-<a href="/leads">
+<a href="/leads" class="mobile-hide-hr">
     <i class="fas fa-users"></i>
     Leads
 </a>
 
-<a href="/discover-candidates">
+<a href="/discover-candidates" class="mobile-hide-hr">
     <i class="fas fa-compass"></i>
     Discover Candidates
 </a>
 
-<a href="/upload">
+<a href="/upload" class="mobile-hide-hr">
     <i class="fas fa-upload"></i>
     Upload Candidate
 </a>
@@ -855,12 +863,12 @@ body{
     Job Feed
 </a>
 
-<a href="/wallet">
+<a href="/wallet" class="mobile-hide-hr">
     <i class="fas fa-wallet"></i>
     Wallet
 </a>
 
-<a href="/profile">
+<a href="/profile" class="mobile-hide-hr">
     <i class="fas fa-user"></i>
     My Profile
 </a>
