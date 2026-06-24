@@ -1565,10 +1565,10 @@ def company_profile(id):
         if existing_follow:
             is_following = True
 
-    elif 'user_id' in session:
+    elif current_user.is_authenticated:
 
         existing_follow = Follow.query.filter_by(
-            follower_hr_id=session['user_id'],
+            follower_hr_id=current_user.id,
             followed_hr_id=id
         ).first()
 
