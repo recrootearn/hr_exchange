@@ -1941,20 +1941,38 @@ def discover_candidates():
 
     city = request.args.get('city', '')
 
-    query = CandidateUser.query
+    # CANDIDATES
+
+    candidate_query = CandidateUser.query
 
     if city:
-        query = query.filter(
+        candidate_query = candidate_query.filter(
             CandidateUser.city.contains(city)
         )
 
-    candidates = query.order_by(
+    candidates = candidate_query.order_by(
         CandidateUser.id.desc()
+    ).all()
+
+    # HRS
+
+    hr_query = User.query.filter(
+        User.is_admin == False
+    )
+
+    if city:
+        hr_query = hr_query.filter(
+            User.company.contains(city)
+        )
+
+    hrs = hr_query.order_by(
+        User.id.desc()
     ).all()
 
     return render_template(
         'discover_candidates.html',
         candidates=candidates,
+        hrs=hrs,
         city=city,
         Follow=Follow
     )

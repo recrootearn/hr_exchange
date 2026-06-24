@@ -110,11 +110,50 @@
     color:white;
 }
 
+.discover-tabs{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.discover-tab{
+    flex:1;
+    border:none;
+    padding:12px;
+    border-radius:12px;
+    background:#e5e7eb;
+    font-weight:600;
+}
+
+.discover-tab.active{
+    background:#2563eb;
+    color:white;
+}
+
 </style>
 
 <h2 class="page-title">
     🔍 Discover Candidates
 </h2>
+
+<div class="discover-tabs">
+
+    <button class="discover-tab active"
+            onclick="showSection('all',this)">
+        All
+    </button>
+
+    <button class="discover-tab"
+            onclick="showSection('candidate',this)">
+        Candidates
+    </button>
+
+    <button class="discover-tab"
+            onclick="showSection('hr',this)">
+        HR Profiles
+    </button>
+
+</div>
 
 <div class="search-box">
 
@@ -142,9 +181,66 @@
 
 <div class="candidate-grid">
 
+{% for hr in hrs %}
+
+<div class="candidate-card hr-section">
+
+    {% if hr.profile_photo and hr.profile_photo != "default.png" %}
+
+        <img
+        src="/static/uploads/{{ hr.profile_photo }}"
+        class="candidate-photo">
+
+    {% else %}
+
+        <div class="default-avatar">
+
+            {{ hr.first_name[:1] }}
+
+        </div>
+
+    {% endif %}
+
+    <div class="name">
+
+        {{ hr.first_name }}
+        {{ hr.last_name }}
+
+    </div>
+
+    <div class="designation">
+
+        HR Professional
+
+    </div>
+
+    <div class="city">
+
+        🏢 {{ hr.company }}
+
+    </div>
+
+    <a href="/company/{{ hr.id }}"
+       class="btn-profile">
+
+       View Profile
+
+    </a>
+
+    <a href="/follow/{{ hr.id }}"
+       class="btn-follow">
+
+       Follow HR
+
+    </a>
+
+</div>
+
+{% endfor %}
+
 {% for candidate in candidates %}
 
-<div class="candidate-card">
+<div class="candidate-card candidate-section">
 
     {% if candidate.profile_photo %}
 
@@ -205,5 +301,63 @@
 {% endfor %}
 
 </div>
+
+<script>
+
+function showSection(type,btn){
+
+    document
+    .querySelectorAll('.discover-tab')
+    .forEach(tab=>{
+        tab.classList.remove('active');
+    });
+
+    btn.classList.add('active');
+
+    let hrs =
+    document.querySelectorAll('.hr-section');
+
+    let candidates =
+    document.querySelectorAll('.candidate-section');
+
+    if(type==='all'){
+
+        hrs.forEach(x=>{
+            x.style.display='block';
+        });
+
+        candidates.forEach(x=>{
+            x.style.display='block';
+        });
+
+    }
+
+    if(type==='hr'){
+
+        hrs.forEach(x=>{
+            x.style.display='block';
+        });
+
+        candidates.forEach(x=>{
+            x.style.display='none';
+        });
+
+    }
+
+    if(type==='candidate'){
+
+        hrs.forEach(x=>{
+            x.style.display='none';
+        });
+
+        candidates.forEach(x=>{
+            x.style.display='block';
+        });
+
+    }
+
+}
+
+</script>
 
 {% endblock %}
