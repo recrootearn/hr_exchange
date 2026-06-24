@@ -2226,6 +2226,127 @@ def edit_job(job_id):
         job=job
     )
 
+@app.route('/delete-account')
+@login_required
+def delete_account():
+
+    user_id = current_user.id
+
+    # Transfer uploaded leads to admin
+    admin = User.query.filter_by(
+        username="HARSHIT"
+    ).first()
+
+    if admin:
+
+        Candidate.query.filter_by(
+            uploaded_by=user_id
+        ).update(
+            {"uploaded_by": admin.id}
+        )
+
+    # Delete jobs
+    JobPost.query.filter_by(
+        hr_id=user_id
+    ).delete()
+
+    # Delete unlocks
+    Unlock.query.filter_by(
+        user_id=user_id
+    ).delete()
+
+    # Delete notifications
+    Notification.query.filter_by(
+        user_id=user_id
+    ).delete()
+
+    # Delete follows
+    Follow.query.filter(
+        (Follow.follower_hr_id == user_id) |
+        (Follow.followed_hr_id == user_id)
+    ).delete()
+
+    # Delete credit history
+    CreditHistory.query.filter_by(
+        user_id=user_id
+    ).delete()
+
+    # Delete earnings
+    Earnings.query.filter_by(
+        user_id=user_id
+    ).delete()
+
+    # Delete withdrawals
+    Withdrawal.query.filter_by(
+        user_id=user_id
+    ).delete()
+
+    # Delete support tickets
+    SupportTicket.query.filter_by(
+        user_id=user_id,
+        user_type='hr'
+    ).delete()
+
+    # Delete unlocked contacts
+    CandidateContactUnlock.query.filter_by(
+        hr_id=user_id
+    ).delete()
+
+    user = User.query.get(user_id)
+
+    logout_user()
+
+    db.session.delete(user)
+
+    db.session.commit()
+
+    session.clear()
+
+    return redirect('/')
+
+@app.route('/delete-candidate-account')
+def delete_candidate_account():
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    candidate_id = session['candidate_id']
+
+    # Delete job applications
+    JobApplication.query.filter_by(
+        candidate_id=candidate_id
+    ).delete()
+
+    # Delete notifications
+    Notification.query.filter_by(
+        user_id=candidate_id,
+        user_type='candidate'
+    ).delete()
+
+    # Delete follows
+    Follow.query.filter(
+        (Follow.follower_candidate_id == candidate_id) |
+        (Follow.followed_candidate_id == candidate_id)
+    ).delete()
+
+    # Delete support tickets
+    SupportTicket.query.filter_by(
+        user_id=candidate_id,
+        user_type='candidate'
+    ).delete()
+
+    candidate = CandidateUser.query.get(
+        candidate_id
+    )
+
+    db.session.delete(candidate)
+
+    db.session.commit()
+
+    session.clear()
+
+    return redirect('/')
+
 @app.route('/candidate-notification/<int:id>')
 def open_candidate_notification(id):
 
