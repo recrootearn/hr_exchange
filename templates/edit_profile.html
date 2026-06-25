@@ -103,62 +103,203 @@ body{
     method="POST"
     enctype="multipart/form-data">
 
-        <input
-        type="text"
-        name="first_name"
-        class="form-control"
-        value="{{ current_user.first_name }}"
-        placeholder="First Name">
+        <!-- First Name -->
 
-        <input
-        type="text"
-        name="last_name"
-        class="form-control"
-        value="{{ current_user.last_name }}"
-        placeholder="Last Name">
+<label class="form-label">First Name</label>
 
-        <input
-        type="text"
-        name="mobile"
-        class="form-control"
-        value="{{ current_user.mobile }}"
-        placeholder="Mobile">
+<input
+type="text"
+class="form-control"
+value="{{ current_user.first_name }}"
+disabled>
 
-        <input
-        type="email"
-        name="email"
-        class="form-control"
-        value="{{ current_user.email }}"
-        placeholder="Email">
+<!-- Last Name -->
 
-        <input
-        type="text"
-        name="company"
-        class="form-control"
-        value="{{ current_user.company }}"
-        placeholder="Company">
+<label class="form-label mt-3">Last Name</label>
 
-        <input
-        type="text"
-        name="hr_type"
-        class="form-control"
-        value="{{ current_user.hr_type }}"
-        placeholder="HR Type">
+<input
+type="text"
+class="form-control"
+value="{{ current_user.last_name }}"
+disabled>
 
-        <input
-        type="file"
-        name="photo"
-        class="form-control">
+<!-- Mobile -->
 
-        <button class="btn-save">
+<label class="form-label mt-3">Mobile Number</label>
 
-            Save Changes
+<input
+type="text"
+class="form-control"
+value="{{ current_user.mobile }}"
+disabled>
 
-        </button>
+<!-- Username -->
 
-    </form>
+<label class="form-label mt-3">Username</label>
 
+<input
+type="text"
+class="form-control"
+value="{{ current_user.username }}"
+disabled>
+
+<!-- Email -->
+
+<label class="form-label mt-3">Email</label>
+
+<input
+type="email"
+name="email"
+class="form-control"
+value="{{ current_user.email }}">
+
+<!-- Company Name -->
+
+<label class="form-label mt-3">Company Name</label>
+
+<input
+type="text"
+name="company"
+class="form-control"
+value="{{ current_user.company }}">
+
+<!-- Company City -->
+
+<label class="form-label mt-3">Company City</label>
+
+<input
+type="text"
+name="company_city"
+class="form-control"
+value="{{ current_user.company_city }}">
+
+<!-- Full Company Address -->
+
+<label class="form-label mt-3">Full Company Address</label>
+
+<textarea
+name="full_company_address"
+class="form-control"
+rows="4">{{ current_user.full_company_address }}</textarea>
+
+<!-- Company Website -->
+
+<label class="form-label mt-3">Company Website</label>
+
+<input
+type="text"
+name="company_website"
+class="form-control"
+value="{{ current_user.company_website }}"
+placeholder="https://company.com">
+
+<!-- HR Type -->
+
+<label class="form-label mt-3">HR Type</label>
+
+<select
+name="hr_type"
+class="form-control">
+
+<option value="Consultancy HR"
+{% if current_user.hr_type=="Consultancy HR" %}
+selected
+{% endif %}>
+Consultancy HR
+</option>
+
+<option value="Company HR"
+{% if current_user.hr_type=="Company HR" %}
+selected
+{% endif %}>
+Company HR
+</option>
+
+</select>
+
+<!-- Profile Photo -->
+
+<label class="form-label mt-3">
+Change Profile Photo
+</label>
+
+<input
+type="file"
+name="photo"
+class="form-control">
+
+<!-- MSME -->
+
+<label class="form-label mt-3">
+MSME Certificate
+</label>
+
+{% if current_user.msme_certificate %}
+
+<a
+href="/static/uploads/{{ current_user.msme_certificate }}"
+target="_blank"
+class="btn btn-success w-100 mb-3">
+
+View MSME Certificate
+
+</a>
+
+{% else %}
+
+<div class="alert alert-secondary">
+Not Uploaded
 </div>
+
+{% endif %}
+
+<!-- Gumasta -->
+
+<label class="form-label">
+Gumasta Certificate
+</label>
+
+{% if current_user.gumasta_certificate %}
+
+<a
+href="/static/uploads/{{ current_user.gumasta_certificate }}"
+target="_blank"
+class="btn btn-primary w-100 mb-3">
+
+View Gumasta Certificate
+
+</a>
+
+{% else %}
+
+<div class="alert alert-secondary">
+Not Uploaded
+</div>
+
+{% endif %}
+
+<!-- Save -->
+
+<button
+type="submit"
+class="btn-save">
+
+Update Profile
+
+</button>
+
+<hr>
+
+<a
+href="/delete-account"
+class="btn btn-danger w-100"
+onclick="return confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')">
+
+Delete Account
+
+</a>
+
+</form>
 
 <script>
 
