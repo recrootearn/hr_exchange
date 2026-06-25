@@ -224,7 +224,7 @@ class JobApplication(db.Model):
 
     status = db.Column(
     db.String(50),
-    default="Have Not Talked"
+    default="Select Candidate Status"
     )
 
     applied_at = db.Column(

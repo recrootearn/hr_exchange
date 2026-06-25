@@ -123,17 +123,82 @@
     text-align:center;  
 }  
   
-@media(max-width:768px){  
-  
-.applicant-top{  
-    flex-direction:column;  
-    align-items:flex-start;  
-}  
-  
-.action-buttons .btn{  
-    flex:1 1 45%;  
-}  
-  
+@media (max-width:768px){
+
+.applicant-card{
+    padding:14px;
+    border-radius:16px;
+    margin-bottom:16px;
+}
+
+.applicant-top{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+}
+
+.applicant-left{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.applicant-avatar{
+    width:55px;
+    height:55px;
+    font-size:22px;
+}
+
+.applicant-name{
+    font-size:18px;
+}
+
+.applicant-type{
+    font-size:13px;
+}
+
+.info-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+}
+
+.info-box{
+    padding:10px 12px;
+}
+
+.info-title{
+    font-size:12px;
+}
+
+.action-buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+
+.action-buttons .btn{
+    width:100%;
+    height:46px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:14px;
+    padding:0;
+    border-radius:10px;
+}
+
+.status-section{
+    margin-top:15px;
+}
+
+.status-section select{
+    height:45px;
+    font-size:15px;
+}
+
 }  
   
 </style>  <div class="container py-3">  <h2 class="page-title">  
@@ -245,6 +310,11 @@ method="POST">
     class="form-select"  
     name="status"  
     onchange="this.form.submit()">  
+
+        <option value="Select Candidate Status"  
+        {% if app.status=="Select Candidate Status" %}selected{% endif %}>  
+        Select Candidate Status  
+        </option>
 
         <option value="Have Not Talked"  
         {% if app.status=="Have Not Talked" %}selected{% endif %}>  
