@@ -224,7 +224,7 @@ class JobApplication(db.Model):
 
     status = db.Column(
     db.String(50),
-    default=None
+    default=True
     )
 
     applied_at = db.Column(
