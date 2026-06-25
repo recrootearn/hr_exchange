@@ -2273,7 +2273,8 @@ def applied_jobs():
     return render_template(
         'applied_jobs.html',
         applications=applications,
-        JobPost=JobPost
+        JobPost=JobPost,
+        User=User
     )
 
 @app.route('/feed')
