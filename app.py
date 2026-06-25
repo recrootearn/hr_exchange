@@ -1570,7 +1570,6 @@ def hr_profile(id):
     )
 
 @app.route('/job-view/<int:job_id>')
-@login_required
 def job_view(job_id):
 
     job = JobPost.query.get_or_404(job_id)
