@@ -1570,16 +1570,36 @@ def hr_profile(id):
     )
 
 @app.route('/job-view/<int:job_id>')
+@login_required
 def job_view(job_id):
 
     job = JobPost.query.get_or_404(job_id)
 
     hr = User.query.get(job.hr_id)
 
+    applied_jobs = []
+
+    if current_user.is_authenticated:
+
+        if hasattr(current_user, "hr_type"):
+
+            applications = JobApplication.query.filter_by(
+                applicant_hr_id=current_user.id
+            ).all()
+
+        else:
+
+            applications = JobApplication.query.filter_by(
+                candidate_id=current_user.id
+            ).all()
+
+        applied_jobs = [a.job_id for a in applications]
+
     return render_template(
         "job_view.html",
         job=job,
-        hr=hr
+        hr=hr,
+        applied_jobs=applied_jobs
     )
 
 @app.route('/company/<int:id>')
@@ -3468,7 +3488,6 @@ def job_share(job_id):
     return redirect(f'/job-details/{job_id}')
 
 @app.route('/share-job/<int:job_id>')
-@login_required
 def share_job(job_id):
 
     job = JobPost.query.get_or_404(job_id)
