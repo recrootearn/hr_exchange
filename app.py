@@ -3621,23 +3621,26 @@ def edit_profile():
 
     if request.method == 'POST':
 
-        current_user.first_name = request.form['first_name']
+        # Editable Fields
+        current_user.email = request.form.get('email')
+        current_user.company = request.form.get('company')
+        current_user.hr_type = request.form.get('hr_type')
+        current_user.company_city = request.form.get('company_city')
+        current_user.full_company_address = request.form.get('full_company_address')
+        current_user.company_website = request.form.get('company_website')
+        current_user.about_company = request.form.get('about_company')
 
-        current_user.last_name = request.form['last_name']
+        # Optional Bank Details
+        current_user.account_holder_name = request.form.get('account_holder_name')
+        current_user.bank_name = request.form.get('bank_name')
+        current_user.account_number = request.form.get('account_number')
+        current_user.ifsc_code = request.form.get('ifsc_code')
+        current_user.upi_id = request.form.get('upi_id')
 
-        current_user.mobile = request.form['mobile']
-
-        current_user.email = request.form['email']
-
-        current_user.company = request.form['company']
-
-        current_user.hr_type = request.form['hr_type']
-
-        # PHOTO UPDATE
-
+        # Profile Photo
         photo = request.files.get('photo')
 
-        if photo and photo.filename != "":
+        if photo and photo.filename:
 
             filename = secure_filename(photo.filename)
 
