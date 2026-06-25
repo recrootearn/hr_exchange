@@ -1,262 +1,200 @@
-{% extends "base.html" %}
-
-{% block content %}
-
 <style>
 
 body{
-    background:#f5f7fb;
+    background:#f4f7fb;
 }
 
 .job-page{
-    max-width:1100px;
-    margin:30px auto;
+    max-width:1000px;
+    margin:25px auto;
 }
 
 .job-card{
     background:#fff;
-    border-radius:20px;
+    border-radius:22px;
     overflow:hidden;
-    box-shadow:0 12px 35px rgba(0,0,0,.08);
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
 
 .banner{
-    height:220px;
+    height:180px;
     background:linear-gradient(135deg,#2563eb,#4f46e5);
     position:relative;
 }
 
 .company-logo{
-
-    width:120px;
-    height:120px;
-
+    width:100px;
+    height:100px;
     border-radius:50%;
-
-    background:white;
-
     overflow:hidden;
-
     position:absolute;
-
-    left:40px;
-
-    bottom:-60px;
-
-    border:6px solid white;
-
-    box-shadow:0 8px 20px rgba(0,0,0,.2);
+    left:30px;
+    bottom:-50px;
+    border:5px solid #fff;
+    background:#fff;
+    box-shadow:0 8px 20px rgba(0,0,0,.18);
 }
 
 .company-logo img{
-
     width:100%;
-
     height:100%;
-
     object-fit:cover;
 }
 
 .logo-letter{
-
     width:100%;
-
     height:100%;
-
     display:flex;
-
     justify-content:center;
-
     align-items:center;
-
-    font-size:52px;
-
+    font-size:42px;
     font-weight:700;
-
     color:#2563eb;
 }
 
 .job-body{
-
-    padding:90px 35px 35px;
+    padding:70px 25px 25px;
 }
 
 .company-name{
-
-    font-size:30px;
-
+    font-size:28px;
     font-weight:700;
-
-    color:#111827;
 }
 
 .company-type{
-
     color:#6b7280;
-
     margin-top:4px;
-
-    font-size:15px;
 }
 
 .job-title{
-
-    font-size:38px;
-
+    font-size:34px;
     font-weight:800;
-
-    margin-top:18px;
-
-    margin-bottom:18px;
-
-    color:#111827;
+    margin:18px 0;
 }
 
 .salary{
-
     display:inline-block;
-
     background:#dcfce7;
-
     color:#15803d;
-
-    padding:12px 24px;
-
+    padding:10px 22px;
     border-radius:40px;
-
+    font-size:22px;
     font-weight:700;
-
-    font-size:18px;
-
-    margin-bottom:25px;
 }
 
 .quick-info{
-
     display:grid;
-
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-
-    gap:15px;
-
-    margin-top:10px;
-
-    margin-bottom:35px;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:25px;
 }
 
 .info-card{
-
-    background:#f9fafb;
-
-    border-radius:14px;
-
-    padding:18px;
-
+    background:#f8fafc;
     border-left:5px solid #2563eb;
+    border-radius:14px;
+    padding:14px;
 }
 
 .info-title{
-
     color:#6b7280;
-
     font-size:13px;
-
-    margin-bottom:6px;
+    margin-bottom:5px;
 }
 
 .info-value{
-
-    font-size:18px;
-
+    font-size:17px;
     font-weight:700;
 }
 
 .section{
-
-    background:white;
-
-    border-radius:18px;
-
-    padding:28px;
-
-    margin-top:25px;
-
-    box-shadow:0 4px 14px rgba(0,0,0,.05);
+    margin-top:18px;
+    background:#fff;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 3px 12px rgba(0,0,0,.05);
 }
 
 .section-title{
-
-    font-size:24px;
-
+    font-size:22px;
     font-weight:700;
-
-    margin-bottom:20px;
-
-    color:#111827;
+    margin-bottom:18px;
 }
 
 .action-buttons{
-
     display:flex;
-
-    gap:15px;
-
+    gap:10px;
     flex-wrap:wrap;
-
-    margin-top:35px;
+    margin-top:25px;
 }
 
 .action-buttons .btn{
-
     flex:1;
-
-    min-width:180px;
-
-    padding:14px;
-
-    border-radius:12px;
-
-    font-size:16px;
-
+    min-width:150px;
     font-weight:700;
+    border-radius:12px;
+    padding:12px;
 }
 
 @media(max-width:768px){
 
 .banner{
-
-height:170px;
-
+    height:130px;
 }
 
 .company-logo{
-
-width:90px;
-
-height:90px;
-
-left:25px;
-
-bottom:-45px;
-
+    width:82px;
+    height:82px;
+    left:20px;
+    bottom:-40px;
 }
 
 .job-body{
-
-padding:70px 20px 25px;
-
+    padding:60px 15px 20px;
 }
 
 .company-name{
-
-font-size:22px;
-
+    font-size:22px;
 }
 
 .job-title{
+    font-size:28px;
+}
 
-font-size:28px;
+.salary{
+    font-size:18px;
+}
 
+.quick-info{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+
+.info-card{
+    padding:10px;
+}
+
+.info-title{
+    font-size:11px;
+}
+
+.info-value{
+    font-size:14px;
+}
+
+.section{
+    padding:15px;
+    margin-top:12px;
+}
+
+.section-title{
+    font-size:19px;
+    margin-bottom:12px;
+}
+
+.action-buttons .btn{
+    font-size:14px;
+    min-width:100px;
 }
 
 }
@@ -292,149 +230,57 @@ font-size:28px;
 <div class="job-body">
 
 <div class="company-name">
-
 {{ hr.company }}
-
 </div>
 
 <div class="company-type">
-
 {{ hr.hr_type }}
-
 </div>
 
 <div class="job-title">
-
 {{ job.job_title }}
-
 </div>
 
 <div class="salary">
-
 💰 ₹ {{ job.salary }}
-
 </div>
 
 <div class="quick-info">
 
 <div class="info-card">
-
-<div class="info-title">
-
-📍 Location
-
-</div>
-
-<div class="info-value">
-
-{{ job.location }}
-
-</div>
-
+<div class="info-title">📍 Location</div>
+<div class="info-value">{{ job.location }}</div>
 </div>
 
 <div class="info-card">
-
-<div class="info-title">
-
-💼 Experience
-
-</div>
-
-<div class="info-value">
-
-{{ job.experience or "Not Mentioned" }}
-
-</div>
-
+<div class="info-title">💼 Experience</div>
+<div class="info-value">{{ job.experience or "Not Mentioned" }}</div>
 </div>
 
 <div class="info-card">
-
-<div class="info-title">
-
-🕒 Job Type
-
-</div>
-
-<div class="info-value">
-
-{{ job.job_type or "Full Time" }}
-
-</div>
-
+<div class="info-title">🕒 Job Type</div>
+<div class="info-value">{{ job.job_type or "Full Time" }}</div>
 </div>
 
 <div class="info-card">
-
-<div class="info-title">
-
-📅 Posted
-
+<div class="info-title">📅 Posted</div>
+<div class="info-value">{{ job.created_at.strftime('%d %b %Y') }}</div>
 </div>
-
-<div class="info-value">
-
-{{ job.created_at.strftime('%d %b %Y') }}
-
-</div>
-
-</div>
-
-</div>
-
-<div class="action-buttons">
-
-<a href="/company/{{ hr.id }}" class="btn btn-outline-primary">
-
-🏢 View Company
-
-</a>
-
-{% if session.get('candidate_id') %}
-
-<a href="/apply-job/{{ job.id }}" class="btn btn-success">
-
-Apply Job
-
-</a>
-
-{% elif current_user.is_authenticated %}
-
-<a href="/apply-job-hr/{{ job.id }}" class="btn btn-success">
-
-Apply Job
-
-</a>
-
-{% endif %}
-
-<a href="/share-job/{{ job.id }}" class="btn btn-primary">
-
-Share Job
-
-</a>
 
 </div>
 
 <div class="section">
 
     <div class="section-title">
-        📄 Job Description
+
+        💼 Job Details
+
     </div>
 
-    <div style="line-height:1.9;font-size:16px;color:#4b5563;">
+    <div style="line-height:1.8;color:#555;font-size:15px;margin-bottom:25px;">
 
         {{ job.description|safe }}
 
-    </div>
-
-</div>
-
-<div class="section">
-
-    <div class="section-title">
-        💼 Work Details
     </div>
 
     <div class="quick-info">
@@ -442,7 +288,9 @@ Share Job
         <div class="info-card">
 
             <div class="info-title">
+
                 💰 Salary
+
             </div>
 
             <div class="info-value">
@@ -456,12 +304,14 @@ Share Job
         <div class="info-card">
 
             <div class="info-title">
+
                 🎁 Incentive
+
             </div>
 
             <div class="info-value">
 
-                {{ job.incentive or "Not Provided" }}
+                {{ job.incentive or "Not Available" }}
 
             </div>
 
@@ -470,7 +320,9 @@ Share Job
         <div class="info-card">
 
             <div class="info-title">
-                🕘 Job Timing
+
+                🕒 Job Timing
+
             </div>
 
             <div class="info-value">
@@ -484,7 +336,9 @@ Share Job
         <div class="info-card">
 
             <div class="info-title">
+
                 📅 Working Days
+
             </div>
 
             <div class="info-value">
@@ -495,50 +349,12 @@ Share Job
 
         </div>
 
-    </div>
-
-</div>
-
-<div class="section">
-
-    <div class="section-title">
-        ⭐ Job Highlights
-    </div>
-
-    <div class="quick-info">
-
         <div class="info-card">
 
             <div class="info-title">
-                📍 Location
-            </div>
 
-            <div class="info-value">
-
-                {{ job.location }}
-
-            </div>
-
-        </div>
-
-        <div class="info-card">
-
-            <div class="info-title">
-                💼 Designation
-            </div>
-
-            <div class="info-value">
-
-                {{ job.job_title }}
-
-            </div>
-
-        </div>
-
-        <div class="info-card">
-
-            <div class="info-title">
                 🏢 Company
+
             </div>
 
             <div class="info-value">
@@ -552,12 +368,14 @@ Share Job
         <div class="info-card">
 
             <div class="info-title">
-                📆 Posted On
+
+                📍 City
+
             </div>
 
             <div class="info-value">
 
-                {{ job.created_at.strftime('%d %b %Y') }}
+                {{ hr.company_city }}
 
             </div>
 
@@ -571,7 +389,7 @@ Share Job
 
     <div class="section-title">
 
-        📅 Walk-in Interview Details
+        🏢 Company & Interview Information
 
     </div>
 
@@ -581,13 +399,21 @@ Share Job
 
             <div class="info-title">
 
-                📆 Interview From
+                📅 Interview Dates
 
             </div>
 
             <div class="info-value">
 
-                {{ job.interview_from or "Not Mentioned" }}
+                {{ job.interview_from or "N/A" }}
+
+                <br>
+
+                to
+
+                <br>
+
+                {{ job.interview_to or "N/A" }}
 
             </div>
 
@@ -597,23 +423,7 @@ Share Job
 
             <div class="info-title">
 
-                📆 Interview To
-
-            </div>
-
-            <div class="info-value">
-
-                {{ job.interview_to or "Not Mentioned" }}
-
-            </div>
-
-        </div>
-
-        <div class="info-card">
-
-            <div class="info-title">
-
-                🕘 Interview Time
+                🕒 Interview Time
 
             </div>
 
@@ -625,95 +435,11 @@ Share Job
 
         </div>
 
-    </div>
-
-    <div class="mt-4">
-
-        <h5>
-
-            📝 Interview Instructions
-
-        </h5>
-
-        <div
-        style="
-        background:#f8fafc;
-        padding:20px;
-        border-radius:15px;
-        line-height:1.8;
-        ">
-
-            {{ job.interview_instructions or "No interview instructions provided." }}
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="section">
-
-    <div class="section-title">
-
-        🏢 Company Details
-
-    </div>
-
-    <div class="quick-info">
-
         <div class="info-card">
 
             <div class="info-title">
 
-                Company Name
-
-            </div>
-
-            <div class="info-value">
-
-                {{ hr.company }}
-
-            </div>
-
-        </div>
-
-        <div class="info-card">
-
-            <div class="info-title">
-
-                HR Type
-
-            </div>
-
-            <div class="info-value">
-
-                {{ hr.hr_type }}
-
-            </div>
-
-        </div>
-
-        <div class="info-card">
-
-            <div class="info-title">
-
-                City
-
-            </div>
-
-            <div class="info-value">
-
-                {{ hr.company_city or "Not Mentioned" }}
-
-            </div>
-
-        </div>
-
-        <div class="info-card">
-
-            <div class="info-title">
-
-                Website
+                🌐 Website
 
             </div>
 
@@ -721,11 +447,9 @@ Share Job
 
                 {% if hr.company_website %}
 
-                <a
-                href="{{ hr.company_website }}"
-                target="_blank">
+                <a href="{{ hr.company_website }}" target="_blank">
 
-                    {{ hr.company_website }}
+                    Visit Website
 
                 </a>
 
@@ -739,104 +463,28 @@ Share Job
 
         </div>
 
-    </div>
-
-    <div class="mt-4">
-
-        <h5>
-
-            📍 Company Address
-
-        </h5>
-
-        <div
-        style="
-        background:#f8fafc;
-        padding:20px;
-        border-radius:15px;
-        ">
-
-            {{ hr.full_company_address }}
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="section">
-
-    <div class="section-title">
-
-        📖 About Company
-
-    </div>
-
-    <div
-    style="
-    line-height:1.9;
-    font-size:16px;
-    color:#4b5563;
-    ">
-
-        {{ hr.about_company or "No company description available." }}
-
-    </div>
-
-</div>
-
-<div class="section">
-
-    <div class="section-title">
-
-        ✅ Company Verification
-
-    </div>
-
-    <div class="quick-info">
-
         <div class="info-card">
 
             <div class="info-title">
 
-                MSME Certificate
+                ✅ Verification
 
             </div>
 
             <div class="info-value">
 
                 {% if hr.msme_certificate %}
-
-                ✅ Verified
-
-                {% else %}
-
-                ❌ Not Uploaded
-
+                    ✔ MSME
                 {% endif %}
 
-            </div>
-
-        </div>
-
-        <div class="info-card">
-
-            <div class="info-title">
-
-                Gumasta Certificate
-
-            </div>
-
-            <div class="info-value">
+                <br>
 
                 {% if hr.gumasta_certificate %}
+                    ✔ Gumasta
+                {% endif %}
 
-                ✅ Verified
-
-                {% else %}
-
-                ❌ Not Uploaded
-
+                {% if not hr.msme_certificate and not hr.gumasta_certificate %}
+                    Not Verified
                 {% endif %}
 
             </div>
@@ -845,61 +493,43 @@ Share Job
 
     </div>
 
-</div>
+    <hr>
 
-<div class="section">
+    <h5 class="mt-3">
 
-    <div class="section-title">
+        📍 Company Address
 
-        👤 Posted By
+    </h5>
 
-    </div>
+    <p class="text-muted mb-4">
 
-    <div class="d-flex align-items-center">
+        {{ hr.full_company_address }}
 
-        <div class="company-logo me-3">
+    </p>
 
-            {% if hr.profile_photo %}
+    <h5>
 
-            <img
-            src="/static/uploads/{{ hr.profile_photo }}">
+        📝 Interview Instructions
 
-            {% else %}
+    </h5>
 
-            <div class="logo-letter">
+    <div class="alert alert-light border">
 
-                {{ hr.first_name[:1].upper() }}
-
-            </div>
-
-            {% endif %}
-
-        </div>
-
-        <div>
-
-            <h4 class="mb-1">
-
-                {{ hr.first_name }} {{ hr.last_name }}
-
-            </h4>
-
-            <p class="text-muted mb-1">
-
-                {{ hr.hr_type }}
-
-            </p>
-
-            <small class="text-success">
-
-                Job Posted on
-                {{ job.created_at.strftime('%d %b %Y') }}
-
-            </small>
-
-        </div>
+        {{ job.interview_instructions or "No interview instructions provided." }}
 
     </div>
+
+    <h5>
+
+        🏢 About Company
+
+    </h5>
+
+    <p class="text-muted mb-0">
+
+        {{ hr.about_company or "No company description available." }}
+
+    </p>
 
 </div>
 
@@ -911,53 +541,93 @@ Share Job
 
     </div>
 
-    <div class="action-buttons">
+    <div class="row g-3">
 
-        <a
-        href="/company/{{ hr.id }}"
-        class="btn btn-outline-primary">
+        <div class="col-md-4">
 
-            <i class="fas fa-building"></i>
+            <a href="/company/{{ hr.id }}"
+               class="btn btn-outline-primary w-100">
 
-            View Company
+                <i class="fas fa-building"></i>
 
-        </a>
+                View Company
 
-        {% if session.get('candidate_id') %}
+            </a>
 
-        <a
-        href="/apply-job/{{ job.id }}"
-        class="btn btn-success">
+        </div>
 
-            <i class="fas fa-paper-plane"></i>
+        <div class="col-md-4">
 
-            Apply Job
+            {% if session.get('candidate_id') %}
 
-        </a>
+                {% if job.id in applied_jobs %}
 
-        {% elif session.get('user_id') %}
+                <button
+                    class="btn btn-success w-100"
+                    disabled>
 
-        <a
-        href="/apply-job-hr/{{ job.id }}"
-        class="btn btn-success">
+                    <i class="fas fa-check-circle"></i>
 
-            <i class="fas fa-paper-plane"></i>
+                    Already Applied
 
-            Apply Job
+                </button>
 
-        </a>
+                {% else %}
 
-        {% endif %}
+                <a href="/apply-job/{{ job.id }}"
+                   class="btn btn-success w-100">
 
-        <a
-        href="/share-job/{{ job.id }}"
-        class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
 
-            <i class="fas fa-share-alt"></i>
+                    Apply Job
 
-            Share Job
+                </a>
 
-        </a>
+                {% endif %}
+
+            {% elif session.get('user_id') %}
+
+                {% if job.id in applied_jobs %}
+
+                <button
+                    class="btn btn-success w-100"
+                    disabled>
+
+                    <i class="fas fa-check-circle"></i>
+
+                    Already Applied
+
+                </button>
+
+                {% else %}
+
+                <a href="/apply-job-hr/{{ job.id }}"
+                   class="btn btn-success w-100">
+
+                    <i class="fas fa-paper-plane"></i>
+
+                    Apply Job
+
+                </a>
+
+                {% endif %}
+
+            {% endif %}
+
+        </div>
+
+        <div class="col-md-4">
+
+            <a href="/share-job/{{ job.id }}"
+               class="btn btn-primary w-100">
+
+                <i class="fas fa-share-alt"></i>
+
+                Share Job
+
+            </a>
+
+        </div>
 
     </div>
 
@@ -977,30 +647,40 @@ position:fixed;
 
 left:0;
 
-bottom:0;
+right:0;
 
-width:100%;
+bottom:0;
 
 background:white;
 
-padding:12px;
+padding:10px 15px;
 
 display:none;
 
 box-shadow:0 -5px 20px rgba(0,0,0,.15);
 
 z-index:999;
+
 }
 
-.mobile-bottom-bar .btn{
+.mobile-bottom-buttons{
 
-width:100%;
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:10px;
+
+}
+
+.mobile-bottom-buttons .btn{
+
+border-radius:12px;
 
 font-weight:700;
 
-padding:12px;
+height:46px;
 
-border-radius:12px;
 }
 
 @media(max-width:768px){
@@ -1013,7 +693,7 @@ display:block;
 
 body{
 
-padding-bottom:90px;
+padding-bottom:85px;
 
 }
 
@@ -1023,27 +703,64 @@ padding-bottom:90px;
 
 <div class="mobile-bottom-bar">
 
-{% if session.get('candidate_id') %}
+<div class="mobile-bottom-buttons">
 
-<a
-href="/apply-job/{{ job.id }}"
-class="btn btn-success">
+<a href="/company/{{ hr.id }}"
+class="btn btn-outline-primary">
 
-Apply Job
+Company
 
 </a>
+
+{% if session.get('candidate_id') %}
+
+    {% if job.id in applied_jobs %}
+
+    <button
+    class="btn btn-success"
+    disabled>
+
+    Applied
+
+    </button>
+
+    {% else %}
+
+    <a href="/apply-job/{{ job.id }}"
+    class="btn btn-success">
+
+    Apply
+
+    </a>
+
+    {% endif %}
 
 {% elif session.get('user_id') %}
 
-<a
-href="/apply-job-hr/{{ job.id }}"
-class="btn btn-success">
+    {% if job.id in applied_jobs %}
 
-Apply Job
+    <button
+    class="btn btn-success"
+    disabled>
 
-</a>
+    Applied
+
+    </button>
+
+    {% else %}
+
+    <a href="/apply-job-hr/{{ job.id }}"
+    class="btn btn-success">
+
+    Apply
+
+    </a>
+
+    {% endif %}
 
 {% endif %}
+
+</div>
 
 </div>
 
