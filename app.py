@@ -100,6 +100,12 @@ class User(UserMixin, db.Model):
 
     company_photos = db.Column(db.Text)
 
+    company_city = db.Column(db.String(100))
+
+    full_company_address = db.Column(db.Text)
+
+    company_website = db.Column(db.String(200))
+
     referred_by = db.Column(db.String(20))
 
     total_referrals = db.Column(db.Integer, default=0)
@@ -1185,6 +1191,12 @@ def register():
             email=request.form['email'],
 
             company=request.form['company'],
+ 
+            company_city=request.form.get("company_city"),
+
+            full_company_address=request.form.get("full_company_address"),
+
+            company_website=request.form.get("company_website"),
 
             hr_type=request.form['hr_type'],
 
