@@ -137,6 +137,8 @@
 
         <div class="feed-buttons">
 
+            <!-- Company -->
+
             <a href="/company/{{ job.hr_id }}"
                class="btn btn-outline-primary">
 
@@ -144,6 +146,18 @@
                 Company
 
             </a>
+
+            <!-- View Job -->
+
+            <a href="/job-view/{{ job.id }}"
+               class="btn btn-info">
+
+                <i class="fas fa-eye"></i>
+                View Job
+
+            </a>
+
+            <!-- Apply -->
 
             {% if job.id in applied_jobs %}
 
@@ -161,19 +175,20 @@
             <a href="/apply-job/{{ job.id }}"
                class="btn btn-primary">
 
-                <i class="fas fa-paper-plane"></i>
-                Apply Now
+               <i class="fas fa-paper-plane"></i>
+               Apply Now
 
             </a>
 
             {% endif %}
 
-            <a href="https://wa.me/?text={{ request.url_root }}job/{{ job.id }}"
-                target="_blank"
-                class="btn btn-success">
+            <!-- Share -->
 
-                 <i class="fab fa-whatsapp"></i>
-                 Share
+            <a href="/share-job/{{ job.id }}"
+               class="btn btn-success">
+
+                <i class="fab fa-whatsapp"></i>
+                Share
 
             </a>
 
