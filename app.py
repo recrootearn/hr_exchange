@@ -224,7 +224,8 @@ class JobApplication(db.Model):
 
     status = db.Column(
     db.String(50),
-    default=True
+    nullable=True,
+    default=None
     )
 
     applied_at = db.Column(
@@ -2168,6 +2169,8 @@ def apply_job(job_id):
     application = JobApplication(
         job_id=job_id,
         candidate_id=session['candidate_id']
+        ,
+            status=None
     )
 
     db.session.add(application)
@@ -2212,7 +2215,8 @@ def apply_job_hr(id):
 
     application = JobApplication(
         applicant_hr_id=current_user.id,
-        job_id=id
+        job_id=id,
+        status=None
     )
 
     db.session.add(application)
