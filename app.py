@@ -179,6 +179,20 @@ class JobPost(db.Model):
 
     salary = db.Column(db.String(100))
 
+    incentive = db.Column(db.String(100))
+
+    job_timing = db.Column(db.String(100))
+
+    working_days = db.Column(db.String(100))
+
+    interview_from = db.Column(db.String(20))
+
+    interview_to = db.Column(db.String(20))
+
+    interview_time = db.Column(db.String(50))
+
+    interview_instructions = db.Column(db.Text)
+
     description = db.Column(db.Text)
 
     image = db.Column(db.Text)
@@ -1889,6 +1903,20 @@ def post_job():
             location=request.form['location'],
 
             salary=request.form['salary'],
+
+            incentive=request.form.get("incentive"),
+
+            job_timing=request.form.get("job_timing"),
+
+            working_days=request.form.get("working_days"),
+
+            interview_from=request.form.get("interview_from"),
+
+            interview_to=request.form.get("interview_to"),
+
+            interview_time=request.form.get("interview_time"),
+
+            interview_instructions=request.form.get("interview_instructions"),
 
             description=request.form['description'],
 
