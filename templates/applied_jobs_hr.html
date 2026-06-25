@@ -2,235 +2,87 @@
 
 {% block content %}
 
-<style>  
-  
-.page-title{  
-    font-size:30px;  
-    font-weight:700;  
-    margin-bottom:25px;  
-}  
-  
-.job-card{  
-    background:#fff;  
-    border-radius:18px;  
-    padding:20px;  
-    margin-bottom:18px;  
-    box-shadow:0 5px 18px rgba(0,0,0,.08);  
-    transition:.25s;  
-}  
-  
-.job-card:hover{  
-    transform:translateY(-2px);  
-}  
-  
-.company-name{  
-    color:#2563eb;  
-    font-size:16px;  
-    font-weight:700;  
-}  
-  
-.job-title{  
-    font-size:20px;  
-    font-weight:700;  
-    margin-top:6px;  
-}  
-  
-.info-grid{  
-    display:grid;  
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));  
-    gap:12px;  
-    margin-top:18px;  
-}  
-  
-.info-box{  
-    background:#f8fafc;  
-    border-radius:12px;  
-    padding:10px;  
-}  
-  
-.info-title{  
-    color:#64748b;  
-    font-size:13px;  
-    margin-bottom:4px;  
-}  
-  
-.status{  
-    display:inline-block;  
-    padding:8px 16px;  
-    border-radius:25px;  
-    color:#fff;  
-    font-weight:600;  
-    margin-top:15px;
-    width:100%;
-    text-align:center;  
-}  
-  
-.pending{  
-    background:#6b7280;  
-}  
-  
-.talked{  
-    background:#f59e0b;  
-}  
-  
-.interview{  
-    background:#2563eb;  
-}  
-  
-.hired{  
-    background:#16a34a;  
-}  
-  
-.rejected{  
-    background:#dc2626;  
-}  
-  
-.action-buttons{  
-    display:flex;  
-    gap:10px;  
-    flex-wrap:wrap;  
-    margin-top:20px; 
-    grid-template-columns:1fr; 
-}  
-  
-.action-buttons .btn{  
-    flex:1;  
-    min-width:140px;  
-}  
-  
-.no-jobs{  
-    background:#fff;  
-    padding:60px;  
-    border-radius:20px;  
-    text-align:center;  
-}  
-  
-@media(max-width:768px){  
-  
-.job-card{  
-    padding:15px;  
-}  
-  
-.info-grid{  
-    grid-template-columns:1fr;  
-}  
-  
-.action-buttons{  
-    display:grid;  
-    grid-template-columns:1fr 1fr;  
-    gap:8px;  
-}  
-  
-.action-buttons .btn{  
-    width:100%;  
-    min-width:0;  
-}  
-  
-}  
-  
-</style>  <div class="container py-3">  <h2 class="page-title">  📂 Applied Jobs
+<style>
+/* Your existing styles remain exactly the same */
+.page-title{ font-size:30px; font-weight:700; margin-bottom:25px; }
+.job-card{ background:#fff; border-radius:18px; padding:20px; margin-bottom:18px; box-shadow:0 5px 18px rgba(0,0,0,.08); transition:.25s; }
+.job-card:hover{ transform:translateY(-2px); }
+.company-name{ color:#2563eb; font-size:18px; font-weight:700; }
+.job-title{ font-size:24px; font-weight:700; margin-top:6px; }
+.info-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-top:18px; }
+.info-box{ background:#f8fafc; border-radius:12px; padding:12px; }
+.info-title{ color:#64748b; font-size:13px; margin-bottom:4px; }
+.status{ display:inline-block; padding:8px 16px; border-radius:25px; color:#fff; font-weight:600; margin-top:15px; }
+.pending{ background:#6b7280; }
+.talked{ background:#f59e0b; }
+.interview{ background:#2563eb; }
+.hired{ background:#16a34a; }
+.rejected{ background:#dc2626; }
+.action-buttons{ display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+.action-buttons .btn{ flex:1; min-width:140px; }
+.no-jobs{ background:#fff; padding:60px; border-radius:20px; text-align:center; }
+@media(max-width:768px){
+  .job-card{ padding:15px; }
+  .info-grid{ grid-template-columns:1fr; }
+  .action-buttons{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .action-buttons .btn{ width:100%; min-width:0; }
+}
+</style>
 
-</h2>  {% if applications %}
+<div class="container py-3">
+    <h2 class="page-title">📂 Applied Jobs</h2>
 
-{% for app in applications %}
+    {% if applications %}
+        {% for app in applications %}
+            {% set job = JobPost.query.get(app.job_id) %}
+            {% set hr = User.query.get(job.hr_id) %}
 
-{% set job = JobPost.query.get(app.job_id) %}
+            <div class="job-card">
+                <div class="company-name">{{ hr.company }}</div>
+                <div class="job-title">{{ job.job_title }}</div>
+                <div class="info-grid">
+                    <div class="info-box">
+                        <div class="info-title">📍 Location</div>
+                        {{ job.city }}
+                    </div>
+                    <div class="info-box">
+                        <div class="info-title">💰 Salary</div>
+                        {{ job.salary }}
+                    </div>
+                    <div class="info-box">
+                        <div class="info-title">📅 Applied On</div>
+                        {{ app.applied_at.strftime('%d %b %Y') }}
+                    </div>
+                </div>
 
-{% if job %}
+                {% if app.status=="Hired" %}
+                    <div class="status hired">🟢 Hired</div>
+                {% elif app.status=="Rejected" %}
+                    <div class="status rejected">🔴 Rejected</div>
+                {% elif app.status=="Called For Interview" %}
+                    <div class="status interview">🔵 Called For Interview</div>
+                {% elif app.status=="Interviewed" %}
+                    <div class="status interview">🟣 Interviewed</div>
+                {% elif app.status=="Talked" %}
+                    <div class="status talked">🟡 Talked</div>
+                {% else %}
+                    <div class="status pending">⚪ Applied</div>
+                {% endif %}
 
-{% set hr = User.query.get(job.hr_id) %}
-
-<div class="job-card">  <div class="company-name">  {{ hr.company }}
-
-</div>  <div class="job-title">  {{ job.job_title }}
-
-</div>  <div class="info-grid">  <div class="info-box">  
-    <div class="info-title">  
-        📍 Location  
-    </div>  
-
-    {{ job.city }}  
-</div>  
-
-<div class="info-box">  
-    <div class="info-title">  
-        💰 Salary  
-    </div>  
-
-    {{ job.salary }}  
-</div>  
-
-<div class="info-box">  
-    <div class="info-title">  
-        📅 Applied On  
-    </div>  
-
-    {{ app.applied_at.strftime('%d %b %Y') }}  
+                <div class="action-buttons">
+                    <a href="/job-view/{{ job.id }}" class="btn btn-primary">👁 View Job</a>
+                    <a href="/company/{{ hr.id }}" class="btn btn-success">🏢 View Company</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-jobs">
+            <img src="/static/images/no-data.png" style="width:130px;margin-bottom:20px;">
+            <h3>No Applied Jobs</h3>
+            <p class="text-muted">Jobs that you apply for will appear here.</p>
+            <a href="/feed" class="btn btn-primary mt-3">Browse Jobs</a>
+        </div>
+    {% endif %}
 </div>
 
-</div>  {% if app.status=="Hired" %}
-
-<div class="status hired">  🟢 Hired
-
-</div>  {% elif app.status=="Rejected" %}
-
-<div class="status rejected">  🔴 Rejected
-
-</div>  {% elif app.status=="Called For Interview" %}
-
-<div class="status interview">  🔵 Called For Interview
-
-</div>  {% elif app.status=="Interviewed" %}
-
-<div class="status interview">  🟣 Interviewed
-
-</div>  {% elif app.status=="Talked" %}
-
-<div class="status talked">  🟡 Talked
-
-</div>  {% else %}
-
-<div class="status pending">  ⚪ Applied
-
-</div>  {% endif %}
-
-<div class="action-buttons">  <a href="/job-view/{{ job.id }}"  
-class="btn btn-primary">
-
-👁 View Job
-
-</a>  <a href="/company/{{ hr.id }}"  
-class="btn btn-success">
-
-🏢 View Company
-
-</a>  </div>  </div>  {% endfor %}
-
-{% else %}
-
-<div class="no-jobs">  <img  
-src="/static/images/no-data.png"  
-style="width:130px;margin-bottom:20px;">  
-
-<h3>  
-
-    No Applied Jobs  
-
-</h3>  
-
-<p class="text-muted">  
-
-    Jobs that you apply for will appear here.  
-
-</p>  
-
-<a href="/feed"  
-   class="btn btn-primary mt-3">  
-
-    Browse Jobs  
-
-</a>
-
-</div>  {% endif %}
-
-</div>  {% endblock %}
+{% endblock %}
