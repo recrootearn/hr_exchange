@@ -311,9 +311,10 @@ method="POST">
     name="status"  
     onchange="this.form.submit()">  
 
-        <option value="Select Candidate Status"  
-        {% if app.status=="Select Candidate Status" %}selected{% endif %}>  
-        Select Candidate Status  
+        <option value=""
+        {% if not app.status %}selected{% endif %}
+        disabled>
+        Select Candidate Status
         </option>
 
         <option value="Have Not Talked"  
@@ -421,7 +422,7 @@ method="POST">
         {% else %}  
 
         <span class="status-badge status-default">  
-            ⚪ Have Not Talked  
+            ⚪ No status
         </span>  
 
         {% endif %}  
