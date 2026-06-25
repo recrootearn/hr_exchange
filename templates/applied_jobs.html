@@ -3,115 +3,34 @@
 {% block content %}
 
 <style>
+/* --- Existing Styles --- */
+.page-title { font-size:28px; font-weight:700; margin-bottom:20px; }
+.job-card { background:#fff; border-radius:18px; padding:18px; margin-bottom:16px; box-shadow:0 4px 15px rgba(0,0,0,.08); border:1px solid #eee; transition:.3s; }
+.job-card:hover { transform:translateY(-2px); }
+.job-title { font-size:20px; font-weight:700; color:#111827; margin-bottom:8px; }
+.company { color:#2563eb; font-weight:600; margin-bottom:10px; }
+.info { color:#6b7280; margin-bottom:6px; font-size:14px; }
 
-.page-title{
-    font-size:28px;
-    font-weight:700;
-    margin-bottom:20px;
-}
+/* --- Status Badge Styles --- */
+.status { display:inline-block; padding:6px 14px; border-radius:50px; color:#fff; font-size:13px; font-weight:600; margin-top:12px; }
+.pending { background:#6b7280; }
+.talked { background:#f59e0b; }
+.interview { background:#2563eb; }
+.hired { background:#16a34a; }
+.rejected { background:#dc2626; }
 
-.job-card{
-    background:#fff;
-    border-radius:18px;
-    padding:18px;
-    margin-bottom:16px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-    border:1px solid #eee;
-    transition:.3s;
-}
-
-.job-card:hover{
-    transform:translateY(-2px);
-}
-
-.job-title{
-    font-size:20px;
-    font-weight:700;
-    color:#111827;
-    margin-bottom:8px;
-}
-
-.company{
-    color:#2563eb;
-    font-weight:600;
-    margin-bottom:10px;
-}
-
-.info{
-    color:#6b7280;
-    margin-bottom:6px;
-    font-size:14px;
-}
-
-.applied-badge{
-    display:inline-block;
-    margin-top:12px;
-    background:#dcfce7;
-    color:#15803d;
-    padding:8px 14px;
-    border-radius:50px;
-    font-size:13px;
-    font-weight:600;
-}
-
-.empty-box{
-    background:white;
-    border-radius:20px;
-    padding:40px 20px;
-    text-align:center;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-}
-
-.empty-box h4{
-    margin-top:15px;
-    font-size:22px;
-}
-
-.empty-box p{
-    color:#6b7280;
-}
-
-.feed-btn{
-    display:inline-block;
-    margin-top:15px;
-    background:#2563eb;
-    color:white;
-    padding:12px 24px;
-    text-decoration:none;
-    border-radius:10px;
-    font-weight:600;
-}
-
-.stats-row{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:15px;
-    margin-bottom:20px;
-}
-
-.stats-card{
-    background:linear-gradient(135deg,#2563eb,#4f46e5);
-    color:white;
-    padding:20px;
-    border-radius:18px;
-    text-align:center;
-}
-
-.stats-card h3{
-    margin:0;
-    font-size:30px;
-}
-
-.stats-card p{
-    margin:5px 0 0;
-    opacity:.9;
-}
-
+/* --- Remaining Existing Styles --- */
+.empty-box { background:white; border-radius:20px; padding:40px 20px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,.08); }
+.empty-box h4 { margin-top:15px; font-size:22px; }
+.empty-box p { color:#6b7280; }
+.feed-btn { display:inline-block; margin-top:15px; background:#2563eb; color:white; padding:12px 24px; text-decoration:none; border-radius:10px; font-weight:600; }
+.stats-row { display:grid; grid-template-columns:1fr; gap:15px; margin-bottom:20px; }
+.stats-card { background:linear-gradient(135deg,#2563eb,#4f46e5); color:white; padding:20px; border-radius:18px; text-align:center; }
+.stats-card h3 { margin:0; font-size:30px; }
+.stats-card p { margin:5px 0 0; opacity:.9; }
 </style>
 
-<h2 class="page-title">
-    📄 My Applied Jobs
-</h2>
+<h2 class="page-title">📄 My Applied Jobs</h2>
 
 <div class="stats-row">
     <div class="stats-card">
@@ -121,62 +40,44 @@
 </div>
 
 {% if applications %}
+    {% for application in applications %}
+        {% set job = JobPost.query.get(application.job_id) %}
+        {% if job %}
+        
+        <div class="job-card">
+            <div class="job-title">{{ job.job_title }}</div>
+            {% set hr = User.query.get(job.hr_id) %}
 
-{% for application in applications %}
+            <div class="company">
+            🏢 {{ hr.company }}
+            </div>
+            <div class="info">📍 {{ job.city }}</div>
+            <div class="info">💰 ₹ {{ job.salary }}</div>
+            <div class="info">🕒 Applied on: {{ application.applied_at.strftime('%d %b %Y') }}</div>
 
-{% set job = JobPost.query.get(application.job_id) %}
-
-<div class="job-card">
-
-    <div class="job-title">
-        {{ job.job_title }}
-    </div>
-
-    <div class="company">
-        🏢 {{ job.company_name }}
-    </div>
-
-    <div class="info">
-        📍 {{ job.location }}
-    </div>
-
-    <div class="info">
-        💰 ₹ {{ job.salary }}
-    </div>
-
-    <div class="info">
-        🕒 Applied on:
-        {{ application.applied_at.strftime('%d %b %Y') }}
-    </div>
-
-    <span class="applied-badge">
-        ✅ Application Submitted
-    </span>
-
-</div>
-
-{% endfor %}
-
+            {% if application.status=="Hired" %}
+                <div class="status hired">🟢 Hired</div>
+            {% elif application.status=="Rejected" %}
+                <div class="status rejected">🔴 Rejected</div>
+            {% elif application.status=="Called For Interview" %}
+                <div class="status interview">🔵 Called For Interview</div>
+            {% elif application.status=="Interviewed" %}
+                <div class="status interview">🟣 Interviewed</div>
+            {% elif application.status=="Talked" %}
+                <div class="status talked">🟡 Talked</div>
+            {% else %}
+                <div class="status pending">⚪ Applied</div>
+            {% endif %}
+        </div>
+    {% endif %}
+    {% endfor %}
 {% else %}
-
-<div class="empty-box">
-
-    <div style="font-size:60px;">
-        📭
+    <div class="empty-box">
+        <div style="font-size:60px;">📭</div>
+        <h4>No Applications Yet</h4>
+        <p>Start applying for jobs and track them here.</p>
+        <a href="/candidate-feed" class="feed-btn">Browse Jobs</a>
     </div>
-
-    <h4>No Applications Yet</h4>
-
-    <p>
-        Start applying for jobs and track them here.
-    </p>
-
-    <a href="/candidate-feed" class="feed-btn">
-        Browse Jobs
-    </a>
-
-</div>
-
 {% endif %}
 
 {% endblock %}
