@@ -2,581 +2,474 @@
 
 {% block content %}
 
-<style>
+<style>  
+  
+.page-title{  
+    font-size:30px;  
+    font-weight:700;  
+    margin-bottom:25px;  
+    color:#222;  
+}  
+  
+.applicant-card{  
+    background:#fff;  
+    border-radius:20px;  
+    padding:22px;  
+    margin-bottom:22px;  
+    box-shadow:0 8px 25px rgba(0,0,0,.08);  
+    border:1px solid #eef2f7;  
+}  
+  
+.applicant-top{  
+    display:flex;  
+    justify-content:space-between;  
+    align-items:center;  
+    margin-bottom:18px;  
+}  
+  
+.applicant-left{  
+    display:flex;  
+    align-items:center;  
+    gap:15px;  
+}  
+  
+.applicant-avatar{  
+    width:70px;  
+    height:70px;  
+    border-radius:50%;  
+    background:linear-gradient(135deg,#2563eb,#4f46e5);  
+    display:flex;  
+    justify-content:center;  
+    align-items:center;  
+    color:#fff;  
+    font-size:26px;  
+    font-weight:bold;  
+}  
+  
+.applicant-name{  
+    font-size:22px;  
+    font-weight:700;  
+}  
+  
+.applicant-type{  
+    color:#6b7280;  
+    font-size:15px;  
+}  
+  
+.status-badge{  
+    padding:8px 15px;  
+    border-radius:30px;  
+    color:white;  
+    font-size:13px;  
+    font-weight:600;  
+}  
+  
+.status-hired{  
+    background:#16a34a;  
+}  
+  
+.status-interview{  
+    background:#2563eb;  
+}  
+  
+.status-talked{  
+    background:#f59e0b;  
+}  
+  
+.status-rejected{  
+    background:#dc2626;  
+}  
+  
+.status-default{  
+    background:#6b7280;  
+}  
+  
+.info-grid{  
+    display:grid;  
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));  
+    gap:14px;  
+    margin-top:18px;  
+}  
+  
+.info-box{  
+    background:#f8fafc;  
+    border-radius:12px;  
+    padding:14px;  
+}  
+  
+.info-title{  
+    color:#64748b;  
+    font-size:13px;  
+    margin-bottom:5px;  
+}  
+  
+.action-buttons{  
+    display:flex;  
+    flex-wrap:wrap;  
+    gap:10px;  
+    margin-top:20px;  
+}  
+  
+.status-section{  
+    margin-top:20px;  
+    padding-top:18px;  
+    border-top:1px solid #eee;  
+}  
+  
+.no-applicants{  
+    background:white;  
+    border-radius:20px;  
+    padding:60px 20px;  
+    text-align:center;  
+}  
+  
+@media(max-width:768px){  
+  
+.applicant-top{  
+    flex-direction:column;  
+    align-items:flex-start;  
+}  
+  
+.action-buttons .btn{  
+    flex:1 1 45%;  
+}  
+  
+}  
+  
+</style>  <div class="container py-3">  <h2 class="page-title">  
+👥 Job Applicants  
+</h2>  {% if applications %}
 
-.page-title{
-    font-size:30px;
-    font-weight:700;
-    margin-bottom:25px;
-    color:#222;
-}
+{% for app in applications %}
 
-.applicant-card{
-    background:#fff;
-    border-radius:20px;
-    padding:22px;
-    margin-bottom:22px;
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
-    border:1px solid #eef2f7;
-}
+{% if app.candidate_id %}
 
-.applicant-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:18px;
-}
+{% set candidate = CandidateUser.query.get(app.candidate_id) %}
 
-.applicant-left{
-    display:flex;
-    align-items:center;
-    gap:15px;
-}
+{% if candidate %}
 
-.applicant-avatar{
-    width:70px;
-    height:70px;
-    border-radius:50%;
-    background:linear-gradient(135deg,#2563eb,#4f46e5);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    color:#fff;
-    font-size:26px;
-    font-weight:bold;
-}
+<div class="applicant-card">  <div class="applicant-top">  <div class="applicant-left">  <div class="applicant-avatar">  {{ candidate.full_name[0] }}
 
-.applicant-name{
-    font-size:22px;
-    font-weight:700;
-    color:#222;
-}
+</div>  <div>  <div class="applicant-name">  {{ candidate.full_name }}
 
-.applicant-type{
-    color:#6b7280;
-    font-size:15px;
-}
+</div>  <div class="applicant-type">  Candidate Applicant
 
-.status-badge{
-    padding:8px 14px;
-    border-radius:30px;
-    color:white;
-    font-size:13px;
-    font-weight:600;
-}
+</div>  </div>  </div>  <div>  {% if app.status=="Hired" %}
 
-.status-hired{
-    background:#16a34a;
-}
+<span class="status-badge status-hired">  
+🟢 Hired  
+</span>  {% elif app.status=="Called For Interview" %}
 
-.status-interview{
-    background:#2563eb;
-}
+<span class="status-badge status-interview">  
+🔵 Interview  
+</span>  {% elif app.status=="Interviewed" %}
 
-.status-talked{
-    background:#f59e0b;
-}
+<span class="status-badge status-interview">  
+🟣 Interviewed  
+</span>  {% elif app.status=="Talked" %}
 
-.status-rejected{
-    background:#dc2626;
-}
+<span class="status-badge status-talked">  
+🟡 Talked  
+</span>  {% elif app.status=="Rejected" %}
 
-.status-default{
-    background:#6b7280;
-}
+<span class="status-badge status-rejected">  
+🔴 Rejected  
+</span>  {% else %}
 
-.info-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:14px;
-    margin-top:15px;
-}
+<span class="status-badge status-default">  
+⚪ Have Not Talked  
+</span>  {% endif %}
 
-.info-box{
-    background:#f8fafc;
-    border-radius:12px;
-    padding:14px;
-    font-size:15px;
-}
+</div>  </div>  <div class="info-grid">  <div class="info-box">  
+    <div class="info-title">📱 Mobile</div>  
+    {{ candidate.mobile }}  
+</div>  
 
-.info-title{
-    color:#64748b;
-    font-size:13px;
-    margin-bottom:5px;
-}
+<div class="info-box">  
+    <div class="info-title">📧 Email</div>  
+    {{ candidate.email }}  
+</div>  
 
-.action-buttons{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    margin-top:22px;
-}
+<div class="info-box">  
+    <div class="info-title">📍 City</div>  
+    {{ candidate.city or "Not Added" }}  
+</div>  
 
-.action-buttons .btn{
-    border-radius:10px;
-    font-weight:600;
-}
-
-.status-section{
-    margin-top:22px;
-    border-top:1px solid #e5e7eb;
-    padding-top:18px;
-}
-
-.status-section label{
-    font-weight:700;
-    margin-bottom:8px;
-}
-
-.no-applicants{
-    background:#fff;
-    border-radius:20px;
-    padding:60px 20px;
-    text-align:center;
-    box-shadow:0 5px 20px rgba(0,0,0,.08);
-}
-
-@media(max-width:768px){
-
-.page-title{
-    font-size:26px;
-}
-
-.applicant-top{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:12px;
-}
-
-.applicant-left{
-    width:100%;
-}
-
-.applicant-name{
-    font-size:20px;
-}
-
-.action-buttons .btn{
-    flex:1 1 45%;
-}
-
-}
-
-</style>
-
-<div class="container py-3">
-
-<h2 class="page-title">
-👥 Job Applicants
-</h2>
-
-<div class="info-grid">
-
-    <div class="info-box">
-        📱 {{ candidate.mobile }}
-    </div>
-
-    <div class="info-box">
-        📧 {{ candidate.email }}
-    </div>
-
-    <div class="info-box">
-        📍 {{ candidate.city or 'Not Added' }}
-    </div>
-
-    <div class="info-box">
-        💼 {{ candidate.experience or 'Not Added' }}
-    </div>
-
+<div class="info-box">  
+    <div class="info-title">💼 Experience</div>  
+    {{ candidate.experience or "Not Added" }}  
 </div>
 
-<div class="action-buttons">
+</div>  <div class="action-buttons">  <a href="/candidate/{{ candidate.id }}"  
+   class="btn btn-primary">  
+    👤 View Profile  
+</a>  
 
-    <a href="/candidate/{{ candidate.id }}"
-       class="btn btn-primary">
-        👤 View Profile
-    </a>
+<a href="tel:{{ candidate.mobile }}"  
+   class="btn btn-success">  
+    📞 Call  
+</a>  
 
-    <a href="tel:{{ candidate.mobile }}"
-       class="btn btn-success">
-        📞 Call
-    </a>
+<a href="https://wa.me/91{{ candidate.mobile }}"  
+   target="_blank"  
+   class="btn btn-success">  
+    💬 WhatsApp  
+</a>  
 
-    <a href="https://wa.me/91{{ candidate.mobile }}"
-       target="_blank"
-       class="btn btn-success">
-        WhatsApp
-    </a>
+<a href="mailto:{{ candidate.email }}"  
+   class="btn btn-info">  
+    ✉️ Email  
+</a>  
 
-    <a href="mailto:{{ candidate.email }}"
-       class="btn btn-info">
-        Email
-    </a>
+{% if candidate.resume_file %}  
 
-    {% if candidate.resume_file %}
-    <a href="/static/uploads/{{ candidate.resume_file }}"
-       target="_blank"
-       class="btn btn-dark">
-        📄 Resume
-    </a>
-    {% endif %}
-
-</div>
-
-<hr>
-
-<div class="mb-3">
-
-{% if app.status=="Hired" %}
-
-<span class="badge bg-success">
-🟢 Hired
-</span>
-
-{% elif app.status=="Rejected" %}
-
-<span class="badge bg-danger">
-🔴 Rejected
-</span>
-
-{% elif app.status=="Called For Interview" %}
-
-<span class="badge bg-primary">
-🔵 Called For Interview
-</span>
-
-{% elif app.status=="Interviewed" %}
-
-<span class="badge bg-info">
-🟣 Interviewed
-</span>
-
-{% elif app.status=="Talked" %}
-
-<span class="badge bg-warning text-dark">
-🟡 Talked
-</span>
-
-{% else %}
-
-<span class="badge bg-secondary">
-⚪ Have Not Talked
-</span>
+<a href="/static/uploads/{{ candidate.resume_file }}"  
+   target="_blank"  
+   class="btn btn-dark">  
+    📄 View Resume  
+</a>  
 
 {% endif %}
 
-</div>
+</div>  <div class="status-section">  <label class="fw-bold mb-2">  
 
-<form
-action="/update-application-status/{{ app.id }}"
-method="POST">
+    Candidate Status  
 
-<label class="fw-bold mb-2">
-Candidate Status
-</label>
+</label>  
 
-<select
-name="status"
-class="form-select"
-onchange="this.form.submit()">
+<form  
+action="/update-application-status/{{ app.id }}"  
+method="POST">  
 
-<option value="Have Not Talked"
-{% if app.status=="Have Not Talked" %}selected{% endif %}>
-Have Not Talked
-</option>
+    <select  
+    class="form-select"  
+    name="status"  
+    onchange="this.form.submit()">  
 
-<option value="Talked"
-{% if app.status=="Talked" %}selected{% endif %}>
-Talked
-</option>
+        <option value="Have Not Talked"  
+        {% if app.status=="Have Not Talked" %}selected{% endif %}>  
+        Have Not Talked  
+        </option>  
 
-<option value="Called For Interview"
-{% if app.status=="Called For Interview" %}selected{% endif %}>
-Called For Interview
-</option>
+        <option value="Talked"  
+        {% if app.status=="Talked" %}selected{% endif %}>  
+        Talked  
+        </option>  
 
-<option value="Interviewed"
-{% if app.status=="Interviewed" %}selected{% endif %}>
-Interviewed
-</option>
+        <option value="Called For Interview"  
+        {% if app.status=="Called For Interview" %}selected{% endif %}>  
+        Called For Interview  
+        </option>  
 
-<option value="Hired"
-{% if app.status=="Hired" %}selected{% endif %}>
-Hired
-</option>
+        <option value="Interviewed"  
+        {% if app.status=="Interviewed" %}selected{% endif %}>  
+        Interviewed  
+        </option>  
 
-<option value="Rejected"
-{% if app.status=="Rejected" %}selected{% endif %}>
-Rejected
-</option>
+        <option value="Hired"  
+        {% if app.status=="Hired" %}selected{% endif %}>  
+        Hired  
+        </option>  
 
-</select>
+        <option value="Rejected"  
+        {% if app.status=="Rejected" %}selected{% endif %}>  
+        Rejected  
+        </option>  
+
+    </select>  
 
 </form>
 
+</div>  </div>  {% endif %}
+
+{% elif app.applicant_hr_id %}
+
+{% set hr = User.query.get(app.applicant_hr_id) %}
+
+{% if hr %}
+
+<div class="applicant-card">  <div class="applicant-top">  
+
+    <div class="applicant-left">  
+
+        <div class="applicant-avatar">  
+
+            {{ hr.first_name[0] }}  
+
+        </div>  
+
+        <div>  
+
+            <div class="applicant-name">  
+
+                {{ hr.first_name }} {{ hr.last_name }}  
+
+            </div>  
+
+            <div class="applicant-type">  
+
+                🏢 HR Applicant  
+
+            </div>  
+
+        </div>  
+
+    </div>  
+
+    <div>  
+
+        {% if app.status=="Hired" %}  
+
+        <span class="status-badge status-hired">  
+            🟢 Hired  
+        </span>  
+
+        {% elif app.status=="Called For Interview" %}  
+
+        <span class="status-badge status-interview">  
+            🔵 Called For Interview  
+        </span>  
+
+        {% elif app.status=="Interviewed" %}  
+
+        <span class="status-badge status-interview">  
+            🟣 Interviewed  
+        </span>  
+
+        {% elif app.status=="Talked" %}  
+
+        <span class="status-badge status-talked">  
+            🟡 Talked  
+        </span>  
+
+        {% elif app.status=="Rejected" %}  
+
+        <span class="status-badge status-rejected">  
+            🔴 Rejected  
+        </span>  
+
+        {% else %}  
+
+        <span class="status-badge status-default">  
+            ⚪ Have Not Talked  
+        </span>  
+
+        {% endif %}  
+
+    </div>  
+
+</div>  
+
+<div class="info-grid">  
+
+    <div class="info-box">  
+        <div class="info-title">🏢 Company</div>  
+        {{ hr.company or "Not Added" }}  
+    </div>  
+
+    <div class="info-box">  
+        <div class="info-title">📱 Mobile</div>  
+        {{ hr.mobile }}  
+    </div>  
+
+    <div class="info-box">  
+        <div class="info-title">📧 Email</div>  
+        {{ hr.email }}  
+    </div>  
+
+    <div class="info-box">  
+        <div class="info-title">📍 City</div>  
+        {{ hr.company_city or "Not Added" }}  
+    </div>  
+
+    <div class="info-box">  
+        <div class="info-title">💼 HR Type</div>  
+        {{ hr.hr_type or "Not Added" }}  
+    </div>  
+
+</div>  
+
+<div class="action-buttons">  
+
+    <a href="/company/{{ hr.id }}"  
+       class="btn btn-primary">  
+        👤 View Company  
+    </a>  
+
+    <a href="tel:{{ hr.mobile }}"  
+       class="btn btn-success">  
+        📞 Call  
+    </a>  
+
+    <a href="https://wa.me/91{{ hr.mobile }}"  
+       target="_blank"  
+       class="btn btn-success">  
+        💬 WhatsApp  
+    </a>  
+
+    <a href="mailto:{{ hr.email }}"  
+       class="btn btn-info">  
+        ✉️ Email  
+    </a>  
+
+</div>  
+
+<div class="status-section">  
+
+    <label class="fw-bold mb-2">  
+
+        Applicant Status  
+
+    </label>  
+
+    <form  
+    action="/update-application-status/{{ app.id }}"  
+    method="POST">  
+
+        <select  
+        name="status"  
+        class="form-select"  
+        onchange="this.form.submit()">  
+
+            <option value="Have Not Talked"  
+            {% if app.status=="Have Not Talked" %}selected{% endif %}>  
+            Have Not Talked  
+            </option>  
+
+            <option value="Talked"  
+            {% if app.status=="Talked" %}selected{% endif %}>  
+            Talked  
+            </option>  
+
+            <option value="Called For Interview"  
+            {% if app.status=="Called For Interview" %}selected{% endif %}>  
+            Called For Interview  
+            </option>  
+
+            <option value="Interviewed"  
+            {% if app.status=="Interviewed" %}selected{% endif %}>  
+            Interviewed  
+            </option>  
+
+            <option value="Hired"  
+            {% if app.status=="Hired" %}selected{% endif %}>  
+            Hired  
+            </option>  
+
+            <option value="Rejected"  
+            {% if app.status=="Rejected" %}selected{% endif %}>  
+            Rejected  
+            </option>  
+
+        </select>  
+
+    </form>  
+
 </div>
+
+</div>  
 
 {% endif %}
-
-{% elif app.applicant_hr_id %}
-
-{% set hr = User.query.get(app.applicant_hr_id) %}
-
-{% if hr %}
-
-<div class="applicant-card">
-
-<div class="applicant-top">
-
-<div class="applicant-avatar">
-
-{{ hr.first_name[0] }}
-
-</div>
-
-<div>
-
-<div class="applicant-name">
-
-{{ hr.first_name }} {{ hr.last_name }}
-
-</div>
-
-<small class="text-muted">
-
-HR Applicant
-
-</small>
-
-</div>
-
-</div>
-
-{% elif app.applicant_hr_id %}
-
-{% set hr = User.query.get(app.applicant_hr_id) %}
-
-{% if hr %}
-
-<div class="applicant-card">
-
-    <div class="applicant-top">
-
-        <div class="applicant-left">
-
-            <div class="applicant-avatar">
-
-                {{ hr.first_name[0] }}
-
-            </div>
-
-            <div>
-
-                <div class="applicant-name">
-
-                    {{ hr.first_name }} {{ hr.last_name }}
-
-                </div>
-
-                <div class="applicant-type">
-
-                    🏢 HR Applicant
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div>
-
-            {% if app.status=="Hired" %}
-
-            <span class="status-badge status-hired">
-                🟢 Hired
-            </span>
-
-            {% elif app.status=="Called For Interview" %}
-
-            <span class="status-badge status-interview">
-                🔵 Interview
-            </span>
-
-            {% elif app.status=="Talked" %}
-
-            <span class="status-badge status-talked">
-                🟡 Talked
-            </span>
-
-            {% elif app.status=="Rejected" %}
-
-            <span class="status-badge status-rejected">
-                🔴 Rejected
-            </span>
-
-            {% else %}
-
-            <span class="status-badge status-default">
-                ⚪ Have Not Talked
-            </span>
-
-            {% endif %}
-
-        </div>
-
-    </div>
-
-    <div class="info-grid">
-
-        <div class="info-box">
-
-            <div class="info-title">
-
-                Company
-
-            </div>
-
-            {{ hr.company or "Not Added" }}
-
-        </div>
-
-        <div class="info-box">
-
-            <div class="info-title">
-
-                Mobile
-
-            </div>
-
-            {{ hr.mobile }}
-
-        </div>
-
-        <div class="info-box">
-
-            <div class="info-title">
-
-                Email
-
-            </div>
-
-            {{ hr.email }}
-
-        </div>
-
-        <div class="info-box">
-
-            <div class="info-title">
-
-                City
-
-            </div>
-
-            {{ hr.company_city or "Not Added" }}
-
-        </div>
-
-        <div class="info-box">
-
-            <div class="info-title">
-
-                HR Type
-
-            </div>
-
-            {{ hr.hr_type or "Not Added" }}
-
-        </div>
-
-    </div>
-
-    <div class="action-buttons">
-
-        <a href="/company/{{ hr.id }}"
-           class="btn btn-primary">
-
-            👤 View Company
-
-        </a>
-
-        <a href="tel:{{ hr.mobile }}"
-           class="btn btn-success">
-
-            📞 Call
-
-        </a>
-
-        <a href="https://wa.me/91{{ hr.mobile }}"
-           target="_blank"
-           class="btn btn-success">
-
-            💬 WhatsApp
-
-        </a>
-
-        <a href="mailto:{{ hr.email }}"
-           class="btn btn-info">
-
-            ✉️ Email
-
-        </a>
-
-    </div>
-
-    <div class="status-section">
-
-        <label>
-
-            Applicant Status
-
-        </label>
-
-        <form
-        action="/update-application-status/{{ app.id }}"
-        method="POST">
-
-            <select
-            class="form-select"
-            name="status"
-            onchange="this.form.submit()">
-
-                <option value="Have Not Talked"
-                {% if app.status=="Have Not Talked" %}selected{% endif %}>
-                Have Not Talked
-                </option>
-
-                <option value="Talked"
-                {% if app.status=="Talked" %}selected{% endif %}>
-                Talked
-                </option>
-
-                <option value="Called For Interview"
-                {% if app.status=="Called For Interview" %}selected{% endif %}>
-                Called For Interview
-                </option>
-
-                <option value="Interviewed"
-                {% if app.status=="Interviewed" %}selected{% endif %}>
-                Interviewed
-                </option>
-
-                <option value="Hired"
-                {% if app.status=="Hired" %}selected{% endif %}>
-                Hired
-                </option>
-
-                <option value="Rejected"
-                {% if app.status=="Rejected" %}selected{% endif %}>
-                Rejected
-                </option>
-
-            </select>
-
-        </form>
-
-    </div>
-
-</div>
 
 {% endif %}
 
@@ -584,29 +477,23 @@ HR Applicant
 
 {% else %}
 
-<div class="no-applicants">
+<div class="no-applicants">  <img  
+src="/static/images/no-data.png"  
+style="width:120px;margin-bottom:20px;">  
 
-    <img
-    src="/static/images/no-data.png"
-    style="width:120px;margin-bottom:20px;">
+<h3>  
 
-    <h3>
+    No Applicants Yet  
 
-        No Applicants Yet
+</h3>  
 
-    </h3>
+<p class="text-muted">  
 
-    <p class="text-muted">
+    Once Candidates or HRs start applying for this job,  
+    they will appear here.  
 
-        Once Candidates or HRs start applying for this job,
-        they will appear here.
+</p>
 
-    </p>
+</div>  {% endif %}
 
-</div>
-
-{% endif %}
-
-</div>
-
-{% endblock %}
+</div>  {% endblock %}
