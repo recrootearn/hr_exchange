@@ -589,7 +589,7 @@ body{
 
                 {% endif %}
 
-            {% elif session.get('user_id') %}
+            {% elif current_user.is_authenticated %}
 
                 {% if job.id in applied_jobs %}
 
@@ -739,7 +739,7 @@ Company
 
     {% endif %}
 
-{% elif session.get('user_id') %}
+{% elif current_user.is_authenticated %}
 
     {% if job.id in applied_jobs %}
 
