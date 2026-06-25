@@ -222,6 +222,11 @@ class JobApplication(db.Model):
         nullable=True
     )
 
+    status = db.Column(
+    db.String(50),
+    default="Have Not Talked"
+    )
+
     applied_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
@@ -1647,6 +1652,28 @@ def company_profile(id):
         followers_count=followers_count,
         is_following=is_following
     )
+
+@app.route('/update-application-status/<int:id>', methods=['POST'])
+@login_required
+def update_application_status(id):
+
+    application = JobApplication.query.get_or_404(id)
+
+    job = JobPost.query.get(application.job_id)
+
+    if job.hr_id != current_user.id:
+        return "Access Denied"
+
+    application.status = request.form.get("status")
+
+    db.session.commit()
+
+    flash(
+        "Candidate status updated successfully.",
+        "success"
+    )
+
+    return redirect(request.referrer)
 
 @app.route('/candidate/<int:id>')
 @login_required
