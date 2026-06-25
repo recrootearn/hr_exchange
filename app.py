@@ -2301,6 +2301,23 @@ def feed():
         applied_jobs=applied_jobs
     )
 
+@app.route('/applied-jobs-hr')
+@login_required
+def applied_jobs_hr():
+
+    applications = JobApplication.query.filter_by(
+        applicant_hr_id=current_user.id
+    ).order_by(
+        JobApplication.applied_at.desc()
+    ).all()
+
+    return render_template(
+        "applied_jobs_hr.html",
+        applications=applications,
+        JobPost=JobPost,
+        User=User
+    )
+
 @app.route('/my-applicants')
 @login_required
 def my_applicants():
