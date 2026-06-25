@@ -1569,6 +1569,20 @@ def hr_profile(id):
         jobs=jobs
     )
 
+@app.route('/job-view/<int:job_id>')
+@login_required
+def job_view(job_id):
+
+    job = JobPost.query.get_or_404(job_id)
+
+    hr = User.query.get(job.hr_id)
+
+    return render_template(
+        "job_view.html",
+        job=job,
+        hr=hr
+    )
+
 @app.route('/company/<int:id>')
 def company_profile(id):
 
