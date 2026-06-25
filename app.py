@@ -1570,7 +1570,6 @@ def hr_profile(id):
     )
 
 @app.route('/job-view/<int:job_id>')
-@login_required
 def job_view(job_id):
 
     job = JobPost.query.get_or_404(job_id)
@@ -1579,19 +1578,21 @@ def job_view(job_id):
 
     applied_jobs = []
 
-    if current_user.is_authenticated:
+    # Candidate
+    if 'candidate_id' in session:
 
-        if hasattr(current_user, "hr_type"):
+        applications = JobApplication.query.filter_by(
+            candidate_id=session['candidate_id']
+        ).all()
 
-            applications = JobApplication.query.filter_by(
-                applicant_hr_id=current_user.id
-            ).all()
+        applied_jobs = [a.job_id for a in applications]
 
-        else:
+    # HR
+    elif current_user.is_authenticated:
 
-            applications = JobApplication.query.filter_by(
-                candidate_id=current_user.id
-            ).all()
+        applications = JobApplication.query.filter_by(
+            applicant_hr_id=current_user.id
+        ).all()
 
         applied_jobs = [a.job_id for a in applications]
 
@@ -2168,7 +2169,7 @@ def apply_job(job_id):
     if next_page:
         return redirect(next_page)
 
-    return redirect('/candidate-feed')
+    return redirect(request.referrer)
 
 @app.route('/apply-job-hr/<int:id>')
 @login_required
@@ -2204,7 +2205,7 @@ def apply_job_hr(id):
 
     db.session.commit()
 
-    return redirect('/feed')
+    return redirect(request.referrer)
 
 @app.route('/job-applicants/<int:job_id>')
 @login_required
@@ -3492,13 +3493,10 @@ def share_job(job_id):
 
     job = JobPost.query.get_or_404(job_id)
 
-    share_link = (
-        request.host_url.rstrip('/')
-        + f"/job/{job.id}"
-    )
+    share_link = request.host_url.rstrip("/") + f"/job-view/{job.id}"
 
     return redirect(
-        f"https://wa.me/?text=Job Opening: {job.title}%0A{share_link}"
+        f"https://wa.me/?text=📢 {job.job_title}%0A{share_link}"
     )
 
 @app.route('/job/<int:job_id>')
