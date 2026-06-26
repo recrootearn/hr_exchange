@@ -3263,7 +3263,7 @@ def unlock(id):
 
         db.session.add(platform)
 
-else:
+    else:
 
     if current_user.credits < free_cost:
 
