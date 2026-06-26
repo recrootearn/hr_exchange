@@ -116,26 +116,35 @@ body{
     #1d4ed8
     );
 
-    padding:20px;
+    padding:12px 20px 20px;
 
     overflow-y:auto;
 
     z-index:9999;
 }
 
-.logo{
+.sidebar-logo{
 
-    color:white;
-    font-size:34px;
-    font-weight:bold;
-    margin-bottom:5px;
+    text-align:center;
+
+    padding:10px 0 25px;
+
 }
 
-.logo-sub{
+.sidebar-logo img{
 
-    color:#cbd5e1;
-    margin-bottom:35px;
-    font-size:14px;
+    width:190px;
+
+    max-width:100%;
+
+    height:auto;
+
+    object-fit:contain;
+
+    display:block;
+
+    margin:auto;
+
 }
 
 .sidebar a{
@@ -785,12 +794,12 @@ body{
 
 {% endif %}
 
-<!-- SIDEBAR --><div class="sidebar"><div class="logo">
-    RecrootEarn
-</div>
+<div class="sidebar-logo">
 
-<div class="logo-sub">
-    Recruit • Connect • Earn
+    <img
+    src="{{ url_for('static', filename='images/header_logo.png') }}"
+    alt="RecrootEarn">
+
 </div>
 
 {% if session.get('candidate_id') %}
