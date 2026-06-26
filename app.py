@@ -3283,11 +3283,11 @@ def unlock(id):
 
         credit_used = free_cost
 
-# -----------------------------------------
-# CREDIT HISTORY
-# -----------------------------------------
+    # -----------------------------------------
+    # CREDIT HISTORY
+    # -----------------------------------------
 
-history = CreditHistory(
+    history = CreditHistory(
 
         user_id=current_user.id,
 
@@ -3305,11 +3305,8 @@ history = CreditHistory(
     db.session.commit()
 
     flash(
-
         "Lead transferred to Unlocked Candidates successfully.",
-
         "success"
-
     )
 
     return redirect(request.referrer)
