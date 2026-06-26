@@ -785,12 +785,13 @@ body{
 
 {% endif %}
 
-<!-- SIDEBAR --><div class="sidebar"><div class="logo">
-    RecrootEarn
-</div>
+<!-- SIDEBAR --><div class="sidebar">
+<div class="sidebar-logo">
 
-<div class="logo-sub">
-    Recruit • Connect • Earn
+    <img
+    src="{{ url_for('static', filename='images/sidebar_logo.png') }}"
+    alt="RecrootEarn">
+
 </div>
 
 {% if session.get('candidate_id') %}
