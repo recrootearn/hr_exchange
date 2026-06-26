@@ -10,63 +10,27 @@
     margin-bottom:20px;
 }
 
-#filter-container{
-    display:none;
-    background:#f9fafb;
-    padding:18px;
-    border-radius:20px;
-    margin-bottom:20px;
-    box-shadow:0 4px 12px rgba(0,0,0,.06);
-}
-
 .search-box{
     background:white;
     padding:15px;
     border-radius:18px;
+    margin-bottom:20px;
     box-shadow:0 4px 12px rgba(0,0,0,.06);
-}
-
-.discover-tabs{
-    display:flex;
-    gap:10px;
-    margin-bottom:18px;
-}
-
-.discover-tab{
-    flex:1;
-    border:none;
-    background:#e5e7eb;
-    padding:12px;
-    border-radius:12px;
-    font-weight:600;
-    cursor:pointer;
-    transition:.25s;
-}
-
-.discover-tab.active{
-    background:#2563eb;
-    color:white;
 }
 
 .candidate-grid{
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
     gap:18px;
-    width:100%;
-}
-
-.hr-section,
-.candidate-section{
-    display:block;
 }
 
 .candidate-card{
     background:white;
-    border-radius:20px;
-    padding:18px;
+    border-radius:22px;
+    padding:20px;
     text-align:center;
     box-shadow:0 4px 15px rgba(0,0,0,.08);
-    transition:.25s;
+    transition:.2s;
 }
 
 .candidate-card:hover{
@@ -86,14 +50,14 @@
     width:90px;
     height:90px;
     border-radius:50%;
+    margin:auto;
     background:#10b981;
     color:white;
     display:flex;
-    justify-content:center;
     align-items:center;
+    justify-content:center;
     font-size:34px;
     font-weight:700;
-    margin:auto;
 }
 
 .name{
@@ -105,7 +69,7 @@
 .designation{
     color:#2563eb;
     font-weight:600;
-    margin-top:6px;
+    margin-top:5px;
 }
 
 .city{
@@ -121,151 +85,80 @@
 }
 
 .btn-profile{
-
     display:block;
-    margin-top:15px;
-    padding:10px;
-    border-radius:12px;
     background:#f3f4f6;
     color:#111827;
     text-decoration:none;
+    padding:10px;
+    border-radius:12px;
+    margin-top:15px;
     font-weight:600;
-
 }
 
 .btn-follow{
-
     display:block;
-    margin-top:10px;
-    padding:10px;
-    border-radius:12px;
     background:#10b981;
     color:white;
     text-decoration:none;
+    padding:10px;
+    border-radius:12px;
+    margin-top:10px;
     font-weight:600;
-
 }
 
 .btn-follow:hover{
-
     color:white;
-
-}
-
-@media(max-width:768px){
-
-.page-title{
-
-    font-size:24px;
-
 }
 
 .discover-tabs{
-
-    flex-wrap:wrap;
-
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
 }
 
 .discover-tab{
-
-    min-width:95px;
     flex:1;
-
+    border:none;
+    padding:12px;
+    border-radius:12px;
+    background:#e5e7eb;
+    font-weight:600;
 }
 
-.candidate-grid{
-
-    grid-template-columns:1fr;
-
-}
-
-.candidate-card{
-
-    width:100%;
-
-}
-
+.discover-tab.active{
+    background:#2563eb;
+    color:white;
 }
 
 </style>
 
 <h2 class="page-title">
-
-🔍 Discover Candidates
-
+    🔍 Discover Candidates
 </h2>
-
-<button
-type="button"
-id="filterBtn"
-class="btn btn-primary mb-3"
-onclick="toggleFilters()">
-
-⚙️ Filters
-
-</button>
-
-<div id="filter-container">
-
-<div class="discover-tabs">
-
-<button
-type="button"
-class="discover-tab active"
-onclick="showSection('all',this)">
-
-All
-
-</button>
-
-<button
-type="button"
-class="discover-tab"
-onclick="showSection('candidate',this)">
-
-Candidates
-
-</button>
-
-<button
-type="button"
-class="discover-tab"
-onclick="showSection('hr',this)">
-
-HR Profiles
-
-</button>
-
-</div>
 
 <div class="search-box">
 
-<form method="GET">
+    <form method="GET">
 
-<div class="input-group">
+        <div class="input-group">
 
-<input
-type="text"
-name="city"
-class="form-control"
-placeholder="Search City..."
-value="{{ city }}">
+            <input
+                type="text"
+                name="city"
+                class="form-control"
+                placeholder="Search City..."
+                value="{{ city }}"
+            >
 
-<button class="btn btn-primary">
+            <button class="btn btn-primary">
+                Search
+            </button>
 
-Search
+        </div>
 
-</button>
-
-</div>
-
-</form>
-
-</div>
+    </form>
 
 </div>
-
-<div class="candidate-grid">
 
 <div class="candidate-grid">
 
@@ -275,64 +168,59 @@ Search
 
     {% if hr.profile_photo and hr.profile_photo != "default.png" %}
 
-    <img
-    src="/static/uploads/{{ hr.profile_photo }}"
-    class="candidate-photo">
+        <img
+        src="/static/uploads/{{ hr.profile_photo }}"
+        class="candidate-photo">
 
     {% else %}
 
-    <div class="default-avatar">
+        <div class="default-avatar">
 
-        {{ hr.first_name[:1] }}
+            {{ hr.first_name[:1] }}
 
-    </div>
+        </div>
 
     {% endif %}
 
     <div class="name">
 
-        {{ hr.first_name }} {{ hr.last_name }}
+        {{ hr.first_name }}
+        {{ hr.last_name }}
 
     </div>
 
     <div class="designation">
 
-        🏢 HR Professional
+        HR Professional
 
     </div>
 
     <div class="city">
 
-        {{ hr.company }}
+        🏢 {{ hr.company }}
 
     </div>
 
-    <a
-    href="/company/{{ hr.id }}"
-    class="btn-profile">
+    <a href="/company/{{ hr.id }}"
+       class="btn-profile">
 
-        👤 View Profile
+       View Profile
 
     </a>
 
     {% set hr_following = Follow.query.filter_by(
-        follower_hr_id=current_user.id,
+    follower_hr_id=current_user.id,
         followed_hr_id=hr.id
     ).first() %}
 
-    <a
-    href="/follow-hr-user/{{ hr.id }}"
-    class="btn-follow">
+    <a href="/follow-hr-user/{{ hr.id }}"
+       class="btn-follow">
 
-        {% if hr_following %}
-
-            ✓ Following
-
-        {% else %}
-
-            ➕ Follow HR
-
-        {% endif %}
+       {% if hr_following %}
+           Following
+       {% else %}
+           Follow HR
+       {% endif %}
 
     </a>
 
@@ -340,24 +228,23 @@ Search
 
 {% endfor %}
 
-
 {% for candidate in candidates %}
 
 <div class="candidate-card candidate-section">
 
     {% if candidate.profile_photo %}
 
-    <img
-    src="/static/uploads/{{ candidate.profile_photo }}"
-    class="candidate-photo">
+        <img
+        src="/static/uploads/{{ candidate.profile_photo }}"
+        class="candidate-photo">
 
     {% else %}
 
-    <div class="default-avatar">
+        <div class="default-avatar">
 
-        {{ candidate.full_name[:1] }}
+            {{ candidate.full_name[:1] }}
 
-    </div>
+        </div>
 
     {% endif %}
 
@@ -385,32 +272,26 @@ Search
 
     </div>
 
-    <a
-    href="/candidate/{{ candidate.id }}"
-    class="btn-profile">
+    <a href="/candidate/{{ candidate.id }}"
+       class="btn-profile">
 
-        👤 View Profile
+       View Profile
 
     </a>
 
     {% set is_following = Follow.query.filter_by(
-        follower_hr_id=current_user.id,
-        followed_candidate_id=candidate.id
+    follower_hr_id=current_user.id,
+    followed_candidate_id=candidate.id
     ).first() %}
 
-    <a
-    href="/follow-candidate/{{ candidate.id }}"
-    class="btn-follow">
+    <a href="/follow-candidate/{{ candidate.id }}"
+       class="btn-follow">
 
-        {% if is_following %}
-
-            ✓ Following
-
-        {% else %}
-
-            ➕ Follow Candidate
-
-        {% endif %}
+       {% if is_following %}
+           Following
+       {% else %}
+           Follow Candidate
+       {% endif %}
 
     </a>
 
@@ -422,101 +303,59 @@ Search
 
 <script>
 
-function toggleFilters(){
-
-    const filterContainer =
-    document.getElementById("filter-container");
-
-    if(filterContainer.style.display==="block"){
-
-        filterContainer.style.display="none";
-
-    }else{
-
-        filterContainer.style.display="block";
-
-    }
-
-}
-
 function showSection(type,btn){
 
-    document.querySelectorAll(".discover-tab").forEach(function(tab){
-
-        tab.classList.remove("active");
-
+    document
+    .querySelectorAll('.discover-tab')
+    .forEach(tab=>{
+        tab.classList.remove('active');
     });
 
-    btn.classList.add("active");
+    btn.classList.add('active');
 
-    const hrCards =
-    document.querySelectorAll(".hr-section");
+    let hrs =
+    document.querySelectorAll('.hr-section');
 
-    const candidateCards =
-    document.querySelectorAll(".candidate-section");
+    let candidates =
+    document.querySelectorAll('.candidate-section');
 
-    if(type==="all"){
+    if(type==='all'){
 
-        hrCards.forEach(function(card){
-
-            card.style.display="";
-
+        hrs.forEach(x=>{
+            x.style.display='';
         });
 
-        candidateCards.forEach(function(card){
-
-            card.style.display="";
-
+        candidates.forEach(x=>{
+            x.style.display='';
         });
 
     }
 
-    else if(type==="hr"){
+    if(type==='hr'){
 
-        hrCards.forEach(function(card){
-
-            card.style.display="";
-
+        hrs.forEach(x=>{
+            x.style.display='';
         });
 
-        candidateCards.forEach(function(card){
-
-            card.style.display="none";
-
+        candidates.forEach(x=>{
+            x.style.display='none';
         });
 
     }
 
-    else if(type==="candidate"){
+    if(type==='candidate'){
 
-        hrCards.forEach(function(card){
-
-            card.style.display="none";
-
+        hrs.forEach(x=>{
+            x.style.display='none';
         });
 
-        candidateCards.forEach(function(card){
-
-            card.style.display="";
-
+        candidates.forEach(x=>{
+            x.style.display='';
         });
 
     }
 
 }
-
-document.addEventListener("DOMContentLoaded",function(){
-
-    const firstTab =
-    document.querySelector(".discover-tab");
-
-    if(firstTab){
-
-        showSection("all",firstTab);
-
-    }
-
-});
 
 </script>
 
