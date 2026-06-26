@@ -185,6 +185,18 @@ class JobPost(db.Model):
 
     working_days = db.Column(db.String(100))
 
+    job_type = db.Column(db.String(100))
+
+    employment_type = db.Column(db.String(50))
+
+    eligibility = db.Column(db.String(100))
+
+    experience_required = db.Column(db.String(100))
+
+    education = db.Column(db.String(100))
+
+    gender = db.Column(db.String(20))
+
     interview_from = db.Column(db.String(20))
 
     interview_to = db.Column(db.String(20))
@@ -1970,7 +1982,19 @@ def post_job():
 
             job_timing=request.form.get("job_timing"),
 
-            working_days=request.form.get("working_days"),
+            working_days = request.form.get("working_days"),
+
+            job_type = request.form.get("job_type"),
+
+            eligibility = request.form.get("eligibility"),
+
+            experience_required = request.form.get("experience_required"),
+         
+            employment_type = request.form.get("employment_type"),
+
+            education = request.form.get("education"),
+
+            gender = request.form.get("gender"),
 
             interview_from=request.form.get("interview_from"),
 
