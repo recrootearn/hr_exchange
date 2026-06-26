@@ -357,6 +357,102 @@ body{
 
             <div class="info-title">
 
+                🏢 Job Type
+
+            </div>
+
+            <div class="info-value">
+
+                {{ job.job_type or "Not Mentioned" }}
+
+            </div>
+
+        </div>
+
+        <div class="info-card">
+
+            <div class="info-title">
+
+                💼 Employment Type
+
+            </div>
+
+            <div class="info-value">
+
+                {{ job.employment_type or "Not Mentioned" }}
+
+            </div>
+
+        </div>
+
+        <div class="info-card">
+
+            <div class="info-title">
+
+               🎓 Education Required
+
+            </div>
+
+            <div class="info-value">
+
+                {{ job.education or "Not Mentioned" }}
+
+            </div>
+
+        </div>
+
+        <div class="info-card">
+
+            <div class="info-title">
+
+                👤 Gender Preference
+
+            </div>
+
+            <div class="info-value">
+
+                {{ job.gender or "Both" }}
+
+            </div>
+
+        </div>
+
+        <div class="info-card">
+
+            <div class="info-title">
+
+                ✅ Eligibility
+
+            </div>
+
+            <div class="info-value">
+
+                {% if job.eligibility == "Experience" %}
+
+                    Experience
+
+                    {% if job.experience_required %}
+                ({{ job.experience_required }})
+                    {% endif %}
+
+                       {% elif job.eligibility == "Fresher" %}
+
+                           Fresher
+
+                       {% else %}
+
+                           Not Mentioned
+
+                       {% endif %}
+
+                   </div>
+
+               </div>
+
+        <div class="info-card">
+
+            <div class="info-title">
+
                 🏢 Company
 
             </div>
