@@ -2,24 +2,69 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
 
     <div>
 
         <h2 style="font-weight:700;">
-            Credit History
+            Credit Wallet
         </h2>
 
         <p style="color:#6b7280;">
-            Manage credits and unlock premium candidates
+            Buy credits and unlock premium candidates
         </p>
 
     </div>
 
-    <div class="credit-box">
+</div>
 
-        Total Credits:
-        {{ current_user.credits }}
+<div class="row mb-4">
+
+    <div class="col-md-4 mb-3">
+
+        <div class="stats-card text-center">
+
+            <h6 style="color:#2563eb;">
+                💳 Paid Credits
+            </h6>
+
+            <h2 style="color:#2563eb;">
+                {{ current_user.paid_credits }}
+            </h2>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-3">
+
+        <div class="stats-card text-center">
+
+            <h6 style="color:#f59e0b;">
+                🎁 Free Credits
+            </h6>
+
+            <h2 style="color:#f59e0b;">
+                {{ current_user.credits }}
+            </h2>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-3">
+
+        <div class="stats-card text-center">
+
+            <h6 style="color:#059669;">
+                ⭐ Total Credits
+            </h6>
+
+            <h2 style="color:#059669;">
+                {{ current_user.paid_credits + current_user.credits }}
+            </h2>
+
+        </div>
 
     </div>
 
@@ -151,6 +196,61 @@ class="btn btn-warning w-100 mt-2">
 </a>
 
         </div>
+
+    </div>
+
+</div>
+
+<div class="stats-card">
+
+    <h4 class="mb-3">
+        💡 Credit Usage Rules
+    </h4>
+
+    <div class="row">
+
+        <div class="col-md-6">
+
+            <div class="alert alert-primary">
+
+                <h5>💳 Paid Credits</h5>
+
+                <ul class="mb-0">
+
+                    <li>Fresher Candidate → <strong>1 Credit</strong></li>
+
+                    <li>Experienced Candidate → <strong>2 Credits</strong></li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="alert alert-warning">
+
+                <h5>🎁 Free Credits</h5>
+
+                <ul class="mb-0">
+
+                    <li>Fresher Candidate → <strong>2 Credits</strong></li>
+
+                    <li>Experienced Candidate → <strong>4 Credits</strong></li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="alert alert-success mb-0">
+
+        ✅ <strong>Paid credits are always used first.</strong><br>
+        If your paid credits are exhausted, the system automatically uses free credits.
 
     </div>
 
