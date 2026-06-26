@@ -3924,25 +3924,25 @@ def buy_credits_page():
 @login_required
 def buy_credits(amount):
 
-    if amount == 149:
+    if amount == 199:
         credits = 10
 
-    elif amount == 299:
+    elif amount == 399:
         credits = 25
 
-    elif amount == 599:
-        credits = 50
+    elif amount == 799:
+        credits = 60
 
-    elif amount == 999:
-        credits = 100
+    elif amount == 1599:
+        credits = 150
 
-    elif amount == 1999:
-        credits = 250
+    elif amount == 3199:
+        credits = 300
 
-    elif amount == 3499:
+    elif amount == 5199:
         credits = 500
 
-    elif amount == 5999:
+    elif amount == 9999:
         credits = 1000
 
     else:
@@ -3954,10 +3954,8 @@ def buy_credits(amount):
         "payment_capture": 1
     })
 
-    # SAVE PURCHASE INFO
-
+    # Save purchase info
     session['buy_credits'] = credits
-
     session['buy_amount'] = amount
 
     return render_template(
