@@ -1,0 +1,563 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+    💰 Revenue Dashboard
+</h2>
+
+<!-- FILTERS -->
+
+<div class="card shadow border-0 mb-4">
+
+    <div class="card-body">
+
+        <form method="GET">
+
+            <div class="row">
+
+                <div class="col-md-3 mb-2">
+
+                    <label><b>📅 Time</b></label>
+
+                    <select name="period" class="form-select">
+
+                        <option value="">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="week">Last 7 Days</option>
+                        <option value="month">This Month</option>
+                        <option value="year">This Year</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mb-2">
+
+                    <label><b>👨 HR</b></label>
+
+                    <select name="hr" class="form-select">
+
+                        <option value="">All HRs</option>
+
+                        {% for hr in hrs %}
+
+                        <option value="{{ hr.id }}">
+
+                            {{ hr.first_name }} {{ hr.last_name }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mb-2">
+
+                    <label><b>📦 Package</b></label>
+
+                    <select name="package" class="form-select">
+
+                        <option value="">All Packages</option>
+                        <option value="10">10 Credits</option>
+                        <option value="25">25 Credits</option>
+                        <option value="60">60 Credits</option>
+                        <option value="150">150 Credits</option>
+                        <option value="300">300 Credits</option>
+                        <option value="500">500 Credits</option>
+                        <option value="1000">1000 Credits</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 mb-2">
+
+                    <label><b>🔍 Search</b></label>
+
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control"
+                        placeholder="HR / Candidate">
+
+                </div>
+
+            </div>
+
+            <div class="mt-3">
+
+                <button class="btn btn-primary">
+                    Apply Filters
+                </button>
+
+                <a href="/admin-revenue" class="btn btn-secondary">
+                    Reset
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div class="row">
+
+        <div class="col-md-3 mb-4">
+            <div class="card shadow border-0">
+                <div class="card-body text-center">
+
+                    <h6>Total Credit Sales</h6>
+
+                    <h2 id="totalSales">
+                        ₹{{ total_sales }}
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card shadow border-0">
+                <div class="card-body text-center">
+
+                    <h6>RecrootEarn Earnings</h6>
+
+                    <h2 id="platformRevenue">
+                        ₹{{ platform_earnings }}
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card shadow border-0">
+                <div class="card-body text-center">
+
+                    <h6>Uploader Earnings</h6>
+
+                    <h2 id="uploaderRevenue">
+                        ₹{{ uploader_earnings }}
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="card shadow border-0">
+                <div class="card-body text-center">
+
+                    <h6>Total Unlocks</h6>
+
+                    <h2 id="totalUnlocks">
+                        {{ total_unlocks }}
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card shadow border-0">
+
+        <div class="card-header">
+
+            <h4 class="mb-0">
+
+                Revenue Analytics
+
+            </h4>
+
+        </div>
+
+        <div class="card shadow border-0 mt-4">
+
+    <div class="card-header">
+
+        <h4 class="mb-0">
+
+            👨‍💼 HR Revenue Report
+
+        </h4>
+
+    </div>
+
+    <div class="card shadow border-0 mt-4">
+
+    <div class="card-header">
+
+        <h4 class="mb-0">
+            💳 Credit Purchase History
+        </h4>
+
+    </div>
+
+    <div class="card shadow border-0 mt-4">
+
+    <div class="card-header">
+
+        <h4>
+
+            💼 Candidate Earnings Report
+
+        </h4>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-success">
+
+                    <tr>
+
+                        <th>Candidate</th>
+
+                        <th>Uploaded By</th>
+
+                        <th>Total Unlocks</th>
+
+                        <th>Total Earnings</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for item in candidate_data %}
+
+                {% set hr = User.query.get(item.candidate.uploaded_by) %}
+
+                <tr>
+
+                    <td>
+
+                        {{ item.candidate.name }}
+
+                    </td>
+
+                    <td>
+
+                        {{ hr.first_name }} {{ hr.last_name }}
+
+                    </td>
+
+                    <td>
+
+                        {{ item.unlocks }}
+
+                    </td>
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(item.earnings) }}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-primary">
+
+                    <tr>
+
+                        <th>HR</th>
+
+                        <th>Package</th>
+
+                        <th>Paid</th>
+
+                        <th>Bought</th>
+
+                        <th>Remaining</th>
+
+                        <th>Price / Credit</th>
+
+                        <th>Date</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for purchase in purchases %}
+
+                <tr>
+
+                    <td>
+
+                        {% set hr = User.query.get(purchase.user_id) %}
+
+                        {{ hr.first_name }} {{ hr.last_name }}
+
+                    </td>
+
+                    <td>
+
+                        {{ purchase.credits_bought }} Credits
+
+                    </td>
+
+                    <td>
+
+                        ₹{{ purchase.amount_paid }}
+
+                    </td>
+
+                    <td>
+
+                        {{ purchase.credits_bought }}
+
+                    </td>
+
+                    <td>
+
+                        {{ purchase.credits_remaining }}
+
+                    </td>
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(purchase.price_per_credit) }}
+
+                    </td>
+
+                    <td>
+
+                        {{ purchase.created_at.strftime('%d %b %Y') }}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>HR</th>
+
+                        <th>Company</th>
+
+                        <th>Wallet</th>
+
+                        <th>Candidates Uploaded</th>
+
+                        <th>Total Earnings</th>
+
+                        <th>Unlocks</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for item in hr_data %}
+
+                <tr>
+
+                    <td>
+
+                        {{ item.hr.first_name }} {{ item.last_name }}
+
+                    </td>
+
+                    <td>
+
+                        {{ item.hr.company }}
+
+                    </td>
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(item.hr.wallet_balance) }}
+
+                    </td>
+
+                    <td>
+
+                        {{ item.uploaded }}
+
+                    </td>
+
+                    <td>
+
+                        ₹{{ item.earnings }}
+
+                    </td>
+
+                    <td>
+
+                        {{ item.unlocks }}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card shadow border-0 mt-4">
+
+    <div class="card-header bg-dark text-white">
+
+        <h4 class="mb-0">
+            📋 Unlock Transaction Ledger
+        </h4>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Date</th>
+                        <th>Unlocking HR</th>
+                        <th>Candidate</th>
+                        <th>Uploaded By</th>
+                        <th>Package</th>
+                        <th>Price / Credit</th>
+                        <th>Uploader Earned</th>
+                        <th>Platform Earned</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for t in transactions %}
+
+                {% set unlocker = User.query.get(t.user_id) %}
+                {% set candidate = Candidate.query.get(t.candidate_id) %}
+                {% set uploader = User.query.get(candidate.uploaded_by) %}
+                {% set purchase = CreditPurchase.query.get(t.purchase_id) %}
+
+                <tr>
+
+                    <td>{{ t.created_at.strftime('%d %b %Y %I:%M %p') }}</td>
+
+                    <td>{{ unlocker.first_name }} {{ unlocker.last_name }}</td>
+
+                    <td>{{ candidate.name }}</td>
+
+                    <td>{{ uploader.first_name }} {{ uploader.last_name }}</td>
+
+                    <td>
+
+                        {{ purchase.credits_bought }} Credits
+
+                    </td>
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(purchase.price_per_credit) }}
+
+                    </td>
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(t.amount) }}
+
+                    </td>
+
+                    <td>
+
+                        ₹{{ "%.2f"|format(t.amount) }}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+        <div class="card-body">
+
+            <p class="text-muted">
+
+                Detailed reports will appear here.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
