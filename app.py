@@ -3605,33 +3605,206 @@ def admin_revenue():
     if not current_user.is_admin:
         return redirect("/dashboard")
 
-    total_sales = db.session.query(
-        db.func.sum(CreditPurchase.amount_paid)
-    ).scalar() or 0
+    period = request.args.get("period")
+    hr_id = request.args.get("hr")
+    package = request.args.get("package")
+    search = request.args.get("search")
 
-    platform_earnings = db.session.query(
-        db.func.sum(PlatformEarning.amount)
-    ).scalar() or 0
+    today = datetime.now()
 
-    uploader_earnings = db.session.query(
-        db.func.sum(Earnings.amount)
-    ).scalar() or 0
+    start_date = None
+    end_date = None
 
-    total_unlocks = Unlock.query.count()
+    if period == "today":
+
+        start_date = today.replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0
+        )
+
+    elif period == "yesterday":
+
+        start_date = (
+            today - timedelta(days=1)
+        ).replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0
+        )
+
+        end_date = today.replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0
+        )
+
+    elif period == "week":
+
+        start_date = today - timedelta(days=7)
+
+    elif period == "month":
+
+        start_date = today.replace(
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0
+        )
+
+    elif period == "year":
+
+        start_date = today.replace(
+            month=1,
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0
+        )
+
+    # ----------------------------------
+    # DASHBOARD SUMMARY
+    # ----------------------------------
+
+    sales_query = CreditPurchase.query
+
+    platform_query = PlatformEarning.query
+
+    earnings_query = Earnings.query
+
+    unlock_query = Unlock.query
+
+    if hr_id:
+
+        sales_query = sales_query.filter(
+            CreditPurchase.user_id == int(hr_id)
+        )
+
+        platform_query = platform_query.filter(
+            PlatformEarning.user_id == int(hr_id)
+        )
+
+    if package:
+
+        sales_query = sales_query.filter(
+            CreditPurchase.credits_bought == int(package)
+        )
+
+    if start_date:
+
+        if period == "yesterday":
+
+            sales_query = sales_query.filter(
+                CreditPurchase.created_at >= start_date,
+                CreditPurchase.created_at < end_date
+            )
+
+            platform_query = platform_query.filter(
+                PlatformEarning.created_at >= start_date,
+                PlatformEarning.created_at < end_date
+            )
+
+            earnings_query = earnings_query.filter(
+                Earnings.created_at >= start_date,
+                Earnings.created_at < end_date
+            )
+
+            unlock_query = unlock_query.filter(
+                Unlock.created_at >= start_date,
+                Unlock.created_at < end_date
+            )
+
+        else:
+
+            sales_query = sales_query.filter(
+                CreditPurchase.created_at >= start_date
+            )
+
+            platform_query = platform_query.filter(
+                PlatformEarning.created_at >= start_date
+            )
+
+            earnings_query = earnings_query.filter(
+                Earnings.created_at >= start_date
+            )
+
+            unlock_query = unlock_query.filter(
+                Unlock.created_at >= start_date
+            )
+
+    total_sales = sum(
+        p.amount_paid
+        for p in sales_query.all()
+    )
+
+    platform_earnings = sum(
+        p.amount
+        for p in platform_query.all()
+    )
+
+    uploader_earnings = sum(
+        e.amount
+        for e in earnings_query.all()
+    )
+
+    total_unlocks = unlock_query.count()
 
     # ----------------------------------
     # HR REPORT
     # ----------------------------------
 
-    hrs = User.query.filter_by(is_admin=False).all()
+    hrs_query = User.query.filter_by(
+        is_admin=False
+    )
+
+    if hr_id:
+
+        hrs_query = hrs_query.filter(
+            User.id == int(hr_id)
+        )
+
+    if search:
+
+        hrs_query = hrs_query.filter(
+
+            db.or_(
+
+                User.first_name.ilike(f"%{search}%"),
+
+                User.last_name.ilike(f"%{search}%"),
+
+                User.company.ilike(f"%{search}%")
+
+            )
+
+        )
+
+    hrs = hrs_query.all()
 
     hr_data = []
 
     for hr in hrs:
 
-        uploaded = Candidate.query.filter_by(
+        candidate_query = Candidate.query.filter_by(
             uploaded_by=hr.id
-        ).all()
+        )
+
+        if search:
+
+            candidate_query = candidate_query.filter(
+
+                Candidate.name.ilike(
+                    f"%{search}%"
+                )
+
+            )
+
+        uploaded = candidate_query.all()
 
         uploaded_count = len(uploaded)
 
@@ -3660,7 +3833,36 @@ def admin_revenue():
     # PURCHASE HISTORY
     # ----------------------------------
 
-    purchases = CreditPurchase.query.order_by(
+    purchases_query = CreditPurchase.query
+
+    if hr_id:
+
+        purchases_query = purchases_query.filter(
+            CreditPurchase.user_id == int(hr_id)
+        )
+
+    if package:
+
+        purchases_query = purchases_query.filter(
+            CreditPurchase.credits_bought == int(package)
+        )
+
+    if start_date:
+
+        if period == "yesterday":
+
+            purchases_query = purchases_query.filter(
+                CreditPurchase.created_at >= start_date,
+                CreditPurchase.created_at < end_date
+            )
+
+        else:
+
+            purchases_query = purchases_query.filter(
+                CreditPurchase.created_at >= start_date
+            )
+
+    purchases = purchases_query.order_by(
         CreditPurchase.created_at.desc()
     ).all()
 
@@ -3668,23 +3870,73 @@ def admin_revenue():
     # CANDIDATE REPORT
     # ----------------------------------
 
-    candidates = Candidate.query.all()
+    candidates_query = Candidate.query
+
+    if hr_id:
+
+        candidates_query = candidates_query.filter(
+            Candidate.uploaded_by == int(hr_id)
+        )
+
+    if search:
+
+        candidates_query = candidates_query.filter(
+            Candidate.name.ilike(
+                f"%{search}%"
+            )
+        )
+
+    candidates = candidates_query.all()
 
     candidate_data = []
 
     for candidate in candidates:
 
-        unlocks = Unlock.query.filter_by(
+        unlock_query = Unlock.query.filter_by(
             candidate_id=candidate.id
-        ).count()
+        )
 
-        total_earned = db.session.query(
+        if start_date:
+
+            if period == "yesterday":
+
+                unlock_query = unlock_query.filter(
+                    Unlock.created_at >= start_date,
+                    Unlock.created_at < end_date
+                )
+
+            else:
+
+                unlock_query = unlock_query.filter(
+                    Unlock.created_at >= start_date
+                )
+
+        unlocks = unlock_query.count()
+
+        earnings_query = db.session.query(
             db.func.sum(Earnings.amount)
         ).filter(
             Earnings.reason.like(
                 f"%{candidate.name}%"
             )
-        ).scalar() or 0
+        )
+
+        if start_date:
+
+            if period == "yesterday":
+
+                earnings_query = earnings_query.filter(
+                    Earnings.created_at >= start_date,
+                    Earnings.created_at < end_date
+                )
+
+            else:
+
+                earnings_query = earnings_query.filter(
+                    Earnings.created_at >= start_date
+                )
+
+        total_earned = earnings_query.scalar() or 0
 
         candidate_data.append({
 
@@ -3698,9 +3950,60 @@ def admin_revenue():
     # TRANSACTION LEDGER
     # ----------------------------------
 
-    transactions = PlatformEarning.query.order_by(
+    transactions_query = PlatformEarning.query
+
+    if hr_id:
+
+        transactions_query = transactions_query.filter(
+            PlatformEarning.user_id == int(hr_id)
+        )
+
+    if start_date:
+
+        if period == "yesterday":
+
+            transactions_query = transactions_query.filter(
+                PlatformEarning.created_at >= start_date,
+                PlatformEarning.created_at < end_date
+            )
+
+        else:
+
+            transactions_query = transactions_query.filter(
+                PlatformEarning.created_at >= start_date
+            )
+
+    transactions = transactions_query.order_by(
         PlatformEarning.created_at.desc()
     ).all()
+
+    if search:
+
+        filtered_transactions = []
+
+        for t in transactions:
+
+            candidate = Candidate.query.get(t.candidate_id)
+
+            if candidate and search.lower() in candidate.name.lower():
+
+                filtered_transactions.append(t)
+
+        transactions = filtered_transactions
+
+    if package:
+
+        filtered_transactions = []
+
+        for t in transactions:
+
+            purchase = CreditPurchase.query.get(t.purchase_id)
+
+            if purchase and purchase.credits_bought == int(package):
+
+                filtered_transactions.append(t)
+
+        transactions = filtered_transactions
 
     return render_template(
 
