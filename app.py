@@ -382,6 +382,10 @@ class Unlock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
     candidate_id = db.Column(db.Integer)
+    created_at = db.Column(
+    db.DateTime,
+    default=datetime.utcnow
+    )
 
 class CreditHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
