@@ -3047,7 +3047,7 @@ def unlock(id):
             "danger"
         )
 
-        return redirect(request.referrer)
+        return redirect(buy_credits.html)
 
     # already unlocked
     existing = Unlock.query.filter_by(
