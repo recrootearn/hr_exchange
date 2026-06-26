@@ -123,19 +123,31 @@ body{
     z-index:9999;
 }
 
-.logo{
-
-    color:white;
-    font-size:34px;
-    font-weight:bold;
-    margin-bottom:5px;
+.sidebar-logo{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:25px;
+    padding-top:5px;
 }
 
-.logo-sub{
+.sidebar-logo img{
+    width:150px;
+    height:auto;
+    display:block;
+}
 
-    color:#cbd5e1;
-    margin-bottom:35px;
-    font-size:14px;
+@media(max-width:768px){
+
+    .sidebar-logo{
+        margin-top:8px;
+        margin-bottom:20px;
+    }
+
+    .sidebar-logo img{
+        width:120px;
+    }
+
 }
 
 .sidebar a{
@@ -913,8 +925,6 @@ body{
 </a>
 
 {% endif %}
-
-</div>
 
 </div>
 
