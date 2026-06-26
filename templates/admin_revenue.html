@@ -124,13 +124,34 @@
 
                             <option value="">All Packages</option>
 
-                            <option value="10">10 Credits</option>
-                            <option value="25">25 Credits</option>
-                            <option value="60">60 Credits</option>
-                            <option value="150">150 Credits</option>
-                            <option value="300">300 Credits</option>
-                            <option value="500">500 Credits</option>
-                            <option value="1000">1000 Credits</option>
+                            <option value="10"
+                            {% if request.args.get('package')=='10' %}selected{% endif %}>
+                            10 Credits
+                            </option>
+                            <option value="25"
+                            {% if request.args.get('package')=='25' %}selected{% endif %}>
+                            25 Credits
+                            </option>
+                            <option value="60"
+                            {% if request.args.get('package')=='60' %}selected{% endif %}>
+                            60 Credits
+                            </option>
+                            <option value="150"
+                            {% if request.args.get('package')=='150' %}selected{% endif %}>
+                            150 Credits
+                            </option>
+                            <option value="300"
+                            {% if request.args.get('package')=='300' %}selected{% endif %}>
+                            300 Credits
+                            </option>
+                            <option value="500"
+                            {% if request.args.get('package')=='500' %}selected{% endif %}>
+                            500 Credits
+                            </option>
+                            <option value="1000"
+                            {% if request.args.get('package')=='1000' %}selected{% endif %}>
+                            1000 Credits
+                            </option>
 
                         </select>
 
@@ -484,6 +505,8 @@
 
                     <tbody>
 
+                    {% for item in hr_data|sort(attribute='earnings', reverse=True) %}
+
                     <tr>
 
                         <td>
@@ -693,7 +716,7 @@
 
                     <td>
 
-                        {{ hr.company }}
+                        {{ hr.company or "-" }}
 
                     </td>
 
