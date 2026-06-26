@@ -160,7 +160,7 @@
 
                 <i class="fas fa-lock-open"></i>
 
-                Unlock Candidate
+                Unlock with Credits
 
             </a>
 
@@ -178,22 +178,32 @@
 
 <!-- PAGINATION -->
 
-<div class="d-flex justify-content-center mt-4 mb-5 flex-wrap">
+<div class="d-flex justify-content-center align-items-center mt-4 mb-5">
 
-    {% for p in candidates.iter_pages() %}
+    {% if candidates.has_prev %}
 
-        {% if p %}
+    <a href="/leads?tab={{ tab }}&page={{ candidates.prev_num }}"
+       class="btn btn-primary rounded-circle me-2"
+       style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;">
 
-            <a href="/leads?tab={{ tab }}&page={{ p }}"
-               class="btn btn-sm {% if p == candidates.page %}btn-primary{% else %}btn-light{% endif %} mx-1 mb-2">
+        <i class="fas fa-chevron-left"></i>
 
-                {{ p }}
+    </a>
 
-            </a>
+    {% endif %}
 
-        {% endif %}
 
-    {% endfor %}
+    {% if candidates.has_next %}
+
+    <a href="/leads?tab={{ tab }}&page={{ candidates.next_num }}"
+       class="btn btn-primary rounded-circle"
+       style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;">
+
+        <i class="fas fa-chevron-right"></i>
+
+    </a>
+
+    {% endif %}
 
 </div>
 

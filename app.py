@@ -3027,7 +3027,7 @@ def unlock(id):
 
     candidate = Candidate.query.get_or_404(id)
 
-    # prevent unlocking own candidate
+    # Prevent unlocking own candidate
     if candidate.uploaded_by == current_user.id:
 
         flash(
@@ -3037,19 +3037,7 @@ def unlock(id):
 
         return redirect(request.referrer)
 
-    # CHECK TOTAL CREDITS
-    total_credits = current_user.credits + current_user.paid_credits
-
-    if total_credits <= 0:
-
-        flash(
-            "You don't have enough credits.",
-            "danger"
-        )
-
-        return redirect(buy_credits.html)
-
-    # already unlocked
+    # Already unlocked
     existing = Unlock.query.filter_by(
         user_id=current_user.id,
         candidate_id=id
@@ -3064,7 +3052,39 @@ def unlock(id):
 
         return redirect(request.referrer)
 
+    # -----------------------------------------
+    # CREDIT CALCULATION
+    # -----------------------------------------
+
+    is_experienced = (
+        candidate.experience.strip().lower() == "experienced"
+    )
+
+    # Paid Credit Cost
+    paid_cost = 2 if is_experienced else 1
+
+    # Free Credit Cost
+    free_cost = 4 if is_experienced else 2
+
+    # Total Credits Check
+    total_credits = (
+        current_user.credits +
+        current_user.paid_credits
+    )
+
+    if total_credits <= 0:
+
+        flash(
+            "You don't have enough credits. Please purchase a package to continue.",
+            "warning"
+        )
+
+        return redirect("/buy-credits")
+
+    # -----------------------------------------
     # CREATE UNLOCK ENTRY
+    # -----------------------------------------
+
     unlock = Unlock(
         user_id=current_user.id,
         candidate_id=id
@@ -3072,21 +3092,22 @@ def unlock(id):
 
     db.session.add(unlock)
 
-    # GET UPLOADER
     uploader = User.query.get(candidate.uploaded_by)
 
-    # =========================================
-    # USE PAID CREDIT FIRST
-    # =========================================
+    # -----------------------------------------
+    # USE PAID CREDITS FIRST
+    # -----------------------------------------
 
-    if current_user.paid_credits > 0:
+    if current_user.paid_credits >= paid_cost:
 
-        current_user.paid_credits -= 1
+        current_user.paid_credits -= paid_cost
 
-        # uploader earns only on paid credits
+        credit_used = paid_cost
+
+        # Uploader earns only on paid unlocks
         if uploader:
 
-            earning = 6
+            earning = paid_cost * 6
 
             uploader.wallet_balance += earning
 
@@ -3097,37 +3118,54 @@ def unlock(id):
                 amount=earning,
 
                 reason=f"Candidate unlocked: {candidate.name}"
+
             )
 
             db.session.add(earn)
 
     else:
 
-        # USE FREE CREDIT
-        current_user.credits -= 1
+        # Not enough free credits
+        if current_user.credits < free_cost:
 
+            flash(
+                f"You need {free_cost} credits to unlock this candidate.",
+                "warning"
+            )
+
+            return redirect("/buy-credits")
+
+        current_user.credits -= free_cost
+
+        credit_used = free_cost
+
+    # -----------------------------------------
     # CREDIT HISTORY
+    # -----------------------------------------
+
     history = CreditHistory(
 
         user_id=current_user.id,
 
-        amount=-1,
+        amount=-credit_used,
 
         action=f"Unlocked: {candidate.name}"
+
     )
 
     db.session.add(history)
 
-    # SAVE DATABASE
+    # -----------------------------------------
+    # SAVE
+    # -----------------------------------------
+
     db.session.commit()
 
-    # SUCCESS POPUP
     flash(
         "Lead transferred to Unlocked Candidates successfully.",
         "success"
     )
 
-    # STAY ON SAME PAGE
     return redirect(request.referrer)
 
 # =========================
