@@ -3270,21 +3270,18 @@ def unlock(id):
 
     else:
 
-    if current_user.credits < free_cost:
+        if current_user.credits < free_cost:
 
-        flash(
+            flash(
+                f"You need {free_cost} free credits or {paid_cost} paid credits to unlock this candidate.",
+                "warning"
+            )
 
-            f"You need {free_cost} free credits or {paid_cost} paid credits to unlock this candidate.",
+            return redirect("/buy-credits")
 
-            "warning"
+        current_user.credits -= free_cost
 
-        )
-
-        return redirect("/buy-credits")
-
-    current_user.credits -= free_cost
-
-    credit_used = free_cost
+        credit_used = free_cost
 
 # -----------------------------------------
 # CREDIT HISTORY
