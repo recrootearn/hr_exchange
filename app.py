@@ -3207,6 +3207,11 @@ def unlock(id):
 
         total_platform_earning = 0
 
+        for purchase in purchases:
+
+            if credits_to_use == 0:
+                break
+
         used = min(
             purchase.credits_remaining,
             credits_to_use
@@ -3287,33 +3292,30 @@ def unlock(id):
 
 history = CreditHistory(
 
-    user_id=current_user.id,
+        user_id=current_user.id,
 
-    amount=-credit_used,
+        amount=-credit_used,
 
-    action=(
-
-        f"Unlocked {candidate.name} "
-
-        f"({'Paid Credits' if credit_used == paid_cost else 'Free Credits'})"
+        action=(
+            f"Unlocked {candidate.name} "
+            f"({'Paid Credits' if credit_used == paid_cost else 'Free Credits'})"
+        )
 
     )
 
-)
+    db.session.add(history)
 
-db.session.add(history)
+    db.session.commit()
 
-db.session.commit()
+    flash(
 
-flash(
+        "Lead transferred to Unlocked Candidates successfully.",
 
-    "Lead transferred to Unlocked Candidates successfully.",
+        "success"
 
-    "success"
+    )
 
-)
-
-return redirect(request.referrer)
+    return redirect(request.referrer)
 
 # =========================
 # REPORTING
