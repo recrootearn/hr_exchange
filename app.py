@@ -3088,7 +3088,10 @@ def unlock(id):
 
     candidate = Candidate.query.get_or_404(id)
 
+    # -----------------------------------------
     # Prevent unlocking own candidate
+    # -----------------------------------------
+
     if candidate.uploaded_by == current_user.id:
 
         flash(
@@ -3098,7 +3101,10 @@ def unlock(id):
 
         return redirect(request.referrer)
 
-    # Already unlocked
+    # -----------------------------------------
+    # Already unlocked?
+    # -----------------------------------------
+
     existing = Unlock.query.filter_by(
         user_id=current_user.id,
         candidate_id=id
@@ -3114,7 +3120,7 @@ def unlock(id):
         return redirect(request.referrer)
 
     # -----------------------------------------
-    # CREDIT CALCULATION
+    # Credit Calculation
     # -----------------------------------------
 
     is_experienced = (
@@ -3122,25 +3128,37 @@ def unlock(id):
     )
 
     paid_cost = 2 if is_experienced else 1
+
     free_cost = 4 if is_experienced else 2
 
-    total_credits = (
-        current_user.credits +
-        current_user.paid_credits
+    # -----------------------------------------
+    # Total Credit Check
+    # -----------------------------------------
+
+    total_available = (
+        current_user.paid_credits +
+        current_user.credits
     )
 
-    if total_credits <= 0:
+    if total_available <= 0:
 
         flash(
-            "You don't have enough credits. Please purchase a package to continue.",
+            "You don't have enough credits. Please purchase a package.",
             "warning"
         )
 
         return redirect("/buy-credits")
 
+    # -----------------------------------------
+    # Create Unlock Record
+    # -----------------------------------------
+
     unlock = Unlock(
+
         user_id=current_user.id,
+
         candidate_id=id
+
     )
 
     db.session.add(unlock)
@@ -3148,7 +3166,7 @@ def unlock(id):
     uploader = User.query.get(candidate.uploaded_by)
 
     # -----------------------------------------
-    # USE PAID CREDITS FIRST
+    # Paid Credits First
     # -----------------------------------------
 
     if current_user.paid_credits >= paid_cost:
@@ -3159,13 +3177,16 @@ def unlock(id):
 
         credits_to_use = paid_cost
 
-        total_earning = 0
-
         purchases = CreditPurchase.query.filter(
+
             CreditPurchase.user_id == current_user.id,
+
             CreditPurchase.credits_remaining > 0
+
         ).order_by(
+
             CreditPurchase.created_at.asc()
+
         ).all()
 
         remaining_paid = sum(
@@ -3176,117 +3197,123 @@ def unlock(id):
         if remaining_paid < paid_cost:
 
             flash(
-                "Your paid credit records are out of sync. Please contact support.",
+                "Paid credit records are out of sync. Please contact support.",
                 "danger"
             )
 
             return redirect("/buy-credits")
 
-        for purchase in purchases:
+        total_uploader_earning = 0
 
-            if credits_to_use == 0:
-                break
+        total_platform_earning = 0
 
-            used = min(
-                purchase.credits_remaining,
-                credits_to_use
-            )
-
-            purchase.credits_remaining -= used 
-  
-            if purchase.credits_remaining < 0:
-                purchase.credits_remaining = 0
-
-            credits_to_use -= used
-
-            total_earning += (
-                purchase.price_per_credit *
-                used *
-                0.5
-            )
-
-        if total_earning > 0:
-
-            uploader_share = round(total_earning, 2)
-
-            platform_share = round(total_earning, 2)
-
-            if uploader:
-
-                uploader.wallet_balance += uploader_share
-
-                earn = Earnings(
-
-                    user_id=uploader.id,
-
-                    purchase_id=purchase_id,
-
-                    amount=uploader_share,
-
-                    reason=f"Candidate unlocked: {candidate.name}"
-
-                )
-
-                db.session.add(earn)
-
-            platform = PlatformEarning(
-
-                user_id=current_user.id,
-
-                candidate_id=candidate.id,
-
-                purchase_id=purchase_id,
-
-                amount=platform_share,
-
-                reason=f"Platform share from unlocking {candidate.name}"
-
-            )
-
-            db.session.add(platform)
-
-    else:
-
-        if current_user.credits < free_cost:
-
-            flash(
-                f"You need {free_cost} free credits or {paid_cost} paid credits to unlock this candidate.",
-                "warning"
-            )
-
-            return redirect("/buy-credits")
-
-        current_user.credits -= free_cost
-
-        credit_used = free_cost
-
-    # -----------------------------------------
-    # CREDIT HISTORY
-    # -----------------------------------------
-
-    history = CreditHistory(
-
-        user_id=current_user.id,
-
-        amount=-credit_used,
-
-        action=(
-            f"Unlocked {candidate.name} "
-            f"({'Paid Credits' if credit_used == paid_cost else 'Free Credits'})"
+        used = min(
+            purchase.credits_remaining,
+            credits_to_use
         )
 
+        purchase.credits_remaining -= used
+
+        if purchase.credits_remaining < 0:
+            purchase.credits_remaining = 0
+
+        credits_to_use -= used
+
+        uploader_share = round(
+            purchase.price_per_credit * used * 0.5,
+            2
+        )
+
+        platform_share = round(
+            purchase.price_per_credit * used * 0.5,
+            2
+        )
+
+        if uploader:
+
+            uploader.wallet_balance += uploader_share
+
+            earn = Earnings(
+
+                user_id=uploader.id,
+
+                purchase_id=purchase.id,
+
+                amount=uploader_share,
+
+                reason=f"Candidate unlocked: {candidate.name}"
+
+            )
+
+            db.session.add(earn)
+
+        platform = PlatformEarning(
+
+            user_id=current_user.id,
+
+            candidate_id=candidate.id,
+
+            purchase_id=purchase.id,
+
+            amount=platform_share,
+
+            reason=f"Platform share from unlocking {candidate.name}"
+
+        )
+
+        db.session.add(platform)
+
+else:
+
+    if current_user.credits < free_cost:
+
+        flash(
+
+            f"You need {free_cost} free credits or {paid_cost} paid credits to unlock this candidate.",
+
+            "warning"
+
+        )
+
+        return redirect("/buy-credits")
+
+    current_user.credits -= free_cost
+
+    credit_used = free_cost
+
+# -----------------------------------------
+# CREDIT HISTORY
+# -----------------------------------------
+
+history = CreditHistory(
+
+    user_id=current_user.id,
+
+    amount=-credit_used,
+
+    action=(
+
+        f"Unlocked {candidate.name} "
+
+        f"({'Paid Credits' if credit_used == paid_cost else 'Free Credits'})"
+
     )
 
-    db.session.add(history)
+)
 
-    db.session.commit()
+db.session.add(history)
 
-    flash(
-        "Lead transferred to Unlocked Candidates successfully.",
-        "success"
-    )
+db.session.commit()
 
-    return redirect(request.referrer)
+flash(
+
+    "Lead transferred to Unlocked Candidates successfully.",
+
+    "success"
+
+)
+
+return redirect(request.referrer)
 
 # =========================
 # REPORTING
@@ -3579,11 +3606,6 @@ def admin_credits():
 @login_required
 def admin_revenue():
 
-    period = request.args.get("period")
-    hr_id = request.args.get("hr")
-    package = request.args.get("package")
-    search = request.args.get("search")
-
     if not current_user.is_admin:
         return redirect("/dashboard")
 
@@ -3601,6 +3623,10 @@ def admin_revenue():
 
     total_unlocks = Unlock.query.count()
 
+    # ----------------------------------
+    # HR REPORT
+    # ----------------------------------
+
     hrs = User.query.filter_by(is_admin=False).all()
 
     hr_data = []
@@ -3616,7 +3642,7 @@ def admin_revenue():
         candidate_ids = [c.id for c in uploaded]
 
         unlock_count = Unlock.query.filter(
-    Unlock.candidate_id.in_(candidate_ids)
+            Unlock.candidate_id.in_(candidate_ids)
         ).count() if candidate_ids else 0
 
         total_earning = db.session.query(
@@ -3628,72 +3654,79 @@ def admin_revenue():
         hr_data.append({
 
             "hr": hr,
-
             "uploaded": uploaded_count,
-
             "unlocks": unlock_count,
-
             "earnings": round(total_earning, 2)
 
         })
 
-        purchases = CreditPurchase.query.order_by(
-            CreditPurchase.created_at.desc()
-        ).all()
+    # ----------------------------------
+    # PURCHASE HISTORY
+    # ----------------------------------
 
-        candidates = Candidate.query.all()
+    purchases = CreditPurchase.query.order_by(
+        CreditPurchase.created_at.desc()
+    ).all()
 
-        candidate_data = []
+    # ----------------------------------
+    # CANDIDATE REPORT
+    # ----------------------------------
 
-        for candidate in candidates:
+    candidates = Candidate.query.all()
 
-            unlocks = Unlock.query.filter_by(
-                candidate_id=candidate.id
-            ).count()
+    candidate_data = []
 
-            total_earned = db.session.query(
-                db.func.sum(Earnings.amount)
-            ).filter(
-                Earnings.reason.like(
-                    f"%{candidate.name}%"
-                )
-            ).scalar() or 0
+    for candidate in candidates:
 
-            candidate_data.append({
+        unlocks = Unlock.query.filter_by(
+            candidate_id=candidate.id
+        ).count()
 
-                "candidate": candidate,
+        total_earned = db.session.query(
+            db.func.sum(Earnings.amount)
+        ).filter(
+            Earnings.reason.like(
+                f"%{candidate.name}%"
+            )
+        ).scalar() or 0
 
-                "unlocks": unlocks,
+        candidate_data.append({
 
-                "earnings": round(total_earned,2)
+            "candidate": candidate,
+            "unlocks": unlocks,
+            "earnings": round(total_earned, 2)
 
-            })
-    
-          transactions = PlatformEarning.query.order_by(
-          PlatformEarning.created_at.desc()
-          ).all()
- 
+        })
+
+    # ----------------------------------
+    # TRANSACTION LEDGER
+    # ----------------------------------
+
+    transactions = PlatformEarning.query.order_by(
+        PlatformEarning.created_at.desc()
+    ).all()
+
     return render_template(
 
-    "admin_revenue.html",
+        "admin_revenue.html",
 
-    total_sales=round(total_sales, 2),
+        total_sales=round(total_sales, 2),
 
-    platform_earnings=round(platform_earnings, 2),
+        platform_earnings=round(platform_earnings, 2),
 
-    uploader_earnings=round(uploader_earnings, 2),
+        uploader_earnings=round(uploader_earnings, 2),
 
-    total_unlocks=total_unlocks,
+        total_unlocks=total_unlocks,
 
-    hr_data=hr_data,
- 
-    purchases=purchases,
+        hr_data=hr_data,
 
-    User=User,
+        purchases=purchases,
 
-    transactions=transactions,
- 
-    candidate_data=candidate_data
+        candidate_data=candidate_data,
+
+        transactions=transactions,
+
+        User=User
 
     )
 
