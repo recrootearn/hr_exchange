@@ -165,6 +165,18 @@ class CandidateUser(UserMixin, db.Model):
 
     is_deleted = db.Column(db.Boolean, default=False)
 
+    career_level = db.Column(db.String(20))
+
+    company_name = db.Column(db.String(200))
+
+    experience_from = db.Column(db.String(20))
+
+    experience_to = db.Column(db.String(20))
+
+    education = db.Column(db.Text)
+
+    interested_fields = db.Column(db.Text)
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
@@ -1647,29 +1659,82 @@ def edit_candidate_profile():
 
     if request.method == 'POST':
 
+        candidate.full_name = request.form['full_name']
+
+        candidate.email = request.form['email']
+
+        candidate.dob = request.form['dob']
+
         candidate.city = request.form['city']
 
-        candidate.designation = request.form['designation']
+        candidate.qualification = request.form['qualification']
 
-        candidate.experience = request.form['experience']
+        candidate.career_level = request.form['career_level']
 
-        candidate.current_company = request.form['current_company']
+        candidate.company_name = request.form.get('company_name', '')
 
-        candidate.current_ctc = request.form['current_ctc']
+        candidate.designation = request.form.get('designation', '')
 
-        candidate.expected_ctc = request.form['expected_ctc']
+        candidate.experience_from = request.form.get('experience_from', '')
+
+        candidate.experience_to = request.form.get('experience_to', '')
+
+        candidate.education = request.form['education']
 
         candidate.skills = request.form['skills']
 
         candidate.about_me = request.form['about_me']
 
+        candidate.interested_fields = ",".join(
+        request.form.getlist("interested_fields")
+        )
+
         db.session.commit()
 
         flash("Profile Updated")
 
+        completion = 0
+
+        if candidate.profile_photo:
+            completion += 10
+
+        if candidate.resume_file:
+            completion += 10
+
+        if candidate.about_me:
+            completion += 10
+
+        if candidate.skills:
+            completion += 10
+
+        if candidate.city:
+            completion += 10
+
+        if candidate.qualification:
+            completion += 10
+
+        if candidate.dob:
+            completion += 10
+
+        if candidate.education:
+            completion += 10
+
+        if candidate.interested_fields:
+            completion += 10
+
+        if candidate.career_level == "Experienced":
+
+        if candidate.company_name and candidate.designation:
+            completion += 10
+
+        else:
+
+            completion += 10
+
     return render_template(
         'edit_candidate_profile.html',
-         candidate=candidate
+         candidate=candidate,
+         profile_completion=completion
     )
 
 @app.route('/hr/<int:id>')
