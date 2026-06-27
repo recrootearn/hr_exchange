@@ -1642,11 +1642,63 @@ def candidate_profile():
         follower_candidate_id=candidate.id
     ).count()
 
+    # ----------------------------
+    # PROFILE COMPLETION
+    # ----------------------------
+
+    completion = 0
+
+    if candidate.profile_photo:
+        completion += 10
+
+    if candidate.resume_file:
+        completion += 10
+
+    if candidate.about_me:
+        completion += 10
+
+    if candidate.skills:
+        completion += 10
+
+    if candidate.city:
+        completion += 10
+
+    if candidate.qualification:
+        completion += 10
+
+    if candidate.dob:
+        completion += 10
+
+    if candidate.education:
+        completion += 10
+
+    if candidate.interested_fields:
+        completion += 10
+
+    if candidate.career_level == "Experienced":
+
+        if (
+            candidate.company_name
+            and candidate.designation
+        ):
+            completion += 10
+
+    else:
+
+        completion += 10
+
     return render_template(
+
         'candidate_profile_view.html',
+
         candidate=candidate,
+
         followers_count=followers_count,
-        following_count=following_count
+
+        following_count=following_count,
+
+        profile_completion=completion
+
     )
 
 @app.route('/edit-candidate-profile', methods=['GET', 'POST'])
