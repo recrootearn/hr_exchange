@@ -45,7 +45,7 @@
 
 </div>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
 
     <div class="mb-3">
 
@@ -148,43 +148,85 @@
 
     <div class="mb-3">
 
-        <label>Qualification</label>
+    <label>Qualification</label>
 
-        <select
-            name="qualification"
-            class="form-control">
+    <select
+        name="qualification"
+        class="form-control">
 
-            <option value="10th Pass">10th Pass</option>
+        <option value="10th Pass"
+        {% if candidate.qualification=="10th Pass" %}selected{% endif %}>
+            10th Pass
+        </option>
 
-            <option value="12th Pass">12th Pass</option>
+        <option value="12th Pass"
+        {% if candidate.qualification=="12th Pass" %}selected{% endif %}>
+            12th Pass
+        </option>
 
-            <option value="Diploma">Diploma</option>
+        <option value="Diploma"
+        {% if candidate.qualification=="Diploma" %}selected{% endif %}>
+            Diploma
+        </option>
 
-            <option value="ITI">ITI</option>
+        <option value="ITI"
+        {% if candidate.qualification=="ITI" %}selected{% endif %}>
+            ITI
+        </option>
 
-            <option value="B.A.">B.A.</option>
+        <option value="B.A."
+        {% if candidate.qualification=="B.A." %}selected{% endif %}>
+            B.A.
+        </option>
 
-            <option value="B.Com.">B.Com.</option>
+        <option value="B.Com."
+        {% if candidate.qualification=="B.Com." %}selected{% endif %}>
+            B.Com.
+        </option>
 
-            <option value="B.Sc.">B.Sc.</option>
+        <option value="B.Sc."
+        {% if candidate.qualification=="B.Sc." %}selected{% endif %}>
+            B.Sc.
+        </option>
 
-            <option value="BCA">BCA</option>
+        <option value="BCA"
+        {% if candidate.qualification=="BCA" %}selected{% endif %}>
+            BCA
+        </option>
 
-            <option value="BBA">BBA</option>
+        <option value="BBA"
+        {% if candidate.qualification=="BBA" %}selected{% endif %}>
+            BBA
+        </option>
 
-            <option value="B.Tech">B.Tech</option>
+        <option value="B.Tech"
+        {% if candidate.qualification=="B.Tech" %}selected{% endif %}>
+            B.Tech
+        </option>
 
-            <option value="MBA">MBA</option>
+        <option value="MBA"
+        {% if candidate.qualification=="MBA" %}selected{% endif %}>
+            MBA
+        </option>
 
-            <option value="M.Tech">M.Tech</option>
+        <option value="M.Tech"
+        {% if candidate.qualification=="M.Tech" %}selected{% endif %}>
+            M.Tech
+        </option>
 
-            <option value="MCA">MCA</option>
+        <option value="MCA"
+        {% if candidate.qualification=="MCA" %}selected{% endif %}>
+            MCA
+        </option>
 
-            <option value="PhD">PhD</option>
+        <option value="PhD"
+        {% if candidate.qualification=="PhD" %}selected{% endif %}>
+            PhD
+        </option>
 
-        </select>
+    </select>
 
-    </div>
+</div>
 
     <div class="mb-3">
 
@@ -347,49 +389,97 @@
 
     <label>
 
-    Interested Fields
-    (Max 5)
+        Interested Fields (Max 5)
 
     </label>
 
     <select
-    multiple
-    name="interested_fields"
-    class="form-control">
+        multiple
+        name="interested_fields"
+        class="form-control">
 
-    <option>Healthcare</option>
+        <option
+        {% if candidate.interested_fields and "Healthcare" in candidate.interested_fields %}selected{% endif %}>
+            Healthcare
+        </option>
 
-    <option>IT</option>
+        <option
+        {% if candidate.interested_fields and "IT" in candidate.interested_fields %}selected{% endif %}>
+            IT
+        </option>
 
-    <option>Finance</option>
+        <option
+        {% if candidate.interested_fields and "Finance" in candidate.interested_fields %}selected{% endif %}>
+            Finance
+        </option>
 
-    <option>Banking</option>
+        <option
+        {% if candidate.interested_fields and "Banking" in candidate.interested_fields %}selected{% endif %}>
+            Banking
+        </option>
 
-    <option>Education</option>
+        <option
+        {% if candidate.interested_fields and "Education" in candidate.interested_fields %}selected{% endif %}>
+            Education
+        </option>
 
-    <option>Automobile</option>
+        <option
+        {% if candidate.interested_fields and "Automobile" in candidate.interested_fields %}selected{% endif %}>
+            Automobile
+        </option>
 
-    <option>Sales</option>
+        <option
+        {% if candidate.interested_fields and "Sales" in candidate.interested_fields %}selected{% endif %}>
+            Sales
+        </option>
 
-    <option>Marketing</option>
+        <option
+        {% if candidate.interested_fields and "Marketing" in candidate.interested_fields %}selected{% endif %}>
+            Marketing
+        </option>
 
-    <option>Human Resources</option>
+        <option
+        {% if candidate.interested_fields and "Human Resources" in candidate.interested_fields %}selected{% endif %}>
+            Human Resources
+        </option>
 
-    <option>Retail</option>
+        <option
+        {% if candidate.interested_fields and "Retail" in candidate.interested_fields %}selected{% endif %}>
+            Retail
+        </option>
 
-    <option>Manufacturing</option>
+        <option
+        {% if candidate.interested_fields and "Manufacturing" in candidate.interested_fields %}selected{% endif %}>
+            Manufacturing
+        </option>
 
-    <option>Stock Market</option>
+        <option
+        {% if candidate.interested_fields and "Stock Market" in candidate.interested_fields %}selected{% endif %}>
+            Stock Market
+        </option>
 
-    <option>Advisory</option>
+        <option
+        {% if candidate.interested_fields and "Advisory" in candidate.interested_fields %}selected{% endif %}>
+            Advisory
+        </option>
 
-    <option>Customer Support</option>
+        <option
+        {% if candidate.interested_fields and "Customer Support" in candidate.interested_fields %}selected{% endif %}>
+            Customer Support
+        </option>
 
-    <option>Others</option>
+        <option
+        {% if candidate.interested_fields and "Others" in candidate.interested_fields %}selected{% endif %}>
+            Others
+        </option>
 
     </select>
 
-    </div>
+    <small class="text-muted">
+        Hold <b>Ctrl</b> (Windows) or <b>Cmd</b> (Mac) to select multiple fields. Maximum 5 fields recommended.
+    </small>
+
+</div>
 
     <button
         type="submit"
