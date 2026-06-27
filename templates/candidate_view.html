@@ -117,13 +117,22 @@
 </style><div class="profile-box"><div class="profile-top">
 
     <div class="profile-pic">
-        {{ candidate.first_name[0] if candidate.first_name else "C" }}
+        {% if candidate.profile_photo %}
+
+        <img src="{{ url_for('static', filename='uploads/' + candidate.profile_photo) }}"
+        style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
+
+        {% else %}
+
+        {{ candidate.full_name[0] if candidate.full_name else "C" }}
+
+        {% endif %}
     </div>
 
     <div class="profile-right">
 
         <div class="profile-name">
-            {{ candidate.first_name }} {{ candidate.last_name }}
+            {{ candidate.full_name }}
         </div>
 
         <div class="profile-designation">
@@ -131,7 +140,7 @@
         </div>
 
         <div class="profile-company">
-            {{ candidate.current_company or "" }}
+            {{ candidate.company_name or "" }}
         </div>
 
         <div class="stats">
@@ -159,72 +168,248 @@
 
 <div class="bio">
 
-    📍 {{ candidate.city or "City Not Added" }}
+📍 {{ candidate.city or "City Not Added" }}
 
-    <br>
+<br>
 
-    💼 {{ candidate.current_company or "Company Not Added" }}
+🎓 {{ candidate.qualification or "Qualification Not Added" }}
 
-    <br>
+<br>
 
-    🎯 Expected CTC:
-    ₹{{ candidate.expected_ctc or "Not Added" }}
+💼 {{ candidate.career_level or "Not Added" }}
 
-    <br>
+{% if candidate.career_level=="Experienced" %}
 
-    🛠 Skills:
-    {{ candidate.skills or "Not Added" }}
+<br>
 
-    <br><br>
+🏢 {{ candidate.company_name }}
 
-    {{ candidate.about_me or "No description added yet." }}
+<br>
+
+💼 {{ candidate.designation }}
+
+<br>
+
+📅 {{ candidate.experience_from }} → {{ candidate.experience_to }}
+
+{% endif %}
+
+<br><br>
+
+🛠 Skills
+
+<br>
+
+{% if candidate.skills %}
+
+{% for skill in candidate.skills.split(',') %}
+
+<span class="badge bg-primary me-1 mb-1">
+
+{{ skill.strip() }}
+
+</span>
+
+{% endfor %}
+
+{% else %}
+
+Not Added
+
+{% endif %}
+
+<br><br>
+
+{{ candidate.about_me or "No description added yet." }}
 
 </div>
 
 <div class="action-buttons">
 
-    {% if is_following %}
+{% if is_following %}
 
-    <a href="/follow-candidate/{{ candidate.id }}"
-       class="btn btn-success">
-        Following ✓
-    </a>
+<a href="/follow-candidate/{{ candidate.id }}"
+class="btn btn-success">
 
-    {% else %}
+Following ✓
 
-    <a href="/follow-candidate/{{ candidate.id }}"
-       class="btn btn-primary">
-        Follow
-    </a>
+</a>
 
-    {% endif %}
+{% else %}
 
-    {% if contact_unlocked or has_applied %}
+<a href="/follow-candidate/{{ candidate.id }}"
+class="btn btn-primary">
 
-    <a href="tel:{{ candidate.mobile }}"
-    class="btn btn-success">
-    Call
-    </a>
+Follow
 
-    <a href="https://wa.me/{{ candidate.mobile }}"
-    target="_blank"
-    class="btn btn-success">
-    WhatsApp
-    </a>
-
-    <a href="mailto:{{ candidate.email }}"
-    class="btn btn-primary">
-    Email
-    </a>
-
-    {% else %}
-
-    <a href="/unlock-contact/{{ candidate.id }}"
-    class="btn btn-warning">
-    Unlock Contact (2 Credits)
-    </a>
+</a>
 
 {% endif %}
+
+{% if contact_unlocked %}
+
+<a href="tel:{{ candidate.mobile }}"
+class="btn btn-success">
+
+Call
+
+</a>
+
+<a href="https://wa.me/{{ candidate.mobile }}"
+target="_blank"
+class="btn btn-success">
+
+WhatsApp
+
+</a>
+
+<a href="mailto:{{ candidate.email }}"
+class="btn btn-info">
+
+Email
+
+</a>
+
+{% if candidate.resume_file %}
+
+<a href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}"
+target="_blank"
+class="btn btn-secondary">
+
+Resume
+
+</a>
+
+{% endif %}
+
+{% else %}
+
+<a href="/unlock-contact/{{ candidate.id }}"
+class="btn btn-warning">
+
+🔒 Unlock Contact (2 Credits)
+
+</a>
+
+{% endif %}
+
+</div>
+
+<div class="card mt-4">
+
+<div class="card-header bg-primary text-white">
+
+Personal Information
+
+</div>
+
+<div class="card-body">
+
+<b>Qualification:</b> {{ candidate.qualification or "Not Added" }}
+
+<br>
+
+<b>City:</b> {{ candidate.city or "Not Added" }}
+
+<br>
+
+<b>Date of Birth:</b>
+
+{{ candidate.dob.strftime('%d %b %Y') if candidate.dob else "Not Added" }}
+
+</div>
+
+</div>
+
+<div class="card mt-4">
+
+<div class="card-header bg-success text-white">
+
+Career Details
+
+</div>
+
+<div class="card-body">
+
+<b>Career Level:</b>
+
+{{ candidate.career_level }}
+
+{% if candidate.career_level=="Experienced" %}
+
+<hr>
+
+<b>Company:</b>
+
+{{ candidate.company_name }}
+
+<br>
+
+<b>Designation:</b>
+
+{{ candidate.designation }}
+
+<br>
+
+<b>Experience:</b>
+
+{{ candidate.experience_from }}
+
+→
+
+{{ candidate.experience_to }}
+
+{% endif %}
+
+</div>
+
+</div>
+
+<div class="card mt-4">
+
+<div class="card-header bg-info text-white">
+
+Education
+
+</div>
+
+<div class="card-body">
+
+{{ candidate.education or "Not Added" }}
+
+</div>
+
+</div>
+
+<div class="card mt-4">
+
+<div class="card-header bg-warning">
+
+Interested Fields
+
+</div>
+
+<div class="card-body">
+
+{% if candidate.interested_fields %}
+
+{% for field in candidate.interested_fields.split(',') %}
+
+<span class="badge bg-success me-1 mb-1">
+
+{{ field.strip() }}
+
+</span>
+
+{% endfor %}
+
+{% else %}
+
+Not Added
+
+{% endif %}
+
+</div>
 
 </div>
 
