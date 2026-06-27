@@ -5,217 +5,281 @@
 <style>
 
 .profile-box{
-    max-width:900px;
-    margin:auto;
+    max-width:950px;
+    margin:12px auto;
     background:#fff;
     border-radius:20px;
-    padding:25px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.08);
+    padding:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
 }
 
 .profile-top{
     display:flex;
-    align-items:center;
-    gap:25px;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+}
+
+.profile-left{
+    display:flex;
+    gap:20px;
+    flex:1;
 }
 
 .profile-pic{
     width:120px;
     height:120px;
     border-radius:50%;
-    background:linear-gradient(135deg,#2563eb,#4f46e5);
-    color:white;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:45px;
-    font-weight:bold;
+    overflow:hidden;
+    background:#f2f2f2;
+    border:4px solid #0d6efd;
     flex-shrink:0;
 }
 
-.profile-right{
+.profile-pic img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.profile-initial{
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:48px;
+    color:white;
+    background:#2563eb;
+    font-weight:bold;
+}
+
+.profile-info{
     flex:1;
 }
 
 .profile-name{
-    font-size:28px;
+    font-size:30px;
     font-weight:700;
     color:#111827;
 }
 
 .profile-designation{
-    font-size:15px;
+    font-size:18px;
     color:#666;
-    margin-top:4px;
+    margin-top:3px;
 }
 
 .profile-company{
-    font-size:14px;
-    color:#888;
+    color:#777;
+    margin-top:4px;
+}
+
+.profile-location{
+    color:#777;
+    margin-top:4px;
 }
 
 .stats{
     display:flex;
-    gap:40px;
+    gap:15px;
     margin-top:18px;
 }
 
-.stats div{
+.stat-box{
+    background:#f8fafc;
+    border-radius:15px;
+    padding:12px 18px;
     text-align:center;
+    min-width:90px;
 }
 
-.stats strong{
-    display:block;
-    font-size:22px;
-    color:#111827;
+.stat-box h4{
+    margin:0;
+    color:#0d6efd;
+    font-weight:700;
 }
 
-.bio{
-    margin-top:25px;
-    line-height:1.8;
-    font-size:15px;
+.stat-box small{
+    color:#666;
 }
 
 .action-buttons{
     display:flex;
     gap:10px;
-    margin-top:25px;
     flex-wrap:wrap;
+    margin-top:15px;
 }
 
 .action-buttons .btn{
-    border-radius:12px;
+    border-radius:10px;
     font-weight:600;
+}
+
+.section-card{
+    margin-top:18px;
+    border:none;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 4px 18px rgba(0,0,0,.08);
+}
+
+.section-header{
+    background:#0d6efd;
+    color:white;
+    padding:14px 20px;
+    font-size:18px;
+    font-weight:700;
+}
+
+.section-body{
+    padding:20px;
+}
+
+.badge-skill{
+    display:inline-block;
+    padding:8px 14px;
+    border-radius:30px;
+    background:#0d6efd;
+    color:white;
+    margin:4px;
+}
+
+.badge-field{
+    display:inline-block;
+    padding:8px 14px;
+    border-radius:30px;
+    background:#198754;
+    color:white;
+    margin:4px;
 }
 
 @media(max-width:768px){
 
+.profile-box{
+    margin:6px;
+    padding:15px;
+}
+
 .profile-top{
     flex-direction:column;
-    text-align:center;
 }
 
-.stats{
-    justify-content:center;
-    gap:25px;
-}
-
-.action-buttons{
+.profile-left{
     flex-direction:column;
-}
-
-.action-buttons .btn{
-    width:100%;
+    align-items:center;
+    text-align:center;
+    gap:12px;
 }
 
 .profile-name{
     font-size:24px;
 }
 
+.profile-designation{
+    font-size:16px;
 }
 
-</style><div class="profile-box"><div class="profile-top">
+.stats{
+    justify-content:center;
+    gap:10px;
+    margin-top:12px;
+}
 
-    <div class="profile-pic">
-        {% if candidate.profile_photo %}
+.stat-box{
+    min-width:82px;
+    padding:10px;
+}
 
-        <img src="{{ url_for('static', filename='uploads/' + candidate.profile_photo) }}"
-        style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
+.action-buttons{
+    justify-content:center;
+    margin-top:10px;
+}
 
-        {% else %}
+.action-buttons .btn{
+    flex:1;
+    min-width:140px;
+}
 
-        {{ candidate.full_name[0] if candidate.full_name else "C" }}
+.section-card{
+    margin-top:12px;
+}
 
-        {% endif %}
-    </div>
+.section-body{
+    padding:15px;
+}
 
-    <div class="profile-right">
+}
 
-        <div class="profile-name">
-            {{ candidate.full_name }}
-        </div>
+</style>
 
-        <div class="profile-designation">
-            {{ candidate.designation or "Candidate" }}
-        </div>
+<div class="profile-box">
 
-        <div class="profile-company">
-            {{ candidate.company_name or "" }}
-        </div>
+<div class="profile-top">
 
-        <div class="stats">
+<div class="profile-left">
 
-            <div>
-                <strong>{{ followers_count }}</strong>
-                Followers
-            </div>
+<div class="profile-pic">
 
-            <div>
-                <strong>{{ following_count or 0 }}</strong>
-                Following
-            </div>
+{% if candidate.profile_photo %}
 
-        </div>
-
-    </div>
-
-</div>
-
-<div class="bio">
-
-📍 {{ candidate.city or "City Not Added" }}
-
-<br>
-
-🎓 {{ candidate.qualification or "Qualification Not Added" }}
-
-<br>
-
-💼 {{ candidate.career_level or "Not Added" }}
-
-{% if candidate.career_level=="Experienced" %}
-
-<br>
-
-🏢 {{ candidate.company_name }}
-
-<br>
-
-💼 {{ candidate.designation }}
-
-<br>
-
-📅 {{ candidate.experience_from }} → {{ candidate.experience_to }}
-
-{% endif %}
-
-<br><br>
-
-🛠 Skills
-
-<br>
-
-{% if candidate.skills %}
-
-{% for skill in candidate.skills.split(',') %}
-
-<span class="badge bg-primary me-1 mb-1">
-
-{{ skill.strip() }}
-
-</span>
-
-{% endfor %}
+<img src="{{ url_for('static', filename='uploads/' + candidate.profile_photo) }}">
 
 {% else %}
 
-Not Added
+<div class="profile-initial">
+
+{{ candidate.full_name[0] }}
+
+</div>
 
 {% endif %}
 
-<br><br>
+</div>
 
-{{ candidate.about_me or "No description added yet." }}
+<div class="profile-info">
+
+<div class="profile-name">
+
+{{ candidate.full_name }}
+
+</div>
+
+<div class="profile-designation">
+
+{{ candidate.designation or "Candidate" }}
+
+</div>
+
+<div class="profile-company">
+
+{{ candidate.company_name or "" }}
+
+</div>
+
+<div class="profile-location">
+
+📍 {{ candidate.city or "City Not Added" }}
+
+</div>
+
+<div class="stats">
+
+<div class="stat-box">
+
+<h4>{{ followers_count }}</h4>
+
+<small>Followers</small>
+
+</div>
+
+<div class="stat-box">
+
+<h4>{{ following_count }}</h4>
+
+<small>Following</small>
+
+</div>
 
 </div>
 
@@ -290,122 +354,465 @@ class="btn btn-warning">
 
 </div>
 
-<div class="card mt-4">
-
-<div class="card-header bg-primary text-white">
-
-Personal Information
-
 </div>
-
-<div class="card-body">
-
-<b>Qualification:</b> {{ candidate.qualification or "Not Added" }}
-
-<br>
-
-<b>City:</b> {{ candidate.city or "Not Added" }}
-
-<br>
-
-<b>Date of Birth:</b>
-
-{{ candidate.dob.strftime('%d %b %Y') if candidate.dob else "Not Added" }}
 
 </div>
 
 </div>
 
-<div class="card mt-4">
+<div class="section-card">
 
-<div class="card-header bg-success text-white">
+    <div class="section-header">
 
-Career Details
+        👤 Personal Information
 
-</div>
+    </div>
 
-<div class="card-body">
+    <div class="section-body">
 
-<b>Career Level:</b>
+        <div class="row">
 
-{{ candidate.career_level }}
+            <div class="col-md-6 mb-3">
 
-{% if candidate.career_level=="Experienced" %}
+                <b>Full Name</b>
 
-<hr>
+                <br>
 
-<b>Company:</b>
+                {{ candidate.full_name }}
 
-{{ candidate.company_name }}
+            </div>
 
-<br>
+            <div class="col-md-6 mb-3">
 
-<b>Designation:</b>
+                <b>Qualification</b>
 
-{{ candidate.designation }}
+                <br>
 
-<br>
+                {{ candidate.qualification or "Not Added" }}
 
-<b>Experience:</b>
+            </div>
 
-{{ candidate.experience_from }}
+            <div class="col-md-6 mb-3">
 
-→
+                <b>Date of Birth</b>
 
-{{ candidate.experience_to }}
+                <br>
 
-{% endif %}
+                {{ candidate.dob.strftime('%d %b %Y') if candidate.dob else "Not Added" }}
 
-</div>
+            </div>
 
-</div>
+            <div class="col-md-6 mb-3">
 
-<div class="card mt-4">
+                <b>City</b>
 
-<div class="card-header bg-info text-white">
+                <br>
 
-Education
+                {{ candidate.city or "Not Added" }}
 
-</div>
+            </div>
 
-<div class="card-body">
+        </div>
 
-{{ candidate.education or "Not Added" }}
-
-</div>
+    </div>
 
 </div>
 
-<div class="card mt-4">
+<div class="section-card">
 
-<div class="card-header bg-warning">
+    <div class="section-header" style="background:#198754;">
 
-Interested Fields
+        💼 Career Details
+
+    </div>
+
+    <div class="section-body">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <b>Career Level</b>
+
+                <br>
+
+                {{ candidate.career_level or "Not Added" }}
+
+            </div>
+
+            {% if candidate.career_level and candidate.career_level|trim|lower == "experienced" %}
+
+            <div class="col-md-6 mb-3">
+
+                <b>Company Name</b>
+
+                <br>
+
+                {{ candidate.company_name or "Not Added" }}
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <b>Designation</b>
+
+                <br>
+
+                {{ candidate.designation or "Not Added" }}
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <b>Experience</b>
+
+                <br>
+
+                {{ candidate.experience_from or "-" }}
+
+                →
+
+                {{ candidate.experience_to or "Present" }}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
 
 </div>
 
-<div class="card-body">
+<div class="section-card">
 
-{% if candidate.interested_fields %}
+    <div class="section-header" style="background:#0dcaf0;">
 
-{% for field in candidate.interested_fields.split(',') %}
+        🎓 Education
 
-<span class="badge bg-success me-1 mb-1">
+    </div>
 
-{{ field.strip() }}
+    <div class="section-body">
 
-</span>
+        {{ candidate.education or "Education Not Added" }}
 
-{% endfor %}
+    </div>
 
-{% else %}
+</div>
 
-Not Added
+<div class="section-card">
 
-{% endif %}
+    <div class="section-header" style="background:#ffc107;color:#111;">
+
+        🛠 Skills
+
+    </div>
+
+    <div class="section-body">
+
+        {% if candidate.skills %}
+
+            {% for skill in candidate.skills.split(',') %}
+
+                <span class="badge-skill">
+
+                    {{ skill.strip() }}
+
+                </span>
+
+            {% endfor %}
+
+        {% else %}
+
+            Skills Not Added
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<div class="section-card">
+
+    <div class="section-header" style="background:#6c757d;">
+
+        🎯 Interested Fields
+
+    </div>
+
+    <div class="section-body">
+
+        {% if candidate.interested_fields %}
+
+            {% for field in candidate.interested_fields.split(',') %}
+
+                <span class="badge-field">
+
+                    {{ field.strip() }}
+
+                </span>
+
+            {% endfor %}
+
+        {% else %}
+
+            Interested Fields Not Added
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<div class="section-card">
+
+    <div class="section-header">
+
+        👤 Personal Information
+
+    </div>
+
+    <div class="section-body">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <b>Qualification</b>
+
+                <br>
+
+                {{ candidate.qualification or "Not Added" }}
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <b>Date of Birth</b>
+
+                <br>
+
+                {{ candidate.dob.strftime('%d %b %Y') if candidate.dob else "Not Added" }}
+
+            </div>
+
+            <div class="col-md-6">
+
+                <b>City</b>
+
+                <br>
+
+                {{ candidate.city or "Not Added" }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="section-card">
+
+    <div class="section-header" style="background:#198754;">
+
+        💼 Career Details
+
+    </div>
+
+    <div class="section-body">
+
+        <b>Career Level</b>
+
+        <br>
+
+        {{ candidate.career_level or "Not Added" }}
+
+        {% if candidate.career_level and candidate.career_level|trim|lower=="experienced" %}
+
+        <hr>
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <b>Company</b>
+
+                <br>
+
+                {{ candidate.company_name or "Not Added" }}
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <b>Designation</b>
+
+                <br>
+
+                {{ candidate.designation or "Not Added" }}
+
+            </div>
+
+            <div class="col-md-6">
+
+                <b>Experience</b>
+
+                <br>
+
+                {{ candidate.experience_from or "-" }}
+
+                →
+
+                {{ candidate.experience_to or "Present" }}
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<div class="section-card">
+
+    <div class="section-header" style="background:#0dcaf0;">
+
+        🎓 Education
+
+    </div>
+
+    <div class="section-body">
+
+        {{ candidate.education or "Education Not Added" }}
+
+    </div>
+
+</div>
+
+<div class="section-card">
+
+    <div class="section-header" style="background:#ffc107;color:#111;">
+
+        🛠 Skills
+
+    </div>
+
+    <div class="section-body">
+
+        {% if candidate.skills %}
+
+            {% for skill in candidate.skills.split(',') %}
+
+                <span class="badge-skill">
+
+                    {{ skill.strip() }}
+
+                </span>
+
+            {% endfor %}
+
+        {% else %}
+
+            Skills Not Added
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<div class="section-card">
+
+    <div class="section-header" style="background:#6c757d;">
+
+        🎯 Interested Fields
+
+    </div>
+
+    <div class="section-body">
+
+        {% if candidate.interested_fields %}
+
+            {% for field in candidate.interested_fields.split(',') %}
+
+                <span class="badge-field">
+
+                    {{ field.strip() }}
+
+                </span>
+
+            {% endfor %}
+
+        {% else %}
+
+            Interested Fields Not Added
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<div class="section-card">
+
+    <div class="section-header" style="background:#212529;">
+
+        📝 About Me
+
+    </div>
+
+    <div class="section-body">
+
+        {{ candidate.about_me or "No description added yet." }}
+
+    </div>
+
+</div>
+
+<div class="section-card">
+
+    <div class="section-header">
+
+        📄 Resume
+
+    </div>
+
+    <div class="section-body text-center">
+
+        {% if contact_unlocked and candidate.resume_file %}
+
+            <a
+            href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}"
+            target="_blank"
+            class="btn btn-success">
+
+                Download Resume
+
+            </a>
+
+        {% elif candidate.resume_file %}
+
+            <a
+            href="/unlock-contact/{{ candidate.id }}"
+            class="btn btn-warning">
+
+                🔒 Unlock Resume (2 Credits)
+
+            </a>
+
+        {% else %}
+
+            Resume Not Uploaded
+
+        {% endif %}
+
+    </div>
 
 </div>
 
 </div>
 
-</div>{% endblock %}
+{% endblock %}
