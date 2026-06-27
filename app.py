@@ -3208,65 +3208,65 @@ def unlock(id):
 
             return redirect("/buy-credits")
 
-        for purchase in purchases:
+    for purchase in purchases:
 
-    if credits_to_use == 0:
-        break
+            if credits_to_use == 0:
+                break
 
-    used = min(
-        purchase.credits_remaining,
-        credits_to_use
-    )
+            used = min(
+                purchase.credits_remaining,
+                credits_to_use
+            )
 
-    purchase.credits_remaining -= used
+            purchase.credits_remaining -= used
 
-    if purchase.credits_remaining < 0:
-        purchase.credits_remaining = 0
+            if purchase.credits_remaining < 0:
+                purchase.credits_remaining = 0
 
-    credits_to_use -= used
+            credits_to_use -= used
 
-    uploader_share = round(
-        purchase.price_per_credit * used * 0.5,
-        2
-    )
+            uploader_share = round(
+                purchase.price_per_credit * used * 0.5,
+                2
+            )
 
-    platform_share = round(
-        purchase.price_per_credit * used * 0.5,
-        2
-    )
+            platform_share = round(
+                purchase.price_per_credit * used * 0.5,
+                2
+            )
 
-    if candidate.is_platform_candidate:
+            if candidate.is_platform_candidate:
 
-        platform_share += uploader_share
-        uploader_share = 0
+                platform_share += uploader_share
+                uploader_share = 0
 
-    elif uploader:
+            elif uploader:
 
-        uploader.wallet_balance += uploader_share
+                uploader.wallet_balance += uploader_share
 
-        earn = Earnings(
-            user_id=uploader.id,
-            purchase_id=purchase.id,
-            amount=uploader_share,
-            reason=f"Candidate unlocked: {candidate.name}"
-        )
+                earn = Earnings(
+                    user_id=uploader.id,
+                    purchase_id=purchase.id,
+                    amount=uploader_share,
+                    reason=f"Candidate unlocked: {candidate.name}"
+                )
 
-        db.session.add(earn)
+                db.session.add(earn)
 
-    else:
+            else:
 
-        platform_share += uploader_share
-        uploader_share = 0
+                platform_share += uploader_share
+                uploader_share = 0
 
-    platform = PlatformEarning(
-        user_id=current_user.id,
-        candidate_id=candidate.id,
-        purchase_id=purchase.id,
-        amount=platform_share,
-        reason=f"Platform share from unlocking {candidate.name}"
-    )
+            platform = PlatformEarning(
+                user_id=current_user.id,
+                candidate_id=candidate.id,
+                purchase_id=purchase.id,
+                amount=platform_share,
+                reason=f"Platform share from unlocking {candidate.name}"
+            )
 
-    db.session.add(platform)
+            db.session.add(platform)
 
     else:
 
