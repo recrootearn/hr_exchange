@@ -1661,7 +1661,14 @@ def edit_candidate_profile():
 
         candidate.full_name = request.form['full_name']
         candidate.email = request.form['email']
-        candidate.dob = request.form['dob']
+        dob = request.form.get("dob")
+
+        if dob:
+            candidate.dob = datetime.strptime(
+                dob,
+                "%Y-%m-%d"
+            ).date()
+
         candidate.city = request.form['city']
         candidate.qualification = request.form['qualification']
         candidate.career_level = request.form['career_level']

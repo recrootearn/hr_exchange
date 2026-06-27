@@ -208,7 +208,7 @@ height="150">
             type="date"
             name="dob"
             class="form-control"
-            value="{{ candidate.dob }}">
+            value="{{ candidate.dob.strftime('%Y-%m-%d') if candidate.dob else '' }}"
 
     </div>
 
