@@ -137,6 +137,10 @@ class CandidateUser(UserMixin, db.Model):
 
     password = db.Column(db.String(300))
 
+    dob = db.Column(db.Date)
+
+    qualification = db.Column(db.String(100))
+
     city = db.Column(db.String(100))
 
     experience = db.Column(db.String(100))
@@ -1413,6 +1417,27 @@ def candidate_register():
                 )
             )
 
+        # PROFILE PHOTO (OPTIONAL)
+
+        profile_photo_name = ""
+
+        profile_photo = request.files.get(
+            "profile_photo"
+        )
+
+        if profile_photo and profile_photo.filename:
+
+            profile_photo_name = secure_filename(
+                profile_photo.filename
+            )
+
+            profile_photo.save(
+                os.path.join(
+                    app.config['UPLOAD_FOLDER'],
+                    profile_photo_name
+                )
+            )
+
         # CREATE CANDIDATE
 
         candidate = CandidateUser(
@@ -1426,6 +1451,14 @@ def candidate_register():
             username=username,
 
             password=password,
+
+            dob=dob,
+
+            city=city,
+
+            qualification=qualification,
+
+            profile_photo=profile_photo,
 
             resume_file=resume_name
 
