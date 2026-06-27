@@ -373,6 +373,10 @@ class Candidate(db.Model):
     city = db.Column(db.String(100))
     category = db.Column(db.String(100))
     uploaded_by = db.Column(db.Integer)
+    is_platform_candidate = db.Column(
+        db.Boolean,
+        default=False
+    )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_fake = db.Column(db.Boolean, default=False)
     report_count = db.Column(db.Integer, default=0)
@@ -2506,18 +2510,15 @@ def delete_account():
 
     user_id = current_user.id
 
-    # Transfer uploaded leads to admin
-    admin = User.query.filter_by(
-        username="HARSHIT"
-    ).first()
+    # Mark uploaded candidates as Platform Candidates
 
-    if admin:
+    Candidate.query.filter_by(
+        uploaded_by=user_id
+    ).update({
 
-        Candidate.query.filter_by(
-            uploaded_by=user_id
-        ).update(
-            {"uploaded_by": admin.id}
-        )
+        "is_platform_candidate": True
+
+    })
 
     # Delete jobs
     JobPost.query.filter_by(
@@ -3207,70 +3208,65 @@ def unlock(id):
 
             return redirect("/buy-credits")
 
-        total_uploader_earning = 0
-
-        total_platform_earning = 0
-
         for purchase in purchases:
 
-            if credits_to_use == 0:
-                break
+    if credits_to_use == 0:
+        break
 
-        used = min(
-            purchase.credits_remaining,
-            credits_to_use
-        )
+    used = min(
+        purchase.credits_remaining,
+        credits_to_use
+    )
 
-        purchase.credits_remaining -= used
+    purchase.credits_remaining -= used
 
-        if purchase.credits_remaining < 0:
-            purchase.credits_remaining = 0
+    if purchase.credits_remaining < 0:
+        purchase.credits_remaining = 0
 
-        credits_to_use -= used
+    credits_to_use -= used
 
-        uploader_share = round(
-            purchase.price_per_credit * used * 0.5,
-            2
-        )
+    uploader_share = round(
+        purchase.price_per_credit * used * 0.5,
+        2
+    )
 
-        platform_share = round(
-            purchase.price_per_credit * used * 0.5,
-            2
-        )
+    platform_share = round(
+        purchase.price_per_credit * used * 0.5,
+        2
+    )
 
-        if uploader:
+    if candidate.is_platform_candidate:
 
-            uploader.wallet_balance += uploader_share
+        platform_share += uploader_share
+        uploader_share = 0
 
-            earn = Earnings(
+    elif uploader:
 
-                user_id=uploader.id,
+        uploader.wallet_balance += uploader_share
 
-                purchase_id=purchase.id,
-
-                amount=uploader_share,
-
-                reason=f"Candidate unlocked: {candidate.name}"
-
-            )
-
-            db.session.add(earn)
-
-        platform = PlatformEarning(
-
-            user_id=current_user.id,
-
-            candidate_id=candidate.id,
-
+        earn = Earnings(
+            user_id=uploader.id,
             purchase_id=purchase.id,
-
-            amount=platform_share,
-
-            reason=f"Platform share from unlocking {candidate.name}"
-
+            amount=uploader_share,
+            reason=f"Candidate unlocked: {candidate.name}"
         )
 
-        db.session.add(platform)
+        db.session.add(earn)
+
+    else:
+
+        platform_share += uploader_share
+        uploader_share = 0
+
+    platform = PlatformEarning(
+        user_id=current_user.id,
+        candidate_id=candidate.id,
+        purchase_id=purchase.id,
+        amount=platform_share,
+        reason=f"Platform share from unlocking {candidate.name}"
+    )
+
+    db.session.add(platform)
 
     else:
 
