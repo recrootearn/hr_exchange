@@ -3208,7 +3208,7 @@ def unlock(id):
 
             return redirect("/buy-credits")
 
-    for purchase in purchases:
+        for purchase in purchases:
 
             if credits_to_use == 0:
                 break
