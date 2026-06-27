@@ -229,7 +229,7 @@
 
 <div class="profile-initial">
 
-{{ candidate.full_name[0] }}
+{{ candidate.full_name[0] if candidate.full_name else "C" }}
 
 </div>
 
@@ -251,11 +251,15 @@
 
 </div>
 
+{% if candidate.company_name %}
+
 <div class="profile-company">
 
-{{ candidate.company_name or "" }}
+🏢 {{ candidate.company_name }}
 
 </div>
+
+{% endif %}
 
 <div class="profile-location">
 
@@ -275,8 +279,7 @@
 
 <div class="stat-box">
 
-<h4>{{ following_count }}</h4>
-
+<h4>{{ following_count|default(0,true) }}</h4>
 <small>Following</small>
 
 </div>
@@ -479,198 +482,6 @@ class="btn btn-warning">
             {% endif %}
 
         </div>
-
-    </div>
-
-</div>
-
-<div class="section-card">
-
-    <div class="section-header" style="background:#0dcaf0;">
-
-        🎓 Education
-
-    </div>
-
-    <div class="section-body">
-
-        {{ candidate.education or "Education Not Added" }}
-
-    </div>
-
-</div>
-
-<div class="section-card">
-
-    <div class="section-header" style="background:#ffc107;color:#111;">
-
-        🛠 Skills
-
-    </div>
-
-    <div class="section-body">
-
-        {% if candidate.skills %}
-
-            {% for skill in candidate.skills.split(',') %}
-
-                <span class="badge-skill">
-
-                    {{ skill.strip() }}
-
-                </span>
-
-            {% endfor %}
-
-        {% else %}
-
-            Skills Not Added
-
-        {% endif %}
-
-    </div>
-
-</div>
-
-<div class="section-card">
-
-    <div class="section-header" style="background:#6c757d;">
-
-        🎯 Interested Fields
-
-    </div>
-
-    <div class="section-body">
-
-        {% if candidate.interested_fields %}
-
-            {% for field in candidate.interested_fields.split(',') %}
-
-                <span class="badge-field">
-
-                    {{ field.strip() }}
-
-                </span>
-
-            {% endfor %}
-
-        {% else %}
-
-            Interested Fields Not Added
-
-        {% endif %}
-
-    </div>
-
-</div>
-
-<div class="section-card">
-
-    <div class="section-header">
-
-        👤 Personal Information
-
-    </div>
-
-    <div class="section-body">
-
-        <div class="row">
-
-            <div class="col-md-6 mb-3">
-
-                <b>Qualification</b>
-
-                <br>
-
-                {{ candidate.qualification or "Not Added" }}
-
-            </div>
-
-            <div class="col-md-6 mb-3">
-
-                <b>Date of Birth</b>
-
-                <br>
-
-                {{ candidate.dob.strftime('%d %b %Y') if candidate.dob else "Not Added" }}
-
-            </div>
-
-            <div class="col-md-6">
-
-                <b>City</b>
-
-                <br>
-
-                {{ candidate.city or "Not Added" }}
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="section-card">
-
-    <div class="section-header" style="background:#198754;">
-
-        💼 Career Details
-
-    </div>
-
-    <div class="section-body">
-
-        <b>Career Level</b>
-
-        <br>
-
-        {{ candidate.career_level or "Not Added" }}
-
-        {% if candidate.career_level and candidate.career_level|trim|lower=="experienced" %}
-
-        <hr>
-
-        <div class="row">
-
-            <div class="col-md-6 mb-3">
-
-                <b>Company</b>
-
-                <br>
-
-                {{ candidate.company_name or "Not Added" }}
-
-            </div>
-
-            <div class="col-md-6 mb-3">
-
-                <b>Designation</b>
-
-                <br>
-
-                {{ candidate.designation or "Not Added" }}
-
-            </div>
-
-            <div class="col-md-6">
-
-                <b>Experience</b>
-
-                <br>
-
-                {{ candidate.experience_from or "-" }}
-
-                →
-
-                {{ candidate.experience_to or "Present" }}
-
-            </div>
-
-        </div>
-
-        {% endif %}
 
     </div>
 
