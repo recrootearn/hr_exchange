@@ -19,6 +19,8 @@ from openpyxl import Workbook
 from flask import send_file
 import io
 from datetime import datetime, timedelta
+import os
+from werkzeug.utils import secure_filename
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
@@ -1661,6 +1663,7 @@ def edit_candidate_profile():
 
         candidate.full_name = request.form['full_name']
         candidate.email = request.form['email']
+
         dob = request.form.get("dob")
 
         if dob:
@@ -1703,6 +1706,52 @@ def edit_candidate_profile():
             )
         )
 
+        # ----------------------------
+        # PROFILE PHOTO
+        # ----------------------------
+
+        profile_photo = request.files.get(
+            "profile_photo"
+        )
+
+        if profile_photo and profile_photo.filename:
+
+            filename = secure_filename(
+                profile_photo.filename
+            )
+
+            profile_photo.save(
+                os.path.join(
+                    app.config['UPLOAD_FOLDER'],
+                    filename
+                )
+            )
+
+            candidate.profile_photo = filename
+
+        # ----------------------------
+        # RESUME
+        # ----------------------------
+
+        resume = request.files.get(
+            "resume_file"
+        )
+
+        if resume and resume.filename:
+
+            filename = secure_filename(
+                resume.filename
+            )
+
+            resume.save(
+                os.path.join(
+                    app.config['UPLOAD_FOLDER'],
+                    filename
+                )
+            )
+
+            candidate.resume_file = filename
+
         db.session.commit()
 
         flash(
@@ -1710,9 +1759,9 @@ def edit_candidate_profile():
             "success"
         )
 
-    # ---------------------------------
+    # ----------------------------
     # PROFILE COMPLETION
-    # ---------------------------------
+    # ----------------------------
 
     completion = 0
 
