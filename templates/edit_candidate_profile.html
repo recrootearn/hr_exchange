@@ -1,102 +1,75 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-5">
+<div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body p-4 p-md-5">
-                    <h2 class="fw-bold mb-4">Edit Profile</h2>
-                    
-                    <div class="mb-5 bg-light p-3 rounded-3">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="fw-semibold">Profile Completion</span>
-                            <span class="fw-bold text-primary">{{ profile_completion }}%</span>
-                        </div>
-                        <div class="progress" style="height: 10px;">
-                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ profile_completion }}%;"></div>
-                        </div>
-                        <small class="text-muted mt-2 d-block">Complete your profile to increase recruiter visibility.</small>
-                    </div>
+        <div class="col-12 col-md-8 col-lg-6">
+            
+            <h4 class="mb-4 text-primary fw-bold">Edit Profile</h4>
 
-                    <form method="POST" enctype="multipart/form-data">
-                        <div class="text-center mb-4">
-                            {% if candidate.profile_photo %}
-                                <img src="{{ url_for('static', filename='uploads/' + candidate.profile_photo) }}" 
-                                     class="rounded-circle border border-3 border-white shadow-sm mb-3" width="140" height="140" style="object-fit: cover;">
-                            {% endif %}
-                            <label class="d-block form-label fw-bold">Update Profile Photo</label>
-                            <input type="file" name="profile_photo" class="form-control form-control-sm w-50 mx-auto">
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Full Name</label>
-                                <input type="text" name="full_name" class="form-control" value="{{ candidate.full_name }}">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">City</label>
-                                <input type="text" name="city" class="form-control" value="{{ candidate.city or '' }}">
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label text-muted">Username</label>
-                                <input type="text" class="form-control bg-light" value="{{ candidate.username }}" readonly>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label text-muted">Mobile Number</label>
-                                <input type="text" class="form-control bg-light" value="{{ candidate.mobile }}" readonly>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control" value="{{ candidate.email }}">
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label">Qualification</label>
-                            <select name="qualification" class="form-select">
-                                {% for qual in ["10th Pass", "12th Pass", "Diploma", "ITI", "B.A.", "B.Com.", "B.Sc.", "BCA", "BBA", "B.Tech", "MBA", "M.Tech", "MCA", "PhD"] %}
-                                    <option value="{{ qual }}" {% if candidate.qualification == qual %}selected{% endif %}>{{ qual }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <div class="border-top pt-4 mb-4">
-                            <div class="mb-3">
-                                <label class="form-label">Career Level</label>
-                                <select id="career_level" name="career_level" class="form-select">
-                                    <option value="Fresher" {% if candidate.career_level=="Fresher" %}selected{% endif %}>Fresher</option>
-                                    <option value="Experienced" {% if candidate.career_level=="Experienced" %}selected{% endif %}>Experienced</option>
-                                </select>
-                            </div>
-
-                            <div id="experienceBox" class="bg-light p-3 rounded">
-                                <div class="row">
-                                    <div class="col-md-6 mb-3"><label class="form-label">Company</label><input type="text" name="company_name" class="form-control" value="{{ candidate.company_name or '' }}"></div>
-                                    <div class="col-md-6 mb-3"><label class="form-label">Designation</label><input type="text" name="designation" class="form-control" value="{{ candidate.designation or '' }}"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3"><label class="form-label">From Year</label><input type="text" name="experience_from" class="form-control" value="{{ candidate.experience_from or '' }}"></div>
-                                    <div class="col-md-6 mb-3"><label class="form-label">To Year</label><input type="text" name="experience_to" class="form-control" value="{{ candidate.experience_to or '' }}"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Skills</label>
-                            <textarea name="skills" class="form-control" rows="3" placeholder="e.g. Python, Sales, Marketing">{{ candidate.skills or '' }}</textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-lg w-100 mt-3 shadow-sm">
-                            <i class="fas fa-save me-2"></i>Save Profile
-                        </button>
-                    </form>
+            <form method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded-4 shadow-sm border">
+                
+                <h6 class="text-uppercase text-muted fw-bold mb-3"><i class="fas fa-user me-2"></i>Profile</h6>
+                <div class="text-center mb-4">
+                    {% if candidate.profile_photo %}
+                        <img src="{{ url_for('static', filename='uploads/' + candidate.profile_photo) }}" class="rounded-circle mb-2" width="100" height="100" style="object-fit: cover;">
+                    {% endif %}
+                    <input type="file" name="profile_photo" class="form-control form-control-sm mt-2">
                 </div>
-            </div>
+
+                <div class="mb-3"><label class="small fw-bold">Full Name</label><input type="text" name="full_name" class="form-control" value="{{ candidate.full_name }}"></div>
+                <div class="mb-3"><label class="small fw-bold">Username <i class="fas fa-lock text-warning"></i></label><input type="text" class="form-control bg-light" value="{{ candidate.username }}" readonly></div>
+                <div class="mb-3"><label class="small fw-bold">Mobile <i class="fas fa-lock text-warning"></i></label><input type="text" class="form-control bg-light" value="{{ candidate.mobile }}" readonly></div>
+                <div class="mb-3"><label class="small fw-bold">Email</label><input type="email" name="email" class="form-control" value="{{ candidate.email }}"></div>
+                <div class="row">
+                    <div class="col-6 mb-3"><label class="small fw-bold">DOB</label><input type="date" name="dob" class="form-control" value="{{ candidate.dob }}"></div>
+                    <div class="col-6 mb-3"><label class="small fw-bold">City</label><input type="text" name="city" class="form-control" value="{{ candidate.city or '' }}"></div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-1"><small class="fw-bold">Profile Completion</small><small class="fw-bold text-primary">{{ profile_completion }}%</small></div>
+                    <div class="progress" style="height: 8px;"><div class="progress-bar bg-success" style="width: {{ profile_completion }}%;"></div></div>
+                </div>
+
+                <hr>
+
+                <div class="mb-3"><label class="small fw-bold"><i class="fas fa-graduation-cap me-2"></i>Education</label><textarea name="education" class="form-control" rows="2">{{ candidate.education or '' }}</textarea></div>
+                
+                <div class="mb-3">
+                    <label class="small fw-bold"><i class="fas fa-briefcase me-2"></i>Experience</label>
+                    <select id="career_level" name="career_level" class="form-select mb-2">
+                        <option value="Fresher" {% if candidate.career_level=="Fresher" %}selected{% endif %}>Fresher</option>
+                        <option value="Experienced" {% if candidate.career_level=="Experienced" %}selected{% endif %}>Experienced</option>
+                    </select>
+                    <div id="experienceBox" class="border p-2 rounded bg-light">
+                        <input type="text" name="company_name" class="form-control mb-1" placeholder="Company Name" value="{{ candidate.company_name or '' }}">
+                        <input type="text" name="designation" class="form-control mb-1" placeholder="Designation" value="{{ candidate.designation or '' }}">
+                        <div class="d-flex gap-2">
+                            <input type="text" name="experience_from" class="form-control" placeholder="From" value="{{ candidate.experience_from or '' }}">
+                            <input type="text" name="experience_to" class="form-control" placeholder="To" value="{{ candidate.experience_to or '' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="mb-3"><label class="small fw-bold"><i class="fas fa-tools me-2"></i>Skills</label><textarea name="skills" class="form-control" rows="2">{{ candidate.skills or '' }}</textarea></div>
+                <div class="mb-3"><label class="small fw-bold"><i class="fas fa-pencil-alt me-2"></i>About Me</label><textarea name="about_me" class="form-control" rows="2">{{ candidate.about_me or '' }}</textarea></div>
+                
+                <div class="mb-3">
+                    <label class="small fw-bold"><i class="fas fa-bullseye me-2"></i>Interested Fields</label>
+                    <select multiple name="interested_fields" class="form-select" size="3">
+                        <option {% if "IT" in candidate.interested_fields %}selected{% endif %}>IT</option>
+                        <option {% if "Sales" in candidate.interested_fields %}selected{% endif %}>Sales</option>
+                    </select>
+                </div>
+
+                <div class="mb-4"><label class="small fw-bold"><i class="fas fa-file-alt me-2"></i>Resume</label><input type="file" name="resume_file" class="form-control"></div>
+
+                <button type="submit" class="btn btn-dark w-100 py-3 fw-bold shadow">
+                    <i class="fas fa-save me-2"></i>SAVE PROFILE
+                </button>
+            </form>
         </div>
     </div>
 </div>
@@ -104,10 +77,8 @@
 <script>
     const career = document.getElementById("career_level");
     const box = document.getElementById("experienceBox");
-    function toggleExperience() {
-        box.style.display = (career.value === "Experienced") ? "block" : "none";
-    }
-    career.addEventListener("change", toggleExperience);
-    toggleExperience();
+    function toggle() { box.style.display = (career.value === "Experienced") ? "block" : "none"; }
+    career.addEventListener("change", toggle);
+    toggle();
 </script>
 {% endblock %}
