@@ -422,6 +422,66 @@ Following
 
 <div class="card mt-4 shadow-sm border-0 rounded-4">
 
+    <div class="card-header bg-success text-white">
+
+        <h5 class="mb-0">
+
+            💼 Career Details
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <b>Career Level</b><br>
+
+                {{ candidate.career_level or "Not Added" }}
+
+            </div>
+
+            {% if candidate.career_level and candidate.career_level|trim|lower == "experienced" %}
+
+            <div class="col-md-6 mb-3">
+
+                <b>Company Name</b><br>
+
+                {{ candidate.company_name or "Not Added" }}
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <b>Designation</b><br>
+
+                {{ candidate.designation or "Not Added" }}
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+
+                <b>Experience</b><br>
+
+                {{ candidate.experience_from or "-" }}
+                →
+                {{ candidate.experience_to or "Present" }}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card mt-4 shadow-sm border-0 rounded-4">
+
     <div class="card-header bg-info text-white">
 
         <h5 class="mb-0">
