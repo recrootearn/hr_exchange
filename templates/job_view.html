@@ -547,9 +547,10 @@ body{
 
                 {% if hr.company_website %}
 
-                <a href="{{ hr.company_website }}" target="_blank">
+                <a href="{% if hr.company_website.startswith('http') %}{{ hr.company_website }}{% else %}https://{{ hr.company_website }}{% endif %}"
+                target="_blank">
 
-                    Visit Website
+                Visit Website
 
                 </a>
 
