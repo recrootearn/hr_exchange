@@ -1647,7 +1647,7 @@ def candidate_profile():
         following_count=following_count
     )
 
-@app.route('/edit-candidate-profile', methods=['GET','POST'])
+@app.route('/edit-candidate-profile', methods=['GET', 'POST'])
 def edit_candidate_profile():
 
     if 'candidate_id' not in session:
@@ -1660,81 +1660,102 @@ def edit_candidate_profile():
     if request.method == 'POST':
 
         candidate.full_name = request.form['full_name']
-
         candidate.email = request.form['email']
-
         candidate.dob = request.form['dob']
-
         candidate.city = request.form['city']
-
         candidate.qualification = request.form['qualification']
-
         candidate.career_level = request.form['career_level']
 
-        candidate.company_name = request.form.get('company_name', '')
+        candidate.company_name = request.form.get(
+            'company_name',
+            ''
+        )
 
-        candidate.designation = request.form.get('designation', '')
+        candidate.designation = request.form.get(
+            'designation',
+            ''
+        )
 
-        candidate.experience_from = request.form.get('experience_from', '')
+        candidate.experience_from = request.form.get(
+            'experience_from',
+            ''
+        )
 
-        candidate.experience_to = request.form.get('experience_to', '')
+        candidate.experience_to = request.form.get(
+            'experience_to',
+            ''
+        )
 
         candidate.education = request.form['education']
-
         candidate.skills = request.form['skills']
-
         candidate.about_me = request.form['about_me']
 
         candidate.interested_fields = ",".join(
-        request.form.getlist("interested_fields")
+            request.form.getlist(
+                "interested_fields"
+            )
         )
 
         db.session.commit()
 
-        flash("Profile Updated")
+        flash(
+            "Profile Updated",
+            "success"
+        )
 
-        completion = 0
+    # ---------------------------------
+    # PROFILE COMPLETION
+    # ---------------------------------
 
-        if candidate.profile_photo:
+    completion = 0
+
+    if candidate.profile_photo:
+        completion += 10
+
+    if candidate.resume_file:
+        completion += 10
+
+    if candidate.about_me:
+        completion += 10
+
+    if candidate.skills:
+        completion += 10
+
+    if candidate.city:
+        completion += 10
+
+    if candidate.qualification:
+        completion += 10
+
+    if candidate.dob:
+        completion += 10
+
+    if candidate.education:
+        completion += 10
+
+    if candidate.interested_fields:
+        completion += 10
+
+    if candidate.career_level == "Experienced":
+
+        if (
+            candidate.company_name
+            and candidate.designation
+        ):
             completion += 10
 
-        if candidate.resume_file:
-            completion += 10
+    else:
 
-        if candidate.about_me:
-            completion += 10
-
-        if candidate.skills:
-            completion += 10
-
-        if candidate.city:
-            completion += 10
-
-        if candidate.qualification:
-            completion += 10
-
-        if candidate.dob:
-            completion += 10
-
-        if candidate.education:
-            completion += 10
-
-        if candidate.interested_fields:
-            completion += 10
-
-        if candidate.career_level == "Experienced":
-
-        if candidate.company_name and candidate.designation:
-            completion += 10
-
-        else:
-
-            completion += 10
+        completion += 10
 
     return render_template(
+
         'edit_candidate_profile.html',
-         candidate=candidate,
-         profile_completion=completion
+
+        candidate=candidate,
+
+        profile_completion=completion
+
     )
 
 @app.route('/hr/<int:id>')
