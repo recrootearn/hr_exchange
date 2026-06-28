@@ -2,16 +2,7 @@
 
 {% for c in candidates.items %}
 
-{% if c.id not in unlocked_ids %}
-
-<div class="col-12">
-
-    <div class="candidate-card"
-         id="candidate-{{ c.id }}">
-
-        <!-- TOP -->
-
-        <form method="GET">
+<form method="GET">
 
 <div class="row g-2 mb-3">
 
@@ -167,6 +158,63 @@ Apply Filters
 </div>
 
 </form>
+
+{% if c.id not in unlocked_ids %}
+
+<div class="col-12">
+
+    <div class="candidate-card"
+         id="candidate-{{ c.id }}">
+
+        <!-- TOP -->
+
+        <div class="candidate-top">
+
+            <div class="candidate-profile">
+
+                <div class="avatar">
+
+                    {{ c.name[0] }}
+
+                </div>
+
+                <div>
+
+                    <div class="candidate-name">
+
+                        {{ c.name }}
+
+                    </div>
+
+                    <div class="candidate-role">
+
+                        {{ c.designation }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% if c.experience == 'Experienced' %}
+
+                <span class="badge bg-success badge-custom">
+
+                    Experienced
+
+                </span>
+
+            {% else %}
+
+                <span class="badge bg-primary badge-custom">
+
+                    Fresher
+
+                </span>
+
+            {% endif %}
+
+        </div>
 
         <!-- DETAILS -->
 
