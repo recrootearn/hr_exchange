@@ -2,30 +2,6 @@
 
 {% block content %}
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-
-{% if messages %}
-
-    {% for category, message in messages %}
-
-    <div class="alert alert-{{ category }} alert-dismissible fade show mt-2">
-
-        {{ message }}
-
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert">
-        </button>
-
-    </div>
-
-    {% endfor %}
-
-{% endif %}
-
-{% endwith %}
-
 <style>
 
 html,
@@ -45,7 +21,6 @@ body{
 
     min-height:100vh;
     overflow-x:hidden;
-    width:100%;
 }
 
 .mobile-bg{
@@ -108,13 +83,13 @@ body{
 
 .login-wrapper{
     width:100%;
-    min-height:100dvh;
-    padding:16px;
+    min-height:100vh;
+    padding:15px;
+    overflow:hidden;
     display:flex;
     justify-content:center;
-    align-items:center;
-    overflow:hidden;
-    box-sizing:border-box;
+    align-items:flex-start;
+    padding-top:25px;
     background:transparent;
 }
 
@@ -328,6 +303,8 @@ body{
 
     padding-left:55px;
 
+    padding-right:55px;
+
     font-size:16px;
 
     transition:0.3s;
@@ -439,17 +416,19 @@ body{
 }
 
 .mobile-logo img{
-    width:220px;
-    max-width:100%;
+    width:100%;
     height:auto;
+    display:block;
+    margin:0 auto;
+    object-fit:contain;
 }
 
 .mobile-tagline{
     text-align:center;
-    font-size:15px;
+    font-size:14px;
     color:#6b7280;
     font-weight:600;
-    margin-bottom:25px;
+    margin-bottom:15px;
 }
 
 .mobile-card{
@@ -532,8 +511,8 @@ body{
     width:100%;
     max-width:420px;
     background:white;
-    border-radius:28px;
-    padding:24px;
+    border-radius:32px;
+    padding:30px 22px;
     box-sizing:border-box;
     overflow:hidden;
 }
@@ -541,9 +520,10 @@ body{
     /* Logo */
 
     .mobile-logo{
-    display:block;
-    text-align:center;
-    margin-bottom:10px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:20px;
 }
 
     /* Titles */
@@ -616,11 +596,8 @@ body{
 }
 
 .login-logo img{
-    width:240px;
-    max-width:100%;
+    width:220px;
     height:auto;
-    display:block;
-    margin:auto;
 }
 
 </style>
@@ -758,27 +735,29 @@ body{
 
                     </div>
 
-                    <div class="input-box password-box">
+                    <div class="input-box">
 
-                        <i class="fas fa-lock"></i>
+                       <i class="fas fa-lock"></i>
 
-                        <input
-                            type="password"
-                            id="candidatePassword"
-                            name="password"
-                            placeholder="Password"
-                            required>
+                       <input
+                       type="password"
+                       id="password"
+                       name="password"
+                       placeholder="Enter password"
+                       required>
 
-                        <button
-                            type="button"
-                            class="eye-btn"
-                            onclick="togglePassword()">
+                       <i
+                       id="togglePassword"
+                       class="fas fa-eye"
+                       onclick="togglePassword()"
+                       style="
+                       left:auto;
+                       right:18px;
+                       cursor:pointer;
+                       color:#6b7280;">
+                       </i>
 
-                            <i id="eyeIcon" class="fas fa-eye"></i>
-
-                        </button>
-
-                    </div>
+                   </div>
 
                 </div>
 
@@ -792,17 +771,23 @@ body{
 
             <div class="login-links">
 
-                <a href="/candidate-forgot-password">
+                <a href="/forgot-password">
 
                     Forgot Password?
 
                 </a>
 
-                <a href="/candidate-register">
+                <a href="/register">
 
                     Create Account
 
                 </a>
+
+            </div>
+
+            <div class="bottom-text">
+
+                Your data is 100% secure with us.
 
             </div>
 
@@ -836,24 +821,25 @@ body{
 function togglePassword(){
 
     let password =
-        document.getElementById("candidatePassword");
+    document.getElementById("password");
 
-    let icon =
-        document.getElementById("eyeIcon");
+    let eye =
+    document.getElementById("togglePassword");
 
     if(password.type === "password"){
 
         password.type = "text";
 
-        icon.classList.remove("fa-eye");
-        icon.classList.add("fa-eye-slash");
+        eye.classList.remove("fa-eye");
+        eye.classList.add("fa-eye-slash");
 
-    }else{
+    }
+    else{
 
         password.type = "password";
 
-        icon.classList.remove("fa-eye-slash");
-        icon.classList.add("fa-eye");
+        eye.classList.remove("fa-eye-slash");
+        eye.classList.add("fa-eye");
 
     }
 
