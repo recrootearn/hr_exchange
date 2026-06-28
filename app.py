@@ -21,6 +21,7 @@ import io
 from datetime import datetime, timedelta
 import os
 from werkzeug.utils import secure_filename
+from sqlalchemy import func
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
@@ -1223,61 +1224,77 @@ def leads():
     ).all()
 
     unlocked_ids = [
-        u.candidate_id for u in unlocked
+        u.candidate_id
+        for u in unlocked
     ]
 
     # =========================
     # FILTER OPTIONS
-    # (Only values present in DB)
     # =========================
 
-    cities = [
-        c[0]
-        for c in db.session.query(Candidate.city)
-        .filter(
+    cities = sorted({
+
+        c[0].strip().title()
+
+        for c in db.session.query(
+            func.lower(Candidate.city)
+        ).filter(
+
             Candidate.city.isnot(None),
+
             Candidate.city != ""
-        )
-        .distinct()
-        .order_by(Candidate.city)
-        .all()
-    ]
 
-    industries = [
-        i[0]
-        for i in db.session.query(Candidate.category)
-        .filter(
-            Candidate.category.isnot(None),
-            Candidate.category != ""
-        )
-        .distinct()
-        .order_by(Candidate.category)
-        .all()
-    ]
+        ).distinct().all()
 
-    designations = [
-        d[0]
-        for d in db.session.query(Candidate.designation)
-        .filter(
+    })
+
+    designations = sorted({
+
+        d[0].strip().title()
+
+        for d in db.session.query(
+            func.lower(Candidate.designation)
+        ).filter(
+
             Candidate.designation.isnot(None),
-            Candidate.designation != ""
-        )
-        .distinct()
-        .order_by(Candidate.designation)
-        .all()
-    ]
 
-    experiences = [
+            Candidate.designation != ""
+
+        ).distinct().all()
+
+    })
+
+    industries = sorted({
+
+        i[0].strip().title()
+
+        for i in db.session.query(
+            func.lower(Candidate.category)
+        ).filter(
+
+            Candidate.category.isnot(None),
+
+            Candidate.category != ""
+
+        ).distinct().all()
+
+    })
+
+    experiences = sorted({
+
         e[0]
-        for e in db.session.query(Candidate.experience)
-        .filter(
+
+        for e in db.session.query(
+            Candidate.experience
+        ).filter(
+
             Candidate.experience.isnot(None),
+
             Candidate.experience != ""
-        )
-        .distinct()
-        .order_by(Candidate.experience)
-        .all()
-    ]
+
+        ).distinct().all()
+
+    })
 
     # =========================
     # MAIN QUERY
@@ -1286,15 +1303,21 @@ def leads():
     if tab == 'unlocked':
 
         query = Candidate.query.filter(
+
             Candidate.id.in_(unlocked_ids),
+
             Candidate.uploaded_by != current_user.id
+
         )
 
     else:
 
         query = Candidate.query.filter(
+
             Candidate.id.notin_(unlocked_ids),
+
             Candidate.uploaded_by != current_user.id
+
         )
 
     # =========================
@@ -1302,23 +1325,35 @@ def leads():
     # =========================
 
     if designation:
+
         query = query.filter(
-            Candidate.designation == designation
+
+            func.lower(Candidate.designation) == designation.lower()
+
         )
 
     if city:
+
         query = query.filter(
-            Candidate.city == city
+
+            func.lower(Candidate.city) == city.lower()
+
         )
 
     if industry:
+
         query = query.filter(
-            Candidate.category == industry
+
+            func.lower(Candidate.category) == industry.lower()
+
         )
 
     if experience:
+
         query = query.filter(
+
             Candidate.experience == experience
+
         )
 
     # =========================
@@ -1326,10 +1361,13 @@ def leads():
     # =========================
 
     if sort == 'old':
+
         query = query.order_by(
             Candidate.id.asc()
         )
+
     else:
+
         query = query.order_by(
             Candidate.id.desc()
         )
@@ -1339,9 +1377,13 @@ def leads():
     # =========================
 
     candidates = query.paginate(
+
         page=page,
+
         per_page=10,
+
         error_out=False
+
     )
 
     # =========================
@@ -1349,16 +1391,27 @@ def leads():
     # =========================
 
     return render_template(
+
         'leads.html',
+
         candidates=candidates,
+
         unlocked_ids=unlocked_ids,
+
         CandidateReview=CandidateReview,
+
         User=User,
+
         tab=tab,
+
         cities=cities,
-        industries=industries,
+
         designations=designations,
+
+        industries=industries,
+
         experiences=experiences
+
     )
 
 @app.route('/register', methods=['GET', 'POST'])
