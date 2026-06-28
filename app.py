@@ -3064,16 +3064,20 @@ def login():
             logging.warning("USER NOT FOUND")
 
         if not user:
-            return "Invalid Login"
+            flash("Invalid Username or Password", "danger")
+            return redirect(url_for("login"))
 
         if user.is_deleted:
-            return "Account Deleted"
+            flash("Your account has been deleted.", "danger")
+            return redirect(url_for("login"))
 
         if user.failed_logins >= 5:
-            return "Blocked"
+            flash("Your account has been blocked. Contact Admin.", "danger")
+            return redirect(url_for("login"))
 
         if not user.is_approved and user.username.upper() != "HARSHIT":
-            return "Pending Approval"
+            flash("Your account is pending approval.", "warning")
+            return redirect(url_for("login"))
 
         if check_password_hash(
             user.password,
@@ -3104,7 +3108,8 @@ def login():
 
             db.session.commit()
 
-            return "Invalid Login"
+            flash("Invalid Username or Password", "danger")
+            return redirect(url_for("login"))
 
     return render_template('login.html')
 
