@@ -2,8 +2,6 @@
 
 {% block content %}
 
-<div class="container-fluid p-0">
-
 <div class="mb-2">
 
 <form method="GET">
@@ -132,7 +130,7 @@ value="{{ city }}"
 
     <!-- CONTENT -->
 
-    <div style="padding:12px;">
+    <div class="p-3">
 
         <h4 class="job-title">
             {{ job.job_title }}
@@ -240,61 +238,37 @@ value="{{ city }}"
 <style>
 
 .feed-card{
-
-    width:100%;
-
-    margin:0 0 8px 0;
-
-    border-radius:12px;
-
-    border:none;
-
     background:#fff;
-
+    border-radius:20px;
     overflow:hidden;
-
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-
+    margin-bottom:25px;
+    padding:0 !important;
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
+    border:1px solid #eee;
 }
 
 .feed-header{
-
     display:flex;
-
     align-items:center;
-
     gap:12px;
-
-    padding:10px;
-
+    padding:14px 16px;
 }
 
 .feed-avatar{
-
-    width:46px;
-
-    height:46px;
-
+    width:48px;
+    height:48px;
     border-radius:50%;
-
     background:linear-gradient(
         135deg,
         #2563eb,
         #7c3aed
     );
-
     color:white;
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
     font-size:18px;
-
     font-weight:700;
-
 }
 
 .feed-company{
@@ -308,94 +282,51 @@ value="{{ city }}"
 }
 
 .feed-image{
-
     width:100%;
-
+    height:auto;
     display:block;
-
-    aspect-ratio:1.15;
-
-    object-fit:cover;
-
+    object-fit:contain;
+    background:#fff;
 }
 
 .job-title{
-
-    font-size:22px;
-
     font-weight:700;
-
-    margin-bottom:8px;
-
+    margin-bottom:10px;
 }
 
 .salary-tag{
-
     display:inline-block;
-
     background:#dcfce7;
-
     color:#15803d;
-
-    padding:6px 14px;
-
+    padding:8px 14px;
     border-radius:20px;
-
-    font-size:15px;
-
     font-weight:700;
-
 }
 
 .feed-buttons{
-
     display:flex;
-    gap:8px;
-    margin-top:12px;
-
+    gap:10px;
+    margin-top:20px;
 }
 
 .feed-buttons .btn{
-
     flex:1;
-    height:44px;
+    height:50px;
 
     display:flex;
-    justify-content:center;
     align-items:center;
+    justify-content:center;
 
-    border-radius:10px;
+    gap:6px;
 
+    border-radius:14px;
     font-weight:600;
 
     padding:0;
-
 }
 
 .feed-buttons .btn i{
     font-size:16px;
-}
-
-body{
-
-    background:#f3f4f6;
-
-}
-
-.container-fluid{
-
-    max-width:100%;
-
-    padding-left:4px !important;
-
-    padding-right:4px !important;
-
-}
-
-.feed-card:last-child{
-
-    margin-bottom:80px;
-
 }
 
 .btn-success{
@@ -412,18 +343,17 @@ body{
     }
 
     .feed-buttons{
+        gap:8px;
+    }
 
-    gap:6px;
-    margin-top:10px;
+    .feed-buttons .btn{
+        height:48px;
+        font-size:14px;
 
-}
-
-.feed-buttons .btn{
-
-    height:42px;
-    font-size:13px;
-
-}
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
 
 }
 
@@ -481,7 +411,5 @@ window.onload=function(){
 }
 
 </script>
-
-</div>
 
 {% endblock %}
