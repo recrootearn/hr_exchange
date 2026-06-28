@@ -180,73 +180,30 @@
 
 <div class="d-flex justify-content-center align-items-center mt-4 mb-5">
 
-{% if candidates.has_prev %}
+    {% if candidates.has_prev %}
 
-<a
-href="{{ url_for(
+    <a href="/leads?tab={{ tab }}&page={{ candidates.prev_num }}"
+       class="btn btn-primary rounded-circle me-2"
+       style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;">
 
-'locked',
+        <i class="fas fa-chevron-left"></i>
 
-page=candidates.prev_num,
+    </a>
 
-designation=request.args.get('designation'),
+    {% endif %}
 
-city=request.args.get('city'),
 
-industry=request.args.get('industry'),
+    {% if candidates.has_next %}
 
-experience=request.args.get('experience'),
+    <a href="/leads?tab={{ tab }}&page={{ candidates.next_num }}"
+       class="btn btn-primary rounded-circle"
+       style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;">
 
-lead_filter=request.args.get('lead_filter')
+        <i class="fas fa-chevron-right"></i>
 
-) }}"
-class="btn btn-primary rounded-circle me-2"
-style="
-width:42px;
-height:42px;
-display:flex;
-align-items:center;
-justify-content:center;">
+    </a>
 
-<i class="fas fa-chevron-left"></i>
-
-</a>
-
-{% endif %}
-
-{% if candidates.has_next %}
-
-<a
-href="{{ url_for(
-
-'locked',
-
-page=candidates.next_num,
-
-designation=request.args.get('designation'),
-
-city=request.args.get('city'),
-
-industry=request.args.get('industry'),
-
-experience=request.args.get('experience'),
-
-lead_filter=request.args.get('lead_filter')
-
-) }}"
-class="btn btn-primary rounded-circle"
-style="
-width:42px;
-height:42px;
-display:flex;
-align-items:center;
-justify-content:center;">
-
-<i class="fas fa-chevron-right"></i>
-
-</a>
-
-{% endif %}
+    {% endif %}
 
 </div>
 
