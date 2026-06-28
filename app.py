@@ -2137,6 +2137,69 @@ def edit_candidate_profile():
 
     )
 
+@app.route('/candidate-forgot-password', methods=['GET', 'POST'])
+def candidate_forgot_password():
+
+    if request.method == "POST":
+
+        email = request.form["email"].strip()
+        mobile = request.form["mobile"].strip()
+
+        candidate = CandidateUser.query.filter_by(
+            email=email,
+            mobile=mobile
+        ).first()
+
+        if not candidate:
+
+            flash(
+                "Invalid Email or Mobile Number.",
+                "danger"
+            )
+
+            return redirect("/candidate-forgot-password")
+
+        session["candidate_reset_id"] = candidate.id
+
+        return redirect("/candidate-reset-password")
+
+    return render_template(
+        "candidate_forgot_password.html"
+    )
+
+@app.route('/candidate-reset-password', methods=['GET', 'POST'])
+def candidate_reset_password():
+
+    if "candidate_reset_id" not in session:
+
+        return redirect("/candidate-login")
+
+    candidate = CandidateUser.query.get(
+        session["candidate_reset_id"]
+    )
+
+    if request.method == "POST":
+
+        candidate.password = request.form["password"]
+
+        db.session.commit()
+
+        session.pop(
+            "candidate_reset_id",
+            None
+        )
+
+        flash(
+            "Password Updated Successfully.",
+            "success"
+        )
+
+        return redirect("/candidate-login")
+
+    return render_template(
+        "candidate_reset_password.html"
+    )
+
 @app.route('/hr/<int:id>')
 def hr_profile(id):
 
