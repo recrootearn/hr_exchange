@@ -121,12 +121,17 @@ body{
             type="tel"
             name="mobile"
             class="form-control"
-            placeholder="Enter 10 digit mobile number"
             maxlength="10"
-            pattern="[6-9]{1}[0-9]{9}"
             inputmode="numeric"
+            placeholder="Enter Mobile Number"
             required
-            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
+            oninput="
+            this.value=this.value.replace(/[^0-9]/g,'');
+            if(this.value.length>0 && !/^[6-9]/.test(this.value)){
+                this.value='';
+            }
+            this.value=this.value.slice(0,10);
+            ">
 
             <small id="mobileStatus"></small>
         </div>
@@ -337,6 +342,22 @@ document.querySelector('[name="mobile"]').addEventListener('blur', function(){
 
 });
 
+</script>
+
+<script>
+document.querySelector('input[name="mobile"]').addEventListener("input", function () {
+
+    this.value = this.value.replace(/\D/g, "");
+
+    if (this.value.length === 1 && !/[6-9]/.test(this.value)) {
+        this.value = "";
+    }
+
+    if (this.value.length > 10) {
+        this.value = this.value.slice(0, 10);
+    }
+
+});
 </script>
 
 </body>
