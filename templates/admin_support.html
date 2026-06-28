@@ -6,62 +6,334 @@
     Support Tickets
 </h2>
 
+<!-- FILTERS -->
+
+<form method="GET" class="row g-3 mb-4">
+
+    <div class="col-md-3">
+
+        <label class="form-label fw-bold">
+
+            User Type
+
+        </label>
+
+        <select
+        name="user_type"
+        id="userType"
+        class="form-select"
+        onchange="changeNameList()">
+
+            <option value="">All</option>
+
+            <option value="hr"
+            {% if request.args.get('user_type')=='hr' %}selected{% endif %}>
+                HR
+            </option>
+
+            <option value="candidate"
+            {% if request.args.get('user_type')=='candidate' %}selected{% endif %}>
+                Candidate
+            </option>
+
+        </select>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <label class="form-label fw-bold">
+
+            Name
+
+        </label>
+
+        <select
+        name="user_name"
+        id="userName"
+        class="form-select">
+
+            <option value="">
+                All Users
+            </option>
+
+        </select>
+
+    </div>
+
+    <div class="col-md-3">
+
+        <label class="form-label fw-bold">
+
+            Date
+
+        </label>
+
+        <select
+        name="day"
+        class="form-select">
+
+            <option value="">
+                All Dates
+            </option>
+
+            <option value="today"
+            {% if request.args.get('day')=='today' %}selected{% endif %}>
+                Today
+            </option>
+
+            <option value="yesterday"
+            {% if request.args.get('day')=='yesterday' %}selected{% endif %}>
+                Yesterday
+            </option>
+
+            <option value="last7"
+            {% if request.args.get('day')=='last7' %}selected{% endif %}>
+                Last 7 Days
+            </option>
+
+            <option value="last30"
+            {% if request.args.get('day')=='last30' %}selected{% endif %}>
+                Last 30 Days
+            </option>
+
+        </select>
+
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+
+        <button class="btn btn-primary w-100">
+
+            Apply Filters
+
+        </button>
+
+    </div>
+
+</form>
+
+<!-- TICKETS -->
+
 {% for t in tickets %}
 
-<div class="card-box mb-4">
+<div class="card shadow-sm mb-4">
 
-    <h5>
-        {{ t.subject }}
-    </h5>
+    <div class="card-header bg-light d-flex justify-content-between">
 
-    <p>
-        {{ t.message }}
-    </p>
+        <div>
 
-    <p>
-        <b>User ID:</b>
-        {{ t.user_id }}
-    </p>
+            {% if t.user_type=="hr" %}
 
-    <p>
-        <b>Status:</b>
-        {{ t.status }}
-    </p>
+                {% set person = User.query.get(t.user_id) %}
 
-    <hr>
+                <h5 class="mb-1">
 
-    <h6>
-        Conversation
-    </h6>
+                    👨‍💼
+                    {{ person.first_name }}
+                    {{ person.last_name }}
 
-    {% for r in SupportReply.query.filter_by(ticket_id=t.id).all() %}
+                </h5>
 
-        <div class="border rounded p-2 mb-2">
+                <small class="text-primary">
 
-            <b>{{ r.sender }}:</b>
+                    HR
+
+                </small>
+
+                {% if person.company %}
+
+                <br>
+
+                <small>
+
+                    {{ person.company }}
+
+                </small>
+
+                {% endif %}
+
+            {% else %}
+
+                {% set person = CandidateUser.query.get(t.user_id) %}
+
+                <h5 class="mb-1">
+
+                    👨‍🎓
+                    {{ person.first_name }}
+                    {{ person.last_name }}
+
+                </h5>
+
+                <small class="text-success">
+
+                    Candidate
+
+                </small>
+
+            {% endif %}
+
+        </div>
+
+        <div class="text-end">
+
+            <span class="badge bg-primary">
+
+                #{{ t.id }}
+
+            </span>
+
+            <br>
+
+            <span class="badge bg-warning text-dark">
+
+                {{ t.status }}
+
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="card-body">
+
+        <h5>
+
+            {{ t.subject }}
+
+        </h5>
+
+        <p>
+
+            {{ t.message }}
+
+        </p>
+
+        <hr>
+
+        <h6>
+
+            Conversation
+
+        </h6>
+
+        {% for r in SupportReply.query.filter_by(ticket_id=t.id).all() %}
+
+        <div class="border rounded p-3 mb-2">
+
+            <strong>
+
+                {{ r.sender }}
+
+            </strong>
+
+            <br>
+
             {{ r.message }}
 
         </div>
 
-    {% endfor %}
+        {% endfor %}
 
-    <form method="POST"
-    action="/reply-ticket/{{ t.id }}">
+        <form
+        method="POST"
+        action="/reply-ticket/{{ t.id }}">
 
-        <textarea
-        name="reply"
-        class="form-control mb-2"
-        placeholder="Reply..."
-        required></textarea>
+            <textarea
+            name="reply"
+            class="form-control mb-2"
+            rows="3"
+            placeholder="Reply..."
+            required></textarea>
 
-        <button class="btn btn-primary btn-sm">
-            Send Reply
-        </button>
+            <button class="btn btn-primary">
 
-    </form>
+                Send Reply
+
+            </button>
+
+        </form>
+
+    </div>
 
 </div>
 
 {% endfor %}
+
+<script>
+
+const hrNames=[
+
+{% for n in hr_names %}
+
+"{{ n }}",
+
+{% endfor %}
+
+];
+
+const candidateNames=[
+
+{% for n in candidate_names %}
+
+"{{ n }}",
+
+{% endfor %}
+
+];
+
+function changeNameList(){
+
+    let type=document.getElementById("userType").value;
+
+    let dropdown=document.getElementById("userName");
+
+    dropdown.innerHTML='<option value="">All Users</option>';
+
+    let list=[];
+
+    if(type=="hr"){
+
+        list=hrNames;
+
+    }
+
+    else if(type=="candidate"){
+
+        list=candidateNames;
+
+    }
+
+    else{
+
+        list=[...hrNames,...candidateNames];
+
+        list.sort();
+
+    }
+
+    list.forEach(function(name){
+
+        let option=document.createElement("option");
+
+        option.value=name;
+
+        option.text=name;
+
+        if(name=="{{ request.args.get('user_name','') }}"){
+
+            option.selected=true;
+
+        }
+
+        dropdown.appendChild(option);
+
+    });
+
+}
+
+changeNameList();
+
+</script>
 
 {% endblock %}

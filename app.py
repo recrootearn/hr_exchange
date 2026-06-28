@@ -3951,13 +3951,129 @@ def admin_support():
     if not admin_only():
         return "Access Denied"
 
-    tickets = SupportTicket.query.all()
+    user_type = request.args.get("user_type")
+    user_name = request.args.get("user_name")
+    day = request.args.get("day")
+
+    tickets = SupportTicket.query
+
+    # ======================
+    # USER TYPE FILTER
+    # ======================
+
+    if user_type:
+
+        tickets = tickets.filter(
+            SupportTicket.user_type == user_type
+        )
+
+    # ======================
+    # NAME FILTER
+    # ======================
+
+    if user_name:
+
+        if user_type == "hr":
+
+            tickets = tickets.join(
+                User,
+                SupportTicket.user_id == User.id
+            ).filter(
+                User.first_name == user_name
+            )
+
+        elif user_type == "candidate":
+
+            tickets = tickets.join(
+                CandidateUser,
+                SupportTicket.user_id == CandidateUser.id
+            ).filter(
+                CandidateUser.first_name == user_name
+            )
+
+    # ======================
+    # DATE FILTER
+    # ======================
+
+    today = datetime.utcnow().date()
+
+    if day == "today":
+
+        tickets = tickets.filter(
+            db.func.date(
+                SupportTicket.created_at
+            ) == today
+        )
+
+    elif day == "yesterday":
+
+        tickets = tickets.filter(
+            db.func.date(
+                SupportTicket.created_at
+            ) == today - timedelta(days=1)
+        )
+
+    elif day == "last7":
+
+        tickets = tickets.filter(
+            SupportTicket.created_at >=
+            datetime.utcnow() - timedelta(days=7)
+        )
+
+    elif day == "last30":
+
+        tickets = tickets.filter(
+            SupportTicket.created_at >=
+            datetime.utcnow() - timedelta(days=30)
+        )
+
+    tickets = tickets.order_by(
+        SupportTicket.created_at.desc()
+    ).all()
+
+    # ======================
+    # AUTO NAME DROPDOWNS
+    # ======================
+
+    hr_names = db.session.query(
+        User.first_name
+    ).distinct().order_by(
+        User.first_name
+    ).all()
+
+    hr_names = [
+        x[0]
+        for x in hr_names
+        if x[0]
+    ]
+
+    candidate_names = db.session.query(
+        CandidateUser.first_name
+    ).distinct().order_by(
+        CandidateUser.first_name
+    ).all()
+
+    candidate_names = [
+        x[0]
+        for x in candidate_names
+        if x[0]
+    ]
 
     return render_template(
-        'admin_support.html',
+
+        "admin_support.html",
+
         tickets=tickets,
+
         User=User,
-        SupportReply=SupportReply
+
+        CandidateUser=CandidateUser,
+
+        SupportReply=SupportReply,
+
+        hr_names=hr_names,
+
+        candidate_names=candidate_names
     )
 
 @app.route('/user-reply/<int:id>', methods=['POST'])
