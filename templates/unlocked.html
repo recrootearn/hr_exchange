@@ -337,22 +337,25 @@ tabindex="-1">
 
 <!-- PAGINATION -->
 
-<div class="d-flex justify-content-center mt-4 mb-5 flex-wrap">
+<div class="d-flex justify-content-center mt-4 mb-5">
 
-    {% for p in candidates.iter_pages() %}
+    {% if candidates.has_prev %}
+        <a href="/leads?tab={{ tab }}&page={{ candidates.prev_num }}"
+           class="btn btn-outline-primary me-2">
+            Previous
+        </a>
+    {% endif %}
 
-        {% if p %}
+    <span class="btn btn-primary disabled">
+        Page {{ candidates.page }} of {{ candidates.pages }}
+    </span>
 
-            <a href="/leads?tab={{ tab }}&page={{ p }}"
-               class="btn btn-sm {% if p == candidates.page %}btn-primary{% else %}btn-light{% endif %} mx-1 mb-2">
-
-                {{ p }}
-
-            </a>
-
-        {% endif %}
-
-    {% endfor %}
+    {% if candidates.has_next %}
+        <a href="/leads?tab={{ tab }}&page={{ candidates.next_num }}"
+           class="btn btn-outline-primary ms-2">
+            Next
+        </a>
+    {% endif %}
 
 </div>
 
