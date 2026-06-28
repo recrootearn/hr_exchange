@@ -3962,7 +3962,6 @@ def admin_support():
     # ======================
 
     if user_type:
-
         tickets = tickets.filter(
             SupportTicket.user_type == user_type
         )
@@ -3988,7 +3987,7 @@ def admin_support():
                 CandidateUser,
                 SupportTicket.user_id == CandidateUser.id
             ).filter(
-                CandidateUser.first_name == user_name
+                CandidateUser.full_name == user_name
             )
 
     # ======================
@@ -4032,48 +4031,33 @@ def admin_support():
     ).all()
 
     # ======================
-    # AUTO NAME DROPDOWNS
+    # DROPDOWNS
     # ======================
 
-    hr_names = db.session.query(
-        User.first_name
-    ).distinct().order_by(
-        User.first_name
-    ).all()
-
     hr_names = [
-        x[0]
-        for x in hr_names
-        if x[0]
+        x[0] for x in db.session.query(
+            User.first_name
+        ).distinct().order_by(
+            User.first_name
+        ).all()
     ]
 
-    candidate_names = db.session.query(
-        CandidateUser.first_name
-    ).distinct().order_by(
-        CandidateUser.first_name
-    ).all()
-
     candidate_names = [
-        x[0]
-        for x in candidate_names
-        if x[0]
+        x[0] for x in db.session.query(
+            CandidateUser.full_name
+        ).distinct().order_by(
+            CandidateUser.full_name
+        ).all()
     ]
 
     return render_template(
-
         "admin_support.html",
-
         tickets=tickets,
-
-        User=User,
-
-        CandidateUser=CandidateUser,
-
-        SupportReply=SupportReply,
-
         hr_names=hr_names,
-
-        candidate_names=candidate_names
+        candidate_names=candidate_names,
+        User=User,
+        CandidateUser=CandidateUser,
+        SupportReply=SupportReply
     )
 
 @app.route('/user-reply/<int:id>', methods=['POST'])
