@@ -2601,12 +2601,22 @@ def applied_jobs():
 @login_required
 def feed():
 
-    jobs = JobPost.query.filter(
+    selected_location = request.args.get("location", "")
+
+    query = JobPost.query.filter(
         JobPost.hr_id != current_user.id
-    ).order_by(
+    )
+
+    if selected_location:
+        query = query.filter_by(
+            location=selected_location
+        )
+
+    jobs = query.order_by(
         JobPost.created_at.desc()
     ).all()
 
+    # Applied jobs
     applications = JobApplication.query.filter_by(
         applicant_hr_id=current_user.id
     ).all()
@@ -2616,10 +2626,25 @@ def feed():
         for app in applications
     ]
 
+    # Cities already available in database
+    locations = db.session.query(
+        JobPost.location
+    ).distinct().order_by(
+        JobPost.location
+    ).all()
+
+    locations = [
+        city[0]
+        for city in locations
+        if city[0]
+    ]
+
     return render_template(
-        'feed.html',
+        "feed.html",
         jobs=jobs,
-        applied_jobs=applied_jobs
+        applied_jobs=applied_jobs,
+        locations=locations,
+        selected_location=selected_location
     )
 
 @app.route('/applied-jobs-hr')
