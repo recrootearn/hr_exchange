@@ -2,6 +2,41 @@
 
 {% block content %}
 
+<div class="mb-2">
+
+<form method="GET">
+
+<div class="input-group">
+
+<select
+name="location"
+class="form-select"
+onchange="this.form.submit()">
+
+<option value="">
+🌍 All Locations
+</option>
+
+{% for city in locations %}
+
+<option
+value="{{ city }}"
+{% if city==selected_location %}selected{% endif %}>
+
+{{ city }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+</form>
+
+</div>
+
 {% for job in jobs %}
 
 <div id="post{{ job.id }}"
