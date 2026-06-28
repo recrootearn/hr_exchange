@@ -1360,31 +1360,46 @@ def leads():
     # SORTING
     # =========================
 
-    if sort == 'old':
+    if tab == "locked":
 
-        query = query.order_by(
-            Candidate.id.asc()
-        )
+        query = query.order_by(func.rand())
 
     else:
 
-        query = query.order_by(
-            Candidate.id.desc()
-        )
+        if sort == "old":
+            query = query.order_by(Candidate.id.asc())
+        else:
+            query = query.order_by(Candidate.id.desc())
 
     # =========================
     # PAGINATION
     # =========================
 
-    candidates = query.paginate(
+    candidates = query.all()
 
-        page=page,
+    random.shuffle(candidates)
 
-        per_page=10,
+    per_page = 10
+    start = (page - 1) * per_page
+    end = start + per_page
 
-        error_out=False
+    page_items = candidates[start:end]
 
-    )
+    class Pagination:
+        pass
+
+    pagination = Pagination()
+    pagination.items = page_items
+    pagination.page = page
+    pagination.per_page = per_page
+    pagination.total = len(candidates)
+    pagination.pages = ceil(len(candidates) / per_page)
+    pagination.has_prev = page > 1
+    pagination.has_next = page < pagination.pages
+    pagination.prev_num = page - 1
+    pagination.next_num = page + 1
+
+    candidates = pagination
 
     # =========================
     # RENDER
