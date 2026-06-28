@@ -392,11 +392,15 @@ select.form-control{
                 <i class="fas fa-phone"></i>
 
                 <input
-                type="text"
+                type="tel"
                 name="mobile"
                 class="form-control"
-                placeholder="Enter Mobile Number"
-                required>
+                placeholder="Enter 10 digit mobile number"
+                maxlength="10"
+                pattern="[6-9]{1}[0-9]{9}"
+                inputmode="numeric"
+                required
+                oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
 
                 <small id="mobileStatus"></small>
             </div>

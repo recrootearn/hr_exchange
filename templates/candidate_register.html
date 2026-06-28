@@ -118,11 +118,15 @@ body{
 
         <div class="mb-3">
             <input
-            type="text"
-            class="form-control"
+            type="tel"
             name="mobile"
-            placeholder="Mobile Number"
-            required>
+            class="form-control"
+            placeholder="Enter 10 digit mobile number"
+            maxlength="10"
+            pattern="[6-9]{1}[0-9]{9}"
+            inputmode="numeric"
+            required
+            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
 
             <small id="mobileStatus"></small>
         </div>

@@ -23,6 +23,7 @@ import os
 from werkzeug.utils import secure_filename
 from sqlalchemy import func
 from math import ceil
+import re
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
@@ -1440,6 +1441,17 @@ def register():
         username = request.form['username'].strip().upper()
         mobile = request.form['mobile'].strip()
 
+        # VALIDATE INDIAN MOBILE NUMBER
+
+        if not re.fullmatch(r"[6-9]\d{9}", mobile):
+
+            flash(
+                "Please enter a valid 10-digit Indian mobile number.",
+                "danger"
+            )
+
+            return redirect('/register')
+
         existing_hr = User.query.filter_by(
             username=username
         ).first()
@@ -1619,6 +1631,17 @@ def candidate_register():
         email = request.form['email']
         username = request.form['username'].strip().upper()
         password = request.form['password']
+
+        # VALIDATE INDIAN MOBILE NUMBER
+
+        if not re.fullmatch(r"[6-9]\d{9}", mobile):
+
+            flash(
+                "Please enter a valid 10-digit Indian mobile number.",
+                "danger"
+        )
+
+        return redirect('/candidate-register')
 
         # CHECK USERNAME
 
