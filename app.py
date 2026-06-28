@@ -1027,22 +1027,55 @@ def locked():
             ~Candidate.id.in_(seen_ids)
         )
 
-    # Random Order Every Refresh
+    # Get all matching candidates
 
-    query = query.order_by(
-        db.func.random()
-    )
+    candidate_list = query.all()
 
-    # Pagination
+    # Shuffle every refresh
 
-    candidates = query.paginate(
+    random.shuffle(candidate_list)
 
-        page=page,
+    # Manual pagination
 
-        per_page=10,
+    from math import ceil
 
-        error_out=False
+    per_page = 10
 
+    start = (page - 1) * per_page
+
+    end = start + per_page
+
+    page_items = candidate_list[start:end]
+
+    class Pagination:
+        def __init__(self, items, page, per_page, total):
+            self.items = items
+            self.page = page
+            self.per_page = per_page
+            self.total = total
+            self.pages = ceil(total / per_page)
+
+        @property
+        def has_prev(self):
+            return self.page > 1
+
+        @property
+        def has_next(self):
+            return self.page < self.pages
+
+        @property
+        def prev_num(self):
+            return self.page - 1
+
+        @property
+        def next_num(self):
+            return self.page + 1
+
+    candidates = Pagination(
+        page_items,
+        page,
+        per_page,
+        len(candidate_list)
     )
 
     # Auto Mark as Read
@@ -1174,17 +1207,11 @@ def locked():
 def leads():
 
     designation = request.args.get('designation')
-
     city = request.args.get('city')
-
     industry = request.args.get('industry')
-
     experience = request.args.get('experience')
-
     sort = request.args.get('sort')
-
     page = request.args.get('page', 1, type=int)
-
     tab = request.args.get('tab', 'locked')
 
     # =========================
@@ -1197,6 +1224,59 @@ def leads():
 
     unlocked_ids = [
         u.candidate_id for u in unlocked
+    ]
+
+    # =========================
+    # FILTER OPTIONS
+    # (Only values present in DB)
+    # =========================
+
+    cities = [
+        c[0]
+        for c in db.session.query(Candidate.city)
+        .filter(
+            Candidate.city.isnot(None),
+            Candidate.city != ""
+        )
+        .distinct()
+        .order_by(Candidate.city)
+        .all()
+    ]
+
+    industries = [
+        i[0]
+        for i in db.session.query(Candidate.category)
+        .filter(
+            Candidate.category.isnot(None),
+            Candidate.category != ""
+        )
+        .distinct()
+        .order_by(Candidate.category)
+        .all()
+    ]
+
+    designations = [
+        d[0]
+        for d in db.session.query(Candidate.designation)
+        .filter(
+            Candidate.designation.isnot(None),
+            Candidate.designation != ""
+        )
+        .distinct()
+        .order_by(Candidate.designation)
+        .all()
+    ]
+
+    experiences = [
+        e[0]
+        for e in db.session.query(Candidate.experience)
+        .filter(
+            Candidate.experience.isnot(None),
+            Candidate.experience != ""
+        )
+        .distinct()
+        .order_by(Candidate.experience)
+        .all()
     ]
 
     # =========================
@@ -1222,27 +1302,23 @@ def leads():
     # =========================
 
     if designation:
-
         query = query.filter(
-            Candidate.designation.contains(designation)
+            Candidate.designation == designation
         )
 
     if city:
-
         query = query.filter(
-            Candidate.city.contains(city)
+            Candidate.city == city
         )
 
     if industry:
-
-        query = query.filter_by(
-            category=industry
+        query = query.filter(
+            Candidate.category == industry
         )
 
     if experience:
-
-        query = query.filter_by(
-            experience=experience
+        query = query.filter(
+            Candidate.experience == experience
         )
 
     # =========================
@@ -1250,13 +1326,10 @@ def leads():
     # =========================
 
     if sort == 'old':
-
         query = query.order_by(
             Candidate.id.asc()
         )
-
     else:
-
         query = query.order_by(
             Candidate.id.desc()
         )
@@ -1281,7 +1354,11 @@ def leads():
         unlocked_ids=unlocked_ids,
         CandidateReview=CandidateReview,
         User=User,
-        tab=tab
+        tab=tab,
+        cities=cities,
+        industries=industries,
+        designations=designations,
+        experiences=experiences
     )
 
 @app.route('/register', methods=['GET', 'POST'])

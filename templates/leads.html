@@ -283,19 +283,51 @@ MOBILE
 
                 <!-- DESIGNATION -->
 
-                <input
-                type="text"
+                <select
                 class="form-control"
-                name="designation"
-                placeholder="Designation">
+                name="designation">
+
+                    <option value="">
+                        All Designations
+                    </option>
+
+                    {% for designation in designations %}
+
+                    <option
+                    value="{{ designation }}"
+                    {% if request.args.get('designation') == designation %}selected{% endif %}>
+
+                        {{ designation }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
 
                 <!-- CITY -->
 
-                <input
-                type="text"
+                <select
                 class="form-control"
-                name="city"
-                placeholder="City">
+                name="city">
+
+                    <option value="">
+                        All Cities
+                    </option>
+
+                    {% for city in cities %}
+
+                    <option
+                    value="{{ city }}"
+                    {% if request.args.get('city') == city %}selected{% endif %}>
+
+                        {{ city }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
 
                 <!-- INDUSTRY -->
 
@@ -307,60 +339,17 @@ MOBILE
                         All Industries
                     </option>
 
-                    <option>IT</option>
-                    <option>BPO</option>
-                    <option>Finance</option>
-                    <option>Banking</option>
-                    <option>Healthcare</option>
-                    <option>Sales</option>
-                    <option>Marketing</option>
-                    <option>HR</option>
-                    <option>Recruitment</option>
-                    <option>Education</option>
-                    <option>Telecalling</option>
-                    <option>Customer Support</option>
-                    <option>Automobile</option>
-                    <option>Manufacturing</option>
-                    <option>Advisory</option>
-                    <option>Insurance</option>
-                    <option>Real Estate</option>
-                    <option>Logistics</option>
-                    <option>E-Commerce</option>
-                    <option>Digital Marketing</option>
-                    <option>Construction</option>
-                    <option>Hospitality</option>
-                    <option>Hotel Management</option>
-                    <option>Aviation</option>
-                    <option>Pharmaceutical</option>
-                    <option>Retail</option>
-                    <option>Textile</option>
-                    <option>Media</option>
-                    <option>Advertising</option>
-                    <option>Legal</option>
-                    <option>FMCG</option>
-                    <option>Electronics</option>
-                    <option>Telecom</option>
-                    <option>Data Entry</option>
-                    <option>Operations</option>
-                    <option>Admin</option>
-                    <option>Business Development</option>
-                    <option>Procurement</option>
-                    <option>Supply Chain</option>
-                    <option>Travel</option>
-                    <option>Event Management</option>
-                    <option>NGO</option>
-                    <option>Government</option>
-                    <option>Security</option>
-                    <option>Fitness</option>
-                    <option>Food & Beverage</option>
-                    <option>Architecture</option>
-                    <option>Interior Design</option>
-                    <option>Animation</option>
-                    <option>UI/UX</option>
-                    <option>Software Testing</option>
-                    <option>Cloud Computing</option>
-                    <option>Cyber Security</option>
-                    <option>AI / ML</option>
+                    {% for industry in industries %}
+
+                    <option
+                    value="{{ industry }}"
+                    {% if request.args.get('industry') == industry %}selected{% endif %}>
+
+                        {{ industry }}
+
+                    </option>
+
+                    {% endfor %}
 
                 </select>
 
@@ -371,16 +360,20 @@ MOBILE
                 name="experience">
 
                     <option value="">
-                        Experience
+                        All Experience
                     </option>
 
-                    <option value="Fresher">
-                        Fresher
+                    {% for exp in experiences %}
+
+                    <option
+                    value="{{ exp }}"
+                    {% if request.args.get('experience') == exp %}selected{% endif %}>
+
+                        {{ exp }}
+
                     </option>
 
-                    <option value="Experienced">
-                        Experienced
-                    </option>
+                    {% endfor %}
 
                 </select>
 
