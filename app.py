@@ -22,6 +22,7 @@ from datetime import datetime, timedelta
 import os
 from werkzeug.utils import secure_filename
 from sqlalchemy import func
+from math import ceil
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
@@ -1362,7 +1363,7 @@ def leads():
 
     if tab == "locked":
 
-        query = query.order_by(func.rand())
+        query = query.order_by(func.random())
 
     else:
 
