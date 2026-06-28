@@ -137,40 +137,30 @@
 
         <div class="feed-buttons">
 
-    <div style="
-    display:flex;
-    gap:10px;
-    ">
+    <a href="/job-applicants/{{ job.id }}"
+       class="btn btn-primary">
 
-        <a
-        href="/job-applicants/{{ job.id }}"
-        class="btn btn-primary">
+        Applicants
 
-            View Applicants
+    </a>
 
-        </a>
+    <a href="/edit-job/{{ job.id }}"
+       class="btn btn-outline-dark">
 
-        <a
-        href="/edit-job/{{ job.id }}"
-        class="btn btn-outline-dark">
+        Edit
 
-            Edit
+    </a>
 
-        </a>
+    <a href="/share-job/{{ job.id }}"
+       class="btn btn-success">
 
-    </div>
+        <i class="fab fa-whatsapp"></i>
+
+        Share
+
+    </a>
 
 </div>
-
-            <!-- Share -->
-
-            <a href="/share-job/{{ job.id }}"
-               class="btn btn-success">
-
-                <i class="fab fa-whatsapp"></i>
-                Share
-
-            </a>
 
         </div>
 
@@ -259,25 +249,35 @@
 }
 
 .feed-buttons{
-    display:flex;
-    gap:10px;
-    margin-top:20px;
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:8px;
+
+    margin-top:15px;
+
 }
 
 .feed-buttons .btn{
-    flex:1;
-    height:50px;
+
+    width:100%;
+
+    height:46px;
 
     display:flex;
-    align-items:center;
+
     justify-content:center;
 
-    gap:6px;
+    align-items:center;
 
-    border-radius:14px;
+    border-radius:10px;
+
+    font-size:14px;
+
     font-weight:600;
 
-    padding:0;
 }
 
 .feed-buttons .btn i{
