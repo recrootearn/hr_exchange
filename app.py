@@ -2378,9 +2378,30 @@ def my_jobs():
 @app.route('/candidate-feed')
 def candidate_feed():
 
-    jobs = JobPost.query.order_by(
+    selected_location = request.args.get('location', '')
+
+    jobs_query = JobPost.query
+
+    if selected_location:
+        jobs_query = jobs_query.filter(
+            JobPost.location == selected_location
+        )
+
+    jobs = jobs_query.order_by(
         JobPost.created_at.desc()
     ).all()
+
+    locations = db.session.query(
+        JobPost.location
+    ).distinct().order_by(
+        JobPost.location
+    ).all()
+
+    locations = [
+        loc[0]
+        for loc in locations
+        if loc[0]
+    ]
 
     selected_id = request.args.get(
         'selected',
@@ -2395,13 +2416,18 @@ def candidate_feed():
             candidate_id=session['candidate_id']
         ).all()
 
-        applied_jobs = [a.job_id for a in applications]
+        applied_jobs = [
+            app.job_id
+            for app in applications
+        ]
 
     return render_template(
         'candidate_feed.html',
         jobs=jobs,
+        applied_jobs=applied_jobs,
         selected_id=selected_id,
-        applied_jobs=applied_jobs
+        locations=locations,
+        selected_location=selected_location
     )
 
 @app.route('/discover-hr')
