@@ -11,53 +11,162 @@
 
         <!-- TOP -->
 
-        <div class="candidate-top">
+        <form method="GET">
 
-            <div class="candidate-profile">
+<div class="row g-2 mb-3">
 
-                <div class="avatar">
+<div class="col-md-3">
 
-                    {{ c.name[0] }}
+<select
+name="designation"
+class="form-select">
 
-                </div>
+<option value="">
+All Designations
+</option>
 
-                <div>
+{% for designation in designations %}
 
-                    <div class="candidate-name">
+<option
+value="{{ designation }}"
+{% if request.args.get('designation') == designation %}selected{% endif %}>
 
-                        {{ c.name }}
+{{ designation }}
 
-                    </div>
+</option>
 
-                    <div class="candidate-role">
+{% endfor %}
 
-                        {{ c.designation }}
+</select>
 
-                    </div>
+</div>
 
-                </div>
+<div class="col-md-3">
 
-            </div>
+<select
+name="city"
+class="form-select">
 
-            {% if c.experience == 'Experienced' %}
+<option value="">
+All Cities
+</option>
 
-                <span class="badge bg-success badge-custom">
+{% for city in cities %}
 
-                    Experienced
+<option
+value="{{ city }}"
+{% if request.args.get('city') == city %}selected{% endif %}>
 
-                </span>
+{{ city }}
 
-            {% else %}
+</option>
 
-                <span class="badge bg-primary badge-custom">
+{% endfor %}
 
-                    Fresher
+</select>
 
-                </span>
+</div>
 
-            {% endif %}
+<div class="col-md-3">
 
-        </div>
+<select
+name="industry"
+class="form-select">
+
+<option value="">
+All Industries
+</option>
+
+{% for industry in industries %}
+
+<option
+value="{{ industry }}"
+{% if request.args.get('industry') == industry %}selected{% endif %}>
+
+{{ industry }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<div class="col-md-3">
+
+<select
+name="experience"
+class="form-select">
+
+<option value="">
+All Experience
+</option>
+
+{% for exp in experiences %}
+
+<option
+value="{{ exp }}"
+{% if request.args.get('experience') == exp %}selected{% endif %}>
+
+{{ exp }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+</div>
+
+<div class="row mb-4">
+
+<div class="col-md-3">
+
+<select
+name="lead_filter"
+class="form-select">
+
+<option value="">
+All Leads
+</option>
+
+<option
+value="read"
+{% if request.args.get('lead_filter') == "read" %}selected{% endif %}>
+
+Read
+
+</option>
+
+<option
+value="unread"
+{% if request.args.get('lead_filter') == "unread" %}selected{% endif %}>
+
+Unread
+
+</option>
+
+</select>
+
+</div>
+
+<div class="col-md-2">
+
+<button
+class="btn btn-primary w-100">
+
+Apply Filters
+
+</button>
+
+</div>
+
+</div>
+
+</form>
 
         <!-- DETAILS -->
 
@@ -180,30 +289,73 @@
 
 <div class="d-flex justify-content-center align-items-center mt-4 mb-5">
 
-    {% if candidates.has_prev %}
+{% if candidates.has_prev %}
 
-    <a href="/leads?tab={{ tab }}&page={{ candidates.prev_num }}"
-       class="btn btn-primary rounded-circle me-2"
-       style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;">
+<a
+href="{{ url_for(
 
-        <i class="fas fa-chevron-left"></i>
+'locked',
 
-    </a>
+page=candidates.prev_num,
 
-    {% endif %}
+designation=request.args.get('designation'),
 
+city=request.args.get('city'),
 
-    {% if candidates.has_next %}
+industry=request.args.get('industry'),
 
-    <a href="/leads?tab={{ tab }}&page={{ candidates.next_num }}"
-       class="btn btn-primary rounded-circle"
-       style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;">
+experience=request.args.get('experience'),
 
-        <i class="fas fa-chevron-right"></i>
+lead_filter=request.args.get('lead_filter')
 
-    </a>
+) }}"
+class="btn btn-primary rounded-circle me-2"
+style="
+width:42px;
+height:42px;
+display:flex;
+align-items:center;
+justify-content:center;">
 
-    {% endif %}
+<i class="fas fa-chevron-left"></i>
+
+</a>
+
+{% endif %}
+
+{% if candidates.has_next %}
+
+<a
+href="{{ url_for(
+
+'locked',
+
+page=candidates.next_num,
+
+designation=request.args.get('designation'),
+
+city=request.args.get('city'),
+
+industry=request.args.get('industry'),
+
+experience=request.args.get('experience'),
+
+lead_filter=request.args.get('lead_filter')
+
+) }}"
+class="btn btn-primary rounded-circle"
+style="
+width:42px;
+height:42px;
+display:flex;
+align-items:center;
+justify-content:center;">
+
+<i class="fas fa-chevron-right"></i>
+
+</a>
+
+{% endif %}
 
 </div>
 

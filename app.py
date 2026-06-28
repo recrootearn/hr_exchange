@@ -453,6 +453,19 @@ class CandidateReview(db.Model):
         default=datetime.utcnow
     )
 
+class LeadView(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    hr_id = db.Column(db.Integer, nullable=False)
+
+    candidate_id = db.Column(db.Integer, nullable=False)
+
+    viewed_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
 class HRFollower(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -929,18 +942,14 @@ def admin_reset_password(user_id):
 def locked():
 
     designation = request.args.get('designation')
-
     city = request.args.get('city')
-
     industry = request.args.get('industry')
-
     experience = request.args.get('experience')
-
-    sort = request.args.get('sort')
-
     lead_filter = request.args.get('lead_filter')
 
     page = request.args.get('page', 1, type=int)
+
+    # Already unlocked candidates
 
     unlocked_ids = [
 
@@ -949,18 +958,20 @@ def locked():
         for u in Unlock.query.filter_by(
             user_id=current_user.id
         ).all()
+
     ]
 
-    # REMOVE OWN UPLOADS
+    # Base Query
 
     query = Candidate.query.filter(
 
         ~Candidate.id.in_(unlocked_ids),
 
         Candidate.uploaded_by != current_user.id
+
     )
 
-    # SEARCH FILTERS
+    # Designation Filter
 
     if designation:
 
@@ -968,11 +979,15 @@ def locked():
             Candidate.designation.contains(designation)
         )
 
+    # City Filter
+
     if city:
 
         query = query.filter(
             Candidate.city.contains(city)
         )
+
+    # Industry Filter
 
     if industry:
 
@@ -980,7 +995,7 @@ def locked():
             category=industry
         )
 
-    # EXPERIENCE FILTER
+    # Experience Filter
 
     if experience:
 
@@ -988,7 +1003,7 @@ def locked():
             experience=experience
         )
 
-    # READ / UNREAD
+    # Read / Unread Filter
 
     seen_ids = [
 
@@ -997,66 +1012,144 @@ def locked():
         for s in SeenLead.query.filter_by(
             user_id=current_user.id
         ).all()
+
     ]
 
-    if lead_filter == 'read':
+    if lead_filter == "read":
 
         query = query.filter(
             Candidate.id.in_(seen_ids)
         )
 
-    elif lead_filter == 'unread':
+    elif lead_filter == "unread":
 
         query = query.filter(
             ~Candidate.id.in_(seen_ids)
         )
 
-    # SORTING
+    # Random Order Every Refresh
 
-    if sort == 'old':
+    query = query.order_by(
+        db.func.random()
+    )
 
-        query = query.order_by(
-            Candidate.created_at.asc()
-        )
-
-    else:
-
-        query = query.order_by(
-            Candidate.created_at.desc()
-        )
-
-    # PAGINATION
+    # Pagination
 
     candidates = query.paginate(
-    page=page,
-    per_page=10,
-    error_out=False
-)
 
-    # AUTO MARK AS READ
+        page=page,
 
-    for c in candidates.items:
+        per_page=10,
 
-        existing_seen = SeenLead.query.filter_by(
+        error_out=False
+
+    )
+
+    # Auto Mark as Read
+
+    for candidate in candidates.items:
+
+        already_seen = SeenLead.query.filter_by(
+
             user_id=current_user.id,
-            candidate_id=c.id
+
+            candidate_id=candidate.id
+
         ).first()
 
-        if not existing_seen:
+        if not already_seen:
 
             db.session.add(
 
                 SeenLead(
+
                     user_id=current_user.id,
-                    candidate_id=c.id
+
+                    candidate_id=candidate.id
+
                 )
+
             )
 
     db.session.commit()
 
+    # Dynamic Filter Values
+
+    cities = [
+
+        c[0]
+
+        for c in db.session.query(
+            Candidate.city
+        ).filter(
+
+            Candidate.city.isnot(None),
+
+            Candidate.city != ""
+
+        ).distinct().order_by(
+            Candidate.city
+        ).all()
+
+    ]
+
+    industries = [
+
+        i[0]
+
+        for i in db.session.query(
+            Candidate.category
+        ).filter(
+
+            Candidate.category.isnot(None),
+
+            Candidate.category != ""
+
+        ).distinct().order_by(
+            Candidate.category
+        ).all()
+
+    ]
+
+    designations = [
+
+        d[0]
+
+        for d in db.session.query(
+            Candidate.designation
+        ).filter(
+
+            Candidate.designation.isnot(None),
+
+            Candidate.designation != ""
+
+        ).distinct().order_by(
+            Candidate.designation
+        ).all()
+
+    ]
+
+    experiences = [
+
+        e[0]
+
+        for e in db.session.query(
+            Candidate.experience
+        ).filter(
+
+            Candidate.experience.isnot(None),
+
+            Candidate.experience != ""
+
+        ).distinct().order_by(
+            Candidate.experience
+        ).all()
+
+    ]
+
     return render_template(
 
-        'locked.html',
+        "locked.html",
 
         candidates=candidates,
 
@@ -1064,7 +1157,16 @@ def locked():
 
         CandidateReview=CandidateReview,
 
-        User=User
+        User=User,
+
+        cities=cities,
+
+        industries=industries,
+
+        designations=designations,
+
+        experiences=experiences
+
     )
 
 @app.route('/leads')
