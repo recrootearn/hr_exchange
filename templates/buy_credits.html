@@ -70,222 +70,41 @@
 
 </div>
 
-<!-- BUY CREDIT CARDS -->
-
 <div class="row mb-4">
 
-    <!-- Starter -->
+{% for package in packages %}
 
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
+<div class="col-lg-3 col-md-6 mb-3">
 
-        <div class="stats-card text-center h-100">
+    <div class="stats-card text-center h-100"
+         style="background:{{ package.color }};color:white;">
 
-            <h5>10 Credits</h5>
-
-            <h3 style="color:#059669;">
-                ₹199
-            </h3>
-
-            <small class="text-muted">
-                Starter Pack
-            </small>
-
-            <a href="/buy-credits/199"
-               class="btn btn-success w-100 mt-3 rounded-pill fw-bold">
-
-                Buy Now
-
-            </a>
-
+        {% if package.badge %}
+        <div class="badge bg-light text-dark mb-2">
+            {{ package.badge }}
         </div>
+        {% endif %}
+
+        <h4>{{ package.credits }} Credits</h4>
+
+        <h2>₹{{ package.price }}</h2>
+
+        <small>
+            {{ package.description }}
+        </small>
+
+        <a href="/buy-credits/{{ package.id }}"
+           class="btn btn-light w-100 mt-3 rounded-pill fw-bold">
+
+            Buy Now
+
+        </a>
 
     </div>
 
-    <!-- Standard -->
+</div>
 
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
-
-        <div class="stats-card text-center h-100">
-
-            <h5>25 Credits</h5>
-
-            <h3 style="color:#2563eb;">
-                ₹399
-            </h3>
-
-            <small class="text-primary fw-bold">
-                Great Value
-            </small>
-
-            <a href="/buy-credits/399"
-               class="btn btn-primary w-100 mt-3 rounded-pill fw-bold">
-
-                Buy Now
-
-            </a>
-
-        </div>
-
-    </div>
-
-    <!-- Popular -->
-
-    <div class="col-lg-2 col-md-4 col-6 mb-3">
-
-        <div class="stats-card text-center h-100">
-
-            <span class="badge bg-warning text-dark mb-2">
-                ⭐ Popular
-            </span>
-
-            <h5>60 Credits</h5>
-
-            <h3 style="color:#f59e0b;">
-                ₹799
-            </h3>
-
-            <small class="text-warning fw-bold">
-                Better Value
-            </small>
-
-            <a href="/buy-credits/799"
-               class="btn btn-warning w-100 mt-3 rounded-pill fw-bold">
-
-                Buy Now
-
-            </a>
-
-        </div>
-
-    </div>
-
-    <!-- Most Popular -->
-
-    <div class="col-lg-3 col-md-6 mb-3">
-
-        <div class="stats-card text-center h-100"
-             style="background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;">
-
-            <div class="badge bg-light text-primary mb-2">
-
-                🔥 MOST POPULAR
-
-            </div>
-
-            <h4>150 Credits</h4>
-
-            <h2>₹1599</h2>
-
-            <small>
-                Best for Active Recruiters
-            </small>
-
-            <a href="/buy-credits/1599"
-               class="btn btn-light w-100 mt-3 rounded-pill fw-bold">
-
-                Buy Now
-
-            </a>
-
-        </div>
-
-    </div>
-
-    <!-- Business -->
-
-    <div class="col-lg-3 col-md-6 mb-3">
-
-        <div class="stats-card text-center h-100"
-             style="background:linear-gradient(135deg,#0f766e,#14b8a6);color:white;">
-
-            <div class="badge bg-light text-success mb-2">
-
-                💼 BUSINESS
-
-            </div>
-
-            <h4>300 Credits</h4>
-
-            <h2>₹3199</h2>
-
-            <small>
-                High Volume Hiring
-            </small>
-
-            <a href="/buy-credits/3199"
-               class="btn btn-light w-100 mt-3 rounded-pill fw-bold">
-
-                Buy Now
-
-            </a>
-
-        </div>
-
-    </div>
-
-    <!-- Enterprise -->
-
-    <div class="col-lg-3 col-md-6 mb-3">
-
-        <div class="stats-card text-center h-100"
-             style="background:linear-gradient(135deg,#111827,#374151);color:white;">
-
-            <div class="badge bg-warning text-dark mb-2">
-
-                👑 ENTERPRISE
-
-            </div>
-
-            <h4>500 Credits</h4>
-
-            <h2>₹5199</h2>
-
-            <small>
-                Best for HR Agencies
-            </small>
-
-            <a href="/buy-credits/5199"
-               class="btn btn-warning w-100 mt-3 rounded-pill fw-bold">
-
-                Buy Now
-
-            </a>
-
-        </div>
-
-    </div>
-
-    <!-- Ultimate -->
-
-    <div class="col-lg-3 col-md-6 mb-3">
-
-        <div class="stats-card text-center h-100"
-             style="background:linear-gradient(135deg,#7c2d12,#ea580c);color:white;">
-
-            <div class="badge bg-light text-danger mb-2">
-
-                🚀 ULTIMATE
-
-            </div>
-
-            <h4>1000 Credits</h4>
-
-            <h2>₹9999</h2>
-
-            <small>
-                Maximum Hiring Power
-            </small>
-
-            <a href="/buy-credits/9999"
-               class="btn btn-light w-100 mt-3 rounded-pill fw-bold">
-
-                Buy Now
-
-            </a>
-
-        </div>
-
-    </div>
+{% endfor %}
 
 </div>
 

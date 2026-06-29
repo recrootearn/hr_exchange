@@ -556,6 +556,31 @@ class BusinessSettings(db.Model):
         onupdate=india_time
     )
 
+class CreditPackage(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    package_name = db.Column(db.String(100), nullable=False)
+
+    credits = db.Column(db.Integer, nullable=False)
+
+    price = db.Column(db.Float, nullable=False)
+
+    badge = db.Column(db.String(50), default="")
+
+    color = db.Column(db.String(30), default="primary")
+
+    description = db.Column(db.String(200), default="")
+
+    display_order = db.Column(db.Integer, default=0)
+
+    is_active = db.Column(db.Boolean, default=True)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
 class Candidate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
@@ -1613,6 +1638,126 @@ def locked():
         experiences=experiences
 
     )
+
+@app.route("/admin-credit-packages")
+@login_required
+def admin_credit_packages():
+
+    packages = CreditPackage.query.order_by(
+        CreditPackage.display_order.asc()
+    ).all()
+
+    return render_template(
+        "admin_credit_packages.html",
+        packages=packages
+    )
+
+@app.route("/add-credit-package", methods=["GET","POST"])
+@login_required
+def add_credit_package():
+
+    if request.method == "POST":
+
+        package = CreditPackage(
+
+            package_name=request.form["package_name"],
+
+            credits=int(request.form["credits"]),
+
+            price=float(request.form["price"]),
+
+            badge=request.form["badge"],
+
+            color=request.form["color"],
+
+            description=request.form["description"],
+
+            display_order=int(request.form["display_order"])
+
+        )
+
+        db.session.add(package)
+
+        db.session.commit()
+
+        flash("Package Added Successfully","success")
+
+        return redirect("/admin-credit-packages")
+
+    return render_template("add_credit_package.html")
+
+@app.route("/edit-credit-package/<int:id>",methods=["GET","POST"])
+@login_required
+def edit_credit_package(id):
+
+    package = CreditPackage.query.get_or_404(id)
+
+    if request.method=="POST":
+
+        package.package_name=request.form["package_name"]
+
+        package.credits=int(request.form["credits"])
+
+        package.price=float(request.form["price"])
+
+        package.badge=request.form["badge"]
+
+        package.color=request.form["color"]
+
+        package.description=request.form["description"]
+
+        package.display_order=int(request.form["display_order"])
+
+        db.session.commit()
+
+        flash("Package Updated","success")
+
+        return redirect("/admin-credit-packages")
+
+    return render_template(
+        "edit_credit_package.html",
+        package=package
+    )
+
+@app.route("/delete-credit-package/<int:id>")
+@login_required
+def delete_credit_package(id):
+
+    package=CreditPackage.query.get_or_404(id)
+
+    db.session.delete(package)
+
+    db.session.commit()
+
+    flash("Package Deleted","success")
+
+    return redirect("/admin-credit-packages")
+
+@app.route("/toggle-credit-package/<int:id>")
+@login_required
+def toggle_credit_package(id):
+
+    package=CreditPackage.query.get_or_404(id)
+
+    package.is_active=not package.is_active
+
+    db.session.commit()
+
+    flash("Package Updated","success")
+
+    return redirect("/admin-credit-packages")
+
+@app.route("/package-order/<int:id>",methods=["POST"])
+@login_required
+def package_order(id):
+
+    package=CreditPackage.query.get_or_404(id)
+
+    package.display_order=int(request.form["display_order"])
+
+    db.session.commit()
+
+    return redirect("/admin-credit-packages")
 
 @app.route('/leads')
 @login_required
@@ -6322,52 +6467,67 @@ def ticket_chat(id):
 @login_required
 def buy_credits_page():
 
-    return render_template('buy_credits.html')
+    packages = CreditPackage.query.filter_by(
+        is_active=True
+    ).order_by(
+        CreditPackage.display_order.asc()
+    ).all()
 
+    return render_template(
+        "buy_credits.html",
+        packages=packages
+    )
 
-@app.route('/buy-credits/<int:amount>')
+@app.route('/buy-credits/<int:package_id>')
 @login_required
 def buy_credits(amount):
 
-    if amount == 199:
-        credits = 10
+    package = CreditPackage.query.filter_by(
+        id=package_id,
+        is_active=True
+    ).first()
 
-    elif amount == 399:
-        credits = 25
+    if not package:
 
-    elif amount == 799:
-        credits = 60
+        flash(
+            "Invalid Package",
+            "danger"
+        )
 
-    elif amount == 1599:
-        credits = 150
+        return redirect("/buy-credits")
 
-    elif amount == 3199:
-        credits = 300
-
-    elif amount == 5199:
-        credits = 500
-
-    elif amount == 9999:
-        credits = 1000
-
-    else:
-        return "Invalid Package"
+    credits = package.credits
 
     order = client.order.create({
-        "amount": amount * 100,
+
+        "amount": int(package.price * 100),
+
         "currency": "INR",
+
         "payment_capture": 1
+
     })
 
     # Save purchase info
-    session['buy_credits'] = credits
-    session['buy_amount'] = amount
+    session["buy_credits"] = credits
+    session["buy_amount"] = package.price
+    session["package_name"] = package.package_name
+    session["package_id"] = package.id
 
     return render_template(
-        'payment.html',
+
+        "payment.html",
+
         order=order,
-        amount=amount,
+
+        amount=package.price,
+
+        credits=credits,
+
+        package=package,
+
         razorpay_key=RAZORPAY_KEY
+
     )
 
 @app.route('/payment-success')
