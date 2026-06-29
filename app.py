@@ -2836,6 +2836,12 @@ def candidate_referral():
         CandidateUser.id.desc()
     ).all()
 
+    if candidate.candidate_referral_code is None:
+
+    candidate.candidate_referral_code = generate_candidate_referral_code()
+
+        db.session.commit()
+
     referral_link = (
         request.host_url +
         "candidate-register?ref=" +
