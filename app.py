@@ -5003,9 +5003,9 @@ def unlock(id):
 
             return redirect("/buy-credits")
 
-         current_user.credits -= free_cost
+        current_user.credits -= free_cost
 
-         credit_used = free_cost
+        credit_used = free_cost
 
     # -----------------------------------------
     # CREDIT HISTORY
