@@ -1433,7 +1433,7 @@ def locked():
         )
 
     # Experience Filter
-y
+
     if experience:
 
         query = query.filter_by(
