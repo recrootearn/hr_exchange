@@ -3245,21 +3245,6 @@ def view_candidates(id):
         has_applied=has_applied
     )
 
-@app.route('/candidate-wallet')
-def candidate_wallet():
-
-    if 'candidate_id' not in session:
-        return redirect('/candidate-login')
-
-    candidate = CandidateUser.query.get_or_404(
-        session['candidate_id']
-    )
-
-    return render_template(
-        'candidate_wallet.html',
-        candidate=candidate
-    )
-
 @app.route('/follow-hr/<int:id>')
 def follow_hr(id):
 
