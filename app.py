@@ -916,132 +916,126 @@ def admin_business_settings():
 
     if request.method == "POST":
 
-        # ==========================
-        # HR REFERRAL
-        # ==========================
+        try:
 
-        settings.hr_to_hr_reward = int(
-            request.form.get("hr_to_hr_reward", 200)
-        )
+            # ======================================
+            # HR REFERRAL
+            # ======================================
 
-        settings.hr_minimum_purchase = int(
-            request.form.get("hr_minimum_purchase", 500)
-        )
+            settings.hr_to_hr_reward = int(request.form.get("hr_to_hr_reward", 200))
+            settings.hr_minimum_purchase = int(request.form.get("hr_minimum_purchase", 500))
+            settings.hr_daily_referral_limit = int(request.form.get("hr_daily_referral_limit", 10))
 
-        settings.hr_daily_referral_limit = int(
-            request.form.get("hr_daily_referral_limit", 10)
-        )
+            # ======================================
+            # CANDIDATE REFERRAL
+            # ======================================
 
-        # ==========================
-        # CANDIDATE REFERRAL
-        # ==========================
+            settings.hr_to_candidate_reward = int(request.form.get("hr_to_candidate_reward", 25))
+            settings.candidate_to_candidate_reward = int(request.form.get("candidate_to_candidate_reward", 25))
+            settings.candidate_daily_referral_limit = int(request.form.get("candidate_daily_referral_limit", 10))
 
-        settings.hr_to_candidate_reward = int(
-            request.form.get("hr_to_candidate_reward", 25)
-        )
+            # ======================================
+            # REVENUE SHARING
+            # ======================================
 
-        settings.candidate_to_candidate_reward = int(
-            request.form.get("candidate_to_candidate_reward", 25)
-        )
+            settings.discover_hr_share = int(request.form.get("discover_hr_share", 50))
+            settings.discover_admin_share = int(request.form.get("discover_admin_share", 50))
 
-        settings.candidate_daily_referral_limit = int(
-            request.form.get("candidate_daily_referral_limit", 10)
-        )
+            settings.leads_hr_share = int(request.form.get("leads_hr_share", 50))
+            settings.leads_admin_share = int(request.form.get("leads_admin_share", 50))
 
-        # ==========================
-        # REVENUE SHARING
-        # ==========================
+            settings.self_candidate_admin_share = int(request.form.get("self_candidate_admin_share", 100))
 
-        settings.discover_hr_share = int(
-            request.form.get("discover_hr_share", 50)
-        )
+            # ======================================
+            # UNLOCK SETTINGS
+            # ======================================
 
-        settings.discover_admin_share = int(
-            request.form.get("discover_admin_share", 50)
-        )
+            settings.discover_unlock_credits = int(request.form.get("discover_unlock_credits", 2))
+            settings.leads_unlock_credits = int(request.form.get("leads_unlock_credits", 2))
 
-        settings.leads_hr_share = int(
-            request.form.get("leads_hr_share", 50)
-        )
+            # ======================================
+            # WALLET
+            # ======================================
 
-        settings.leads_admin_share = int(
-            request.form.get("leads_admin_share", 50)
-        )
+            settings.minimum_withdrawal = int(request.form.get("minimum_withdrawal", 500))
+            settings.maximum_daily_withdrawal = int(request.form.get("maximum_daily_withdrawal", 5000))
 
-        settings.self_candidate_admin_share = int(
-            request.form.get("self_candidate_admin_share", 100)
-        )
+            # ======================================
+            # FEATURE TOGGLES
+            # ======================================
 
-        # ==========================
-        # UNLOCK SETTINGS
-        # ==========================
+            settings.enable_hr_referral = "enable_hr_referral" in request.form
+            settings.enable_candidate_referral = "enable_candidate_referral" in request.form
+            settings.enable_revenue_sharing = "enable_revenue_sharing" in request.form
+            settings.enable_discover = "enable_discover" in request.form
+            settings.enable_leads = "enable_leads" in request.form
+            settings.enable_wallet = "enable_wallet" in request.form
+            settings.enable_withdrawals = "enable_withdrawals" in request.form
 
-        settings.discover_unlock_credits = int(
-            request.form.get("discover_unlock_credits", 2)
-        )
+            # ======================================
+            # VALIDATIONS
+            # ======================================
 
-        settings.leads_unlock_credits = int(
-            request.form.get("leads_unlock_credits", 2)
-        )
+            if settings.discover_hr_share + settings.discover_admin_share != 100:
+                flash("Discover Revenue Share must total 100%.", "danger")
+                return redirect(url_for("admin_business_settings"))
 
-        # ==========================
-        # WALLET
-        # ==========================
+            if settings.leads_hr_share + settings.leads_admin_share != 100:
+                flash("Leads Revenue Share must total 100%.", "danger")
+                return redirect(url_for("admin_business_settings"))
 
-        settings.minimum_withdrawal = int(
-            request.form.get("minimum_withdrawal", 500)
-        )
+            if settings.self_candidate_admin_share != 100:
+                flash("Self Registered Candidate revenue must remain 100% for Admin.", "danger")
+                return redirect(url_for("admin_business_settings"))
 
-        settings.maximum_daily_withdrawal = int(
-            request.form.get("maximum_daily_withdrawal", 5000)
-        )
+            if settings.hr_to_hr_reward < 0:
+                flash("HR Referral Reward cannot be negative.", "danger")
+                return redirect(url_for("admin_business_settings"))
 
-        # ==========================
-        # FEATURE TOGGLES
-        # ==========================
+            if settings.hr_to_candidate_reward < 0:
+                flash("HR to Candidate Reward cannot be negative.", "danger")
+                return redirect(url_for("admin_business_settings"))
 
-        settings.enable_hr_referral = (
-            "enable_hr_referral" in request.form
-        )
+            if settings.candidate_to_candidate_reward < 0:
+                flash("Candidate Referral Reward cannot be negative.", "danger")
+                return redirect(url_for("admin_business_settings"))
 
-        settings.enable_candidate_referral = (
-            "enable_candidate_referral" in request.form
-        )
+            if settings.discover_unlock_credits < 1:
+                flash("Discover Unlock Credits must be at least 1.", "danger")
+                return redirect(url_for("admin_business_settings"))
 
-        settings.enable_revenue_sharing = (
-            "enable_revenue_sharing" in request.form
-        )
+            if settings.leads_unlock_credits < 1:
+                flash("Lead Unlock Credits must be at least 1.", "danger")
+                return redirect(url_for("admin_business_settings"))
 
-        settings.enable_discover = (
-            "enable_discover" in request.form
-        )
+            if settings.hr_daily_referral_limit < 1:
+                flash("HR Daily Referral Limit must be at least 1.", "danger")
+                return redirect(url_for("admin_business_settings"))
 
-        settings.enable_leads = (
-            "enable_leads" in request.form
-        )
+            if settings.candidate_daily_referral_limit < 1:
+                flash("Candidate Daily Referral Limit must be at least 1.", "danger")
+                return redirect(url_for("admin_business_settings"))
 
-        settings.enable_wallet = (
-            "enable_wallet" in request.form
-        )
+            if settings.minimum_withdrawal > settings.maximum_daily_withdrawal:
+                flash("Minimum Withdrawal cannot exceed Maximum Daily Withdrawal.", "danger")
+                return redirect(url_for("admin_business_settings"))
 
-        settings.enable_withdrawals = (
-            "enable_withdrawals" in request.form
-        )
+            # ======================================
+            # AUDIT
+            # ======================================
 
-        # ==========================
-        # AUDIT
-        # ==========================
+            settings.updated_by = current_user.id
 
-        settings.updated_by = current_user.id
+            db.session.commit()
 
-        db.session.commit()
+            flash("Business Settings Updated Successfully.", "success")
 
-        flash(
-            "Business Settings Updated Successfully!",
-            "success"
-        )
+            return redirect(url_for("admin_business_settings"))
 
-        return redirect(url_for("admin_business_settings"))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error: {str(e)}", "danger")
+            return redirect(url_for("admin_business_settings"))
 
     return render_template(
         "admin_business_settings.html",
