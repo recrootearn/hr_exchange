@@ -18,7 +18,14 @@ import pandas as pd
 from openpyxl import Workbook
 from flask import send_file
 import io
-from datetime import datetime, timedelta
+from datetime import datetime,timedelta
+from zoneinfo import ZoneInfo
+
+IST = ZoneInfo("Asia/Kolkata")
+
+def india_time():
+    return datetime.now(IST)
+
 import os
 from werkzeug.utils import secure_filename
 from sqlalchemy import func
@@ -255,7 +262,7 @@ class CandidateUser(UserMixin, db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class CreditPurchase(db.Model):
@@ -278,7 +285,7 @@ class CreditPurchase(db.Model):
 
     price_per_credit = db.Column(db.Float)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=india_time)
 
 class JobPost(db.Model):
 
@@ -328,7 +335,7 @@ class JobPost(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class JobApplication(db.Model):
@@ -357,7 +364,7 @@ class JobApplication(db.Model):
 
     applied_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class Notification(db.Model):
@@ -380,7 +387,7 @@ class Notification(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class CandidateWithdrawal(db.Model):
@@ -400,7 +407,7 @@ class CandidateWithdrawal(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class Follow(db.Model):
@@ -432,7 +439,7 @@ class Follow(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class JobImage(db.Model):
@@ -473,7 +480,7 @@ class PlatformEarning(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class BusinessSettings(db.Model):
@@ -535,8 +542,8 @@ class BusinessSettings(db.Model):
     updated_by = db.Column(db.Integer, db.ForeignKey("user.id"))
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow
+        default=india_time,
+        onupdate=india_time
     )
 
 class Candidate(db.Model):
@@ -560,7 +567,7 @@ class Candidate(db.Model):
     revenue_owner_id = db.Column(
         db.Integer
     )
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=india_time)
     is_fake = db.Column(db.Boolean, default=False)
     report_count = db.Column(db.Integer, default=0)
     wrong_experience_reports = db.Column(db.Integer, default=0)
@@ -571,7 +578,7 @@ class Unlock(db.Model):
     candidate_id = db.Column(db.Integer)
     created_at = db.Column(
     db.DateTime,
-    default=datetime.utcnow
+    default=india_time
     )
 
 class CandidateWalletHistory(db.Model):
@@ -586,7 +593,7 @@ class CandidateWalletHistory(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class CreditHistory(db.Model):
@@ -594,7 +601,7 @@ class CreditHistory(db.Model):
     user_id = db.Column(db.Integer)
     amount = db.Column(db.Integer)
     action = db.Column(db.String(200))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=india_time)
 
 class Earnings(db.Model):
 
@@ -613,7 +620,7 @@ class Earnings(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class CandidateReview(db.Model):
@@ -630,7 +637,7 @@ class CandidateReview(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class LeadView(db.Model):
@@ -643,7 +650,7 @@ class LeadView(db.Model):
 
     viewed_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class HRFollower(db.Model):
@@ -656,7 +663,7 @@ class HRFollower(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class CandidateContactUnlock(db.Model):
@@ -669,13 +676,13 @@ class CandidateContactUnlock(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class AdminLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     action = db.Column(db.String(300))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=india_time)
 
 class SupportReply(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -686,7 +693,7 @@ class SupportReply(db.Model):
 
     message = db.Column(db.Text)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=india_time)
 
 class SupportTicket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -709,7 +716,7 @@ class SupportTicket(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class SeenLead(db.Model):
@@ -722,7 +729,7 @@ class SeenLead(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class Withdrawal(db.Model):
@@ -747,7 +754,7 @@ class Withdrawal(db.Model):
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class PasswordReset(db.Model):
