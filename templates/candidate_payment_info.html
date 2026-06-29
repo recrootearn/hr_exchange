@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+.payment-wrapper{
+    max-width:900px;
+    margin:auto;
+}
+
+.payment-card{
+    background:white;
+    border-radius:30px;
+    padding:35px;
+    box-shadow:0 10px 35px rgba(0,0,0,.08);
+}
+
+.page-title{
+    font-size:36px;
+    font-weight:800;
+    margin-bottom:30px;
+    color:#111827;
+}
+
+.form-label{
+    font-weight:700;
+    font-size:18px;
+    margin-bottom:8px;
+}
+
+.form-control{
+    height:60px;
+    border-radius:16px;
+    font-size:18px;
+    margin-bottom:20px;
+}
+
+.save-btn{
+
+    width:100%;
+
+    height:60px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #3b82f6
+    );
+
+    color:white;
+
+    font-size:22px;
+
+    font-weight:800;
+
+}
+
+.save-btn:hover{
+
+    opacity:.95;
+
+}
+
+.info-box{
+
+    background:#ecfeff;
+
+    border:1px solid #bae6fd;
+
+    padding:20px;
+
+    border-radius:18px;
+
+    margin-bottom:25px;
+
+    color:#155e75;
+
+}
+
+@media(max-width:768px){
+
+.page-title{
+
+font-size:28px;
+
+}
+
+.payment-card{
+
+padding:22px;
+
+}
+
+.form-control{
+
+height:55px;
+
+font-size:16px;
+
+}
+
+.save-btn{
+
+height:55px;
+
+font-size:18px;
+
+}
+
+}
+
+</style>
+
+<div class="payment-wrapper">
+
+<div class="payment-card">
+
+<h2 class="page-title">
+
+<i class="fas fa-wallet text-primary"></i>
+
+Payment Information
+
+</h2>
+
+<div class="info-box">
+
+<b>Note:</b>
+
+Your withdrawal amount will be transferred to the UPI or bank account provided below.
+
+</div>
+
+<form method="POST">
+
+<label class="form-label">
+
+UPI ID
+
+</label>
+
+<input
+type="text"
+name="upi_id"
+class="form-control"
+placeholder="example@upi"
+value="{{ candidate.upi_id or '' }}">
+
+<label class="form-label">
+
+Bank Name
+
+</label>
+
+<input
+type="text"
+name="bank_name"
+class="form-control"
+placeholder="State Bank of India"
+value="{{ candidate.bank_name or '' }}">
+
+<label class="form-label">
+
+Account Holder Name
+
+</label>
+
+<input
+type="text"
+name="account_holder"
+class="form-control"
+placeholder="Account Holder Name"
+value="{{ candidate.account_holder or '' }}">
+
+<label class="form-label">
+
+Account Number
+
+</label>
+
+<input
+type="text"
+name="account_number"
+class="form-control"
+placeholder="123456789012"
+value="{{ candidate.account_number or '' }}">
+
+<label class="form-label">
+
+IFSC Code
+
+</label>
+
+<input
+type="text"
+name="ifsc_code"
+class="form-control"
+placeholder="SBIN0001234"
+value="{{ candidate.ifsc_code or '' }}">
+
+<button
+type="submit"
+class="save-btn">
+
+<i class="fas fa-save"></i>
+
+Save Payment Information
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

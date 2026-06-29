@@ -196,6 +196,12 @@ class CandidateUser(UserMixin, db.Model):
     education = db.Column(db.Text)
 
     interested_fields = db.Column(db.Text)
+    
+    upi_id = db.Column(db.String(100))
+    bank_name = db.Column(db.String(100))
+    account_holder = db.Column(db.String(100))
+    account_number = db.Column(db.String(50))
+    ifsc_code = db.Column(db.String(30))
 
     referred_by_hr_code = db.Column(db.String(50))
     referred_by_hr_id = db.Column(db.Integer)
@@ -1824,7 +1830,6 @@ def candidate_withdraw():
     if request.method == "POST":
 
         amount = float(request.form["amount"])
-
         upi = request.form["upi"]
 
         if amount < settings.minimum_withdrawal:
@@ -1851,24 +1856,50 @@ def candidate_withdraw():
 
             amount=amount,
 
-            upi_id=upi
+            upi_id=upi,
+
+            status="Pending"
 
         )
 
         db.session.add(withdrawal)
 
+        # Reserve wallet amount immediately
+        candidate.wallet_balance -= amount
+
+        db.session.add(
+
+            CandidateWalletHistory(
+
+                candidate_id=candidate.id,
+
+                amount=-amount,
+
+                action="Withdrawal Requested"
+
+            )
+
+        )
+
         db.session.commit()
 
         flash(
-            "Withdrawal request submitted.",
+            "Withdrawal request submitted successfully.",
             "success"
         )
 
-        return redirect("/candidate-wallet")
+        return redirect("/candidate-withdraw")
+
+    withdrawals = CandidateWithdrawal.query.filter_by(
+        candidate_id=candidate.id
+    ).order_by(
+        CandidateWithdrawal.created_at.desc()
+    ).all()
 
     return render_template(
         "candidate_withdraw.html",
         candidate=candidate,
+        withdrawals=withdrawals,
         settings=settings
     )
 
@@ -1892,7 +1923,6 @@ def approve_candidate_withdrawal(id):
     withdrawal = CandidateWithdrawal.query.get_or_404(id)
 
     if withdrawal.status != "Pending":
-
         return redirect('/admin-candidate-withdrawals')
 
     candidate = CandidateUser.query.get(
@@ -1901,22 +1931,15 @@ def approve_candidate_withdrawal(id):
 
     if candidate:
 
-        if not safe_wallet_debit(candidate, withdrawal.amount):
-
-            flash(
-                "Invalid withdrawal request.",
-                "danger"
-            )
-
-            return redirect("/admin-candidate-withdrawals")
+        withdrawal.status = "Approved"
 
         db.session.add(
 
             CandidateWalletHistory(
 
-        candidate_id=candidate.id,
+                candidate_id=candidate.id,
 
-        amount=-withdrawal.amount,
+                amount=0,
 
                 action="Withdrawal Approved"
 
@@ -1924,7 +1947,13 @@ def approve_candidate_withdrawal(id):
 
         )
 
-        withdrawal.status = "Approved"
+        send_notification(
+            user_id=candidate.id,
+            user_type="candidate",
+            message=f"Your withdrawal request of ₹{withdrawal.amount} has been approved.",
+            link="/candidate-withdraw",
+            type="withdraw_approved"
+        )
 
     db.session.commit()
 
@@ -1941,6 +1970,39 @@ def reject_candidate_withdrawal(id):
 
     withdrawal = CandidateWithdrawal.query.get_or_404(id)
 
+    if withdrawal.status != "Pending":
+        return redirect('/admin-candidate-withdrawals')
+
+    candidate = CandidateUser.query.get(
+        withdrawal.candidate_id
+    )
+
+    if candidate:
+
+        candidate.wallet_balance += withdrawal.amount
+
+        db.session.add(
+
+            CandidateWalletHistory(
+
+                candidate_id=candidate.id,
+
+                amount=withdrawal.amount,
+
+                action="Withdrawal Rejected - Amount Refunded"
+
+            )
+
+        )
+
+        send_notification(
+            user_id=candidate.id,
+            user_type="candidate",
+            message=f"Your withdrawal request of ₹{withdrawal.amount} was rejected. The amount has been refunded to your wallet.",
+            link="/candidate-withdraw",
+            type="withdraw_rejected"
+        )
+
     withdrawal.status = "Rejected"
 
     db.session.commit()
@@ -1951,6 +2013,64 @@ def reject_candidate_withdrawal(id):
     )
 
     return redirect('/admin-candidate-withdrawals')
+
+@app.route('/candidate-payment-info', methods=['GET', 'POST'])
+def candidate_payment_info():
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    candidate = CandidateUser.query.get_or_404(
+        session['candidate_id']
+    )
+
+    if request.method == "POST":
+
+        candidate.upi_id = request.form.get("upi_id")
+
+        candidate.bank_name = request.form.get("bank_name")
+
+        candidate.account_holder = request.form.get("account_holder")
+
+        candidate.account_number = request.form.get("account_number")
+
+        candidate.ifsc_code = request.form.get("ifsc_code")
+
+        db.session.commit()
+
+        flash(
+            "Payment information updated successfully.",
+            "success"
+        )
+
+        return redirect("/candidate-withdraw")
+
+    return render_template(
+        "candidate_payment_info.html",
+        candidate=candidate
+    )
+
+@app.route('/candidate-wallet')
+def candidate_wallet():
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    candidate = CandidateUser.query.get_or_404(
+        session['candidate_id']
+    )
+
+    history = CandidateWalletHistory.query.filter_by(
+        candidate_id=candidate.id
+    ).order_by(
+        CandidateWalletHistory.created_at.desc()
+    ).all()
+
+    return render_template(
+        "candidate_wallet.html",
+        candidate=candidate,
+        history=history
+    )
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
