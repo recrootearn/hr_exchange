@@ -4850,13 +4850,6 @@ def unlock(id):
             "warning"
         )
 
-    return redirect("/buy-credits")
-
-        flash(
-            "You don't have enough credits. Please purchase a package.",
-            "warning"
-        )
-
         return redirect("/buy-credits")
 
     # -----------------------------------------
