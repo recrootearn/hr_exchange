@@ -4992,20 +4992,20 @@ def unlock(id):
 
             db.session.add(platform)
 
-            else:
+    else:
 
-                if current_user.credits < free_cost:
+        if current_user.credits < free_cost:
 
-                    flash(
-                        f"You need {free_cost} free credits or {paid_cost} paid credits to unlock this candidate.",
-                        "warning"
-                    )
+            flash(
+                f"You need {free_cost} free credits or {paid_cost} paid credits to unlock this candidate.",
+                "warning"
+            )
 
-                    return redirect("/buy-credits")
+            return redirect("/buy-credits")
 
-                current_user.credits -= free_cost
+         current_user.credits -= free_cost
 
-                credit_used = free_cost
+         credit_used = free_cost
 
     # -----------------------------------------
     # CREDIT HISTORY
