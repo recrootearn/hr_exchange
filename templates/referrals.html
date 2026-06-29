@@ -101,8 +101,11 @@
     <h2>🎁 Referral Rewards Program</h2>
 
     <p>
-        Earn ₹200 when a referred recruiter purchases
-        a credit pack worth ₹500 or more.
+        Earn ₹{{ settings.hr_to_hr_reward }}
+        when a referred recruiter purchases
+        a credit pack worth
+        ₹{{ settings.hr_minimum_purchase }}
+        or more.
     </p>
 
     <h1>{{ current_user.referral_code }}</h1>
@@ -265,11 +268,15 @@
     </div>
 
     <div class="live-item">
-        ✅ Recruiter purchases ₹500+ credit pack
+        ✅ Recruiter purchases
+        ₹{{ settings.hr_minimum_purchase }}+
+        credit pack
     </div>
 
     <div class="live-item">
-        ✅ You receive ₹200 in wallet
+        ✅ You receive
+        ₹{{ settings.hr_to_hr_reward }}
+        in wallet
     </div>
 
     <div class="live-item">
@@ -285,15 +292,18 @@
     <h4>🚀 Potential Earnings</h4>
 
     <div class="live-item">
-        1 Referral = ₹200
+        1 Referral =
+        ₹{{ settings.hr_to_hr_reward }}
     </div>
 
     <div class="live-item">
-        5 Referrals = ₹1,000
+        5 Referrals =
+        ₹{{ settings.hr_to_hr_reward * 5 }}
     </div>
 
     <div class="live-item">
-        10 Referrals = ₹2,000
+        10 Referrals =
+        ₹{{ settings.hr_to_hr_reward * 10 }}
     </div>
 
 </div>

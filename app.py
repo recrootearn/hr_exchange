@@ -46,6 +46,12 @@ client = razorpay.Client(
 def generate_referral_code():
     return "RR" + str(random.randint(100000,999999))
 
+def generate_candidate_referral_code():
+
+    return "RC" + str(
+        random.randint(100000, 999999)
+    )
+
 # =========================
 # CONFIG & DB SETUP
 # =========================
@@ -182,6 +188,47 @@ class CandidateUser(UserMixin, db.Model):
 
     interested_fields = db.Column(db.Text)
 
+    referred_by_hr_code = db.Column(db.String(50))
+    referred_by_hr_id = db.Column(db.Integer)
+
+    candidate_referral_code = db.Column(
+        db.String(20),
+        unique=True
+    )
+
+    referred_by_candidate_code = db.Column(
+        db.String(20)
+    )
+
+    referred_by_candidate_id = db.Column(
+        db.Integer
+    )
+
+    candidate_referral_reward_given = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    wallet_balance = db.Column(
+        db.Float,
+        default=0
+    )
+
+    referral_earnings = db.Column(
+        db.Float,
+        default=0
+    )
+
+    successful_referrals = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    hr_referral_reward_given = db.Column(
+        db.Boolean,
+        default=False
+    )
+
     revenue_owner_type = db.Column(
         db.String(20),
         default="admin"
@@ -190,6 +237,21 @@ class CandidateUser(UserMixin, db.Model):
     revenue_owner_id = db.Column(
         db.Integer
     )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+class CandidateWalletHistory(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    candidate_id = db.Column(db.Integer)
+
+    amount = db.Column(db.Float)
+
+    action = db.Column(db.String(200))
 
     created_at = db.Column(
         db.DateTime,
@@ -315,6 +377,26 @@ class Notification(db.Model):
     type = db.Column(db.String(30))
    
     user_type = db.Column(db.String(20))
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+class CandidateWithdrawal(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    candidate_id = db.Column(db.Integer)
+
+    amount = db.Column(db.Float)
+
+    upi_id = db.Column(db.String(100))
+
+    status = db.Column(
+        db.String(20),
+        default="Pending"
+    )
 
     created_at = db.Column(
         db.DateTime,
@@ -490,6 +572,21 @@ class Unlock(db.Model):
     created_at = db.Column(
     db.DateTime,
     default=datetime.utcnow
+    )
+
+class CandidateWalletHistory(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    candidate_id = db.Column(db.Integer)
+
+    amount = db.Column(db.Float)
+
+    action = db.Column(db.String(200))
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
     )
 
 class CreditHistory(db.Model):
@@ -691,6 +788,62 @@ def get_business_settings():
         db.session.commit()
 
     return settings
+
+def safe_wallet_credit(user, amount):
+
+    if not user:
+        return False
+
+    if amount <= 0:
+        return False
+
+    user.wallet_balance += amount
+
+    return True
+
+def safe_wallet_debit(user, amount):
+
+    if not user:
+        return False
+
+    if amount <= 0:
+        return False
+
+    if user.wallet_balance < amount:
+        return False
+
+    user.wallet_balance -= amount
+
+    return True
+
+def send_notification(
+    user_id,
+    user_type,
+    message,
+    link="",
+    image="",
+    type="general"
+):
+
+    db.session.add(
+
+        Notification(
+
+            user_id=user_id,
+
+            user_type=user_type,
+
+            message=message,
+
+            link=link,
+
+            image=image,
+
+            type=type
+
+        )
+
+    )
 
 @app.context_processor
 def inject_notifications():
@@ -1662,6 +1815,149 @@ def leads():
 
     )
 
+@app.route('/candidate-withdraw', methods=['GET', 'POST'])
+def candidate_withdraw():
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    candidate = CandidateUser.query.get_or_404(
+        session['candidate_id']
+    )
+
+    settings = get_business_settings()
+
+    if request.method == "POST":
+
+        amount = float(request.form["amount"])
+
+        upi = request.form["upi"]
+
+        if amount < settings.minimum_withdrawal:
+
+            flash(
+                f"Minimum withdrawal is ₹{settings.minimum_withdrawal}",
+                "danger"
+            )
+
+            return redirect("/candidate-withdraw")
+
+        if amount > candidate.wallet_balance:
+
+            flash(
+                "Insufficient wallet balance.",
+                "danger"
+            )
+
+            return redirect("/candidate-withdraw")
+
+        withdrawal = CandidateWithdrawal(
+
+            candidate_id=candidate.id,
+
+            amount=amount,
+
+            upi_id=upi
+
+        )
+
+        db.session.add(withdrawal)
+
+        db.session.commit()
+
+        flash(
+            "Withdrawal request submitted.",
+            "success"
+        )
+
+        return redirect("/candidate-wallet")
+
+    return render_template(
+        "candidate_withdraw.html",
+        candidate=candidate,
+        settings=settings
+    )
+
+@app.route('/admin-candidate-withdrawals')
+@admin_required
+def admin_candidate_withdrawals():
+
+    withdrawals = CandidateWithdrawal.query.order_by(
+        CandidateWithdrawal.created_at.desc()
+    ).all()
+
+    return render_template(
+        "admin_candidate_withdrawals.html",
+        withdrawals=withdrawals
+    )
+
+@app.route('/approve-candidate-withdrawal/<int:id>')
+@admin_required
+def approve_candidate_withdrawal(id):
+
+    withdrawal = CandidateWithdrawal.query.get_or_404(id)
+
+    if withdrawal.status != "Pending":
+
+        return redirect('/admin-candidate-withdrawals')
+
+    candidate = CandidateUser.query.get(
+        withdrawal.candidate_id
+    )
+
+    if candidate:
+
+        if not safe_wallet_debit(candidate, withdrawal.amount):
+
+            flash(
+                "Invalid withdrawal request.",
+                "danger"
+            )
+
+            return redirect("/admin-candidate-withdrawals")
+
+        db.session.add(
+
+            CandidateWalletHistory(
+
+        candidate_id=candidate.id,
+
+        amount=-withdrawal.amount,
+
+                action="Withdrawal Approved"
+
+            )
+
+        )
+
+        withdrawal.status = "Approved"
+
+    db.session.commit()
+
+    flash(
+        "Withdrawal Approved.",
+        "success"
+    )
+
+    return redirect('/admin-candidate-withdrawals')
+
+@app.route('/reject-candidate-withdrawal/<int:id>')
+@admin_required
+def reject_candidate_withdrawal(id):
+
+    withdrawal = CandidateWithdrawal.query.get_or_404(id)
+
+    withdrawal.status = "Rejected"
+
+    db.session.commit()
+
+    flash(
+        "Withdrawal Rejected.",
+        "warning"
+    )
+
+    return redirect('/admin-candidate-withdrawals')
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
 
@@ -1870,9 +2166,9 @@ def candidate_register():
             flash(
                 "Please enter a valid 10-digit Indian mobile number.",
                 "danger"
-        )
+            )
 
-        return redirect('/candidate-register')
+            return redirect('/candidate-register')
 
         # CHECK USERNAME
 
@@ -1954,6 +2250,40 @@ def candidate_register():
                 )
             )
 
+        # OPTIONAL REFERRAL CODE
+
+        referral_code = request.form.get(
+            "referral_code",
+            ""
+        ).strip().upper()
+
+        referred_hr = None
+
+        if referral_code:
+
+            referred_hr = User.query.filter_by(
+                referral_code=referral_code
+            ).first()
+
+        candidate_referral_code = request.form.get(
+            "candidate_referral_code",
+            ""
+        ).strip().upper()
+
+        referred_candidate = None
+
+        if candidate_referral_code:
+
+            referred_candidate = CandidateUser.query.filter_by(
+        candidate_referral_code=candidate_referral_code
+            ).first()
+
+        # OTHER DETAILS
+
+        dob = request.form.get("dob")
+        city = request.form.get("city")
+        qualification = request.form.get("qualification")
+
         # CREATE CANDIDATE
 
         candidate = CandidateUser(
@@ -1974,9 +2304,35 @@ def candidate_register():
 
             qualification=qualification,
 
-            profile_photo=profile_photo,
+            profile_photo=profile_photo_name,
 
-            resume_file=resume_name
+            resume_file=resume_name,
+
+            referred_by_hr_id=(
+                referred_hr.id
+                if referred_hr
+                else None
+            ),
+
+            referred_by_hr_code=(
+                referred_hr.referral_code
+                if referred_hr
+                else None
+            ),
+
+            candidate_referral_code=generate_candidate_referral_code(),
+
+            referred_by_candidate_code=(
+            referred_candidate.candidate_referral_code
+                if referred_candidate
+                else None
+            ),
+
+            referred_by_candidate_id=(
+                referred_candidate.id
+                if referred_candidate
+                else None
+            )
 
         )
 
@@ -2531,14 +2887,175 @@ def company_profile(id):
 @login_required
 def update_application_status(id):
 
+    settings = get_business_settings()
+
     application = JobApplication.query.get_or_404(id)
 
-    job = JobPost.query.get(application.job_id)
+    job = JobPost.query.get_or_404(application.job_id)
 
     if job.hr_id != current_user.id:
         return "Access Denied"
 
-    application.status = request.form.get("status")
+    new_status = request.form.get("status")
+
+    application.status = new_status
+
+    # ==========================================
+    # HR -> CANDIDATE REFERRAL REWARD
+    # ==========================================
+
+    if (
+        settings.enable_hr_referral
+        and new_status == "Interview Done"
+    ):
+
+        candidate = CandidateUser.query.get(
+            application.candidate_id
+        )
+
+        if (
+            candidate
+            and candidate.referred_by_hr_id
+            and not candidate.hr_referral_reward_given
+        ):
+
+            # Check profile completion
+            completion = 0
+
+            if candidate.profile_photo:
+                completion += 10
+
+            if candidate.resume_file:
+                completion += 10
+
+            if candidate.about_me:
+                completion += 10
+
+            if candidate.skills:
+                completion += 10
+
+            if candidate.city:
+                completion += 10
+
+            if candidate.qualification:
+                completion += 10
+
+            if candidate.dob:
+                completion += 10
+
+            if candidate.education:
+                completion += 10
+
+            if candidate.interested_fields:
+                completion += 10
+
+            if candidate.career_level == "Experienced":
+
+                if candidate.company_name and candidate.designation:
+                    completion += 10
+
+            else:
+                completion += 10
+
+            if completion >= 100:
+
+                referring_hr = User.query.get(
+                    candidate.referred_by_hr_id
+                )
+
+                if referring_hr:
+
+                    safe_wallet_credit(
+                        referring_hr,
+                    settings.hr_to_candidate_reward
+                    )
+
+                    referring_hr.referral_earnings += (
+                        settings.hr_to_candidate_reward
+                    )
+
+                    referring_hr.successful_referrals += 1
+
+                    candidate.hr_referral_reward_given = True
+
+                    candidate.revenue_owner_type = "hr"
+
+                    candidate.revenue_owner_id = referring_hr.id
+
+                    db.session.add(
+
+                        Earnings(
+                            user_id=referring_hr.id,
+                            amount=settings.hr_to_candidate_reward,
+                            reason=f"Candidate Referral Reward - {candidate.full_name}"
+                        )
+
+                    )
+
+                    send_notification(
+                        user_id=referring_hr.id,
+                        user_type="hr",
+                        message=f"You earned ₹{settings.hr_to_candidate_reward} because {candidate.full_name} completed Interview.",
+                        link="/wallet",
+                    image=candidate.profile_photo,
+                        type="referral_reward"
+                    )
+
+                # ==========================================
+                # CANDIDATE -> CANDIDATE REFERRAL REWARD
+                # ==========================================
+
+                if (
+                    settings.enable_candidate_referral
+                    and candidate.referred_by_candidate_id
+                    and not candidate.candidate_referral_reward_given
+                ):
+
+                    referring_candidate = CandidateUser.query.get(
+                        candidate.referred_by_candidate_id
+                    )
+
+                    if referring_candidate:
+
+                        safe_wallet_credit(
+                            referring_candidate,
+                        settings.candidate_to_candidate_reward
+                        )
+
+                        referring_candidate.referral_earnings += (
+                            settings.candidate_to_candidate_reward
+                        )
+
+                        referring_candidate.successful_referrals += 1
+
+                        candidate.candidate_referral_reward_given = True
+
+                        db.session.add(
+
+                            CandidateWalletHistory(
+
+                        candidate_id=referring_candidate.id,
+
+                        amount=settings.candidate_to_candidate_reward,
+
+                            action=f"Referral Reward - {candidate.full_name}"
+
+                            )
+
+                        )
+
+                        db.session.add(
+
+                            Notification(
+                                user_id=referring_candidate.id,
+                                user_type="candidate",
+                                message=f"You earned ₹{settings.candidate_to_candidate_reward} because {candidate.full_name} completed Interview.",
+                                link="/candidate-wallet",
+                                image=candidate.profile_photo,
+                                type="candidate_referral_reward"
+                            )
+
+                        )
 
     db.session.commit()
 
@@ -2584,6 +3101,21 @@ def view_candidates(id):
         is_following=is_following,
     contact_unlocked=contact_unlocked,
         has_applied=has_applied
+    )
+
+@app.route('/candidate-wallet')
+def candidate_wallet():
+
+    if 'candidate_id' not in session:
+        return redirect('/candidate-login')
+
+    candidate = CandidateUser.query.get_or_404(
+        session['candidate_id']
+    )
+
+    return render_template(
+        'candidate_wallet.html',
+        candidate=candidate
     )
 
 @app.route('/follow-hr/<int:id>')
@@ -2640,6 +3172,74 @@ def follow_hr(id):
     db.session.commit()
 
     return redirect(f'/company/{id}')
+
+@app.route('/admin-revenue-dashboard')
+@admin_required
+def admin_revenue_dashboard():
+
+    total_platform = db.session.query(
+        db.func.sum(PlatformEarning.amount)
+    ).scalar() or 0
+
+    total_hr_wallet = db.session.query(
+        db.func.sum(User.wallet_balance)
+    ).scalar() or 0
+
+    total_candidate_wallet = db.session.query(
+        db.func.sum(CandidateUser.wallet_balance)
+    ).scalar() or 0
+
+    total_hr_referrals = db.session.query(
+        db.func.sum(User.referral_earnings)
+    ).scalar() or 0
+
+    total_candidate_referrals = db.session.query(
+        db.func.sum(CandidateUser.referral_earnings)
+    ).scalar() or 0
+
+    pending_candidate = CandidateWithdrawal.query.filter_by(
+        status="Pending"
+    ).count()
+
+    approved_candidate = CandidateWithdrawal.query.filter_by(
+        status="Approved"
+    ).count()
+
+    total_leads_unlock = Unlock.query.count()
+
+    total_discover_unlock = CandidateContactUnlock.query.count()
+
+    total_hr = User.query.count()
+
+    total_candidates = CandidateUser.query.count()
+
+    return render_template(
+
+        "admin_revenue_dashboard.html",
+
+        total_platform=total_platform,
+
+        total_hr_wallet=total_hr_wallet,
+
+        total_candidate_wallet=total_candidate_wallet,
+
+        total_hr_referrals=total_hr_referrals,
+
+        total_candidate_referrals=total_candidate_referrals,
+
+        pending_candidate=pending_candidate,
+
+        approved_candidate=approved_candidate,
+
+        total_leads_unlock=total_leads_unlock,
+
+        total_discover_unlock=total_discover_unlock,
+
+        total_hr=total_hr,
+
+        total_candidates=total_candidates
+
+    )
 
 @app.route('/follow-hr-user/<int:id>')
 @login_required
@@ -2743,10 +3343,12 @@ def unlock_contact(id):
 
         return redirect(request.referrer)
 
+    candidate = CandidateUser.query.get_or_404(id)
+
+    # Deduct Credits
     current_user.credits -= settings.discover_unlock_credits
 
     db.session.add(
-
         CandidateContactUnlock(
             hr_id=current_user.id,
             candidate_user_id=id
@@ -2754,13 +3356,86 @@ def unlock_contact(id):
     )
 
     db.session.add(
-
         CreditHistory(
             user_id=current_user.id,
             amount=-settings.discover_unlock_credits,
             action="Unlocked Candidate Contact"
         )
     )
+
+    # =====================================
+    # DISCOVER REVENUE SHARING
+    # =====================================
+
+    if settings.enable_revenue_sharing:
+
+        purchase = CreditPurchase.query.filter(
+            CreditPurchase.user_id == current_user.id,
+            CreditPurchase.credits_remaining > 0
+        ).order_by(
+            CreditPurchase.created_at.asc()
+        ).first()
+
+        if purchase:
+
+            purchase.credits_remaining -= settings.discover_unlock_credits
+
+            revenue = purchase.price_per_credit * settings.discover_unlock_credits
+
+            # Candidate belongs to HR
+            if (
+                candidate.revenue_owner_type == "hr"
+                and candidate.revenue_owner_id
+            ):
+
+                owner = User.query.get(candidate.revenue_owner_id)
+
+                if owner:
+
+                    hr_share = revenue * settings.discover_hr_share / 100
+                    admin_share = revenue * settings.discover_admin_share / 100
+
+                    owner.wallet_balance += hr_share
+
+                    db.session.add(
+                        Earnings(
+                            user_id=owner.id,
+                            amount=hr_share,
+                            purchase_id=purchase.id,
+                            reason="Discover Candidate Unlock"
+                        )
+                    )
+
+                    db.session.add(
+                        PlatformEarning(
+                            user_id=current_user.id,
+                            amount=admin_share,
+                            purchase_id=purchase.id,
+                            reason="Discover Candidate Unlock"
+                        )
+                    )
+
+                else:
+
+                    db.session.add(
+                        PlatformEarning(
+                            user_id=current_user.id,
+                            amount=revenue,
+                            purchase_id=purchase.id,
+                            reason="Deleted HR Owner"
+                        )
+                    )
+
+            else:
+
+                db.session.add(
+                    PlatformEarning(
+                        user_id=current_user.id,
+                        amount=revenue,
+                        purchase_id=purchase.id,
+                        reason="Self Registered Candidate"
+                    )
+                )
 
     db.session.commit()
 
@@ -3361,7 +4036,11 @@ def delete_account():
         uploaded_by=user_id
     ).update({
 
-        "is_platform_candidate": True
+        "is_platform_candidate": True,
+
+        "revenue_owner_type": "admin",
+
+        "revenue_owner_id": None
 
     })
 
@@ -3540,6 +4219,8 @@ def candidate_logout():
 @login_required
 def referrals():
 
+    settings = get_business_settings()
+
     if not current_user.referral_code:
 
         current_user.referral_code = generate_referral_code()
@@ -3547,7 +4228,8 @@ def referrals():
         db.session.commit()
 
     referral_link = (
-        "https://recrootearn.com/register?ref="
+        request.host_url.rstrip("/")
+        + "/register?ref="
         + current_user.referral_code
     )
 
@@ -3558,7 +4240,8 @@ def referrals():
     return render_template(
         'referrals.html',
         referral_link=referral_link,
-        referred_users=referred_users
+        referred_users=referred_users,
+        settings=settings
     )
 
 from flask import jsonify
@@ -3696,7 +4379,7 @@ def upload():
 
         if Candidate.query.filter_by(
             uploaded_by=current_user.id
-        ).count() settings.hr_minimum_purchase:
+        ).count() >= 100:
 
             flash(
                 "Upload limit reached",
@@ -3710,15 +4393,10 @@ def upload():
         # GET FORM DATA
 
         name = request.form['name']
-
         phone = request.form['phone']
-
         experience = request.form['experience']
-
         designation = request.form['designation']
-
         city = request.form['city']
-
         category = request.form['category']
 
         # CHECK DUPLICATE PHONE
@@ -3764,7 +4442,12 @@ def upload():
 
             category=category,
 
-            uploaded_by=current_user.id
+            uploaded_by=current_user.id,
+
+            revenue_owner_type="hr",
+
+            revenue_owner_id=current_user.id
+
         )
 
         db.session.add(candidate)
@@ -3782,7 +4465,9 @@ def upload():
                 amount=1,
 
                 action=f"Uploaded: {name}"
+
             )
+
         )
 
         db.session.commit()
@@ -3819,7 +4504,6 @@ def bulk_upload():
 
             # REMOVE .0 FROM EXCEL
             if phone.endswith('.0'):
-
                 phone = phone[:-2]
 
             # REMOVE SPACES
@@ -3827,7 +4511,6 @@ def bulk_upload():
 
             # VALIDATE PHONE
             if len(phone) != 10 or not phone.isdigit():
-
                 invalid_count += 1
                 continue
 
@@ -3837,7 +4520,6 @@ def bulk_upload():
             ).first()
 
             if existing:
-
                 duplicate_count += 1
                 continue
 
@@ -3850,11 +4532,8 @@ def bulk_upload():
                 "exp" in experience_raw
                 or "experience" in experience_raw
             ):
-
                 experience_value = "Experienced"
-
             else:
-
                 experience_value = "Fresher"
 
             # CREATE CANDIDATE
@@ -3880,7 +4559,13 @@ def bulk_upload():
                     row['Industry']
                 ).strip(),
 
-                uploaded_by=current_user.id
+                uploaded_by=current_user.id,
+
+                # Revenue Owner
+                revenue_owner_type="hr",
+
+                revenue_owner_id=current_user.id
+
             )
 
             db.session.add(candidate)
@@ -3906,7 +4591,9 @@ def bulk_upload():
             amount=uploaded_count,
 
             action=f'Bulk uploaded {uploaded_count} candidates'
+
         )
+
     )
 
     db.session.commit()
@@ -4091,28 +4778,53 @@ def unlock(id):
                 2
             )
 
-            if candidate.is_platform_candidate:
+            # ==========================================
+            # REVENUE OWNER LOGIC
+            # ==========================================
 
-                platform_share += uploader_share
-                uploader_share = 0
+            if settings.enable_revenue_sharing:
 
-            elif uploader:
+                   # HR-owned lead
+                   if (
+            candidate.revenue_owner_type == "hr"
+                       and candidate.revenue_owner_id
+                   ):
 
-                uploader.wallet_balance += uploader_share
+                       owner = User.query.get(candidate.revenue_owner_id)
 
-                earn = Earnings(
-                    user_id=uploader.id,
-                    purchase_id=purchase.id,
-                    amount=uploader_share,
-                    reason=f"Candidate unlocked: {candidate.name}"
-                )
+                       if owner:
 
-                db.session.add(earn)
+                               safe_wallet_credit(
+                                   owner,
+                                   uploader_share
+                               )
 
-            else:
+                           db.session.add(
+                               Earnings(
+                               user_id=owner.id,
+                               purchase_id=purchase.id,
+                               amount=uploader_share,
+                               reason=f"Lead Unlock Revenue - {candidate.name}"
+                               )
+                           )
 
-                platform_share += uploader_share
-                uploader_share = 0
+                       else:
+
+                           # HR deleted
+                           platform_share += uploader_share
+                           uploader_share = 0
+
+                   else:
+
+                       # Platform/Admin owned
+                       platform_share += uploader_share
+                       uploader_share = 0
+
+               else:
+
+                   # Revenue sharing disabled
+                   platform_share += uploader_share
+                   uploader_share = 0
 
             platform = PlatformEarning(
                 user_id=current_user.id,
