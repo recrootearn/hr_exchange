@@ -44,13 +44,22 @@ client = razorpay.Client(
 )
 
 def generate_referral_code():
-    return "RR" + str(random.randint(100000,999999))
+
+    while True:
+        code = "RR" + str(random.randint(100000, 999999))
+
+        if not User.query.filter_by(referral_code=code).first():
+            return code
 
 def generate_candidate_referral_code():
 
-    return "RC" + str(
-        random.randint(100000, 999999)
-    )
+    while True:
+        code = "RC" + str(random.randint(100000, 999999))
+
+        if not CandidateUser.query.filter_by(
+            candidate_referral_code=code
+        ).first():
+            return code
 
 # =========================
 # CONFIG & DB SETUP
