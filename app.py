@@ -2152,6 +2152,20 @@ def candidate_register():
         email = request.form['email']
         username = request.form['username'].strip().upper()
         password = request.form['password']
+        entered_code = request.form.get(
+            "referral_code", ""
+        ).strip().upper()
+
+        referred_hr = User.query.filter_by(
+            referral_code=entered_code
+        ).first()
+
+        referred_candidate = None
+
+        if not referred_hr:
+            referred_candidate = CandidateUser.query.filter_by(
+        candidate_referral_code=entered_code
+            ).first()
 
         # VALIDATE INDIAN MOBILE NUMBER
 
@@ -2243,34 +2257,6 @@ def candidate_register():
                     profile_photo_name
                 )
             )
-
-        # OPTIONAL REFERRAL CODE
-
-        referral_code = request.form.get(
-            "referral_code",
-            ""
-        ).strip().upper()
-
-        referred_hr = None
-
-        if referral_code:
-
-            referred_hr = User.query.filter_by(
-                referral_code=referral_code
-            ).first()
-
-        candidate_referral_code = request.form.get(
-            "candidate_referral_code",
-            ""
-        ).strip().upper()
-
-        referred_candidate = None
-
-        if candidate_referral_code:
-
-            referred_candidate = CandidateUser.query.filter_by(
-        candidate_referral_code=candidate_referral_code
-            ).first()
 
         # OTHER DETAILS
 
