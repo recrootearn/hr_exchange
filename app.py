@@ -385,6 +385,69 @@ class PlatformEarning(db.Model):
         default=datetime.utcnow
     )
 
+class BusinessSettings(db.Model):
+    __tablename__ = "business_settings"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    # -------------------------
+    # HR Referral
+    # -------------------------
+    hr_to_hr_reward = db.Column(db.Integer, default=200)
+    hr_to_candidate_reward = db.Column(db.Integer, default=25)
+    candidate_to_candidate_reward = db.Column(db.Integer, default=25)
+
+    hr_minimum_purchase = db.Column(db.Integer, default=500)
+
+    hr_daily_referral_limit = db.Column(db.Integer, default=10)
+    candidate_daily_referral_limit = db.Column(db.Integer, default=10)
+
+    # -------------------------
+    # Revenue Sharing
+    # -------------------------
+    discover_hr_share = db.Column(db.Integer, default=50)
+    discover_admin_share = db.Column(db.Integer, default=50)
+
+    leads_hr_share = db.Column(db.Integer, default=50)
+    leads_admin_share = db.Column(db.Integer, default=50)
+
+    self_candidate_admin_share = db.Column(db.Integer, default=100)
+
+    # -------------------------
+    # Unlock Credits
+    # -------------------------
+    discover_unlock_credits = db.Column(db.Integer, default=2)
+    leads_unlock_credits = db.Column(db.Integer, default=2)
+
+    # -------------------------
+    # Wallet
+    # -------------------------
+    minimum_withdrawal = db.Column(db.Integer, default=500)
+    maximum_daily_withdrawal = db.Column(db.Integer, default=5000)
+
+    # -------------------------
+    # Feature Toggles
+    # -------------------------
+    enable_hr_referral = db.Column(db.Boolean, default=True)
+    enable_candidate_referral = db.Column(db.Boolean, default=True)
+    enable_revenue_sharing = db.Column(db.Boolean, default=True)
+
+    enable_discover = db.Column(db.Boolean, default=True)
+    enable_leads = db.Column(db.Boolean, default=True)
+
+    enable_wallet = db.Column(db.Boolean, default=True)
+    enable_withdrawals = db.Column(db.Boolean, default=True)
+
+    # -------------------------
+    # Audit
+    # -------------------------
+    updated_by = db.Column(db.Integer, db.ForeignKey("user.id"))
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
 class Candidate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
@@ -597,6 +660,20 @@ def admin_only():
     if not current_user.is_authenticated or current_user.username.upper() != "HARSHIT":
         return False
     return True
+
+def get_business_settings():
+
+    settings = BusinessSettings.query.first()
+
+    if not settings:
+
+        settings = BusinessSettings()
+
+        db.session.add(settings)
+
+        db.session.commit()
+
+    return settings
 
 @app.context_processor
 def inject_notifications():
@@ -826,6 +903,149 @@ def home():
 
         CandidateReview=CandidateReview,
         User=User
+    )
+
+@app.route('/admin/business-settings', methods=['GET', 'POST'])
+@login_required
+def admin_business_settings():
+
+    if not admin_only():
+        return "Access Denied"
+
+    settings = get_business_settings()
+
+    if request.method == "POST":
+
+        # ==========================
+        # HR REFERRAL
+        # ==========================
+
+        settings.hr_to_hr_reward = int(
+            request.form.get("hr_to_hr_reward", 200)
+        )
+
+        settings.hr_minimum_purchase = int(
+            request.form.get("hr_minimum_purchase", 500)
+        )
+
+        settings.hr_daily_referral_limit = int(
+            request.form.get("hr_daily_referral_limit", 10)
+        )
+
+        # ==========================
+        # CANDIDATE REFERRAL
+        # ==========================
+
+        settings.hr_to_candidate_reward = int(
+            request.form.get("hr_to_candidate_reward", 25)
+        )
+
+        settings.candidate_to_candidate_reward = int(
+            request.form.get("candidate_to_candidate_reward", 25)
+        )
+
+        settings.candidate_daily_referral_limit = int(
+            request.form.get("candidate_daily_referral_limit", 10)
+        )
+
+        # ==========================
+        # REVENUE SHARING
+        # ==========================
+
+        settings.discover_hr_share = int(
+            request.form.get("discover_hr_share", 50)
+        )
+
+        settings.discover_admin_share = int(
+            request.form.get("discover_admin_share", 50)
+        )
+
+        settings.leads_hr_share = int(
+            request.form.get("leads_hr_share", 50)
+        )
+
+        settings.leads_admin_share = int(
+            request.form.get("leads_admin_share", 50)
+        )
+
+        settings.self_candidate_admin_share = int(
+            request.form.get("self_candidate_admin_share", 100)
+        )
+
+        # ==========================
+        # UNLOCK SETTINGS
+        # ==========================
+
+        settings.discover_unlock_credits = int(
+            request.form.get("discover_unlock_credits", 2)
+        )
+
+        settings.leads_unlock_credits = int(
+            request.form.get("leads_unlock_credits", 2)
+        )
+
+        # ==========================
+        # WALLET
+        # ==========================
+
+        settings.minimum_withdrawal = int(
+            request.form.get("minimum_withdrawal", 500)
+        )
+
+        settings.maximum_daily_withdrawal = int(
+            request.form.get("maximum_daily_withdrawal", 5000)
+        )
+
+        # ==========================
+        # FEATURE TOGGLES
+        # ==========================
+
+        settings.enable_hr_referral = (
+            "enable_hr_referral" in request.form
+        )
+
+        settings.enable_candidate_referral = (
+            "enable_candidate_referral" in request.form
+        )
+
+        settings.enable_revenue_sharing = (
+            "enable_revenue_sharing" in request.form
+        )
+
+        settings.enable_discover = (
+            "enable_discover" in request.form
+        )
+
+        settings.enable_leads = (
+            "enable_leads" in request.form
+        )
+
+        settings.enable_wallet = (
+            "enable_wallet" in request.form
+        )
+
+        settings.enable_withdrawals = (
+            "enable_withdrawals" in request.form
+        )
+
+        # ==========================
+        # AUDIT
+        # ==========================
+
+        settings.updated_by = current_user.id
+
+        db.session.commit()
+
+        flash(
+            "Business Settings Updated Successfully!",
+            "success"
+        )
+
+        return redirect(url_for("admin_business_settings"))
+
+    return render_template(
+        "admin_business_settings.html",
+        settings=settings
     )
 
 @app.route('/my-uploads')

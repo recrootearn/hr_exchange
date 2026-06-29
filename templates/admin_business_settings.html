@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block title %}Business Settings{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">
+        ⚙️ Business Settings
+    </h2>
+
+    <form method="POST">
+
+        <!-- ====================================== -->
+        <!-- HR REFERRAL -->
+        <!-- ====================================== -->
+
+        <div class="card mb-4">
+
+            <div class="card-header bg-primary text-white">
+                HR Referral
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+                        <label>HR → HR Reward (₹)</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="hr_to_hr_reward"
+                            value="{{ settings.hr_to_hr_reward }}">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Minimum Purchase (₹)</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="hr_minimum_purchase"
+                            value="{{ settings.hr_minimum_purchase }}">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Daily Referral Limit</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="hr_daily_referral_limit"
+                            value="{{ settings.hr_daily_referral_limit }}">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ====================================== -->
+        <!-- CANDIDATE REFERRAL -->
+        <!-- ====================================== -->
+
+        <div class="card mb-4">
+
+            <div class="card-header bg-success text-white">
+                Candidate Referral
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label>HR → Candidate Reward (₹)</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="hr_to_candidate_reward"
+                            value="{{ settings.hr_to_candidate_reward }}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Candidate → Candidate Reward (₹)</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="candidate_to_candidate_reward"
+                            value="{{ settings.candidate_to_candidate_reward }}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Candidate Daily Referral Limit</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="candidate_daily_referral_limit"
+                            value="{{ settings.candidate_daily_referral_limit }}">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ====================================== -->
+        <!-- REVENUE SHARING -->
+        <!-- ====================================== -->
+
+        <div class="card mb-4">
+
+            <div class="card-header bg-warning">
+                Revenue Sharing
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-3 mb-3">
+                        <label>Discover HR %</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="discover_hr_share"
+                            value="{{ settings.discover_hr_share }}">
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Discover Admin %</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="discover_admin_share"
+                            value="{{ settings.discover_admin_share }}">
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Leads HR %</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="leads_hr_share"
+                            value="{{ settings.leads_hr_share }}">
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Leads Admin %</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="leads_admin_share"
+                            value="{{ settings.leads_admin_share }}">
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Self Candidate Admin %</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="self_candidate_admin_share"
+                            value="{{ settings.self_candidate_admin_share }}">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ====================================== -->
+        <!-- UNLOCK SETTINGS -->
+        <!-- ====================================== -->
+
+        <div class="card mb-4">
+
+            <div class="card-header bg-info text-white">
+                Unlock Settings
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label>Discover Unlock Credits</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="discover_unlock_credits"
+                            value="{{ settings.discover_unlock_credits }}">
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label>Leads Unlock Credits</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="leads_unlock_credits"
+                            value="{{ settings.leads_unlock_credits }}">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ====================================== -->
+        <!-- WALLET -->
+        <!-- ====================================== -->
+
+        <div class="card mb-4">
+
+            <div class="card-header bg-dark text-white">
+                Wallet
+            </div>
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label>Minimum Withdrawal</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="minimum_withdrawal"
+                            value="{{ settings.minimum_withdrawal }}">
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label>Maximum Daily Withdrawal</label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="maximum_daily_withdrawal"
+                            value="{{ settings.maximum_daily_withdrawal }}">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ====================================== -->
+        <!-- FEATURE TOGGLES -->
+        <!-- ====================================== -->
+
+        <div class="card mb-4">
+
+            <div class="card-header bg-secondary text-white">
+                Feature Toggles
+            </div>
+
+            <div class="card-body">
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="enable_hr_referral" {% if settings.enable_hr_referral %}checked{% endif %}>
+                    <label class="form-check-label">Enable HR Referral</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="enable_candidate_referral" {% if settings.enable_candidate_referral %}checked{% endif %}>
+                    <label class="form-check-label">Enable Candidate Referral</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="enable_revenue_sharing" {% if settings.enable_revenue_sharing %}checked{% endif %}>
+                    <label class="form-check-label">Enable Revenue Sharing</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="enable_discover" {% if settings.enable_discover %}checked{% endif %}>
+                    <label class="form-check-label">Enable Discover</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="enable_leads" {% if settings.enable_leads %}checked{% endif %}>
+                    <label class="form-check-label">Enable Leads</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="enable_wallet" {% if settings.enable_wallet %}checked{% endif %}>
+                    <label class="form-check-label">Enable Wallet</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="enable_withdrawals" {% if settings.enable_withdrawals %}checked{% endif %}>
+                    <label class="form-check-label">Enable Withdrawals</label>
+                </div>
+
+            </div>
+
+        </div>
+
+        <button
+            class="btn btn-success btn-lg w-100">
+
+            💾 Save Business Settings
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
