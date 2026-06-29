@@ -186,10 +186,9 @@
         <!-- UNLOCK SETTINGS -->
         <!-- ====================================== -->
 
-        <div class="card mb-4">
-
+        <div class="card mt-4">
             <div class="card-header bg-info text-white">
-                Unlock Settings
+                Lead Unlock Settings
             </div>
 
             <div class="card-body">
@@ -197,34 +196,58 @@
                 <div class="row">
 
                     <div class="col-md-6 mb-3">
+                        <label>Fresher (Paid Credits)</label>
+                        <input type="number"
+                               name="lead_fresher_paid"
+                               class="form-control"
+                               value="{{ settings.lead_fresher_paid }}">
+            </div>
 
-                        <label>Discover Unlock Credits</label>
+            <div class="col-md-6 mb-3">
+                <label>Fresher (Free Credits)</label>
+                <input type="number"
+                       name="lead_fresher_free"
+                       class="form-control"
+                       value="{{ settings.lead_fresher_free }}">
+            </div>
 
-                        <input
-                            type="number"
-                            class="form-control"
-                            name="discover_unlock_credits"
-                            value="{{ settings.discover_unlock_credits }}">
+            <div class="col-md-6 mb-3">
+                <label>Experienced (Paid Credits)</label>
+                <input type="number"
+                       name="lead_experienced_paid"
+                       class="form-control"
+                       value="{{ settings.lead_experienced_paid }}">
+            </div>
 
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-
-                        <label>Leads Unlock Credits</label>
-
-                        <input
-                            type="number"
-                            class="form-control"
-                            name="leads_unlock_credits"
-                            value="{{ settings.leads_unlock_credits }}">
-
-                    </div>
-
-                </div>
-
+            <div class="col-md-6 mb-3">
+                <label>Experienced (Free Credits)</label>
+                <input type="number"
+                       name="lead_experienced_free"
+                       class="form-control"
+                       value="{{ settings.lead_experienced_free }}">
             </div>
 
         </div>
+
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header bg-dark text-white">
+        Discover Unlock
+    </div>
+
+    <div class="card-body">
+
+        <label>Discover Unlock Cost</label>
+
+        <input type="number"
+               name="discover_unlock_cost"
+               class="form-control"
+               value="{{ settings.discover_unlock_cost }}">
+
+    </div>
+</div>
 
         <!-- ====================================== -->
         <!-- WALLET -->

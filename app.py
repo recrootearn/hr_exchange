@@ -536,6 +536,16 @@ class BusinessSettings(db.Model):
     enable_wallet = db.Column(db.Boolean, default=True)
     enable_withdrawals = db.Column(db.Boolean, default=True)
 
+    # Lead Unlock Credits
+    lead_fresher_paid = db.Column(db.Integer, default=1)
+    lead_fresher_free = db.Column(db.Integer, default=2)
+
+    lead_experienced_paid = db.Column(db.Integer, default=2)
+    lead_experienced_free = db.Column(db.Integer, default=4)
+
+    # Discover Unlock Credits
+    discover_unlock_cost = db.Column(db.Integer, default=2)
+
     # -------------------------
     # Audit
     # -------------------------
@@ -1136,6 +1146,14 @@ def admin_business_settings():
 
             settings.minimum_withdrawal = int(request.form.get("minimum_withdrawal", 500))
             settings.maximum_daily_withdrawal = int(request.form.get("maximum_daily_withdrawal", 5000))
+
+            settings.lead_fresher_paid = int(request.form.get("lead_fresher_paid", 1))
+            settings.lead_fresher_free = int(request.form.get("lead_fresher_free", 2))
+
+            settings.lead_experienced_paid = int(request.form.get("lead_experienced_paid", 2))
+            settings.lead_experienced_free = int(request.form.get("lead_experienced_free", 4))
+
+            settings.discover_unlock_cost = int(request.form.get("discover_unlock_cost", 2))
 
             # ======================================
             # FEATURE TOGGLES
