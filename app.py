@@ -243,21 +243,6 @@ class CandidateUser(UserMixin, db.Model):
         default=datetime.utcnow
     )
 
-class CandidateWalletHistory(db.Model):
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    candidate_id = db.Column(db.Integer)
-
-    amount = db.Column(db.Float)
-
-    action = db.Column(db.String(200))
-
-    created_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
-    )
-
 class CreditPurchase(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
