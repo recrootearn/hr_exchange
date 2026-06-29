@@ -2824,20 +2824,34 @@ def candidate_referral():
     if not session.get("candidate_id"):
         return redirect("/candidate-login")
 
+    settings = get_business_settings()
+
     candidate = CandidateUser.query.get_or_404(
         session["candidate_id"]
     )
 
     referrals = CandidateUser.query.filter_by(
         referred_by_candidate_id=candidate.id
+    ).order_by(
+        CandidateUser.id.desc()
     ).all()
+
+    referral_link = (
+        request.host_url +
+        "candidate-register?ref=" +
+        candidate.candidate_referral_code
+    )
 
     return render_template(
         "candidate_referral.html",
+
         candidate=candidate,
+
         referrals=referrals,
-        total_earnings=candidate.referral_earnings,
-        successful=candidate.successful_referrals
+
+        settings=settings,
+
+        referral_link=referral_link
     )
 
 @app.route('/company/<int:id>')
