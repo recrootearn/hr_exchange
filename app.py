@@ -182,6 +182,15 @@ class CandidateUser(UserMixin, db.Model):
 
     interested_fields = db.Column(db.Text)
 
+    revenue_owner_type = db.Column(
+        db.String(20),
+        default="admin"
+    )
+
+    revenue_owner_id = db.Column(
+        db.Integer
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
@@ -460,6 +469,14 @@ class Candidate(db.Model):
     is_platform_candidate = db.Column(
         db.Boolean,
         default=False
+    )
+    revenue_owner_type = db.Column(
+        db.String(20),
+        default="admin"
+    )
+
+    revenue_owner_id = db.Column(
+        db.Integer
     )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_fake = db.Column(db.Boolean, default=False)
@@ -2707,6 +2724,8 @@ def follow_candidate(id):
 @login_required
 def unlock_contact(id):
 
+    settings = get_business_settings()
+
     existing = CandidateContactUnlock.query.filter_by(
         hr_id=current_user.id,
         candidate_user_id=id
@@ -2718,13 +2737,13 @@ def unlock_contact(id):
 
         return redirect(request.referrer)
 
-    if current_user.credits < 2:
+    if current_user.credits < settings.discover_unlock_credits:
 
-        flash("Need 2 credits")
+        flash(f"Need {settings.discover_unlock_credits} credits")
 
         return redirect(request.referrer)
 
-    current_user.credits -= 2
+    current_user.credits -= settings.discover_unlock_credits
 
     db.session.add(
 
@@ -2738,7 +2757,7 @@ def unlock_contact(id):
 
         CreditHistory(
             user_id=current_user.id,
-            amount=-2,
+            amount=-settings.discover_unlock_credits,
             action="Unlocked Candidate Contact"
         )
     )
@@ -3677,7 +3696,7 @@ def upload():
 
         if Candidate.query.filter_by(
             uploaded_by=current_user.id
-        ).count() >= 500:
+        ).count() settings.hr_minimum_purchase:
 
             flash(
                 "Upload limit reached",
@@ -4056,13 +4075,19 @@ def unlock(id):
 
             credits_to_use -= used
 
+            settings = get_business_settings()
+
             uploader_share = round(
-                purchase.price_per_credit * used * 0.5,
+                purchase.price_per_credit *
+                used *
+                settings.leads_hr_share / 100,
                 2
             )
 
             platform_share = round(
-                purchase.price_per_credit * used * 0.5,
+                purchase.price_per_credit *
+                used *
+                settings.leads_admin_share / 100,
                 2
             )
 
@@ -5474,6 +5499,8 @@ def buy_credits(amount):
 @login_required
 def payment_success():
 
+    settings = get_business_settings()
+
     credits = session.get('buy_credits', 0)
 
     amount = session.get('buy_amount', 0)
@@ -5514,9 +5541,8 @@ def payment_success():
     db.session.add(history)
 
     # REFERRAL REWARD
-
     if (
-        amount >= 500 and
+        amount >= settings.hr_minimum_purchase and
         current_user.referred_by and
         not current_user.referral_purchase_reward_given
     ):
@@ -5530,8 +5556,8 @@ def payment_success():
             referrer.successful_referrals < 10
         ):
 
-            referrer.wallet_balance += 200
-            referrer.referral_earnings += 200
+            referrer.wallet_balance += settings.hr_to_hr_reward
+            referrer.referral_earnings += settings.hr_to_hr_reward
             referrer.successful_referrals += 1
 
             current_user.referral_purchase_reward_given = True
