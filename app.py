@@ -4778,53 +4778,209 @@ def unlock(id):
                 2
             )
 
+@app.route('/unlock/<int:id>')
+@login_required
+def unlock(id):
+
+    candidate = Candidate.query.get_or_404(id)
+
+    # -----------------------------------------
+    # Prevent unlocking own candidate
+    # -----------------------------------------
+
+    if candidate.uploaded_by == current_user.id:
+
+        flash(
+            "You cannot unlock your own candidate.",
+            "danger"
+        )
+
+        return redirect(request.referrer)
+
+    # -----------------------------------------
+    # Already unlocked?
+    # -----------------------------------------
+
+    existing = Unlock.query.filter_by(
+        user_id=current_user.id,
+        candidate_id=id
+    ).first()
+
+    if existing:
+
+        flash(
+            "Candidate already unlocked.",
+            "warning"
+        )
+
+        return redirect(request.referrer)
+
+    # -----------------------------------------
+    # Credit Calculation
+    # -----------------------------------------
+
+    is_experienced = (
+        candidate.experience.strip().lower() == "experienced"
+    )
+
+    paid_cost = 2 if is_experienced else 1
+
+    free_cost = 4 if is_experienced else 2
+
+    # -----------------------------------------
+    # Total Credit Check
+    # -----------------------------------------
+
+    total_available = (
+        current_user.paid_credits +
+        current_user.credits
+    )
+
+    if total_available <= 0:
+
+        flash(
+            "You don't have enough credits. Please purchase a package.",
+            "warning"
+        )
+
+        return redirect("/buy-credits")
+
+    # -----------------------------------------
+    # Create Unlock Record
+    # -----------------------------------------
+
+    unlock = Unlock(
+
+        user_id=current_user.id,
+
+        candidate_id=id
+
+    )
+
+    db.session.add(unlock)
+
+    uploader = User.query.get(candidate.uploaded_by)
+
+    # -----------------------------------------
+    # Paid Credits First
+    # -----------------------------------------
+
+    if current_user.paid_credits >= paid_cost:
+
+        current_user.paid_credits -= paid_cost
+
+        credit_used = paid_cost
+
+        credits_to_use = paid_cost
+
+        purchases = CreditPurchase.query.filter(
+
+            CreditPurchase.user_id == current_user.id,
+
+            CreditPurchase.credits_remaining > 0
+
+        ).order_by(
+
+            CreditPurchase.created_at.asc()
+
+        ).all()
+
+        remaining_paid = sum(
+            purchase.credits_remaining
+            for purchase in purchases
+        )
+
+        if remaining_paid < paid_cost:
+
+            flash(
+                "Paid credit records are out of sync. Please contact support.",
+                "danger"
+            )
+
+            return redirect("/buy-credits")
+
+        for purchase in purchases:
+
+            if credits_to_use == 0:
+                break
+
+            used = min(
+                purchase.credits_remaining,
+                credits_to_use
+            )
+
+            purchase.credits_remaining -= used
+
+            if purchase.credits_remaining < 0:
+                purchase.credits_remaining = 0
+
+            credits_to_use -= used
+
+            settings = get_business_settings()
+
+            uploader_share = round(
+                purchase.price_per_credit *
+                used *
+                settings.leads_hr_share / 100,
+                2
+            )
+
+            platform_share = round(
+                purchase.price_per_credit *
+                used *
+                settings.leads_admin_share / 100,
+                2
+            )
+
             # ==========================================
             # REVENUE OWNER LOGIC
             # ==========================================
 
             if settings.enable_revenue_sharing:
 
-                   # HR-owned lead
-                   if (
-            candidate.revenue_owner_type == "hr"
-                       and candidate.revenue_owner_id
-                   ):
+                # HR-owned lead
+                if (
+                    candidate.revenue_owner_type == "hr"
+                    and candidate.revenue_owner_id
+                ):
 
-                       owner = User.query.get(candidate.revenue_owner_id)
+                    owner = User.query.get(
+                        candidate.revenue_owner_id
+                    )
 
-                       if owner:
+                    if owner:
 
-                               safe_wallet_credit(
-                                   owner,
-                                   uploader_share
-                               )
+                        safe_wallet_credit(
+                            owner,
+                            uploader_share
+                        )
 
-                           db.session.add(
-                               Earnings(
-                               user_id=owner.id,
-                               purchase_id=purchase.id,
-                               amount=uploader_share,
-                               reason=f"Lead Unlock Revenue - {candidate.name}"
-                               )
-                           )
+                        db.session.add(
+                            Earnings(
+                                user_id=owner.id,
+                                purchase_id=purchase.id,
+                                amount=uploader_share,
+                                reason=f"Lead Unlock Revenue - {candidate.name}"
+                            )
+                        )
 
-                       else:
+                    else:
 
-                           # HR deleted
-                           platform_share += uploader_share
-                           uploader_share = 0
+                        # HR deleted
+                        platform_share += uploader_share
+                        uploader_share = 0
 
-                   else:
+                else:
 
-                       # Platform/Admin owned
-                       platform_share += uploader_share
-                       uploader_share = 0
+                    # Platform/Admin owned
+                    platform_share += uploader_share
+                    uploader_share = 0
 
-               else:
+            else:
 
-                   # Revenue sharing disabled
-                   platform_share += uploader_share
-                   uploader_share = 0
+                # Revenue sharing disabled
+                platform_share += uploader_share
+                uploader_share = 0
 
             platform = PlatformEarning(
                 user_id=current_user.id,
@@ -4836,20 +4992,20 @@ def unlock(id):
 
             db.session.add(platform)
 
-    else:
+            else:
 
-        if current_user.credits < free_cost:
+                if current_user.credits < free_cost:
 
-            flash(
-                f"You need {free_cost} free credits or {paid_cost} paid credits to unlock this candidate.",
-                "warning"
-            )
+                    flash(
+                        f"You need {free_cost} free credits or {paid_cost} paid credits to unlock this candidate.",
+                        "warning"
+                    )
 
-            return redirect("/buy-credits")
+                    return redirect("/buy-credits")
 
-        current_user.credits -= free_cost
+                current_user.credits -= free_cost
 
-        credit_used = free_cost
+                credit_used = free_cost
 
     # -----------------------------------------
     # CREDIT HISTORY
