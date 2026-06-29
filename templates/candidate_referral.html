@@ -1,0 +1,175 @@
+{% extends "candidate_base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3 class="mb-4">
+        🎁 Candidate Referral Program
+    </h3>
+
+    <div class="row">
+
+        <div class="col-md-6 mb-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h5>Your Referral Code</h5>
+
+                    <div class="input-group mt-3">
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="referralCode"
+                            value="{{ candidate.candidate_referral_code }}"
+                            readonly>
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="copyCode()">
+
+                            Copy
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6 mb-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h5>Total Earnings</h5>
+
+                    <h2 class="text-success">
+
+                        ₹{{ total_earnings }}
+
+                    </h2>
+
+                    <p>
+
+                        Successful Referrals :
+                        <strong>{{ successful }}</strong>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card shadow-sm mt-4">
+
+        <div class="card-header">
+
+            Referral History
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Name</th>
+                        <th>Mobile</th>
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for user in referrals %}
+
+                    <tr>
+
+                        <td>{{ user.full_name }}</td>
+
+                        <td>{{ user.mobile }}</td>
+
+                        <td>
+
+                            {% if user.candidate_referral_reward_given %}
+
+                                <span class="badge bg-success">
+                                    Reward Paid
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-warning">
+                                    Pending
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="3" class="text-center">
+
+                            No referrals yet.
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function copyCode(){
+
+    let copyText =
+    document.getElementById("referralCode");
+
+    copyText.select();
+
+    copyText.setSelectionRange(0,99999);
+
+    navigator.clipboard.writeText(
+        copyText.value
+    );
+
+    alert("Referral code copied!");
+
+}
+
+</script>
+
+{% endblock %}

@@ -2823,6 +2823,33 @@ def job_view(job_id):
         applied_jobs=applied_jobs
     )
 
+@app.route('/candidate-referral')
+@login_required
+def candidate_referral():
+
+    if session.get("user_type") != "candidate":
+        return redirect("/candidate-login")
+
+    candidate = CandidateUser.query.get_or_404(current_user.id)
+
+    referrals = CandidateUser.query.filter_by(
+        referred_by_candidate_id=candidate.id
+    ).order_by(
+        CandidateUser.id.desc()
+    ).all()
+
+    total_earnings = candidate.referral_earnings or 0
+
+    successful = candidate.successful_referrals or 0
+
+    return render_template(
+        "candidate_referral.html",
+        candidate=candidate,
+        referrals=referrals,
+        total_earnings=total_earnings,
+        successful=successful
+    )
+
 @app.route('/company/<int:id>')
 def company_profile(id):
 
