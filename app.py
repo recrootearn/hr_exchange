@@ -1864,7 +1864,7 @@ def candidate_withdraw():
     )
 
 @app.route('/admin-candidate-withdrawals')
-@admin_required
+@login_required
 def admin_candidate_withdrawals():
 
     withdrawals = CandidateWithdrawal.query.order_by(
@@ -1877,7 +1877,7 @@ def admin_candidate_withdrawals():
     )
 
 @app.route('/approve-candidate-withdrawal/<int:id>')
-@admin_required
+@login_required
 def approve_candidate_withdrawal(id):
 
     withdrawal = CandidateWithdrawal.query.get_or_404(id)
@@ -1927,7 +1927,7 @@ def approve_candidate_withdrawal(id):
     return redirect('/admin-candidate-withdrawals')
 
 @app.route('/reject-candidate-withdrawal/<int:id>')
-@admin_required
+@login_required
 def reject_candidate_withdrawal(id):
 
     withdrawal = CandidateWithdrawal.query.get_or_404(id)
@@ -3159,7 +3159,7 @@ def follow_hr(id):
     return redirect(f'/company/{id}')
 
 @app.route('/admin-revenue-dashboard')
-@admin_required
+@login_required
 def admin_revenue_dashboard():
 
     total_platform = db.session.query(
