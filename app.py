@@ -2327,8 +2327,11 @@ def candidate_register():
 
         return redirect('/candidate-login')
 
+    ref = request.args.get("ref", "").upper()
+
     return render_template(
-        'candidate_register.html'
+        "candidate_register.html",
+        referral_code=ref
     )
 
 @app.route('/candidate-login', methods=['GET','POST'])
@@ -2830,33 +2833,30 @@ def candidate_referral():
         session["candidate_id"]
     )
 
+    # Generate referral code if it doesn't exist
+    if not candidate.candidate_referral_code:
+        candidate.candidate_referral_code = generate_candidate_referral_code()
+        db.session.commit()
+
+    # Candidates referred by this candidate
     referrals = CandidateUser.query.filter_by(
         referred_by_candidate_id=candidate.id
     ).order_by(
         CandidateUser.id.desc()
     ).all()
 
-    if candidate.candidate_referral_code is None:
-
-    candidate.candidate_referral_code = generate_candidate_referral_code()
-
-        db.session.commit()
-
+    # Referral link
     referral_link = (
-        request.host_url +
-        "candidate-register?ref=" +
+        request.host_url.rstrip("/") +
+        "/candidate-register?ref=" +
         candidate.candidate_referral_code
     )
 
     return render_template(
         "candidate_referral.html",
-
         candidate=candidate,
-
         referrals=referrals,
-
         settings=settings,
-
         referral_link=referral_link
     )
 
