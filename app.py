@@ -1433,7 +1433,7 @@ def locked():
         )
 
     # Experience Filter
-
+y
     if experience:
 
         query = query.filter_by(
@@ -6484,7 +6484,7 @@ def buy_credits_page():
 
 @app.route('/buy-credits/<int:package_id>')
 @login_required
-def buy_credits(amount):
+def buy_credits(package_id):
 
     package = CreditPackage.query.filter_by(
         id=package_id,
@@ -6492,24 +6492,18 @@ def buy_credits(amount):
     ).first()
 
     if not package:
-
         flash(
             "Invalid Package",
             "danger"
         )
-
         return redirect("/buy-credits")
 
     credits = package.credits
 
     order = client.order.create({
-
-        "amount": int(package.price * 100),
-
+        "amount": int(float(package.price) * 100),
         "currency": "INR",
-
         "payment_capture": 1
-
     })
 
     # Save purchase info
@@ -6519,19 +6513,12 @@ def buy_credits(amount):
     session["package_id"] = package.id
 
     return render_template(
-
         "payment.html",
-
         order=order,
-
         amount=package.price,
-
         credits=credits,
-
         package=package,
-
         razorpay_key=RAZORPAY_KEY
-
     )
 
 @app.route('/payment-success')
