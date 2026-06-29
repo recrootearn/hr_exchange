@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+<div class="card shadow">
+
+<div class="card-header bg-success text-white">
+
+<h3>
+
+➕ Add Credit Package
+
+</h3>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label>Package Name</label>
+
+<input
+type="text"
+name="package_name"
+class="form-control"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>Credits</label>
+
+<input
+type="number"
+name="credits"
+class="form-control"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>Price (₹)</label>
+
+<input
+type="number"
+name="price"
+class="form-control"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>Badge</label>
+
+<input
+type="text"
+name="badge"
+class="form-control"
+placeholder="Popular / Business / Most Popular">
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>Description</label>
+
+<input
+type="text"
+name="description"
+class="form-control"
+placeholder="Best for Recruiters">
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>Display Order</label>
+
+<input
+type="number"
+name="display_order"
+class="form-control"
+value="1">
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>Background Color</label>
+
+<input
+type="color"
+name="color"
+class="form-control form-control-color"
+value="#2563eb">
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>Status</label>
+
+<select
+name="is_active"
+class="form-control">
+
+<option value="1">
+
+Active
+
+</option>
+
+<option value="0">
+
+Disabled
+
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<hr>
+
+<button
+class="btn btn-success">
+
+<i class="fas fa-save"></i>
+
+Save Package
+
+</button>
+
+<a
+href="/admin-credit-packages"
+class="btn btn-secondary">
+
+Cancel
+
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

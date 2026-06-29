@@ -1672,7 +1672,9 @@ def add_credit_package():
 
             description=request.form["description"],
 
-            display_order=int(request.form["display_order"])
+            display_order=int(request.form["display_order"]),
+
+            is_active=bool(int(request.form["is_active"]))
 
         )
 
@@ -1694,19 +1696,21 @@ def edit_credit_package(id):
 
     if request.method=="POST":
 
-        package.package_name=request.form["package_name"]
+        package.package_name = request.form["package_name"]
 
-        package.credits=int(request.form["credits"])
+        package.credits = int(request.form["credits"])
 
-        package.price=float(request.form["price"])
+        package.price = float(request.form["price"])
 
-        package.badge=request.form["badge"]
+        package.badge = request.form["badge"]
 
-        package.color=request.form["color"]
+        package.color = request.form["color"]
 
-        package.description=request.form["description"]
+        package.description = request.form["description"]
 
-        package.display_order=int(request.form["display_order"])
+        package.display_order = int(request.form["display_order"])
+
+        package.is_active = bool(int(request.form["is_active"]))
 
         db.session.commit()
 
