@@ -4817,24 +4817,40 @@ def unlock(id):
     # Credit Calculation
     # -----------------------------------------
 
+    settings = get_business_settings()
+
     is_experienced = (
-        candidate.experience.strip().lower() == "experienced"
+    candidate.experience.strip().lower() == "experienced"
     )
 
-    paid_cost = 2 if is_experienced else 1
+    if is_experienced:
 
-    free_cost = 4 if is_experienced else 2
+        paid_cost = settings.lead_experienced_paid
+
+        free_cost = settings.lead_experienced_free
+
+    else:
+
+        paid_cost = settings.lead_fresher_paid
+
+        free_cost = settings.lead_fresher_free
 
     # -----------------------------------------
     # Total Credit Check
     # -----------------------------------------
 
-    total_available = (
-        current_user.paid_credits +
-        current_user.credits
-    )
+    if (
+        current_user.paid_credits < paid_cost
+        and
+        current_user.credits < free_cost
+    ):
 
-    if total_available <= 0:
+        flash(
+            f"You need {paid_cost} paid credits or {free_cost} free credits to unlock this candidate.",
+            "warning"
+        )
+
+    return redirect("/buy-credits")
 
         flash(
             "You don't have enough credits. Please purchase a package.",
