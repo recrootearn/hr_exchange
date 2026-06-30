@@ -203,6 +203,23 @@ class CandidateUser(UserMixin, db.Model):
     education = db.Column(db.Text)
 
     interested_fields = db.Column(db.Text)
+
+    daily_bonus_completed = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    # Candidate XP
+    candidate_xp = db.Column(db.Integer, default=0)
+
+    # Daily Streaks
+    daily_login_completed = db.Column(db.Boolean, default=False)
+    daily_apply_completed = db.Column(db.Boolean, default=False)
+    daily_follow_completed = db.Column(db.Boolean, default=False)
+    daily_referral_completed = db.Column(db.Boolean, default=False)
+
+    # Date for resetting streaks
+    last_streak_reset = db.Column(db.Date, nullable=True)
     
     upi_id = db.Column(db.String(100))
     bank_name = db.Column(db.String(100))
@@ -886,6 +903,73 @@ def send_notification(
         )
 
     )
+
+def check_daily_bonus(candidate):
+
+    if (
+        candidate.daily_login_completed and
+        candidate.daily_apply_completed and
+        candidate.daily_follow_completed and
+        candidate.daily_referral_completed
+    ):
+
+        if not getattr(candidate, "daily_bonus_completed", False):
+
+            candidate.candidate_xp += 15
+            candidate.daily_bonus_completed = True
+
+def get_candidate_level(xp):
+
+    levels = [
+
+        ("🌱 Beginner", 0),
+        ("🚀 Explorer", 100),
+        ("💼 Job Seeker", 300),
+        ("⭐ Rising Talent", 700),
+        ("🔥 Professional", 1500),
+        ("💎 Elite Candidate", 3000),
+        ("👑 Career Champion", 6000)
+
+    ]
+
+    current_level = levels[0][0]
+    next_level = "MAX"
+    progress = 100
+    remaining = 0
+
+    for i in range(len(levels)):
+
+        level_name, level_xp = levels[i]
+
+        if xp >= level_xp:
+            current_level = level_name
+
+            if i < len(levels) - 1:
+
+                next_level_name, next_level_xp = levels[i + 1]
+
+                remaining = next_level_xp - xp
+
+                progress = (
+                    (xp - level_xp)
+                    /
+                    (next_level_xp - level_xp)
+                ) * 100
+
+                next_level = next_level_name
+
+            else:
+
+                remaining = 0
+                progress = 100
+                next_level = "MAX"
+
+    return {
+        "level": current_level,
+        "next_level": next_level,
+        "remaining": remaining,
+        "progress": round(progress),
+    }
 
 @app.context_processor
 def inject_notifications():
@@ -2653,14 +2737,36 @@ def candidate_login():
         # Normal login
         if user and user.password == password:
 
-            session['candidate_id'] = user.id
+            from datetime import date
+
+            today = date.today()
+
+            # Reset streaks on a new day
+            if user.last_streak_reset != today:
+
+                user.daily_login_completed = False
+                user.daily_apply_completed = False
+                user.daily_follow_completed = False
+                user.daily_referral_completed = False
+
+                user.last_streak_reset = today
+
+            # Give login XP once per day
+            if not user.daily_login_completed:
+
+                user.daily_login_completed = True
+                user.candidate_xp += 5
+
+            db.session.commit()
+
+            session["candidate_id"] = user.id
 
             flash(
-                'Login Successful',
-                'success'
+                "Login Successful",
+                "success"
             )
 
-            return redirect('/candidate-dashboard')
+            return redirect("/candidate-dashboard")
 
         flash(
             'Invalid Username or Password',
@@ -2675,13 +2781,79 @@ def candidate_dashboard():
     if 'candidate_id' not in session:
         return redirect('/candidate-login')
 
-    candidate = CandidateUser.query.get(
+    candidate = CandidateUser.query.get_or_404(
         session['candidate_id']
     )
 
+    # ==========================
+    # Candidate Level
+    # ==========================
+
+    level = get_candidate_level(
+        candidate.candidate_xp
+    )
+
+    # ==========================
+    # Top Cards
+    # ==========================
+
+    applied_jobs = JobApplication.query.filter_by(
+        candidate_id=candidate.id
+    ).count()
+
+    interviews = JobApplication.query.filter(
+        JobApplication.candidate_id == candidate.id,
+        JobApplication.status == "Interview Done"
+    ).count()
+
+    referrals = candidate.successful_referrals
+
+    wallet_balance = candidate.wallet_balance
+
+    # ==========================
+    # Daily Streaks
+    # ==========================
+
+    daily_login_completed = candidate.daily_login_completed
+
+    daily_apply_completed = candidate.daily_apply_completed
+
+    daily_follow_completed = candidate.daily_follow_completed
+
+    daily_referral_completed = candidate.daily_referral_completed
+
     return render_template(
-        'candidate_dashboard.html',
-        candidate=candidate
+
+        "candidate_dashboard.html",
+
+        candidate=candidate,
+
+        wallet_balance=wallet_balance,
+
+        applied_jobs=applied_jobs,
+
+        interviews=interviews,
+
+        referrals=referrals,
+
+        candidate_xp=candidate.candidate_xp,
+
+        candidate_level=level["level"],
+
+        next_level=level["next_level"],
+
+        remaining_xp=level["remaining"],
+
+        progress=level["progress"],
+
+        daily_login_completed=daily_login_completed,
+
+        daily_apply_completed=daily_apply_completed,
+
+        daily_follow_completed=daily_follow_completed,
+
+        daily_referral_completed=daily_referral_completed
+
     )
 
 @app.route('/candidate-support', methods=['GET','POST'])
@@ -3465,10 +3637,29 @@ def follow_hr(id):
             link=f"/candidate/{candidate.id}",
             image=candidate.profile_photo,
             type="follow"
-
         )
 
         db.session.add(notification)
+
+        # ==========================
+        # DAILY FOLLOW XP
+        # ==========================
+
+        today = date.today()
+
+        if candidate.last_streak_reset != today:
+
+            candidate.daily_login_completed = False
+            candidate.daily_apply_completed = False
+            candidate.daily_follow_completed = False
+            candidate.daily_referral_completed = False
+
+            candidate.last_streak_reset = today
+
+        if not candidate.daily_follow_completed:
+
+            candidate.daily_follow_completed = True
+            candidate.candidate_xp += 5
 
     db.session.commit()
 
@@ -4057,9 +4248,8 @@ def apply_job(job_id):
 
     application = JobApplication(
         job_id=job_id,
-        candidate_id=session['candidate_id']
-        ,
-            status=None
+        candidate_id=session['candidate_id'],
+        status=None
     )
 
     db.session.add(application)
@@ -4080,6 +4270,26 @@ def apply_job(job_id):
     )
 
     db.session.add(notification)
+
+    # ==========================
+    # DAILY APPLY XP
+    # ==========================
+
+    today = date.today()
+
+    if candidate.last_streak_reset != today:
+
+        candidate.daily_login_completed = False
+        candidate.daily_apply_completed = False
+        candidate.daily_follow_completed = False
+        candidate.daily_referral_completed = False
+
+        candidate.last_streak_reset = today
+
+    if not candidate.daily_apply_completed:
+
+        candidate.daily_apply_completed = True
+        candidate.candidate_xp += 10
 
     db.session.commit()
 
