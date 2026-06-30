@@ -4312,9 +4312,7 @@ def discover_hr():
 
     city = request.args.get('city', '')
 
-    query = User.query.filter_by(
-        is_approved=True
-    )
+    query = User.query.filter_by(is_approved=True)
 
     if city:
         query = query.filter(
@@ -4325,11 +4323,22 @@ def discover_hr():
         User.id.desc()
     ).all()
 
+    following_ids = []
+
+    if 'candidate_id' in session:
+
+        following_ids = [
+            f.followed_hr_id
+            for f in Follow.query.filter_by(
+                follower_candidate_id=session['candidate_id']
+            ).all()
+        ]
+
     return render_template(
-        'discover_hr.html',
+        "discover_hr.html",
         hrs=hrs,
         city=city,
-        Follow=Follow
+        following_ids=following_ids
     )
 
 @app.route('/discover-candidates')
