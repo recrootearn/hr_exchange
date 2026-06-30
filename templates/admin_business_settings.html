@@ -294,233 +294,233 @@
         </div>
 
         <!-- ====================================== -->
-<!-- DAILY CANDIDATE REWARD -->
-<!-- ====================================== -->
+        <!-- DAILY CANDIDATE REWARD -->
+        <!-- ====================================== -->
 
-<div class="card mb-4">
+        <div class="card mb-4">
 
-    <div class="card-header bg-warning text-dark">
+            <div class="card-header bg-warning text-dark">
 
-        🎁 Daily Candidate Reward
-
-    </div>
-
-    <div class="card-body">
-
-        <div class="row">
-
-            <!-- Left Side -->
-
-            <div class="col-md-6">
-
-                <div class="form-check form-switch mb-4">
-
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="enable_daily_candidate_reward"
-                        id="enableDailyReward"
-                        {% if settings.enable_daily_candidate_reward %}checked{% endif %}>
-
-                    <label class="form-check-label fw-bold"
-                           for="enableDailyReward">
-
-                        Enable Daily Reward
-
-                    </label>
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-
-                        💰 Reward Amount (₹)
-
-                    </label>
-
-                    <input
-                        type="number"
-                        class="form-control"
-                        name="daily_candidate_reward"
-                        value="{{ settings.daily_candidate_reward }}">
-
-                    <small class="text-muted">
-
-                        Amount credited after completing all enabled tasks.
-
-                    </small>
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-
-                        🎯 Referral Target
-
-                    </label>
-
-                    <input
-                        type="number"
-                        class="form-control"
-                        name="daily_referral_target"
-                        value="{{ settings.daily_referral_target }}">
-
-                    <small class="text-muted">
-
-                        Used only if Referral task is enabled.
-
-                    </small>
-
-                </div>
+                🎁 Daily Candidate Reward
 
             </div>
 
-            <!-- Right Side -->
+            <div class="card-body">
 
-            <div class="col-md-6">
+                <div class="row">
 
-                <h6 class="fw-bold mb-3">
+                    <!-- Left Side -->
 
-                    ✅ Daily Tasks Required
+                    <div class="col-md-6">
 
-                </h6>
+                        <div class="form-check form-switch mb-4">
 
-                <div class="form-check mb-2">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="enable_daily_candidate_reward"
+                                id="enableDailyReward"
+                                {% if settings.enable_daily_candidate_reward %}checked{% endif %}>
 
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="daily_reward_login"
-                        id="loginTask"
-                        {% if settings.daily_reward_login %}checked{% endif %}>
+                            <label class="form-check-label fw-bold"
+                                   for="enableDailyReward">
 
-                    <label class="form-check-label"
-                           for="loginTask">
+                                Enable Daily Reward
 
-                        🔑 Login Required
+                            </label>
 
-                    </label>
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+
+                                💰 Reward Amount (₹)
+
+                            </label>
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                name="daily_candidate_reward"
+                                value="{{ settings.daily_candidate_reward }}">
+
+                            <small class="text-muted">
+
+                                Amount credited after completing all enabled tasks.
+
+                            </small>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+
+                                🎯 Referral Target
+
+                            </label>
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                name="daily_referral_target"
+                                value="{{ settings.daily_referral_target }}">
+
+                            <small class="text-muted">
+
+                                Used only if Referral task is enabled.
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Right Side -->
+
+                    <div class="col-md-6">
+
+                        <h6 class="fw-bold mb-3">
+
+                            ✅ Daily Tasks Required
+
+                        </h6>
+
+                        <div class="form-check mb-2">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="daily_reward_login"
+                                id="loginTask"
+                                {% if settings.daily_reward_login %}checked{% endif %}>
+
+                            <label class="form-check-label"
+                                   for="loginTask">
+
+                                🔑 Login Required
+
+                            </label>
+
+                        </div>
+
+                        <div class="form-check mb-2">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="daily_reward_apply"
+                                id="applyTask"
+                                {% if settings.daily_reward_apply %}checked{% endif %}>
+
+                            <label class="form-check-label"
+                                   for="applyTask">
+
+                                📄 Apply 1 Job
+
+                            </label>
+
+                        </div>
+
+                        <div class="form-check mb-2">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="daily_reward_follow"
+                                id="followTask"
+                                {% if settings.daily_reward_follow %}checked{% endif %}>
+
+                            <label class="form-check-label"
+                                   for="followTask">
+
+                                ❤️ Follow 1 HR
+
+                            </label>
+
+                        </div>
+
+                        <div class="form-check mb-4">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="daily_reward_referral"
+                                id="referralTask"
+                                {% if settings.daily_reward_referral %}checked{% endif %}>
+
+                            <label class="form-check-label"
+                                   for="referralTask">
+
+                                👥 Successful Referrals
+
+                            </label>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
-                <div class="form-check mb-2">
+                <hr>
 
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="daily_reward_apply"
-                        id="applyTask"
-                        {% if settings.daily_reward_apply %}checked{% endif %}>
+                <!-- Preview -->
 
-                    <label class="form-check-label"
-                           for="applyTask">
+                <div class="alert alert-light border">
 
-                        📄 Apply 1 Job
+                    <h6 class="fw-bold mb-3">
 
-                    </label>
+                        🎁 Reward Preview
 
-                </div>
+                    </h6>
 
-                <div class="form-check mb-2">
+                    <p class="mb-2">
 
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="daily_reward_follow"
-                        id="followTask"
-                        {% if settings.daily_reward_follow %}checked{% endif %}>
+                        Candidate completes all enabled daily tasks.
 
-                    <label class="form-check-label"
-                           for="followTask">
+                    </p>
 
-                        ❤️ Follow 1 HR
+                    <div class="row">
 
-                    </label>
+                        <div class="col-md-6">
 
-                </div>
+                            ✔ Daily Login<br>
+                            ✔ Apply 1 Job<br>
+                            ✔ Follow 1 HR<br>
+                            ✔ Referral Target (if enabled)
 
-                <div class="form-check mb-4">
+                        </div>
 
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="daily_reward_referral"
-                        id="referralTask"
-                        {% if settings.daily_reward_referral %}checked{% endif %}>
+                        <div class="col-md-6 text-md-end mt-3 mt-md-0">
 
-                    <label class="form-check-label"
-                           for="referralTask">
+                            <h5 class="text-success mb-1">
 
-                        👥 Successful Referrals
+                                Reward
 
-                    </label>
+                            </h5>
+
+                            <h2 class="fw-bold text-success">
+
+                                ₹{{ settings.daily_candidate_reward }}
+
+                            </h2>
+
+                            <small class="text-muted">
+
+                                Automatically credited to Candidate Wallet
+
+                            </small>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
             </div>
 
         </div>
-
-        <hr>
-
-        <!-- Preview -->
-
-        <div class="alert alert-light border">
-
-            <h6 class="fw-bold mb-3">
-
-                🎁 Reward Preview
-
-            </h6>
-
-            <p class="mb-2">
-
-                Candidate completes all enabled daily tasks.
-
-            </p>
-
-            <div class="row">
-
-                <div class="col-md-6">
-
-                    ✔ Daily Login<br>
-                    ✔ Apply 1 Job<br>
-                    ✔ Follow 1 HR<br>
-                    ✔ Referral Target (if enabled)
-
-                </div>
-
-                <div class="col-md-6 text-md-end mt-3 mt-md-0">
-
-                    <h5 class="text-success mb-1">
-
-                        Reward
-
-                    </h5>
-
-                    <h2 class="fw-bold text-success">
-
-                        ₹{{ settings.daily_candidate_reward }}
-
-                    </h2>
-
-                    <small class="text-muted">
-
-                        Automatically credited to Candidate Wallet
-
-                    </small>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
 
         <!-- ====================================== -->
         <!-- FEATURE TOGGLES -->
