@@ -293,6 +293,48 @@
 
         </div>
 
+        <h4>🎁 Daily Candidate Reward</h4>
+
+        <label>
+        <input type="checkbox" name="enable_daily_candidate_reward"
+        {% if settings.enable_daily_candidate_reward %}checked{% endif %}>
+        Enable Daily Reward
+        </label>
+
+        <label>Reward Amount (₹)</label>
+        <input type="number"
+        name="daily_candidate_reward"
+        value="{{ settings.daily_candidate_reward }}">
+
+        <label>
+        <input type="checkbox" name="daily_reward_login"
+        {% if settings.daily_reward_login %}checked{% endif %}>
+        Login Required
+        </label>
+
+        <label>
+        <input type="checkbox" name="daily_reward_apply"
+        {% if settings.daily_reward_apply %}checked{% endif %}>
+        Apply Job Required
+        </label>
+
+        <label>
+        <input type="checkbox" name="daily_reward_follow"
+        {% if settings.daily_reward_follow %}checked{% endif %}>
+        Follow HR Required
+        </label>
+
+        <label>
+        <input type="checkbox" name="daily_reward_referral"
+        {% if settings.daily_reward_referral %}checked{% endif %}>
+        Referral Required
+        </label>
+
+        <label>Referral Target</label>
+        <input type="number"
+        name="daily_referral_target"
+        value="{{ settings.daily_referral_target }}">
+
         <!-- ====================================== -->
         <!-- FEATURE TOGGLES -->
         <!-- ====================================== -->

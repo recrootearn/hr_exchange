@@ -204,6 +204,11 @@ class CandidateUser(UserMixin, db.Model):
 
     interested_fields = db.Column(db.Text)
 
+    daily_reward_claimed = db.Column(
+        db.Boolean,
+        default=False
+    )
+
     daily_bonus_completed = db.Column(
         db.Boolean,
         default=False
@@ -516,6 +521,45 @@ class BusinessSettings(db.Model):
 
     hr_daily_referral_limit = db.Column(db.Integer, default=10)
     candidate_daily_referral_limit = db.Column(db.Integer, default=10)
+
+    # ==========================
+    # Daily Candidate Reward
+    # ==========================
+
+    enable_daily_candidate_reward = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    daily_candidate_reward = db.Column(
+        db.Integer,
+        default=5
+    )
+
+    daily_reward_login = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    daily_reward_apply = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    daily_reward_follow = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    daily_reward_referral = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    daily_referral_target = db.Column(
+        db.Integer,
+        default=10
+    )
 
     # -------------------------
     # Revenue Sharing
@@ -847,6 +891,70 @@ def get_business_settings():
         db.session.commit()
 
     return settings
+
+def check_daily_reward(candidate):
+
+    settings = get_business_settings()
+
+    if not settings.enable_daily_candidate_reward:
+        return
+
+    if candidate.daily_reward_claimed:
+        return
+
+    login_ok = (
+        not settings.daily_reward_login
+        or candidate.daily_login_completed
+    )
+
+    apply_ok = (
+        not settings.daily_reward_apply
+        or candidate.daily_apply_completed
+    )
+
+    follow_ok = (
+        not settings.daily_reward_follow
+        or candidate.daily_follow_completed
+    )
+
+    referral_ok = (
+        not settings.daily_reward_referral
+        or candidate.daily_referral_completed
+    )
+
+    if login_ok and apply_ok and follow_ok and referral_ok:
+
+        candidate.wallet_balance += settings.daily_candidate_reward
+
+        candidate.daily_reward_claimed = True
+
+        db.session.add(
+
+            CandidateWalletHistory(
+
+                candidate_id=candidate.id,
+
+                amount=settings.daily_candidate_reward,
+
+                action="Daily Task Reward"
+
+            )
+
+        )
+
+        send_notification(
+
+            user_id=candidate.id,
+
+            user_type="candidate",
+
+            message=f"🎉 You earned ₹{settings.daily_candidate_reward} for completing today's tasks.",
+
+            link="/candidate-wallet",
+
+            type="daily_reward"
+
+        )
 
 def safe_wallet_credit(user, amount):
 
@@ -1263,6 +1371,24 @@ def admin_business_settings():
             settings.lead_experienced_free = int(request.form.get("lead_experienced_free", 4))
 
             settings.discover_unlock_cost = int(request.form.get("discover_unlock_cost", 2))
+
+            settings.enable_daily_candidate_reward = "enable_daily_candidate_reward" in request.form
+
+            settings.daily_candidate_reward = int(
+                request.form.get("daily_candidate_reward", 5)
+            )
+
+            settings.daily_reward_login = "daily_reward_login" in request.form
+
+            settings.daily_reward_apply = "daily_reward_apply" in request.form
+
+            settings.daily_reward_follow = "daily_reward_follow" in request.form
+
+            settings.daily_reward_referral = "daily_reward_referral" in request.form
+
+            settings.daily_referral_target = int(
+                request.form.get("daily_referral_target", 10)
+            )
 
             # ======================================
             # FEATURE TOGGLES
@@ -2712,7 +2838,7 @@ def candidate_register():
         referral_code=ref
     )
 
-@app.route('/candidate-login', methods=['GET','POST'])
+@app.route('/candidate-login', methods=['GET', 'POST'])
 def candidate_login():
 
     if request.method == 'POST':
@@ -2741,21 +2867,24 @@ def candidate_login():
 
             today = date.today()
 
-            # Reset streaks on a new day
+            # Reset daily tasks on a new day
             if user.last_streak_reset != today:
 
                 user.daily_login_completed = False
                 user.daily_apply_completed = False
                 user.daily_follow_completed = False
                 user.daily_referral_completed = False
+                user.daily_reward_claimed = False
 
                 user.last_streak_reset = today
 
-            # Give login XP once per day
+            # Mark daily login completed
             if not user.daily_login_completed:
 
                 user.daily_login_completed = True
-                user.candidate_xp += 5
+
+            # Check if all daily tasks are complete
+            check_daily_reward(user)
 
             db.session.commit()
 
@@ -2769,11 +2898,11 @@ def candidate_login():
             return redirect("/candidate-dashboard")
 
         flash(
-            'Invalid Username or Password',
-            'danger'
+            "Invalid Username or Password",
+            "danger"
         )
 
-    return render_template('candidate_login.html')
+    return render_template("candidate_login.html")
 
 @app.route('/candidate-dashboard')
 def candidate_dashboard():
@@ -3642,7 +3771,7 @@ def follow_hr(id):
         db.session.add(notification)
 
         # ==========================
-        # DAILY FOLLOW XP
+        # DAILY FOLLOW TASK
         # ==========================
 
         today = date.today()
@@ -3653,13 +3782,16 @@ def follow_hr(id):
             candidate.daily_apply_completed = False
             candidate.daily_follow_completed = False
             candidate.daily_referral_completed = False
+            candidate.daily_reward_claimed = False
 
             candidate.last_streak_reset = today
 
         if not candidate.daily_follow_completed:
 
             candidate.daily_follow_completed = True
-            candidate.candidate_xp += 5
+
+        # Check if all daily tasks are completed
+        check_daily_reward(candidate)
 
     db.session.commit()
 
@@ -4272,8 +4404,10 @@ def apply_job(job_id):
     db.session.add(notification)
 
     # ==========================
-    # DAILY APPLY XP
+    # DAILY APPLY TASK
     # ==========================
+
+    from datetime import date
 
     today = date.today()
 
@@ -4283,13 +4417,16 @@ def apply_job(job_id):
         candidate.daily_apply_completed = False
         candidate.daily_follow_completed = False
         candidate.daily_referral_completed = False
+        candidate.daily_reward_claimed = False
 
         candidate.last_streak_reset = today
 
     if not candidate.daily_apply_completed:
 
         candidate.daily_apply_completed = True
-        candidate.candidate_xp += 10
+
+    # Check if all daily tasks are completed
+    check_daily_reward(candidate)
 
     db.session.commit()
 

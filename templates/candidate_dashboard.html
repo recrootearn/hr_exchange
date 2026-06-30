@@ -2,244 +2,566 @@
 
 {% block content %}
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<div class="row mt-4">  <!-- Wallet -->  
 
-<style>
+<div class="col-lg-3 col-md-6 col-6 mb-4">  
 
-.candidate-card{
-    background:#fff;
-    border-radius:25px;
-    padding:25px;
-    box-shadow:0 4px 20px rgba(0,0,0,.08);
-}
+    <div class="stats-card text-center">  
 
-.candidate-profile{
-    display:flex;
-    align-items:center;
-    gap:20px;
-}
+        <div class="mb-3">  
 
-.avatar{
-    width:70px;
-    height:70px;
-    border-radius:50%;
-    background:linear-gradient(135deg,#2563eb,#7c3aed);
-    color:white;
-    font-size:36px;
-    font-weight:700;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
+            <i class="fas fa-wallet fa-2x text-success"></i>  
 
-.candidate-name{
-    font-size:20px;
-    font-weight:700;
-}
+        </div>  
 
-.candidate-role{
-    color:#666;
-    text-transform:uppercase;
-}
+        <h6 class="text-muted mb-2">  
 
-.stats-card{
-    background:#fff;
-    border-radius:25px;
-    padding:35px 20px;
-    margin-bottom:25px;
-    box-shadow:0 4px 20px rgba(0,0,0,.08);
-}
+            Wallet Balance  
 
-.stats-card h3{
-    font-size:40px;
-    margin-bottom:15px;
-}
+        </h6>  
 
-.stats-card h4{
-    font-size:20px;
-    font-weight:700;
-    margin-bottom:10px;
-}
+        <h2 class="fw-bold text-success">  
 
-.stats-card p{
-    color:#666;
-    margin-bottom:20px;
-}
+            ₹{{ wallet_balance }}  
 
-.mobile-nav{
-    position:fixed;
-    bottom:0;
-    left:0;
-    width:100%;
-    height:70px;
-    background:#fff;
-    display:flex;
-    justify-content:space-around;
-    align-items:center;
-    box-shadow:0 -3px 15px rgba(0,0,0,.12);
-    z-index:9999;
-}
+        </h2>  
 
-.mobile-nav a{
-    text-decoration:none;
-    color:#666;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    font-size:11px;
-    font-weight:600;
-}
+    </div>  
 
-.mobile-nav i{
-    font-size:22px;
-    margin-bottom:4px;
-}
+</div>  
 
-.mobile-nav a.active{
-    color:#2563eb;
-}
+<!-- Applied Jobs -->  
 
-.page-wrapper{
-    padding-bottom:90px;
-}
+<div class="col-lg-3 col-md-6 col-6 mb-4">  
 
-@media(min-width:769px){
-    .mobile-nav{
-        display:none;
-    }
-}
+    <div class="stats-card text-center">  
 
-</style>
+        <div class="mb-3">  
 
-<div class="page-wrapper">
+            <i class="fas fa-briefcase fa-2x text-primary"></i>  
 
-    <div class="candidate-card">
+        </div>  
 
-        <div class="candidate-profile">
+        <h6 class="text-muted mb-2">  
 
-            <div class="avatar">
-                {{ candidate.full_name[:1].upper() }}
-            </div>
+            Applied Jobs  
 
-            <div>
+        </h6>  
 
-                <div class="candidate-name">
-                    Welcome {{ candidate.full_name }}
-                </div>
+        <h2 class="fw-bold">  
 
-                <div class="candidate-role">
-                    Candidate Dashboard
-                </div>
+            {{ applied_jobs }}  
 
-            </div>
+        </h2>  
 
-        </div>
+    </div>  
 
-    </div>
+</div>  
 
-    <div class="row mt-4">
+<!-- Successful Referrals -->  
 
-        <div class="col-md-4">
+<div class="col-lg-3 col-md-6 col-6 mb-4">  
 
-            <div class="stats-card text-center">
+    <div class="stats-card text-center">  
 
-                <h3>
-                    <i class="fas fa-briefcase"></i>
-                </h3>
+        <div class="mb-3">  
 
-                <h4>Jobs Feed</h4>
+            <i class="fas fa-user-plus fa-2x text-warning"></i>  
 
-                <p>
-                    Explore latest jobs posted by recruiters.
-                </p>
+        </div>  
 
-                <a href="/candidate-feed"
-                   class="btn btn-primary">
+        <h6 class="text-muted mb-2">  
 
-                    View Jobs
+            Referrals  
 
-                </a>
+        </h6>  
 
-            </div>
+        <h2 class="fw-bold">  
 
-        </div>
+            {{ referrals }}  
 
-        <div class="col-md-4">
+        </h2>  
 
-            <div class="stats-card text-center">
+    </div>  
 
-                <h3>
-                    <i class="fas fa-file-alt"></i>
-                </h3>
+</div>  
 
-                <h4>Applied Jobs</h4>
+<!-- Interviews -->  
 
-                <p>
-                    Track all your job applications.
-                </p>
+<div class="col-lg-3 col-md-6 col-6 mb-4">  
 
-                <a href="/applied-jobs"
-                   class="btn btn-success">
+    <div class="stats-card text-center">  
 
-                    View Applications
+        <div class="mb-3">  
 
-                </a>
+            <i class="fas fa-calendar-check fa-2x text-danger"></i>  
 
-            </div>
+        </div>  
 
-        </div>
+        <h6 class="text-muted mb-2">  
 
-        <div class="col-md-4">
+            Interviews  
 
-            <div class="stats-card text-center">
+        </h6>  
 
-                <h3>
-                    <i class="fas fa-user"></i>
-                </h3>
+        <h2 class="fw-bold">  
 
-                <h4>Profile</h4>
+            {{ interviews }}  
 
-                <p>
-                    Complete your profile to attract recruiters.
-                </p>
+        </h2>  
 
-                <a href="/candidate-profile"
-                   class="btn btn-dark">
-
-                    My Profile
-
-                </a>
-
-            </div>
-
-        </div>
-
-    </div>
+    </div>  
 
 </div>
 
-<div class="mobile-nav">
+</div>  <!-- ========================= -->  <!-- DAILY REWARD -->  <!-- ========================= -->  <div class="stats-card">  <div class="d-flex justify-content-between align-items-center">  
 
-    <a href="/candidate-dashboard" class="active">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
-    </a>
+    <div>  
 
-    <a href="/candidate-feed">
-        <i class="fas fa-briefcase"></i>
-        <span>Jobs</span>
-    </a>
+        <h3 class="fw-bold">  
 
-    <a href="/applied-jobs">
-        <i class="fas fa-file-alt"></i>
-        <span>Applied</span>
-    </a>
+            🎁 Daily Reward  
 
-    <a href="/candidate-profile">
-        <i class="fas fa-user"></i>
-        <span>Profile</span>
-    </a>
+        </h3>  
+
+        <p class="text-muted mb-0">  
+
+            Complete today's tasks and earn  
+
+            <strong class="text-success">  
+
+                ₹{{ settings.daily_candidate_reward }}  
+
+            </strong>  
+
+        </p>  
+
+    </div>  
+
+    <div>  
+
+        {% if candidate.daily_reward_claimed %}  
+
+        <span class="badge bg-success p-3">  
+
+            Reward Claimed  
+
+        </span>  
+
+        {% else %}  
+
+        <span class="badge bg-warning text-dark p-3">  
+
+            In Progress  
+
+        </span>  
+
+        {% endif %}  
+
+    </div>  
+
+</div>  
+
+<hr>  
+
+<div class="row">  
+
+    {% if settings.daily_reward_login %}  
+
+    <div class="col-md-6 mb-3">  
+
+        <div class="d-flex justify-content-between">  
+
+            <span>  
+
+                {% if candidate.daily_login_completed %}  
+                    ✅ Daily Login  
+                {% else %}  
+                    ⬜ Daily Login  
+                {% endif %}  
+
+            </span>  
+
+            <span>  
+
+                {% if candidate.daily_login_completed %}  
+                    Done  
+                {% else %}  
+                    Pending  
+                {% endif %}  
+
+            </span>  
+
+        </div>  
+
+    </div>  
+
+    {% endif %}  
+
+
+    {% if settings.daily_reward_apply %}  
+
+    <div class="col-md-6 mb-3">  
+
+        <div class="d-flex justify-content-between">  
+
+            <span>  
+
+                {% if candidate.daily_apply_completed %}  
+                    ✅ Apply 1 Job  
+                {% else %}  
+                    ⬜ Apply 1 Job  
+                {% endif %}  
+
+            </span>  
+
+            <span>  
+
+                {% if candidate.daily_apply_completed %}  
+                    Done  
+                {% else %}  
+                    Pending  
+                {% endif %}  
+
+            </span>  
+
+        </div>  
+
+    </div>  
+
+    {% endif %}  
+
+
+    {% if settings.daily_reward_follow %}  
+
+    <div class="col-md-6 mb-3">  
+
+        <div class="d-flex justify-content-between">  
+
+            <span>  
+
+                {% if candidate.daily_follow_completed %}  
+                    ✅ Follow 1 HR  
+                {% else %}  
+                    ⬜ Follow 1 HR  
+                {% endif %}  
+
+            </span>  
+
+            <span>  
+
+                {% if candidate.daily_follow_completed %}  
+                    Done  
+                {% else %}  
+                    Pending  
+                {% endif %}  
+
+            </span>  
+
+        </div>  
+
+    </div>  
+
+    {% endif %}  
+
+
+    {% if settings.daily_reward_referral %}  
+
+    <div class="col-md-6 mb-3">  
+
+        <div class="d-flex justify-content-between">  
+
+            <span>  
+
+                {% if candidate.daily_referral_completed %}  
+                    ✅ Refer {{ settings.daily_referral_target }} Friends  
+                {% else %}  
+                    ⬜ Refer {{ settings.daily_referral_target }} Friends  
+                {% endif %}  
+
+            </span>  
+
+            <span>  
+
+                {% if candidate.daily_referral_completed %}  
+                    Done  
+                {% else %}  
+                    Pending  
+                {% endif %}  
+
+            </span>  
+
+        </div>  
+
+    </div>  
+
+    {% endif %}  
+
+</div>  
+
+<hr>  
+
+<h6 class="mb-3">  
+
+    Today's Progress  
+
+</h6>  
+
+{% set completed = 0 %}  
+{% set total = 0 %}  
+
+{% if settings.daily_reward_login %}  
+    {% set total = total + 1 %}  
+    {% if candidate.daily_login_completed %}  
+        {% set completed = completed + 1 %}  
+    {% endif %}  
+{% endif %}  
+
+{% if settings.daily_reward_apply %}  
+    {% set total = total + 1 %}  
+    {% if candidate.daily_apply_completed %}  
+        {% set completed = completed + 1 %}  
+    {% endif %}  
+{% endif %}  
+
+{% if settings.daily_reward_follow %}  
+    {% set total = total + 1 %}  
+    {% if candidate.daily_follow_completed %}  
+        {% set completed = completed + 1 %}  
+    {% endif %}  
+{% endif %}  
+
+{% if settings.daily_reward_referral %}  
+    {% set total = total + 1 %}  
+    {% if candidate.daily_referral_completed %}  
+        {% set completed = completed + 1 %}  
+    {% endif %}  
+{% endif %}  
+
+{% set percentage = (completed * 100 // total) if total else 0 %}  
+
+<div class="progress mb-3"  
+     style="height:18px;border-radius:20px;">  
+
+    <div class="progress-bar bg-success"  
+         style="width:{{ percentage }}%">  
+
+        {{ percentage }}%  
+
+    </div>  
+
+</div>  
+
+<div class="d-flex justify-content-between">  
+
+    <strong>  
+
+        {{ completed }} / {{ total }} Tasks Completed  
+
+    </strong>  
+
+    <strong class="text-success">  
+
+        ₹{{ settings.daily_candidate_reward }}  
+
+    </strong>  
+
+</div>  
+
+<hr>  
+
+{% if candidate.daily_reward_claimed %}  
+
+<div class="alert alert-success mb-0">  
+
+    🎉 Congratulations! ₹{{ settings.daily_candidate_reward }} has been added to your wallet.  
+
+</div>  
+
+{% else %}  
+
+<div class="alert alert-warning mb-0">  
+
+    Complete all enabled tasks to unlock today's reward.  
+
+</div>  
+
+{% endif %}
+
+</div>  <!-- ========================= -->  <!-- CANDIDATE LEVEL -->  <!-- ========================= -->  <div class="stats-card mt-4">  <div class="d-flex justify-content-between align-items-center mb-3">  
+
+    <div>  
+
+        <h3 class="fw-bold">  
+
+            🏆 Candidate Level  
+
+        </h3>  
+
+        <small class="text-muted">  
+
+            Unlock higher levels by getting successful referrals.  
+
+        </small>  
+
+    </div>  
+
+    <div>  
+
+        {% if referrals < 10 %}  
+
+            <span class="badge bg-secondary p-3">  
+                🌱 Beginner  
+            </span>  
+
+        {% elif referrals < 50 %}  
+
+            <span class="badge bg-warning text-dark p-3">  
+                🥉 Bronze  
+            </span>  
+
+        {% elif referrals < 150 %}  
+
+            <span class="badge bg-info p-3">  
+                🥈 Silver  
+            </span>  
+
+        {% elif referrals < 500 %}  
+
+            <span class="badge bg-warning p-3">  
+                🥇 Gold  
+            </span>  
+
+        {% elif referrals < 1000 %}  
+
+            <span class="badge bg-primary p-3">  
+                💎 Platinum  
+            </span>  
+
+        {% else %}  
+
+            <span class="badge bg-dark p-3">  
+                👑 Legend  
+            </span>  
+
+        {% endif %}  
+
+    </div>  
+
+</div>  
+
+{% if referrals < 10 %}  
+    {% set next_target = 10 %}  
+    {% set next_level = "Bronze" %}  
+{% elif referrals < 50 %}  
+    {% set next_target = 50 %}  
+    {% set next_level = "Silver" %}  
+{% elif referrals < 150 %}  
+    {% set next_target = 150 %}  
+    {% set next_level = "Gold" %}  
+{% elif referrals < 500 %}  
+    {% set next_target = 500 %}  
+    {% set next_level = "Platinum" %}  
+{% elif referrals < 1000 %}  
+    {% set next_target = 1000 %}  
+    {% set next_level = "Legend" %}  
+{% else %}  
+    {% set next_target = referrals %}  
+    {% set next_level = "Maximum" %}  
+{% endif %}  
+
+{% if next_target == referrals %}  
+    {% set level_progress = 100 %}  
+{% else %}  
+    {% set level_progress = (referrals * 100 // next_target) %}  
+{% endif %}  
+
+<div class="progress mb-3"  
+     style="height:18px;border-radius:25px;">  
+
+    <div class="progress-bar bg-primary"  
+
+         style="width:{{ level_progress }}%;">  
+
+        {{ level_progress }}%  
+
+    </div>  
+
+</div>  
+
+<div class="row text-center">  
+
+    <div class="col-md-4 mb-3">  
+
+        <h6 class="text-muted">  
+
+            Successful Referrals  
+
+        </h6>  
+
+        <h3>  
+
+            {{ referrals }}  
+
+        </h3>  
+
+    </div>  
+
+    <div class="col-md-4 mb-3">  
+
+        <h6 class="text-muted">  
+
+            Next Level  
+
+        </h6>  
+
+        <h3>  
+
+            {{ next_level }}  
+
+        </h3>  
+
+    </div>  
+
+    <div class="col-md-4 mb-3">  
+
+        <h6 class="text-muted">  
+
+            Remaining  
+
+        </h6>  
+
+        <h3>  
+
+            {% if next_target == referrals %}  
+                0  
+            {% else %}  
+                {{ next_target-referrals }}  
+            {% endif %}  
+
+        </h3>  
+
+    </div>  
+
+</div>  
+
+{% if next_target == referrals %}  
+
+    <div class="alert alert-success mb-0">  
+
+        🎉 Congratulations! You have reached the highest Candidate Level.  
+
+    </div>  
+
+{% else %}  
+
+    <div class="alert alert-info mb-0">  
+
+        Complete <b>{{ next_target-referrals }}</b> more successful referrals to unlock <b>{{ next_level }}</b> level.  
+
+    </div>  
+
+{% endif %}
 
 </div>
 
