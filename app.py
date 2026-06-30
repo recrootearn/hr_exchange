@@ -2951,6 +2951,8 @@ def candidate_dashboard():
 
     daily_referral_completed = candidate.daily_referral_completed
 
+    settings = get_business_settings()
+
     return render_template(
 
         "candidate_dashboard.html",
@@ -2962,6 +2964,8 @@ def candidate_dashboard():
         applied_jobs=applied_jobs,
 
         interviews=interviews,
+
+        settings=settings,
 
         referrals=referrals,
 
