@@ -185,8 +185,17 @@
 
         <div class="d-flex gap-2 mt-3">
 
+            {% if session.get('candidate_id') %}
+
             <a href="/follow-hr/{{ hr.id }}?next={{ request.path }}"
                class="btn {% if is_following %}btn-success{% else %}btn-primary{% endif %} flex-fill">
+
+            {% elif current_user.is_authenticated %}
+
+            <a href="/follow-hr-user/{{ hr.id }}?next={{ request.path }}"
+               class="btn {% if is_following %}btn-success{% else %}btn-primary{% endif %} flex-fill">
+
+            {% endif %}
 
                 {% if is_following %}
                     ✓ Following
