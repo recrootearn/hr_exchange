@@ -20,8 +20,60 @@
 
 .candidate-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    grid-template-columns:repeat(4,1fr);
     gap:18px;
+}
+
+@media (max-width:992px){
+
+    .candidate-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+}
+
+@media (max-width:768px){
+
+    .candidate-grid{
+        grid-template-columns:repeat(2,1fr);
+        gap:12px;
+    }
+
+    .candidate-card{
+        padding:12px;
+    }
+
+    .candidate-photo,
+    .default-avatar{
+        width:70px;
+        height:70px;
+    }
+
+    .default-avatar{
+        font-size:26px;
+    }
+
+    .name{
+        font-size:15px;
+        margin-top:8px;
+    }
+
+    .designation{
+        font-size:12px;
+    }
+
+    .city,
+    .exp{
+        font-size:11px;
+    }
+
+    .btn-profile,
+    .btn-follow{
+        padding:8px;
+        font-size:12px;
+        margin-top:8px;
+    }
+
 }
 
 .candidate-card{
