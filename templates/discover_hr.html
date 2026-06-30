@@ -20,16 +20,8 @@
 
 .hr-grid{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
     gap:18px;
-}
-
-@media(max-width:992px){
-
-    .hr-grid{
-        grid-template-columns:repeat(3,1fr);
-    }
-
 }
 
 @media(max-width:768px){
@@ -42,38 +34,31 @@
 }
 
 .hr-card{
-
     background:white;
-    border-radius:20px;
+    border-radius:18px;
     padding:14px;
     text-align:center;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
     transition:.2s;
     overflow:hidden;
-
 }
 
 .hr-card:hover{
-
     transform:translateY(-3px);
-
 }
 
 .hr-photo{
-
-    width:72px;
-    height:72px;
+    width:70px;
+    height:70px;
     border-radius:50%;
     object-fit:cover;
     margin:auto;
     border:3px solid #2563eb;
-
 }
 
 .default-avatar{
-
-    width:72px;
-    height:72px;
+    width:70px;
+    height:70px;
     border-radius:50%;
     margin:auto;
     background:#2563eb;
@@ -83,54 +68,44 @@
     justify-content:center;
     font-size:28px;
     font-weight:700;
-
 }
 
 .hr-name{
-
-    font-size:17px;
+    font-size:16px;
     font-weight:700;
     margin-top:10px;
-    line-height:1.25;
-
+    line-height:1.2;
 }
 
 .company-name{
-
     color:#2563eb;
     font-weight:600;
-    font-size:13px;
     margin-top:5px;
+    font-size:13px;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-
 }
 
 .city{
-
     color:#6b7280;
     font-size:12px;
-    margin-top:6px;
-
+    margin-top:5px;
 }
 
 .btn-profile{
-
     display:block;
     background:#f3f4f6;
     color:#111827;
     text-decoration:none;
     padding:8px;
     border-radius:10px;
-    margin-top:12px;
+    margin-top:10px;
     font-weight:600;
     font-size:13px;
-
 }
 
 .btn-follow{
-
     display:block;
     background:#2563eb;
     color:white;
@@ -140,43 +115,10 @@
     margin-top:8px;
     font-weight:600;
     font-size:13px;
-
 }
 
 .btn-follow:hover{
-
     color:white;
-
-}
-
-@media(max-width:768px){
-
-    .page-title{
-
-        font-size:22px;
-
-    }
-
-    .search-box{
-
-        padding:12px;
-
-    }
-
-    .hr-card{
-
-        padding:12px;
-
-    }
-
-    .btn-profile,
-    .btn-follow{
-
-        padding:7px;
-        font-size:12px;
-
-    }
-
 }
 
 </style>
@@ -196,12 +138,11 @@
                 name="city"
                 class="form-control"
                 placeholder="Search City..."
-                value="{{ city }}">
+                value="{{ city }}"
+            >
 
             <button class="btn btn-primary">
-
                 Search
-
             </button>
 
         </div>
@@ -219,8 +160,8 @@
     {% if hr.profile_photo %}
 
         <img
-            src="/static/uploads/{{ hr.profile_photo }}"
-            class="hr-photo">
+        src="/static/uploads/{{ hr.profile_photo }}"
+        class="hr-photo">
 
     {% else %}
 
@@ -253,7 +194,7 @@
     <a href="/company/{{ hr.id }}"
        class="btn-profile">
 
-        View Profile
+       View Profile
 
     </a>
 
@@ -262,7 +203,7 @@
     <a href="/follow-hr/{{ hr.id }}"
        class="btn-follow">
 
-        Follow
+       Follow
 
     </a>
 
