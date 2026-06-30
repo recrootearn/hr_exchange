@@ -200,10 +200,16 @@
 
     {% if session.get('candidate_id') %}
 
-    <a href="/follow-hr/{{ hr.id }}"
-       class="btn-follow">
+    {% set is_following = hr.id in following_ids %}
 
-       Follow
+    <a href="/follow-hr/{{ hr.id }}?next={{ request.path }}"
+       class="btn-follow {% if is_following %}btn-success{% endif %}">
+
+        {% if is_following %}
+            ✓ Following
+        {% else %}
+            Follow
+        {% endif %}
 
     </a>
 

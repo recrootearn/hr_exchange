@@ -3727,24 +3727,26 @@ def view_candidates(id):
 @app.route('/follow-hr/<int:id>')
 def follow_hr(id):
 
+    from datetime import date
+
     if 'candidate_id' not in session:
         return redirect('/candidate-login')
 
+    hr_id = id
+
     existing = Follow.query.filter_by(
         follower_candidate_id=session['candidate_id'],
-        followed_hr_id=id
+        followed_hr_id=hr_id
     ).first()
 
-    candidate = CandidateUser.query.get(
-        session['candidate_id']
-    )
+    candidate = CandidateUser.query.get(session['candidate_id'])
 
     if existing:
 
         db.session.delete(existing)
 
         notification = Notification(
-            user_id=id,
+            user_id=hr_id,
             user_type="hr",
             message=f"{candidate.full_name} unfollowed you",
             link=f"/candidate/{candidate.id}",
@@ -3759,12 +3761,12 @@ def follow_hr(id):
         db.session.add(
             Follow(
                 follower_candidate_id=session['candidate_id'],
-                followed_hr_id=id
+                followed_hr_id=hr_id
             )
         )
 
         notification = Notification(
-            user_id=id,
+            user_id=hr_id,
             user_type="hr",
             message=f"{candidate.full_name} started following you",
             link=f"/candidate/{candidate.id}",
@@ -3791,7 +3793,6 @@ def follow_hr(id):
             candidate.last_streak_reset = today
 
         if not candidate.daily_follow_completed:
-
             candidate.daily_follow_completed = True
 
         # Check if all daily tasks are completed
@@ -3799,7 +3800,13 @@ def follow_hr(id):
 
     db.session.commit()
 
-    return redirect(f'/company/{id}')
+    # Return to the same page
+    next_page = request.args.get("next")
+
+    if next_page:
+        return redirect(next_page)
+
+    return redirect(request.referrer or "/discover-hr")
 
 @app.route('/admin-revenue-dashboard')
 @login_required
