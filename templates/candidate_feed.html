@@ -37,6 +37,8 @@ value="{{ city }}"
 
 </div>
 
+<div class="desktop-feed">
+
 {% for job in jobs %}
 
 <div id="post{{ job.id }}"
@@ -235,6 +237,8 @@ value="{{ city }}"
 
 {% endfor %}
 
+</div>
+
 <style>
 
 .feed-card{
@@ -353,6 +357,19 @@ value="{{ city }}"
         display:flex;
         align-items:center;
         justify-content:center;
+    }
+
+}
+
+/* ==========================
+   Desktop Only
+   ========================== */
+
+@media (min-width:992px){
+
+    .desktop-feed{
+        max-width:650px;
+        margin:0 auto;
     }
 
 }
