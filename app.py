@@ -6453,6 +6453,7 @@ def admin_candidate_users():
     name = request.args.get('name', '')
     city = request.args.get('city', '')
     mobile = request.args.get('mobile', '')
+    page = request.args.get('page', 1, type=int)
 
     query = CandidateUser.query
 
@@ -6473,17 +6474,23 @@ def admin_candidate_users():
 
     candidates = query.order_by(
         CandidateUser.id.desc()
-    ).all()
+    ).paginate(
+        page=page,
+        per_page=20,
+        error_out=False
+    )
 
     total_candidates = CandidateUser.query.count()
-
     total_applications = JobApplication.query.count()
 
     return render_template(
         'admin_candidate_users.html',
         candidates=candidates,
         total_candidates=total_candidates,
-        total_applications=total_applications
+        total_applications=total_applications,
+        User=User,
+        CandidateUser=CandidateUser,
+        JobApplication=JobApplication
     )
 
 @app.route('/admin/candidate-users/export')
@@ -6495,21 +6502,20 @@ def export_candidate_users():
 
     wb = Workbook()
     ws = wb.active
-
     ws.title = "Candidate Users"
 
     ws.append([
         "ID",
         "Name",
-        "Mobile",
         "Email",
+        "Mobile",
+        "Username",
         "City",
+        "Wallet Balance",
+        "Career Level",
         "Designation",
-        "Experience",
-        "Current Company",
-        "Current CTC",
-        "Expected CTC",
-        "Skills",
+        "Qualification",
+        "Applied Jobs",
         "Joined Date"
     ])
 
@@ -6522,22 +6528,20 @@ def export_candidate_users():
         ws.append([
             c.id,
             c.full_name,
-            c.mobile,
             c.email,
+            c.mobile,
+            c.username,
             c.city,
+            c.wallet_balance or 0,
+            c.career_level,
             c.designation,
-            c.experience,
-            c.current_company,
-            c.current_ctc,
-            c.expected_ctc,
-            c.skills,
-            c.created_at.strftime('%d-%m-%Y')
+            c.qualification,
+            JobApplication.query.filter_by(candidate_id=c.id).count(),
+            c.created_at.strftime('%d-%m-%Y') if c.created_at else ""
         ])
 
     output = io.BytesIO()
-
     wb.save(output)
-
     output.seek(0)
 
     return send_file(

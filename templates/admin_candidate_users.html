@@ -4,244 +4,497 @@
 
 <div class="container-fluid">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h3>
-            Manage Candidate Users
-        </h3>
+    <h3>
+        Manage Candidate Users
+    </h3>
 
-        <div class="mb-3">
+    <div class="mb-3">
 
-            <span class="badge bg-primary">
+        <span class="badge bg-primary">
 
-                Total Candidates :
-                {{ total_candidates }}
+            Total Candidates :
+            {{ total_candidates }}
 
-            </span>
-
-        </div>
-
-        <a href="/admin/candidate-users/export"
-           class="btn btn-success">
-
-            <i class="fas fa-file-excel"></i>
-            Export Excel
-
-        </a>
+        </span>
 
     </div>
 
-    <form method="GET" class="row g-2 mb-4">
+    <a href="/admin/candidate-users/export"
+       class="btn btn-success">
 
-        <div class="col-md-3">
-            <input
-                type="text"
-                name="name"
-                class="form-control"
-                placeholder="Search Name"
-                value="{{ request.args.get('name','') }}">
-        </div>
+        <i class="fas fa-file-excel"></i>
+        Export Excel
 
-        <div class="col-md-3">
-            <input
-                type="text"
-                name="mobile"
-                class="form-control"
-                placeholder="Search Mobile"
-                value="{{ request.args.get('mobile','') }}">
-        </div>
+    </a>
 
-        <div class="col-md-3">
-            <input
-                type="text"
-                name="city"
-                class="form-control"
-                placeholder="Search City"
-                value="{{ request.args.get('city','') }}">
-        </div>
+</div>
 
-        <div class="col-md-3">
-            <button class="btn btn-primary w-100">
-                <i class="fas fa-search"></i>
-                Search
-            </button>
-        </div>
+<form method="GET" class="row g-2 mb-4">
 
-    </form>
+    <div class="col-md-3">
 
-    <div class="card shadow-sm">
-
-        <div class="card-body">
-
-            <div class="table-responsive">
-
-                <table class="table table-bordered table-hover align-middle">
-
-                    <thead class="table-dark">
-
-                        <tr>
-                            <th>ID</th>
-                            <th>Photo</th>
-                            <th>Name</th>
-                            <th>Mobile</th>
-                            <th>Email</th>
-                            <th>Username</th>
-                            <th>City</th>
-                            <th>Designation</th>
-                            <th>Experience</th>
-                            <th>Current Company</th>
-                            <th>Current CTC</th>
-                            <th>Expected CTC</th>
-                            <th>Skills</th>
-                            <th>About</th>
-                            <th>Resume</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                            <th>Applied Jobs</th>
-                            <th>Joined</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for c in candidates %}
-
-                        <tr>
-
-                            <td>{{ c.id }}</td>
-
-                            <td>
-
-                                {% if c.profile_photo %}
-
-                                <img
-                                    src="{{ url_for('static', filename='uploads/' + c.profile_photo) }}"
-                                    style="width:60px;height:60px;border-radius:50%;object-fit:cover;">
-
-                                {% else %}
-
-                                <span class="text-muted">
-                                    No Photo
-                                </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>{{ c.full_name }}</td>
-
-                            <td>{{ c.mobile }}</td>
-
-                            <td>{{ c.email }}</td>
-
-                            <td>{{ c.username }}</td>
-
-                            <td>{{ c.city }}</td>
-
-                            <td>{{ c.designation }}</td>
-
-                            <td>{{ c.experience }}</td>
-
-                            <td>{{ c.current_company }}</td>
-
-                            <td>{{ c.current_ctc }}</td>
-
-                            <td>{{ c.expected_ctc }}</td>
-
-                            <td style="min-width:250px;">
-                                {{ c.skills }}
-                            </td>
-
-                            <td style="min-width:250px;">
-                                {{ c.about_me }}
-                            </td>
-
-                            <td>
-
-                                {% if c.resume_file %}
-
-                                <a
-                                    href="{{ url_for('static', filename='uploads/' + c.resume_file) }}"
-                                    target="_blank"
-                                    class="btn btn-sm btn-primary">
-
-                                    View Resume
-
-                                </a>
-
-                                {% else %}
-
-                                <span class="text-muted">
-                                    No Resume
-                                </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                            {% if c.is_deleted %}
-
-                            <span class="badge bg-danger">
-                            Blocked
-                            </span>
-
-                            {% else %}
-
-                            <span class="badge bg-success">
-                            Active
-                            </span>
-
-                            {% endif %}
-
-                            </td>
-
-                            <td>
-
-                            {% if not c.is_deleted %}
-
-                            <a
-                            href="/admin/candidate/{{ c.id }}/delete"
-                            class="btn btn-danger btn-sm"
-                            onclick="return confirm('Are you sure you want to disable this candidate account?')">
-
-                            Delete
-
-                            </a>
-
-                            {% else %}
-
-                            <span class="badge bg-secondary">
-                            Disabled
-                            </span>
-
-                            {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                {% if c.created_at %}
-                                    {{ c.created_at.strftime('%d-%m-%Y') }}
-                                {% endif %}
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
+        <input
+            type="text"
+            name="name"
+            class="form-control"
+            placeholder="Search Name"
+            value="{{ request.args.get('name','') }}">
 
     </div>
+
+    <div class="col-md-3">
+
+        <input
+            type="text"
+            name="mobile"
+            class="form-control"
+            placeholder="Search Mobile"
+            value="{{ request.args.get('mobile','') }}">
+
+    </div>
+
+    <div class="col-md-3">
+
+        <input
+            type="text"
+            name="city"
+            class="form-control"
+            placeholder="Search City"
+            value="{{ request.args.get('city','') }}">
+
+    </div>
+
+    <div class="col-md-3">
+
+        <button class="btn btn-primary w-100">
+
+            <i class="fas fa-search"></i>
+            Search
+
+        </button>
+
+    </div>
+
+</form>
+
+<div class="card shadow-sm">
+
+<div class="card-body">
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-hover align-middle">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>ID</th>
+
+<th>Photo</th>
+
+<th>Name</th>
+
+<th>Email</th>
+
+<th>Mobile</th>
+
+<th>Username</th>
+
+<th>City</th>
+
+<th>Wallet Balance</th>
+
+<th>Candidate Level</th>
+
+<th>Designation</th>
+
+<th>Qualification</th>
+
+<th>Referred By</th>
+
+<th>Resume</th>
+
+<th>Applied Jobs</th>
+
+<th>Joined</th>
+
+<th>Status</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for c in candidates %}
+
+<tr>
+
+<td>
+
+{{ c.id }}
+
+</td>
+
+<td>
+
+{% if c.profile_photo %}
+
+<img
+src="{{ url_for('static', filename='uploads/' + c.profile_photo) }}"
+style="width:60px;height:60px;border-radius:50%;object-fit:cover;">
+
+{% else %}
+
+<span class="text-muted">
+
+No Photo
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{{ c.full_name }}
+
+</td>
+
+<td>
+
+{{ c.email }}
+
+</td>
+
+<td>
+
+{{ c.mobile }}
+
+</td>
+
+<td>
+
+{{ c.username }}
+
+</td>
+
+<td>
+
+{{ c.city or "-" }}
+
+</td>
+
+<td>
+
+₹ {{ "%.2f"|format(c.wallet_balance or 0) }}
+
+</td>
+
+<td>
+
+{{ c.career_level or "-" }}
+
+</td>
+
+<td>
+
+{{ c.designation or "-" }}
+
+</td>
+
+<td>
+
+{{ c.qualification or "-" }}
+
+</td>
+
+<td>
+
+{% if c.referred_by_hr_id %}
+
+{% set hr = User.query.get(c.referred_by_hr_id) %}
+
+{% if hr %}
+
+<b>
+
+{{ hr.first_name }} {{ hr.last_name }}
+
+</b>
+
+<br>
+
+<small class="text-primary">
+
+{{ c.referred_by_hr_code }}
+
+</small>
+
+{% else %}
+
+-
+
+{% endif %}
+
+{% elif c.referred_by_candidate_id %}
+
+{% set ref = CandidateUser.query.get(c.referred_by_candidate_id) %}
+
+{% if ref %}
+
+<b>
+
+{{ ref.full_name }}
+
+</b>
+
+<br>
+
+<small class="text-success">
+
+{{ c.referred_by_candidate_code }}
+
+</small>
+
+{% else %}
+
+-
+
+{% endif %}
+
+{% else %}
+
+<span class="text-muted">
+
+Direct Registration
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if c.resume_file %}
+
+<a
+href="{{ url_for('static', filename='uploads/' + c.resume_file) }}"
+target="_blank"
+class="btn btn-primary btn-sm">
+
+View Resume
+
+</a>
+
+{% else %}
+
+<span class="text-muted">
+
+No Resume
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{{ JobApplication.query.filter_by(candidate_id=c.id).count() }}
+
+</td>
+
+<td>
+
+{% if c.created_at %}
+
+{{ c.created_at.strftime("%d-%m-%Y") }}
+
+{% else %}
+
+-
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if c.is_deleted %}
+
+<span class="badge bg-danger">
+
+Blocked
+
+</span>
+
+{% else %}
+
+<span class="badge bg-success">
+
+Active
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+<a
+href="/admin/view-candidate/{{ c.id }}"
+class="btn btn-info btn-sm mb-1">
+
+View
+
+</a>
+
+<a
+href="/admin/edit-candidate/{{ c.id }}"
+class="btn btn-warning btn-sm mb-1">
+
+Edit
+
+</a>
+
+{% if not c.is_deleted %}
+
+<a
+href="/admin/candidate/{{ c.id }}/delete"
+class="btn btn-danger btn-sm"
+onclick="return confirm('Are you sure you want to disable this candidate account?')">
+
+Delete
+
+</a>
+
+{% else %}
+
+<span class="badge bg-secondary">
+
+Disabled
+
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+{% if candidates.pages > 1 %}
+
+<nav class="mt-4">
+
+<ul class="pagination justify-content-center">
+
+{% if candidates.has_prev %}
+
+<li class="page-item">
+
+<a
+class="page-link"
+href="{{ url_for(request.endpoint,
+page=candidates.prev_num,
+name=request.args.get('name'),
+mobile=request.args.get('mobile'),
+city=request.args.get('city')) }}">
+
+Previous
+
+</a>
+
+</li>
+
+{% endif %}
+
+{% for page_num in candidates.iter_pages(
+left_edge=2,
+right_edge=2,
+left_current=2,
+right_current=2
+) %}
+
+{% if page_num %}
+
+<li class="page-item {% if page_num==candidates.page %}active{% endif %}">
+
+<a
+class="page-link"
+href="{{ url_for(request.endpoint,
+page=page_num,
+name=request.args.get('name'),
+mobile=request.args.get('mobile'),
+city=request.args.get('city')) }}">
+
+{{ page_num }}
+
+</a>
+
+</li>
+
+{% else %}
+
+<li class="page-item disabled">
+
+<span class="page-link">
+
+...
+
+</span>
+
+</li>
+
+{% endif %}
+
+{% endfor %}
+
+{% if candidates.has_next %}
+
+<li class="page-item">
+
+<a
+class="page-link"
+href="{{ url_for(request.endpoint,
+page=candidates.next_num,
+name=request.args.get('name'),
+mobile=request.args.get('mobile'),
+city=request.args.get('city')) }}">
+
+Next
+
+</a>
+
+</li>
+
+{% endif %}
+
+</ul>
+
+</nav>
+
+{% endif %}
 
 </div>
 
