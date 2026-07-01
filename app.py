@@ -192,6 +192,8 @@ class CandidateUser(UserMixin, db.Model):
 
     is_deleted = db.Column(db.Boolean, default=False)
 
+    session_token = db.Column(db.String(200))
+
     career_level = db.Column(db.String(20))
 
     company_name = db.Column(db.String(200))
@@ -1078,6 +1080,30 @@ def get_candidate_level(xp):
         "remaining": remaining,
         "progress": round(progress),
     }
+
+@app.before_request
+def check_candidate_session():
+
+    if "candidate_id" in session:
+
+        candidate = CandidateUser.query.get(
+            session["candidate_id"]
+        )
+
+        if not candidate:
+            session.clear()
+            return redirect("/candidate-login")
+
+        if session.get("candidate_session_token") != candidate.session_token:
+
+            session.clear()
+
+            flash(
+                "Your account was logged in on another device.",
+                "warning"
+            )
+
+            return redirect("/candidate-login")
 
 @app.context_processor
 def inject_notifications():
@@ -2843,12 +2869,26 @@ def candidate_login():
 
     if request.method == 'POST':
 
-        username = request.form['username'].strip()
+        import uuid
+        from datetime import date
+
+        login_id = request.form['username'].strip()
         password = request.form['password']
 
+        # Username login should be case-insensitive
+        if not login_id.isdigit():
+            login_id = login_id.upper()
+
+        # Login using username
         user = CandidateUser.query.filter_by(
-            username=username
+            username=login_id
         ).first()
+
+        # (Optional) If candidates can also login with mobile
+        # if not user:
+        #     user = CandidateUser.query.filter_by(
+        #         mobile=login_id
+        #     ).first()
 
         # Candidate blocked by admin
         if user and user.is_deleted:
@@ -2862,8 +2902,6 @@ def candidate_login():
 
         # Normal login
         if user and user.password == password:
-
-            from datetime import date
 
             today = date.today()
 
@@ -2883,12 +2921,20 @@ def candidate_login():
 
                 user.daily_login_completed = True
 
-            # Check if all daily tasks are complete
+            # Check daily reward
             check_daily_reward(user)
+
+            # Single device login
+            token = str(uuid.uuid4())
+
+            user.session_token = token
 
             db.session.commit()
 
+            session.clear()
+
             session["candidate_id"] = user.id
+            session["candidate_session_token"] = token
 
             flash(
                 "Login Successful",
@@ -4962,17 +5008,23 @@ def login():
         login_id = request.form['username'].strip()
         password = request.form['password'].strip()
 
+        # If not mobile number, convert username to uppercase
+        if not login_id.isdigit():
+            login_id = login_id.upper()
+
+        # Try login using mobile number
         user = User.query.filter_by(
             mobile=login_id
         ).first()
 
+        # Otherwise try username
         if not user:
 
             user = User.query.filter_by(
                 username=login_id
             ).first()
 
-        print("USERNAME =", request.form['username'])
+        print("LOGIN =", login_id)
 
         if user:
             logging.warning(f"FOUND USER = {user.username}")
@@ -4997,39 +5049,32 @@ def login():
             flash("Your account is pending approval.", "warning")
             return redirect(url_for("login"))
 
-        if check_password_hash(
-            user.password,
-            password
-        ):
+        if check_password_hash(user.password, password):
 
             user.failed_logins = 0
-
             user.last_login = datetime.utcnow()
 
-            # SINGLE DEVICE LOGIN
-
+            # Single device login
             token = str(uuid.uuid4())
-
             user.session_token = token
 
             db.session.commit()
 
             login_user(user)
 
-            session['session_token'] = token
+            session["session_token"] = token
 
-            return redirect(url_for('home'))
+            return redirect(url_for("home"))
 
         else:
 
             user.failed_logins += 1
-
             db.session.commit()
 
             flash("Invalid Username or Password", "danger")
             return redirect(url_for("login"))
 
-    return render_template('login.html')
+    return render_template("login.html")
 
 @app.route('/logout')
 @login_required

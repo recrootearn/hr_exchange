@@ -260,6 +260,8 @@ body{
             class="form-control"
             name="username"
             placeholder="Username"
+            style="text-transform:uppercase;"
+            oninput="this.value=this.value.toUpperCase().replace(/\s/g,'')"
             required>
 
             <small id="usernameStatus"></small>
@@ -305,7 +307,7 @@ body{
 
 document.querySelector('[name="username"]').addEventListener('blur', function(){
 
-    fetch('/check-username?username=' + this.value)
+    fetch('/check-username?username=' + this.value.toUpperCase())
 
     .then(r => r.json())
 

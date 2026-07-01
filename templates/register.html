@@ -540,6 +540,8 @@ select.form-control{
                 name="username"
                 class="form-control"
                 placeholder="Create Username"
+                style="text-transform:uppercase;"
+                oninput="this.value=this.value.toUpperCase().replace(/\s/g,'')"
                 required>
 
                 <small id="usernameStatus"></small>
@@ -788,7 +790,7 @@ function(e){
 
 document.querySelector('[name="username"]').addEventListener('blur', function(){
 
-    fetch('/check-username?username=' + this.value)
+    fetch('/check-username?username=' + this.value.toUpperCase())
 
     .then(r => r.json())
 

@@ -744,7 +744,13 @@ body{
                         <input
                         type="text"
                         name="username"
-                        placeholder="Enter username or Mobile Number"
+                        placeholder="Enter Username or Mobile Number"
+                        style="text-transform:uppercase;"
+                        oninput="
+                        if(isNaN(this.value)){
+                        this.value=this.value.toUpperCase().replace(/\s/g,'');
+                        }
+                        "
                         required>
 
                     </div>
