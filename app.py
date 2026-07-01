@@ -311,6 +311,53 @@ class CreditPurchase(db.Model):
 
     created_at = db.Column(db.DateTime, default=india_time)
 
+class ReferralRewardHistory(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    mobile = db.Column(
+        db.String(20),
+        unique=True
+    )
+
+    rewarded = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+class DeletedAccount(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    account_type = db.Column(db.String(20))
+
+    full_name = db.Column(db.String(200))
+
+    mobile = db.Column(db.String(20), unique=True)
+
+    email = db.Column(db.String(150))
+
+    username = db.Column(db.String(100))
+
+    referral_reward_used = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    deleted_by = db.Column(
+        db.String(20)
+    )
+
+    deleted_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
 class JobPost(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -1578,11 +1625,19 @@ def admin_delete_user(user_id):
 
     user = User.query.get_or_404(user_id)
 
-    user.is_deleted = True
+    db.session.add(
+        DeletedAccount(
+            account_type="hr",
+            full_name=f"{user.first_name} {user.last_name}",
+            mobile=user.mobile,
+            email=user.email,
+            username=user.username,
+            referral_reward_used=True,
+            deleted_by="admin"
+        )
+    )
 
-    user.email = f"deleted_{user.id}@deleted.com"
-    user.mobile = f"deleted_{user.id}"
-    user.username = f"deleted_{user.id}"
+    db.session.delete(user)
 
     db.session.commit()
 
@@ -2812,7 +2867,7 @@ def candidate_register():
 
             username=username,
 
-            password=password,
+            password=generate_password_hash(password),
 
             dob=dob,
 
@@ -2907,7 +2962,10 @@ def candidate_login():
             return redirect('/candidate-register')
 
         # Normal login
-        if user and user.password == password:
+        if user and check_password_hash(
+            user.password,
+            password
+        ):
 
             today = date.today()
 
@@ -3401,7 +3459,9 @@ def candidate_reset_password():
 
     if request.method == "POST":
 
-        candidate.password = request.form["password"]
+        candidate.password = generate_password_hash(
+            request.form["password"]
+        )
 
         db.session.commit()
 
@@ -3563,14 +3623,12 @@ def update_application_status(id):
     settings = get_business_settings()
 
     application = JobApplication.query.get_or_404(id)
-
     job = JobPost.query.get_or_404(application.job_id)
 
     if job.hr_id != current_user.id:
         return "Access Denied"
 
     new_status = request.form.get("status")
-
     application.status = new_status
 
     # ==========================================
@@ -3592,7 +3650,7 @@ def update_application_status(id):
             and not candidate.hr_referral_reward_given
         ):
 
-            # Check profile completion
+            # Profile completion
             completion = 0
 
             if candidate.profile_photo:
@@ -3638,41 +3696,50 @@ def update_application_status(id):
 
                 if referring_hr:
 
-                    safe_wallet_credit(
-                        referring_hr,
-                    settings.hr_to_candidate_reward
-                    )
+                    already_rewarded = ReferralRewardHistory.query.filter_by(
+                        mobile=candidate.mobile
+                    ).first()
 
-                    referring_hr.referral_earnings += (
-                        settings.hr_to_candidate_reward
-                    )
+                    if not already_rewarded:
 
-                    referring_hr.successful_referrals += 1
-
-                    candidate.hr_referral_reward_given = True
-
-                    candidate.revenue_owner_type = "hr"
-
-                    candidate.revenue_owner_id = referring_hr.id
-
-                    db.session.add(
-
-                        Earnings(
-                            user_id=referring_hr.id,
-                            amount=settings.hr_to_candidate_reward,
-                            reason=f"Candidate Referral Reward - {candidate.full_name}"
+                        safe_wallet_credit(
+                            referring_hr,
+                            settings.hr_to_candidate_reward
                         )
 
-                    )
+                        referring_hr.referral_earnings += (
+                            settings.hr_to_candidate_reward
+                        )
 
-                    send_notification(
-                        user_id=referring_hr.id,
-                        user_type="hr",
-                        message=f"You earned ₹{settings.hr_to_candidate_reward} because {candidate.full_name} completed Interview.",
-                        link="/wallet",
-                    image=candidate.profile_photo,
-                        type="referral_reward"
-                    )
+                        referring_hr.successful_referrals += 1
+
+                        candidate.hr_referral_reward_given = True
+
+                        candidate.revenue_owner_type = "hr"
+                        candidate.revenue_owner_id = referring_hr.id
+
+                        db.session.add(
+                            ReferralRewardHistory(
+                                mobile=candidate.mobile
+                            )
+                        )
+
+                        db.session.add(
+                            Earnings(
+                                user_id=referring_hr.id,
+                                amount=settings.hr_to_candidate_reward,
+                                reason=f"Candidate Referral Reward - {candidate.full_name}"
+                            )
+                        )
+
+                        send_notification(
+                            user_id=referring_hr.id,
+                            user_type="hr",
+                            message=f"You earned ₹{settings.hr_to_candidate_reward} because {candidate.full_name} completed Interview.",
+                            link="/wallet",
+                            image=candidate.profile_photo,
+                            type="referral_reward"
+                        )
 
                 # ==========================================
                 # CANDIDATE -> CANDIDATE REFERRAL REWARD
@@ -3690,45 +3757,49 @@ def update_application_status(id):
 
                     if referring_candidate:
 
-                        safe_wallet_credit(
-                            referring_candidate,
-                        settings.candidate_to_candidate_reward
-                        )
+                        already_rewarded = ReferralRewardHistory.query.filter_by(
+                            mobile=candidate.mobile
+                        ).first()
 
-                        referring_candidate.referral_earnings += (
-                            settings.candidate_to_candidate_reward
-                        )
+                        if not already_rewarded:
 
-                        referring_candidate.successful_referrals += 1
-
-                        candidate.candidate_referral_reward_given = True
-
-                        db.session.add(
-
-                            CandidateWalletHistory(
-
-                        candidate_id=referring_candidate.id,
-
-                        amount=settings.candidate_to_candidate_reward,
-
-                            action=f"Referral Reward - {candidate.full_name}"
-
+                            safe_wallet_credit(
+                                referring_candidate,
+                                settings.candidate_to_candidate_reward
                             )
 
-                        )
-
-                        db.session.add(
-
-                            Notification(
-                                user_id=referring_candidate.id,
-                                user_type="candidate",
-                                message=f"You earned ₹{settings.candidate_to_candidate_reward} because {candidate.full_name} completed Interview.",
-                                link="/candidate-wallet",
-                                image=candidate.profile_photo,
-                                type="candidate_referral_reward"
+                            referring_candidate.referral_earnings += (
+                                settings.candidate_to_candidate_reward
                             )
 
-                        )
+                            referring_candidate.successful_referrals += 1
+
+                            candidate.candidate_referral_reward_given = True
+
+                            db.session.add(
+                                ReferralRewardHistory(
+                                    mobile=candidate.mobile
+                                )
+                            )
+
+                            db.session.add(
+                                CandidateWalletHistory(
+                                    candidate_id=referring_candidate.id,
+                                    amount=settings.candidate_to_candidate_reward,
+                                    action=f"Referral Reward - {candidate.full_name}"
+                                )
+                            )
+
+                            db.session.add(
+                                Notification(
+                                    user_id=referring_candidate.id,
+                                    user_type="candidate",
+                                    message=f"You earned ₹{settings.candidate_to_candidate_reward} because {candidate.full_name} completed Interview.",
+                                    link="/candidate-wallet",
+                                    image=candidate.profile_photo,
+                                    type="candidate_referral_reward"
+                                )
+                            )
 
     db.session.commit()
 
@@ -4815,6 +4886,17 @@ def delete_account():
 
     logout_user()
 
+    db.session.add(
+        DeletedAccount(
+            account_type="hr",
+            full_name=f"{user.first_name} {user.last_name}",
+            mobile=user.mobile,
+            email=user.email,
+            username=user.username,
+            referral_reward_used=True
+        )
+    )
+
     db.session.delete(user)
 
     db.session.commit()
@@ -4856,6 +4938,17 @@ def delete_candidate_account():
 
     candidate = CandidateUser.query.get(
         candidate_id
+    )
+
+    db.session.add(
+        DeletedAccount(
+            account_type="candidate",
+            full_name=candidate.full_name,
+            mobile=candidate.mobile,
+            email=candidate.email,
+            username=candidate.username,
+            referral_reward_used=True
+        )
     )
 
     db.session.delete(candidate)
@@ -6560,7 +6653,19 @@ def admin_delete_candidate(id):
 
     candidate = CandidateUser.query.get_or_404(id)
 
-    candidate.is_deleted = True
+    db.session.add(
+        DeletedAccount(
+            account_type="candidate",
+            full_name=candidate.full_name,
+            mobile=candidate.mobile,
+            email=candidate.email,
+            username=candidate.username,
+            referral_reward_used=True,
+            deleted_by="admin"
+        )
+    )
+
+    db.session.delete(candidate)
 
     db.session.commit()
 
