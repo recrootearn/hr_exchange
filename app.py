@@ -2790,7 +2790,13 @@ def candidate_register():
 
         # OTHER DETAILS
 
-        dob = request.form.get("dob")
+        dob = None
+
+        if request.form.get("dob"):
+            dob = datetime.strptime(
+        request.form.get("dob"),
+                "%Y-%m-%d"
+            ).date()
         city = request.form.get("city")
         qualification = request.form.get("qualification")
 
