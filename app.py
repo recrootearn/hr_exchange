@@ -2673,7 +2673,7 @@ def register():
 
             mobile=mobile,
 
-            email=request.form['email'],
+            email = request.form['email'].strip().lower(),
 
             company=request.form['company'],
  
@@ -2734,7 +2734,7 @@ def candidate_register():
 
         full_name = request.form['full_name']
         mobile = request.form['mobile'].strip()
-        email = request.form['email']
+        email = request.form['email'].strip().lower()
         username = request.form['username'].strip().upper()
         password = request.form['password']
         entered_code = request.form.get(
@@ -3968,6 +3968,21 @@ def admin_referral_history():
         "admin_referral_history.html",
         referral_data=referral_data
     )
+
+@app.route('/check-email')
+def check_email():
+
+    email = request.args.get("email", "").strip().lower()
+
+    exists = (
+        User.query.filter_by(email=email).first()
+        or
+        CandidateUser.query.filter_by(email=email).first()
+    )
+
+    return jsonify({
+        "exists": bool(exists)
+    })
 
 @app.route('/candidate/<int:id>')
 @login_required

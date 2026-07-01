@@ -427,6 +427,7 @@ select.form-control{
                 placeholder="Enter Email"
                 required>
 
+                <small id="emailStatus"></small>
             </div>
 
         </div>
@@ -833,6 +834,32 @@ document.querySelector('[name="mobile"]').addEventListener('blur', function(){
 
             s.innerHTML = '✅ Mobile available';
             s.style.color = 'green';
+
+        }
+
+    });
+
+});
+
+document.querySelector('input[name="email"]').addEventListener('blur', function () {
+
+    fetch('/check-email?email=' + encodeURIComponent(this.value))
+
+    .then(r => r.json())
+
+    .then(data => {
+
+        const s = document.getElementById('emailStatus');
+
+        if(data.exists){
+
+            s.innerHTML = "❌ Email already registered";
+            s.style.color = "red";
+
+        }else{
+
+            s.innerHTML = "✅ Email available";
+            s.style.color = "green";
 
         }
 
