@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h3>
+
+Referral History
+
+</h3>
+
+<div>
+
+<span class="badge bg-success p-2">
+
+Total Referrers :
+{{ referral_data|length }}
+
+</span>
+
+</div>
+
+</div>
+
+<div class="card shadow-sm mb-4">
+
+<div class="card-body">
+
+<form method="GET">
+
+<div class="row">
+
+<div class="col-md-4 mb-2">
+
+<input
+type="text"
+name="search"
+class="form-control"
+placeholder="Search Name / Mobile / Referral Code"
+value="{{ request.args.get('search','') }}">
+
+</div>
+
+<div class="col-md-2 mb-2">
+
+<button class="btn btn-primary w-100">
+
+Search
+
+</button>
+
+</div>
+
+<div class="col-md-2 mb-2">
+
+<a
+href="/admin/referral-history"
+class="btn btn-secondary w-100">
+
+Reset
+
+</a>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<div class="card shadow-sm">
+
+<div class="card-body">
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-hover align-middle">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>#</th>
+
+<th>Type</th>
+
+<th>Name</th>
+
+<th>Mobile</th>
+
+<th>Referral Code</th>
+
+<th>Total Referred</th>
+
+<th>Active</th>
+
+<th>Deleted</th>
+
+<th>Interview Done</th>
+
+<th>Total Earned</th>
+
+<th>Wallet</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for r in referral_data %}
+
+<tr>
+
+<td>
+
+{{ loop.index }}
+
+</td>
+
+<td>
+
+{% if r.type=="HR" %}
+
+<span class="badge bg-primary">
+
+HR
+
+</span>
+
+{% else %}
+
+<span class="badge bg-success">
+
+Candidate
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+<strong>
+
+{{ r.name }}
+
+</strong>
+
+</td>
+
+<td>
+
+{{ r.mobile }}
+
+</td>
+
+<td>
+
+<span class="badge bg-dark">
+
+{{ r.referral_code }}
+
+</span>
+
+</td>
+
+<td>
+
+{{ r.total }}
+
+</td>
+
+<td>
+
+<span class="badge bg-success">
+
+{{ r.active }}
+
+</span>
+
+</td>
+
+<td>
+
+<span class="badge bg-danger">
+
+{{ r.deleted }}
+
+</span>
+
+</td>
+
+<td>
+
+<span class="badge bg-info text-dark">
+
+{{ r.interviewed }}
+
+</span>
+
+</td>
+
+<td>
+
+₹ {{ "%.2f"|format(r.earned or 0) }}
+
+</td>
+
+<td>
+
+₹ {{ "%.2f"|format(r.wallet or 0) }}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% if referral_data|length == 0 %}
+
+<div class="text-center py-5">
+
+<h5 class="text-muted">
+
+No referral history found.
+
+</h5>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

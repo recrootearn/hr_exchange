@@ -3810,6 +3810,165 @@ def update_application_status(id):
 
     return redirect(request.referrer)
 
+@app.route('/admin/deleted-accounts')
+@login_required
+def admin_deleted_accounts():
+
+    if not admin_only():
+        return "Access Denied"
+
+    search = request.args.get("search", "").strip()
+
+    query = DeletedAccount.query
+
+    if search:
+
+        query = query.filter(
+            db.or_(
+                DeletedAccount.full_name.contains(search),
+                DeletedAccount.mobile.contains(search),
+                DeletedAccount.username.contains(search),
+                DeletedAccount.email.contains(search)
+            )
+        )
+
+    deleted_accounts = query.order_by(
+        DeletedAccount.id.desc()
+    ).all()
+
+    return render_template(
+        "admin_deleted_accounts.html",
+        deleted_accounts=deleted_accounts,
+        total_deleted=len(deleted_accounts)
+    )
+
+@app.route('/admin/referral-history')
+@login_required
+def admin_referral_history():
+
+    if not admin_only():
+        return "Access Denied"
+
+    referral_data = []
+
+    # -------------------------
+    # HR REFERRALS
+    # -------------------------
+
+    hrs = User.query.all()
+
+    for hr in hrs:
+
+        total = CandidateUser.query.filter_by(
+            referred_by_hr_id=hr.id
+        ).count()
+
+        active = CandidateUser.query.filter_by(
+            referred_by_hr_id=hr.id,
+            is_deleted=False
+        ).count()
+
+        deleted = CandidateUser.query.filter_by(
+            referred_by_hr_id=hr.id,
+            is_deleted=True
+        ).count()
+
+        interviewed = JobApplication.query.join(
+            CandidateUser,
+            CandidateUser.id == JobApplication.candidate_id
+        ).filter(
+            CandidateUser.referred_by_hr_id == hr.id,
+            JobApplication.status == "Interview Done"
+        ).count()
+
+        referral_data.append({
+
+            "type": "HR",
+
+            "name": f"{hr.first_name} {hr.last_name}",
+
+            "mobile": hr.mobile,
+
+            "referral_code": hr.referral_code,
+
+            "total": total,
+
+            "active": active,
+
+            "deleted": deleted,
+
+            "interviewed": interviewed,
+
+            "earned": hr.referral_earnings,
+
+            "wallet": hr.wallet_balance
+
+        })
+
+    # -------------------------
+    # Candidate REFERRALS
+    # -------------------------
+
+    candidates = CandidateUser.query.all()
+
+    for c in candidates:
+
+        total = CandidateUser.query.filter_by(
+            referred_by_candidate_id=c.id
+        ).count()
+
+        active = CandidateUser.query.filter_by(
+            referred_by_candidate_id=c.id,
+            is_deleted=False
+        ).count()
+
+        deleted = CandidateUser.query.filter_by(
+            referred_by_candidate_id=c.id,
+            is_deleted=True
+        ).count()
+
+        interviewed = JobApplication.query.join(
+            CandidateUser,
+            CandidateUser.id == JobApplication.candidate_id
+        ).filter(
+            CandidateUser.referred_by_candidate_id == c.id,
+            JobApplication.status == "Interview Done"
+        ).count()
+
+        referral_data.append({
+
+            "type": "Candidate",
+
+            "name": c.full_name,
+
+            "mobile": c.mobile,
+
+            "referral_code": c.candidate_referral_code,
+
+            "total": total,
+
+            "active": active,
+
+            "deleted": deleted,
+
+            "interviewed": interviewed,
+
+            "earned": c.referral_earnings,
+
+            "wallet": c.wallet_balance
+
+        })
+
+    referral_data.sort(
+        key=lambda x: x["earned"],
+        reverse=True
+    )
+
+    return render_template(
+        "admin_referral_history.html",
+        referral_data=referral_data
+    )
+
 @app.route('/candidate/<int:id>')
 @login_required
 def view_candidates(id):

@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h3>
+
+Deleted Accounts
+
+</h3>
+
+<div>
+
+<span class="badge bg-danger p-2">
+
+Total Deleted :
+
+{{ total_deleted }}
+
+</span>
+
+</div>
+
+</div>
+
+<div class="card shadow-sm mb-4">
+
+<div class="card-body">
+
+<form method="GET">
+
+<div class="row">
+
+<div class="col-md-4 mb-2">
+
+<input
+type="text"
+name="search"
+class="form-control"
+placeholder="Search Name / Mobile / Username"
+value="{{ request.args.get('search','') }}">
+
+</div>
+
+<div class="col-md-2 mb-2">
+
+<button class="btn btn-primary w-100">
+
+Search
+
+</button>
+
+</div>
+
+<div class="col-md-2 mb-2">
+
+<a
+href="/admin/deleted-accounts"
+class="btn btn-secondary w-100">
+
+Reset
+
+</a>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<div class="card shadow-sm">
+
+<div class="card-body">
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-hover align-middle">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>ID</th>
+
+<th>Account Type</th>
+
+<th>Name</th>
+
+<th>Mobile</th>
+
+<th>Email</th>
+
+<th>Username</th>
+
+<th>Deleted By</th>
+
+<th>Referral Used</th>
+
+<th>Deleted Date</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for d in deleted_accounts %}
+
+<tr>
+
+<td>
+
+{{ d.id }}
+
+</td>
+
+<td>
+
+{% if d.account_type=="hr" %}
+
+<span class="badge bg-primary">
+
+HR
+
+</span>
+
+{% else %}
+
+<span class="badge bg-success">
+
+Candidate
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{{ d.full_name }}
+
+</td>
+
+<td>
+
+{{ d.mobile }}
+
+</td>
+
+<td>
+
+{{ d.email }}
+
+</td>
+
+<td>
+
+{{ d.username }}
+
+</td>
+
+<td>
+
+{{ d.deleted_by|title }}
+
+</td>
+
+<td>
+
+{% if d.referral_reward_used %}
+
+<span class="badge bg-success">
+
+Yes
+
+</span>
+
+{% else %}
+
+<span class="badge bg-secondary">
+
+No
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if d.created_at %}
+
+{{ d.created_at.strftime("%d-%m-%Y %I:%M %p") }}
+
+{% else %}
+
+-
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% if deleted_accounts|length == 0 %}
+
+<div class="text-center py-5">
+
+<h5 class="text-muted">
+
+No deleted accounts found.
+
+</h5>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
