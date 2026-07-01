@@ -7007,8 +7007,11 @@ def credits():
     ).all()
 
     return render_template(
-        'credits.html',
-        history=history
+        "buy_credits.html",
+        history=history,
+    packages=CreditPackage.query.filter_by(is_active=True)
+            .order_by(CreditPackage.display_order.asc())
+            .all()
     )
 
 @app.route('/edit-profile', methods=['GET', 'POST'])

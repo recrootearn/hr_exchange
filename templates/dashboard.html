@@ -233,7 +233,7 @@ border-radius:20px;
 
 <div class="dashboard-grid"><div class="dash-card green">
     <h5>My Credits</h5>
-    <h2>{{ current_user.credits }}</h2>
+    <h2>{{ current_user.paid_credits + current_user.credits }}</h2>
 
     <a href="/buy-credits" class="mini-btn">
         Buy Credits
