@@ -1148,15 +1148,22 @@ document.querySelectorAll(".nav-btn").forEach(btn => {
 </script>
 
 <script>
-document.querySelectorAll("a").forEach(link=>{
+document.querySelectorAll("a").forEach(link => {
 
-    link.addEventListener("click",function(){
+    link.addEventListener("click", function () {
 
-        document.body.style.opacity="0.92";
+        const content = document.querySelector(".content");
+
+        if(content){
+
+            content.style.opacity = "0.92";
+
+        }
 
     });
 
 });
+
 </script>
 
 </body>
