@@ -715,8 +715,14 @@ body{
     </button>
 
     <div class="mobile-logo">
-        <img src="{{ url_for('static', filename='images/header_logo.png') }}"
-         alt="RecrootEarn">
+        <img
+        src="{{ url_for('static', filename='images/header_logo.png') }}"
+        alt="RecrootEarn"
+        loading="eager"
+        fetchpriority="high"
+        decoding="sync"
+        draggable="false"
+        style="display:block;">
     </div>
 
     <a href="/candidate-notifications"
