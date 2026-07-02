@@ -6817,7 +6817,11 @@ def admin_revenue():
 
         transactions=transactions,
 
-        User=User
+        User=User,
+
+        Candidate=Candidate,
+
+        CreditPurchase=CreditPurchase
 
     )
 
