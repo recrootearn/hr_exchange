@@ -7322,25 +7322,25 @@ def withdraw():
     # Get Business Settings
     settings = get_business_settings()
 
-    # Get User Withdrawal History
+    # Withdrawal History
     withdrawals = Withdrawal.query.filter_by(
         user_id=current_user.id
     ).order_by(
         Withdrawal.created_at.desc()
     ).all()
 
-    if request.method == 'POST':
+    if request.method == "POST":
 
         try:
-            amount = float(request.form['amount'])
+            amount = float(request.form.get("amount", 0))
         except:
             flash(
                 "Invalid withdrawal amount.",
                 "danger"
             )
-            return redirect('/withdraw')
+            return redirect("/withdraw")
 
-        # Minimum Withdrawal Check
+        # Minimum Withdrawal
         if amount < settings.minimum_withdrawal:
 
             flash(
@@ -7348,9 +7348,9 @@ def withdraw():
                 "danger"
             )
 
-            return redirect('/withdraw')
+            return redirect("/withdraw")
 
-        # Wallet Balance Check
+        # Wallet Balance
         if amount > current_user.wallet_balance:
 
             flash(
@@ -7358,28 +7358,46 @@ def withdraw():
                 "danger"
             )
 
-            return redirect('/withdraw')
+            return redirect("/withdraw")
 
-        # Payment Details Check
-        if not current_user.payment_method:
+        # Check Payment Details
+
+        has_upi = (
+            current_user.upi_id
+            and current_user.upi_id.strip()
+        )
+
+        has_bank = (
+            current_user.bank_name
+            and current_user.account_holder_name
+            and current_user.account_number
+            and current_user.ifsc_code
+        )
+
+        if not (has_upi or has_bank):
 
             flash(
-                "Please update your payment details first.",
+                "Please update your payment details before requesting withdrawal.",
                 "warning"
             )
 
-            return redirect('/payment-info')
+            return redirect("/payment-info")
 
         # Create Withdrawal Request
+
         withdrawal = Withdrawal(
+
             user_id=current_user.id,
+
             amount=amount,
+
             status="Pending"
+
         )
 
         db.session.add(withdrawal)
 
-        # Deduct Wallet Balance
+        # Deduct Wallet
         current_user.wallet_balance -= amount
 
         db.session.commit()
@@ -7389,12 +7407,16 @@ def withdraw():
             "success"
         )
 
-        return redirect('/withdraw')
+        return redirect("/withdraw")
 
     return render_template(
-        'withdraw.html',
+
+        "withdraw.html",
+
         withdrawals=withdrawals,
+
         settings=settings
+
     )
 
 @app.route('/admin/withdrawals')
