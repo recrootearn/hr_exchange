@@ -885,21 +885,60 @@ class Withdrawal(db.Model):
     )
 
     user_id = db.Column(
-        db.Integer
+        db.Integer,
+        db.ForeignKey('user.id'),
+        nullable=False
     )
 
     amount = db.Column(
-        db.Float
+        db.Float,
+        nullable=False
     )
 
     status = db.Column(
         db.String(50),
-        default='Pending'
+        default="Pending"
+    )
+
+    payment_method = db.Column(
+        db.String(50)
+    )
+
+    payment_details = db.Column(
+        db.Text
+    )
+
+    utr_number = db.Column(
+        db.String(100)
+    )
+
+    admin_remark = db.Column(
+        db.Text
+    )
+
+    approved_at = db.Column(
+        db.DateTime
+    )
+
+    paid_at = db.Column(
+        db.DateTime
+    )
+
+    rejected_at = db.Column(
+        db.DateTime
     )
 
     created_at = db.Column(
         db.DateTime,
         default=india_time
+    )
+
+    user = db.relationship(
+        "User",
+        backref=db.backref(
+            "withdrawals",
+            lazy=True
+        )
     )
 
 class PasswordReset(db.Model):
@@ -2367,6 +2406,94 @@ def candidate_withdraw():
         withdrawals=withdrawals,
         settings=settings
     )
+
+@app.route('/approve-withdrawal/<int:id>')
+@login_required
+def approve_withdrawal(id):
+
+    if not current_user.is_admin:
+        return "Access Denied"
+
+    withdrawal = Withdrawal.query.get_or_404(id)
+
+    if withdrawal.status != "Pending":
+
+        flash(
+            "This withdrawal request has already been processed.",
+            "warning"
+        )
+
+        return redirect("/admin/withdrawals")
+
+    withdrawal.status = "Approved"
+
+    withdrawal.approved_at = india_time()
+
+    db.session.commit()
+
+    flash(
+        "Withdrawal approved successfully.",
+        "success"
+    )
+
+    return redirect("/admin/withdrawals")
+
+@app.route('/reject-withdrawal/<int:id>')
+@login_required
+def reject_withdrawal(id):
+
+    if not current_user.is_admin:
+
+        flash(
+            "Access Denied.",
+            "danger"
+        )
+
+        return redirect("/dashboard")
+
+    withdrawal = Withdrawal.query.get_or_404(id)
+
+    if withdrawal.status != "Pending":
+
+        flash(
+            "This withdrawal request has already been processed.",
+            "warning"
+        )
+
+        return redirect("/admin/withdrawals")
+
+    # Refund wallet balance
+    user = User.query.get(withdrawal.user_id)
+
+    if user:
+
+        user.wallet_balance += withdrawal.amount
+
+        # Optional: Add wallet history
+        history = CreditHistory(
+
+            user_id=user.id,
+
+            amount=withdrawal.amount,
+
+            action=f"Withdrawal Rejected - Amount Refunded ₹{withdrawal.amount}"
+
+        )
+
+        db.session.add(history)
+
+    withdrawal.status = "Rejected"
+
+    withdrawal.rejected_at = india_time()
+
+    db.session.commit()
+
+    flash(
+        "Withdrawal rejected and amount refunded successfully.",
+        "success"
+    )
+
+    return redirect("/admin/withdrawals")
 
 @app.route('/admin-candidate-withdrawals')
 @login_required
@@ -7426,22 +7553,50 @@ def admin_withdrawals():
     if not current_user.is_admin:
         return "Access Denied"
 
-    # All withdrawal requests
-    withdrawals = Withdrawal.query.order_by(
-        Withdrawal.id.desc()
+    search = request.args.get("search", "").strip()
+    status = request.args.get("status", "").strip()
+
+    query = Withdrawal.query
+
+    if status:
+        query = query.filter_by(status=status)
+
+    withdrawals = query.order_by(
+        Withdrawal.created_at.desc()
     ).all()
 
-    # Create user dictionary
-    users = {}
+    withdrawal_data = []
+
+    total_amount = 0
+    pending_amount = 0
 
     for w in withdrawals:
 
-        user = User.query.get(w.user_id)
+        user = w.user
 
-        if user:
-            users[w.user_id] = user
+        if search and user:
 
-    # Counts
+            search_text = (
+                f"{user.username} "
+                f"{user.mobile or ''} "
+                f"{user.email or ''} "
+                f"{user.upi_id or ''} "
+                f"{user.account_number or ''}"
+            ).lower()
+
+            if search.lower() not in search_text:
+                continue
+
+        total_amount += w.amount
+
+        if w.status == "Pending":
+            pending_amount += w.amount
+
+        withdrawal_data.append({
+            "withdrawal": w,
+            "user": user
+        })
+
     pending_count = Withdrawal.query.filter_by(
         status="Pending"
     ).count()
@@ -7450,22 +7605,36 @@ def admin_withdrawals():
         status="Approved"
     ).count()
 
-    rejected_count = Withdrawal.query.filter_by(
-        status="Rejected"
-    ).count()
-
     paid_count = Withdrawal.query.filter_by(
         status="Paid"
     ).count()
 
+    rejected_count = Withdrawal.query.filter_by(
+        status="Rejected"
+    ).count()
+
     return render_template(
+
         "admin_withdrawals.html",
-        withdrawals=withdrawals,
-        users=users,
+
+        withdrawal_data=withdrawal_data,
+
+        total_amount=total_amount,
+
+        pending_amount=pending_amount,
+
         pending_count=pending_count,
+
         approved_count=approved_count,
+
+        paid_count=paid_count,
+
         rejected_count=rejected_count,
-        paid_count=paid_count
+
+        search=search,
+
+        status=status
+
     )
 
 @app.route('/mark-paid/<int:id>')

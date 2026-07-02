@@ -1,196 +1,662 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
 
-<style>
+<div class="container-fluid mt-4">
 
-.page-header{
-    background:linear-gradient(135deg,#2563eb,#7c3aed);
-    color:white;
-    padding:25px;
-    border-radius:20px;
-    margin-bottom:25px;
-}
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-.stats-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:15px;
-    margin-bottom:25px;
-}
+        <div>
 
-.stats-card{
-    background:white;
-    padding:20px;
-    border-radius:18px;
-    text-align:center;
-    box-shadow:0 4px 18px rgba(0,0,0,.08);
-}
+            <h2 class="fw-bold">
+                💸 Withdrawal Requests
+            </h2>
 
-.table-box{
-    background:white;
-    border-radius:20px;
-    padding:20px;
-    box-shadow:0 4px 18px rgba(0,0,0,.08);
-}
+            <p class="text-muted mb-0">
+                Manage all HR withdrawal requests
+            </p>
 
-.empty-box{
-    text-align:center;
-    padding:60px 20px;
-    color:#6b7280;
-}
+        </div>
 
-</style>
-
-<div class="page-header">
-
-    <h2>💸 Withdrawal Requests</h2>
-
-    <p>Manage recruiter withdrawal requests and payments.</p>
-
-</div>
-
-<div class="stats-grid">
-
-    <div class="stats-card">
-        <h5>Pending</h5>
-        <h2>{{ pending_count }}</h2>
     </div>
 
-    <div class="stats-card">
-        <h5>Approved</h5>
-        <h2>{{ approved_count }}</h2>
+
+    <!-- Dashboard Cards -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-lg-2 col-md-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-muted">
+                        Total Requests
+                    </h6>
+
+                    <h2 class="fw-bold">
+
+                        {{ withdrawal_data|length }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-2 col-md-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-warning">
+                        Pending
+                    </h6>
+
+                    <h2 class="fw-bold text-warning">
+
+                        {{ pending_count }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-2 col-md-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-primary">
+                        Approved
+                    </h6>
+
+                    <h2 class="fw-bold text-primary">
+
+                        {{ approved_count }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-2 col-md-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-success">
+                        Paid
+                    </h6>
+
+                    <h2 class="fw-bold text-success">
+
+                        {{ paid_count }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-2 col-md-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-danger">
+                        Rejected
+                    </h6>
+
+                    <h2 class="fw-bold text-danger">
+
+                        {{ rejected_count }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-2 col-md-4">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h6 class="text-success">
+                        Pending ₹
+                    </h6>
+
+                    <h4 class="fw-bold text-success">
+
+                        ₹{{ pending_amount }}
+
+                    </h4>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="stats-card">
-        <h5>Total Requests</h5>
-        <h2>{{ withdrawals|length }}</h2>
+
+
+    <!-- Search -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <form method="GET">
+
+                <div class="row g-3">
+
+                    <div class="col-lg-5">
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="search"
+                            placeholder="Search HR / Mobile / Email / UPI"
+                            value="{{ search }}">
+
+                    </div>
+
+
+                    <div class="col-lg-3">
+
+                        <select
+                            class="form-select"
+                            name="status">
+
+                            <option value="">
+
+                                All Status
+
+                            </option>
+
+                            <option
+                                value="Pending"
+                                {% if status=="Pending" %}selected{% endif %}>
+
+                                Pending
+
+                            </option>
+
+                            <option
+                                value="Approved"
+                                {% if status=="Approved" %}selected{% endif %}>
+
+                                Approved
+
+                            </option>
+
+                            <option
+                                value="Paid"
+                                {% if status=="Paid" %}selected{% endif %}>
+
+                                Paid
+
+                            </option>
+
+                            <option
+                                value="Rejected"
+                                {% if status=="Rejected" %}selected{% endif %}>
+
+                                Rejected
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-lg-2">
+
+                        <button
+                            class="btn btn-primary w-100">
+
+                            Search
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="col-lg-2">
+
+                        <a
+                            href="/admin/withdrawals"
+                            class="btn btn-secondary w-100">
+
+                            Reset
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
     </div>
 
-</div>
 
-<div class="table-box">
 
-{% if withdrawals %}
+    <!-- Withdrawal Table -->
 
-<table class="table table-bordered table-hover">
+    <div class="card border-0 shadow-sm">
 
-    <thead>
+        <div class="card-body p-0">
 
-        <tr>
+            <div class="table-responsive">
 
-            <th>HR Name</th>
+                <table class="table table-hover align-middle mb-0">
 
-            <th>Mobile</th>
+                    <thead class="table-dark">
 
-            <th>UPI ID</th>
+                    <tr>
 
-            <th>Amount</th>
+                        <th>#</th>
 
-            <th>Status</th>
+                        <th>HR</th>
 
-            <th>Date</th>
+                        <th>Contact</th>
 
-            <th>Action</th>
+                        <th>Payment Details</th>
 
-        </tr>
+                        <th>Amount</th>
 
-    </thead>
+                        <th>Status</th>
 
-    <tbody>
+                        <th>Date</th>
 
-    {% for w in withdrawals %}
+                        <th width="240">
 
-    <tr>
+                            Action
 
-        <td>
+                        </th>
 
-            {{ users[w.user_id].username if w.user_id in users else "Deleted User" }}
+                    </tr>
 
-        </td>
+                    </thead>
 
-        <td>
+                    <tbody>
 
-            {{ users[w.user_id].mobile if w.user_id in users else "-" }}
+{% for row in withdrawal_data %}
 
-        </td>
+{% set w = row.withdrawal %}
+{% set user = row.user %}
 
-        <td>
+<tr>
 
-            {{ users[w.user_id].upi_id if w.user_id in users else "-" }}
+    <td>
+        {{ w.id }}
+    </td>
 
-        </td>
+    <td>
 
-        <td>
+        {% if user %}
 
-            ₹{{ "%.2f"|format(w.amount) }}
+            <strong>
 
-        </td>
+                {{ user.username }}
 
-        <td>
+            </strong>
 
-            {% if w.status=="Pending" %}
-                <span class="badge bg-warning text-dark">Pending</span>
+            <br>
 
-            {% elif w.status=="Approved" %}
-                <span class="badge bg-success">Approved</span>
+            <small class="text-muted">
 
-            {% elif w.status=="Rejected" %}
-                <span class="badge bg-danger">Rejected</span>
+                ID : {{ user.id }}
+
+            </small>
+
+        {% else %}
+
+            <span class="text-danger">
+
+                Deleted User
+
+            </span>
+
+        {% endif %}
+
+    </td>
+
+    <td>
+
+        {% if user %}
+
+            📱 {{ user.mobile }}
+
+            <br>
+
+            ✉ {{ user.email }}
+
+        {% endif %}
+
+    </td>
+
+    <td>
+
+        {% if user %}
+
+            {% if user.upi_id %}
+
+                <span class="badge bg-success">
+
+                    UPI
+
+                </span>
+
+                <br>
+
+                <b id="upi{{ w.id }}">
+
+                    {{ user.upi_id }}
+
+                </b>
+
+                <br>
+
+                <button
+                    class="btn btn-sm btn-outline-primary mt-2"
+                    onclick="copyText('upi{{ w.id }}')">
+
+                    Copy UPI
+
+                </button>
 
             {% else %}
-                <span class="badge bg-secondary">{{ w.status }}</span>
+
+                <span class="badge bg-primary">
+
+                    Bank
+
+                </span>
+
+                <br>
+
+                <b>
+
+                    {{ user.bank_name }}
+
+                </b>
+
+                <br>
+
+                {{ user.account_holder_name }}
+
+                <br>
+
+                <span id="acc{{ w.id }}">
+
+                    {{ user.account_number }}
+
+                </span>
+
+                <br>
+
+                {{ user.ifsc_code }}
+
+                <br>
+
+                <button
+                    class="btn btn-sm btn-outline-primary mt-2"
+                    onclick="copyText('acc{{ w.id }}')">
+
+                    Copy Account
+
+                </button>
+
             {% endif %}
 
-        </td>
+        {% endif %}
 
-        <td>
+    </td>
 
-            {{ w.created_at.strftime("%d-%m-%Y %I:%M %p") }}
+    <td>
 
-        </td>
+        <h6 class="text-success">
 
-        <td>
+            ₹{{ w.amount }}
 
-            {% if w.status=="Pending" %}
+        </h6>
 
-            <a href="/approve-withdrawal/{{ w.id }}"
-               class="btn btn-success btn-sm">
+    </td>
 
-                Approve
+    <td>
+
+        {% if w.status=="Pending" %}
+
+            <span class="badge bg-warning">
+
+                Pending
+
+            </span>
+
+        {% elif w.status=="Approved" %}
+
+            <span class="badge bg-primary">
+
+                Approved
+
+            </span>
+
+        {% elif w.status=="Paid" %}
+
+            <span class="badge bg-success">
+
+                Paid
+
+            </span>
+
+        {% elif w.status=="Rejected" %}
+
+            <span class="badge bg-danger">
+
+                Rejected
+
+            </span>
+
+        {% endif %}
+
+        {% if w.utr_number %}
+
+            <br>
+
+            <small class="text-muted">
+
+                UTR
+
+                <br>
+
+                {{ w.utr_number }}
+
+            </small>
+
+        {% endif %}
+
+    </td>
+
+    <td>
+
+        {{ w.created_at.strftime('%d %b %Y') }}
+
+        <br>
+
+        {{ w.created_at.strftime('%I:%M %p') }}
+
+    </td>
+
+    <td>
+
+        {% if w.status=="Pending" %}
+
+            <a
+                href="/approve-withdrawal/{{ w.id }}"
+                class="btn btn-success btn-sm mb-1">
+
+                ✓ Approve
 
             </a>
 
-            {% else %}
+            <br>
 
-            <span class="text-success">Done</span>
+            <a
+                href="/reject-withdrawal/{{ w.id }}"
+                class="btn btn-danger btn-sm">
 
-            {% endif %}
+                ✕ Reject
 
-        </td>
+            </a>
 
-    </tr>
+        {% elif w.status=="Approved" %}
 
-    {% endfor %}
+            <a
+                href="/mark-paid/{{ w.id }}"
+                class="btn btn-primary btn-sm">
 
-    </tbody>
+                💸 Mark Paid
 
-</table>
+            </a>
 
-{% else %}
+        {% elif w.status=="Paid" %}
 
-<div class="empty-box">
+            <span class="text-success fw-bold">
 
-    <h1>📭</h1>
+                Payment Completed
 
-    <h3>No Withdrawal Requests Yet</h3>
+            </span>
 
-    <p>Recruiters haven't submitted any withdrawal requests.</p>
+        {% else %}
+
+            <span class="text-danger">
+
+                Rejected
+
+            </span>
+
+        {% endif %}
+
+        {% if w.admin_remark %}
+
+            <hr>
+
+            <small>
+
+                <b>Remark:</b>
+
+                <br>
+
+                {{ w.admin_remark }}
+
+            </small>
+
+        {% endif %}
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
-{% endif %}
+<script>
 
-</div>
+function copyText(id){
+
+    const text = document.getElementById(id).innerText;
+
+    navigator.clipboard.writeText(text).then(function(){
+
+        showToast("Copied Successfully");
+
+    });
+
+}
+
+function showToast(message){
+
+    let toast = document.createElement("div");
+
+    toast.innerHTML = message;
+
+    toast.style.position = "fixed";
+    toast.style.bottom = "25px";
+    toast.style.right = "25px";
+    toast.style.background = "#198754";
+    toast.style.color = "#fff";
+    toast.style.padding = "12px 20px";
+    toast.style.borderRadius = "10px";
+    toast.style.boxShadow = "0 4px 12px rgba(0,0,0,.25)";
+    toast.style.fontWeight = "600";
+    toast.style.zIndex = "99999";
+    toast.style.opacity = "0";
+    toast.style.transition = ".3s";
+
+    document.body.appendChild(toast);
+
+    setTimeout(function(){
+
+        toast.style.opacity = "1";
+
+    },100);
+
+    setTimeout(function(){
+
+        toast.style.opacity = "0";
+
+        setTimeout(function(){
+
+            toast.remove();
+
+        },300);
+
+    },2000);
+
+}
+
+</script>
 
 {% endblock %}
