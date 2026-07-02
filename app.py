@@ -3978,15 +3978,21 @@ def admin_referral_history():
 
     referral_data = []
 
-    # -------------------------
+    # =====================================
     # HR REFERRALS
-    # -------------------------
+    # =====================================
 
     hrs = User.query.all()
 
     for hr in hrs:
 
-        hr_referred = CandidateUser.query.filter_by(
+        # HRs referred by this HR
+        hr_referred = User.query.filter_by(
+            referred_by=hr.referral_code
+        ).count()
+
+        # Candidates referred by this HR
+        candidate_referred = CandidateUser.query.filter_by(
             referred_by_hr_id=hr.id
         ).count()
 
@@ -4020,7 +4026,7 @@ def admin_referral_history():
 
             "hr_referred": hr_referred,
 
-            "candidate_referred": 0,
+            "candidate_referred": candidate_referred,
 
             "active": active,
 
@@ -4034,9 +4040,9 @@ def admin_referral_history():
 
         })
 
-    # -------------------------
-    # Candidate REFERRALS
-    # -------------------------
+    # =====================================
+    # CANDIDATE REFERRALS
+    # =====================================
 
     candidates = CandidateUser.query.all()
 
@@ -4090,8 +4096,32 @@ def admin_referral_history():
 
         })
 
+    # =====================================
+    # SEARCH
+    # =====================================
+
+    search = request.args.get("search", "").strip().lower()
+
+    if search:
+
+        referral_data = [
+
+            r for r in referral_data
+
+            if (
+                search in (r["name"] or "").lower()
+                or search in (r["mobile"] or "").lower()
+                or search in (r["referral_code"] or "").lower()
+            )
+
+        ]
+
+    # =====================================
+    # SORT
+    # =====================================
+
     referral_data.sort(
-        key=lambda x: x["earned"],
+        key=lambda x: x["earned"] or 0,
         reverse=True
     )
 
