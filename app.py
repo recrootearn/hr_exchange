@@ -7319,7 +7319,10 @@ def wallet():
 @login_required
 def withdraw():
 
-    # GET USER HISTORY
+    # Get Business Settings
+    settings = get_business_settings()
+
+    # Get User Withdrawal History
     withdrawals = Withdrawal.query.filter_by(
         user_id=current_user.id
     ).order_by(
@@ -7328,57 +7331,70 @@ def withdraw():
 
     if request.method == 'POST':
 
-        amount = float(
-            request.form['amount']
-        )
+        try:
+            amount = float(request.form['amount'])
+        except:
+            flash(
+                "Invalid withdrawal amount.",
+                "danger"
+            )
+            return redirect('/withdraw')
 
-        # MINIMUM LIMIT
-        if amount < 500:
+        # Minimum Withdrawal Check
+        if amount < settings.minimum_withdrawal:
 
             flash(
-                'Minimum withdrawal is ₹500',
-                'danger'
+                f"Minimum withdrawal is ₹{settings.minimum_withdrawal}",
+                "danger"
             )
 
             return redirect('/withdraw')
 
-        # BALANCE CHECK
+        # Wallet Balance Check
         if amount > current_user.wallet_balance:
 
             flash(
-                'Insufficient wallet balance',
-                'danger'
+                "Insufficient wallet balance.",
+                "danger"
             )
 
             return redirect('/withdraw')
 
-        # CREATE REQUEST
+        # Payment Details Check
+        if not current_user.payment_method:
+
+            flash(
+                "Please update your payment details first.",
+                "warning"
+            )
+
+            return redirect('/payment-info')
+
+        # Create Withdrawal Request
         withdrawal = Withdrawal(
-
             user_id=current_user.id,
-
             amount=amount,
-
-            status='Pending'
+            status="Pending"
         )
 
         db.session.add(withdrawal)
 
-        # DEDUCT WALLET
+        # Deduct Wallet Balance
         current_user.wallet_balance -= amount
 
         db.session.commit()
 
         flash(
-            'Withdrawal request submitted successfully.',
-            'success'
+            "Withdrawal request submitted successfully.",
+            "success"
         )
 
         return redirect('/withdraw')
 
     return render_template(
         'withdraw.html',
-        withdrawals=withdrawals
+        withdrawals=withdrawals,
+        settings=settings
     )
 
 @app.route('/admin/withdrawals')
