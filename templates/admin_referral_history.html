@@ -96,7 +96,9 @@ Reset
 
 <th>Referral Code</th>
 
-<th>Total Referred</th>
+<th>HR Referred</th>
+
+<th>Candidate Referred</th>
 
 <th>Active</th>
 
@@ -118,29 +120,17 @@ Reset
 
 <tr>
 
-<td>
-
-{{ loop.index }}
-
-</td>
+<td>{{ loop.index }}</td>
 
 <td>
 
 {% if r.type=="HR" %}
 
-<span class="badge bg-primary">
-
-HR
-
-</span>
+<span class="badge bg-primary">HR</span>
 
 {% else %}
 
-<span class="badge bg-success">
-
-Candidate
-
-</span>
+<span class="badge bg-success">Candidate</span>
 
 {% endif %}
 
@@ -148,19 +138,11 @@ Candidate
 
 <td>
 
-<strong>
-
-{{ r.name }}
-
-</strong>
+<strong>{{ r.name }}</strong>
 
 </td>
 
-<td>
-
-{{ r.mobile }}
-
-</td>
+<td>{{ r.mobile }}</td>
 
 <td>
 
@@ -174,7 +156,21 @@ Candidate
 
 <td>
 
-{{ r.total }}
+<span class="badge bg-primary">
+
+{{ r.hr_referred }}
+
+</span>
+
+</td>
+
+<td>
+
+<span class="badge bg-success">
+
+{{ r.candidate_referred }}
+
+</span>
 
 </td>
 

@@ -3986,7 +3986,7 @@ def admin_referral_history():
 
     for hr in hrs:
 
-        total = CandidateUser.query.filter_by(
+        hr_referred = CandidateUser.query.filter_by(
             referred_by_hr_id=hr.id
         ).count()
 
@@ -4018,7 +4018,9 @@ def admin_referral_history():
 
             "referral_code": hr.referral_code,
 
-            "total": total,
+            "hr_referred": hr_referred,
+
+            "candidate_referred": 0,
 
             "active": active,
 
@@ -4040,7 +4042,7 @@ def admin_referral_history():
 
     for c in candidates:
 
-        total = CandidateUser.query.filter_by(
+        candidate_referred = CandidateUser.query.filter_by(
             referred_by_candidate_id=c.id
         ).count()
 
@@ -4072,7 +4074,9 @@ def admin_referral_history():
 
             "referral_code": c.candidate_referral_code,
 
-            "total": total,
+            "hr_referred": 0,
+
+            "candidate_referred": candidate_referred,
 
             "active": active,
 
@@ -4470,12 +4474,9 @@ def unlock_contact(id):
 
         revenue = purchase.price_per_credit * cost
 
-        if (
-            candidate.revenue_owner_type == "hr"
-            and candidate.revenue_owner_id
-        ):
+        if candidate.referred_by_hr_id:
 
-            owner = User.query.get(candidate.revenue_owner_id)
+            owner = User.query.get(candidate.referred_by_hr_id)
 
             if owner:
 
