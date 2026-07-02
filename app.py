@@ -315,6 +315,8 @@ class ReferralRewardHistory(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
+    reward_type = db.Column(db.String(20))
+
     mobile = db.Column(
         db.String(20),
         unique=True
@@ -3673,6 +3675,7 @@ def candidate_referral():
 
     # Generate referral code if it doesn't exist
     if not candidate.candidate_referral_code:
+
         candidate.candidate_referral_code = generate_candidate_referral_code()
         db.session.commit()
 
@@ -3685,9 +3688,9 @@ def candidate_referral():
 
     # Referral link
     referral_link = (
-        request.host_url.rstrip("/") +
-        "/candidate-register?ref=" +
-        candidate.candidate_referral_code
+        request.host_url.rstrip("/")
+        + "/candidate-register?ref="
+        + candidate.candidate_referral_code
     )
 
     return render_template(
@@ -3824,7 +3827,8 @@ def update_application_status(id):
                 if referring_hr:
 
                     already_rewarded = ReferralRewardHistory.query.filter_by(
-                        mobile=candidate.mobile
+                        mobile=candidate.mobile,
+                        reward_type="hr"
                     ).first()
 
                     if not already_rewarded:
@@ -3847,7 +3851,9 @@ def update_application_status(id):
 
                         db.session.add(
                             ReferralRewardHistory(
-                                mobile=candidate.mobile
+
+                        mobile=candidate.mobile,
+                                reward_type="hr"
                             )
                         )
 
@@ -3885,7 +3891,8 @@ def update_application_status(id):
                     if referring_candidate:
 
                         already_rewarded = ReferralRewardHistory.query.filter_by(
-                            mobile=candidate.mobile
+                            mobile=candidate.mobile,
+                            reward_type="candidate"
                         ).first()
 
                         if not already_rewarded:
@@ -3905,7 +3912,9 @@ def update_application_status(id):
 
                             db.session.add(
                                 ReferralRewardHistory(
-                                    mobile=candidate.mobile
+                                    
+                            mobile=candidate.mobile,
+                                    reward_type="hr"
                                 )
                             )
 
