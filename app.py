@@ -7426,10 +7426,22 @@ def admin_withdrawals():
     if not current_user.is_admin:
         return "Access Denied"
 
+    # All withdrawal requests
     withdrawals = Withdrawal.query.order_by(
         Withdrawal.id.desc()
     ).all()
 
+    # Create user dictionary
+    users = {}
+
+    for w in withdrawals:
+
+        user = User.query.get(w.user_id)
+
+        if user:
+            users[w.user_id] = user
+
+    # Counts
     pending_count = Withdrawal.query.filter_by(
         status="Pending"
     ).count()
@@ -7438,11 +7450,22 @@ def admin_withdrawals():
         status="Approved"
     ).count()
 
+    rejected_count = Withdrawal.query.filter_by(
+        status="Rejected"
+    ).count()
+
+    paid_count = Withdrawal.query.filter_by(
+        status="Paid"
+    ).count()
+
     return render_template(
-        'admin_withdrawals.html',
+        "admin_withdrawals.html",
         withdrawals=withdrawals,
+        users=users,
         pending_count=pending_count,
-        approved_count=approved_count
+        approved_count=approved_count,
+        rejected_count=rejected_count,
+        paid_count=paid_count
     )
 
 @app.route('/mark-paid/<int:id>')

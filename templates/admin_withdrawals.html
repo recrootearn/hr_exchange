@@ -40,19 +40,13 @@
     color:#6b7280;
 }
 
-.empty-box h3{
-    margin-top:15px;
-}
-
 </style>
 
 <div class="page-header">
 
     <h2>💸 Withdrawal Requests</h2>
 
-    <p>
-        Manage recruiter withdrawal requests and payments.
-    </p>
+    <p>Manage recruiter withdrawal requests and payments.</p>
 
 </div>
 
@@ -77,70 +71,125 @@
 
 <div class="table-box">
 
-    {% if withdrawals %}
+{% if withdrawals %}
 
-    <table class="table">
+<table class="table table-bordered table-hover">
 
-        <thead>
+    <thead>
 
-            <tr>
-                <th>HR</th>
-                <th>Amount</th>
-                <th>UPI</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
+        <tr>
 
-        </thead>
+            <th>HR Name</th>
 
-        <tbody>
+            <th>Mobile</th>
 
-        {% for w in withdrawals %}
+            <th>UPI ID</th>
 
-            <tr>
+            <th>Amount</th>
 
-                <td>{{ w.user.username }}</td>
+            <th>Status</th>
 
-                <td>₹{{ w.amount }}</td>
+            <th>Date</th>
 
-                <td>{{ w.upi_id }}</td>
+            <th>Action</th>
 
-                <td>{{ w.status }}</td>
+        </tr>
 
-                <td>
+    </thead>
 
-                    <a href="/approve-withdrawal/{{ w.id }}"
-                       class="btn btn-success btn-sm">
+    <tbody>
 
-                        Approve
+    {% for w in withdrawals %}
 
-                    </a>
+    <tr>
 
-                </td>
+        <td>
 
-            </tr>
+            {{ users[w.user_id].username if w.user_id in users else "Deleted User" }}
 
-        {% endfor %}
+        </td>
 
-        </tbody>
+        <td>
 
-    </table>
+            {{ users[w.user_id].mobile if w.user_id in users else "-" }}
 
-    {% else %}
+        </td>
 
-    <div class="empty-box">
+        <td>
 
-        <h1>📭</h1>
+            {{ users[w.user_id].upi_id if w.user_id in users else "-" }}
 
-        <h3>No Withdrawal Requests Yet</h3>
+        </td>
 
-        <p>
-            Recruiters haven't submitted any withdrawal requests.
-        </p>
+        <td>
 
-    </div>
+            ₹{{ "%.2f"|format(w.amount) }}
 
-    {% endif %}
+        </td>
+
+        <td>
+
+            {% if w.status=="Pending" %}
+                <span class="badge bg-warning text-dark">Pending</span>
+
+            {% elif w.status=="Approved" %}
+                <span class="badge bg-success">Approved</span>
+
+            {% elif w.status=="Rejected" %}
+                <span class="badge bg-danger">Rejected</span>
+
+            {% else %}
+                <span class="badge bg-secondary">{{ w.status }}</span>
+            {% endif %}
+
+        </td>
+
+        <td>
+
+            {{ w.created_at.strftime("%d-%m-%Y %I:%M %p") }}
+
+        </td>
+
+        <td>
+
+            {% if w.status=="Pending" %}
+
+            <a href="/approve-withdrawal/{{ w.id }}"
+               class="btn btn-success btn-sm">
+
+                Approve
+
+            </a>
+
+            {% else %}
+
+            <span class="text-success">Done</span>
+
+            {% endif %}
+
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% else %}
+
+<div class="empty-box">
+
+    <h1>📭</h1>
+
+    <h3>No Withdrawal Requests Yet</h3>
+
+    <p>Recruiters haven't submitted any withdrawal requests.</p>
+
+</div>
+
+{% endif %}
 
 </div>
 
