@@ -4149,6 +4149,8 @@ def check_email():
 @login_required
 def view_candidates(id):
 
+    settings = get_business_settings()
+
     candidate = CandidateUser.query.get_or_404(id)
 
     followers_count = Follow.query.filter_by(
@@ -4161,8 +4163,8 @@ def view_candidates(id):
     ).first()
 
     contact_unlocked = CandidateContactUnlock.query.filter_by(
-    hr_id=current_user.id,
-    candidate_user_id=id
+        hr_id=current_user.id,
+        candidate_user_id=id
     ).first()
 
     has_applied = JobApplication.query.join(
@@ -4174,12 +4176,13 @@ def view_candidates(id):
     ).first()
 
     return render_template(
-        'candidate_view.html',
+        "candidate_view.html",
         candidate=candidate,
         followers_count=followers_count,
         is_following=is_following,
-    contact_unlocked=contact_unlocked,
-        has_applied=has_applied
+        contact_unlocked=contact_unlocked,
+        has_applied=has_applied,
+        settings=settings
     )
 
 @app.route('/follow-hr/<int:id>')
