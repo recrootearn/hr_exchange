@@ -3818,6 +3818,20 @@ def update_application_status(id):
             else:
                 completion += 10
 
+            print("STATUS =", new_status)
+
+            candidate = CandidateUser.query.get(application.candidate_id)
+
+            print("Candidate =", candidate.full_name)
+            print("HR ID =", candidate.referred_by_hr_id)
+            print("Candidate ID =", candidate.referred_by_candidate_id)
+            print("HR Reward Given =", candidate.hr_referral_reward_given)
+            print("Candidate Reward Given =", candidate.candidate_referral_reward_given)
+
+            print("Completion =", completion)
+            print("HR ID =", candidate.referred_by_hr_id)
+            print("Candidate ID =", candidate.referred_by_candidate_id)
+
             if completion >= 100:
 
                 referring_hr = User.query.get(
