@@ -4391,21 +4391,57 @@ def unlock_contact(id):
     ).first()
 
     if existing:
-
         flash("Already unlocked")
-
-        return redirect(request.referrer)
-
-    if current_user.credits < settings.discover_unlock_credits:
-
-        flash(f"Need {settings.discover_unlock_credits} credits")
-
         return redirect(request.referrer)
 
     candidate = CandidateUser.query.get_or_404(id)
 
-    # Deduct Credits
-    current_user.credits -= settings.discover_unlock_credits
+    cost = settings.discover_unlock_credits
+
+    paid_credit_used = False
+    purchase = None
+
+    # =====================================
+    # USE PAID CREDITS FIRST
+    # =====================================
+
+    if current_user.paid_credits >= cost:
+
+        paid_credit_used = True
+
+        current_user.paid_credits -= cost
+
+        purchase = CreditPurchase.query.filter(
+            CreditPurchase.user_id == current_user.id,
+            CreditPurchase.credits_remaining > 0
+        ).order_by(
+            CreditPurchase.created_at.asc()
+        ).first()
+
+        if purchase:
+            purchase.credits_remaining -= cost
+
+    # =====================================
+    # OTHERWISE USE FREE CREDITS
+    # =====================================
+
+    elif current_user.credits >= cost:
+
+        current_user.credits -= cost
+
+    # =====================================
+    # NOT ENOUGH CREDITS
+    # =====================================
+
+    else:
+
+        flash(f"Need {cost} credits")
+
+        return redirect(request.referrer)
+
+    # =====================================
+    # SAVE UNLOCK
+    # =====================================
 
     db.session.add(
         CandidateContactUnlock(
@@ -4417,73 +4453,55 @@ def unlock_contact(id):
     db.session.add(
         CreditHistory(
             user_id=current_user.id,
-            amount=-settings.discover_unlock_credits,
+            amount=-cost,
             action="Unlocked Candidate Contact"
         )
     )
 
     # =====================================
-    # DISCOVER REVENUE SHARING
+    # REVENUE SHARING ONLY FOR PAID CREDITS
     # =====================================
 
-    if settings.enable_revenue_sharing:
+    if (
+        paid_credit_used
+        and purchase
+        and settings.enable_revenue_sharing
+    ):
 
-        purchase = CreditPurchase.query.filter(
-            CreditPurchase.user_id == current_user.id,
-            CreditPurchase.credits_remaining > 0
-        ).order_by(
-            CreditPurchase.created_at.asc()
-        ).first()
+        revenue = purchase.price_per_credit * cost
 
-        if purchase:
+        if (
+            candidate.revenue_owner_type == "hr"
+            and candidate.revenue_owner_id
+        ):
 
-            purchase.credits_remaining -= settings.discover_unlock_credits
+            owner = User.query.get(candidate.revenue_owner_id)
 
-            revenue = purchase.price_per_credit * settings.discover_unlock_credits
+            if owner:
 
-            # Candidate belongs to HR
-            if (
-                candidate.revenue_owner_type == "hr"
-                and candidate.revenue_owner_id
-            ):
+                hr_share = revenue * settings.discover_hr_share / 100
 
-                owner = User.query.get(candidate.revenue_owner_id)
+                admin_share = revenue * settings.discover_admin_share / 100
 
-                if owner:
+                owner.wallet_balance += hr_share
 
-                    hr_share = revenue * settings.discover_hr_share / 100
-                    admin_share = revenue * settings.discover_admin_share / 100
-
-                    owner.wallet_balance += hr_share
-
-                    db.session.add(
-                        Earnings(
-                            user_id=owner.id,
-                            amount=hr_share,
-                            purchase_id=purchase.id,
-                            reason="Discover Candidate Unlock"
-                        )
+                db.session.add(
+                    Earnings(
+                        user_id=owner.id,
+                        amount=hr_share,
+                        purchase_id=purchase.id,
+                        reason="Discover Candidate Unlock"
                     )
+                )
 
-                    db.session.add(
-                        PlatformEarning(
-                            user_id=current_user.id,
-                            amount=admin_share,
-                            purchase_id=purchase.id,
-                            reason="Discover Candidate Unlock"
-                        )
+                db.session.add(
+                    PlatformEarning(
+                        user_id=current_user.id,
+                        amount=admin_share,
+                        purchase_id=purchase.id,
+                        reason="Discover Candidate Unlock"
                     )
-
-                else:
-
-                    db.session.add(
-                        PlatformEarning(
-                            user_id=current_user.id,
-                            amount=revenue,
-                            purchase_id=purchase.id,
-                            reason="Deleted HR Owner"
-                        )
-                    )
+                )
 
             else:
 
@@ -4492,9 +4510,20 @@ def unlock_contact(id):
                         user_id=current_user.id,
                         amount=revenue,
                         purchase_id=purchase.id,
-                        reason="Self Registered Candidate"
+                        reason="Deleted HR Owner"
                     )
                 )
+
+        else:
+
+            db.session.add(
+                PlatformEarning(
+                    user_id=current_user.id,
+                    amount=revenue,
+                    purchase_id=purchase.id,
+                    reason="Self Registered Candidate"
+                )
+            )
 
     db.session.commit()
 
