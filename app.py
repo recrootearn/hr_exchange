@@ -5345,7 +5345,12 @@ def delete_candidate_account():
 
     db.session.delete(candidate)
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(e)
+        return str(e)
 
     session.clear()
 
