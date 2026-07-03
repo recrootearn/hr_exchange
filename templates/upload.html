@@ -2,10 +2,6 @@
 
 {% block content %}
 
-{% extends 'base.html' %}
-
-{% block content %}
-
 <style>
 
 .content{
@@ -218,14 +214,18 @@ label{
     transition:all 0.3s ease;
 }
 
-@media(max-width:768px){
-
     .mobile-swipe{
-        display:flex !important;
-        flex-wrap:nowrap !important;
-        overflow-x:scroll !important;
+        display:flex;
+        flex-wrap:nowrap;
+        overflow-x:auto;
         scroll-snap-type:x mandatory;
-        -webkit-overflow-scrolling:touch;
+        scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
+        scrollbar-width:none;
+    }
+
+    .mobile-swipe::-webkit-scrollbar{
+        display:none;
     }
 
     .mobile-page{
@@ -233,14 +233,6 @@ label{
         width:100%;
         scroll-snap-align:start;
     }
-
-}
-
-.upload-tabs{
-    display:none;
-}
-
-@media(max-width:768px){
 
     .upload-tabs{
         display:flex;
@@ -259,297 +251,15 @@ label{
         font-weight:700;
         border-radius:12px;
         transition:.3s;
+        cursor:pointer;
     }
 
     .upload-tab.active{
-        background:linear-gradient(
-            135deg,
-            #2563eb,
-            #7c3aed
-        );
-        color:white;
+        background:linear-gradient(135deg,#2563eb,#7c3aed);
+        color:#fff;
     }
 
-}
-
 </style>
-
-<div class="upload-tabs">
-
-    <button
-        class="upload-tab active"
-        onclick="goToUploadTab(0,this)">
-
-        🚀 Single Upload
-
-    </button>
-
-    <button
-        class="upload-tab"
-        onclick="goToUploadTab(1,this)">
-
-        📂 Bulk Upload
-
-    </button>
-
-</div>
-
-<div class="mobile-swipe">
-
-    <!-- SINGLE UPLOAD -->
-
-    <div class="mobile-page">
-
-        <div class="card-box">
-
-            <h2>
-                🚀 Upload Candidate
-            </h2>
-
-            <form method="POST">
-
-                <label class="mb-1">
-                    Candidate Name
-                </label>
-
-                <input
-                type="text"
-                name="name"
-                class="form-control mb-3"
-                placeholder="Enter Candidate Name"
-                required>
-
-                <label class="mb-1">
-                    Phone Number
-                </label>
-
-                <input
-                type="text"
-                name="phone"
-                class="form-control mb-3"
-                placeholder="Enter Mobile Number"
-                required>
-
-                <label class="mb-1">
-                    Experience
-                </label>
-
-                <select
-                name="experience"
-                class="form-control mb-3">
-
-                    <option>
-                        Fresher
-                    </option>
-
-                    <option>
-                        Experienced
-                    </option>
-
-                </select>
-
-                <label class="mb-1">
-                    Designation
-                </label>
-
-                <input
-                type="text"
-                name="designation"
-                class="form-control mb-3"
-                placeholder="Example: Telecaller"
-                required>
-
-                <label class="mb-1">
-                    City
-                </label>
-
-                <input
-                type="text"
-                name="city"
-                class="form-control mb-3"
-                placeholder="Example: Mumbai"
-                required>
-
-                <label class="mb-1">
-                    Industry
-                </label>
-
-                <select
-                name="category"
-                class="form-control mb-4">
-
-                    <option>
-                        IT
-                    </option>
-
-                    <option>
-                        Advisory
-                    </option>
-
-                    <option>
-                        Finance
-                    </option>
-
-                    <option>
-                        Healthcare
-                    </option>
-
-                    <option>
-                        Automobile
-                    </option>
-
-                    <option>
-                        Broking
-                    </option>
-
-                </select>
-
-                <button class="btn btn-primary w-100">
-
-                    Upload Candidate
-
-                </button>
-
-            </form>
-
-        </div>
-
-    </div>
-
-    <!-- BULK UPLOAD -->
-
-    <div class="mobile-page">
-
-        <div class="card-box">
-
-            <h2>
-                📂 Bulk Upload
-            </h2>
-
-            <form
-            method="POST"
-            action="/bulk-upload"
-            enctype="multipart/form-data">
-
-                <label class="mb-2">
-                    Upload Excel File
-                </label>
-
-                <input
-                type="file"
-                name="file"
-                class="form-control mb-4"
-                required>
-
-                <button class="btn btn-success w-100">
-
-                    Upload Excel
-
-                </button>
-
-            </form>
-
-            <hr class="my-4">
-
-            <h5>
-                📑 Excel Format
-            </h5>
-
-            <div class="table-responsive">
-
-                <table class="table table-bordered align-middle">
-
-                    <tr>
-
-                        <th>Name</th>
-
-                        <th>Phone</th>
-
-                        <th>Experience</th>
-
-                        <th>Designation</th>
-
-                        <th>City</th>
-
-                        <th>Industry</th>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>Rahul</td>
-
-                        <td>9876543210</td>
-
-                        <td>Fresher</td>
-
-                        <td>Telecaller</td>
-
-                        <td>Mumbai</td>
-
-                        <td>Advisory</td>
-
-                    </tr>
-
-                </table>
-
-            </div>
-
-            <div class="alert alert-info mt-4">
-
-                <b>
-                    Excel column names must be exactly:
-                </b>
-
-                <br><br>
-
-                Name,
-                Phone,
-                Experience,
-                Designation,
-                City,
-                Industry
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<script>
-
-function goToUploadTab(index,btn){
-
-    document.querySelector(
-        '.mobile-swipe'
-    ).scrollTo({
-
-        left:
-        document.querySelector(
-            '.mobile-swipe'
-        ).offsetWidth * index,
-
-        behavior:'smooth'
-
-    });
-
-    document
-    .querySelectorAll('.upload-tab')
-    .forEach(tab=>{
-
-        tab.classList.remove(
-            'active'
-        );
-
-    });
-
-    btn.classList.add('active');
-
-}
-
-</script>
 
 <div class="upload-tabs">
 
