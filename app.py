@@ -3171,7 +3171,7 @@ def candidate_dashboard():
 
     interviews = JobApplication.query.filter(
         JobApplication.candidate_id == candidate.id,
-        JobApplication.status == "Interview Done"
+        JobApplication.status == "Interviewed"
     ).count()
 
     referrals = candidate.successful_referrals
@@ -3769,7 +3769,7 @@ def update_application_status(id):
 
     if (
         settings.enable_hr_referral
-        and new_status == "Interview Done"
+        and new_status == "Interviewed"
     ):
 
         candidate = CandidateUser.query.get(
@@ -4036,7 +4036,7 @@ def admin_referral_history():
             CandidateUser.id == JobApplication.candidate_id
         ).filter(
             CandidateUser.referred_by_hr_id == hr.id,
-            JobApplication.status == "Interview Done"
+            JobApplication.status == "Interviewed"
         ).count()
 
         referral_data.append({
@@ -4092,7 +4092,7 @@ def admin_referral_history():
             CandidateUser.id == JobApplication.candidate_id
         ).filter(
             CandidateUser.referred_by_candidate_id == c.id,
-            JobApplication.status == "Interview Done"
+            JobApplication.status == "Interviewed"
         ).count()
 
         referral_data.append({
