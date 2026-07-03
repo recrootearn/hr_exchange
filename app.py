@@ -3750,6 +3750,8 @@ def company_profile(id):
 @login_required
 def update_application_status(id):
 
+    print("UPDATE APPLICATION STATUS ROUTE CALLED")
+
     settings = get_business_settings()
 
     application = JobApplication.query.get_or_404(id)
