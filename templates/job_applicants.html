@@ -164,9 +164,58 @@
 
 }
   
-</style>  <div class="container py-3">  <h2 class="page-title">  
+</style>  <div class="container py-3"> 
+
+ <h2 class="page-title">  
 👥 Job Applicants  
-</h2>  {% if applications %}
+</h2> 
+
+<div class="row mb-4">
+
+    <div class="col-md-4 mb-2">
+        <input
+            type="text"
+            id="searchInput"
+            class="form-control"
+            placeholder="🔍 Search applicant...">
+    </div>
+
+    <div class="col-md-3 mb-2">
+        <select id="statusFilter" class="form-select">
+
+            <option value="All">All Status</option>
+            <option>Have Not Talked</option>
+            <option>Talked</option>
+            <option>Called For Interview</option>
+            <option>Interviewed</option>
+            <option>Hired</option>
+            <option>Rejected</option>
+
+        </select>
+    </div>
+
+    <div class="col-md-2 mb-2">
+        <select id="typeFilter" class="form-select">
+
+            <option value="All">All Types</option>
+            <option value="Candidate">Candidate</option>
+            <option value="HR">HR</option>
+
+        </select>
+    </div>
+
+    <div class="col-md-3 mb-2">
+        <select id="sortFilter" class="form-select">
+
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+
+        </select>
+    </div>
+
+</div>
+
+{% if applications %}
 
 {% for app in applications %}
 
@@ -176,7 +225,13 @@
 
 {% if candidate %}
 
-<div class="applicant-card">  <div class="applicant-top">  <div class="applicant-left">  <div class="applicant-avatar">  {{ candidate.full_name[0] }}
+<div class="applicant-card"
+     data-status="{{ app.status or 'Have Not Talked' }}"
+     data-type="Candidate"
+     data-name="{{ candidate.full_name|lower }}"
+     data-id="{{ app.id }}"> 
+
+<div class="applicant-top">  <div class="applicant-left">  <div class="applicant-avatar">  {{ candidate.full_name[0] }}
 
 </div>  <div>  <div class="applicant-name">  {{ candidate.full_name }}
 
@@ -324,7 +379,11 @@ method="POST">
 
 {% if hr %}
 
-<div class="applicant-card">  <div class="applicant-top">  
+<div class="applicant-card"
+     data-status="{{ app.status or 'Have Not Talked' }}"
+     data-type="HR"
+     data-name="{{ (hr.first_name ~ ' ' ~ hr.last_name)|lower }}"
+     data-id="{{ app.id }}">  <div class="applicant-top">  
 
     <div class="applicant-left">  
 
