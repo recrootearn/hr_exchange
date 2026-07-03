@@ -6,6 +6,41 @@
     Support Center
 </h2>
 
+<div class="row mb-3">
+
+    <div class="col-md-4 mb-2">
+        <input
+            type="text"
+            id="searchInput"
+            class="form-control"
+            placeholder="🔍 Search Subject">
+    </div>
+
+    <div class="col-md-4 mb-2">
+        <select
+            id="statusFilter"
+            class="form-select">
+
+            <option value="All">All Status</option>
+            <option value="Open">Open</option>
+            <option value="Closed">Closed</option>
+
+        </select>
+    </div>
+
+    <div class="col-md-4 mb-2">
+        <select
+            id="sortFilter"
+            class="form-select">
+
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+
+        </select>
+    </div>
+
+</div>
+
 <!-- CREATE TICKET -->
 
 <div class="stats-card mb-4">
@@ -68,7 +103,10 @@
 
         {% for t in tickets.items %}
 
-        <div class="border rounded p-3 mb-4"
+        <div class="border rounded p-3 mb-4 support-card"
+             data-status="{{ t.status }}"
+             data-subject="{{ t.subject|lower }}"
+        data-date="{{ t.created_at.timestamp() }}"
              style="
              background:#ffffff;
              border:1px solid #e5e7eb;
@@ -245,5 +283,59 @@
     {% endif %}
 
 </div>
+
+<script>
+
+function filterTickets(){
+
+    let search=document.getElementById("searchInput").value.toLowerCase();
+    let status=document.getElementById("statusFilter").value;
+
+    document.querySelectorAll(".support-card").forEach(card=>{
+
+        let subject=card.dataset.subject;
+        let cardStatus=card.dataset.status;
+
+        let show=true;
+
+        if(search && !subject.includes(search))
+            show=false;
+
+        if(status!="All" && cardStatus!=status)
+            show=false;
+
+        card.style.display=show?"block":"none";
+
+    });
+
+}
+
+document.getElementById("searchInput")
+.addEventListener("keyup",filterTickets);
+
+document.getElementById("statusFilter")
+.addEventListener("change",filterTickets);
+
+document.getElementById("sortFilter")
+.addEventListener("change",function(){
+
+    let container=document.querySelector(".stats-card");
+    let cards=[...document.querySelectorAll(".support-card")];
+
+    cards.sort((a,b)=>{
+
+        if(this.value=="newest"){
+            return b.dataset.date-a.dataset.date;
+        }
+
+        return a.dataset.date-b.dataset.date;
+
+    });
+
+    cards.forEach(card=>container.appendChild(card));
+
+});
+
+</script>
 
 {% endblock %}
