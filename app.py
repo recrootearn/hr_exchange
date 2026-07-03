@@ -86,6 +86,7 @@ db = SQLAlchemy(app)
 # MODELS
 # =========================
 class User(UserMixin, db.Model):
+    __table_args__ = {'sqlite_autoincrement': True}
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
@@ -151,6 +152,8 @@ class User(UserMixin, db.Model):
 )
 
 class CandidateUser(UserMixin, db.Model):
+
+    __table_args__ = {'sqlite_autoincrement': True}
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -5289,6 +5292,8 @@ def delete_account():
         )
     )
 
+    db.session.flush()      # Save DeletedAccount first
+
     db.session.delete(user)
 
     db.session.commit()
@@ -5342,6 +5347,8 @@ def delete_candidate_account():
             referral_reward_used=True
         )
     )
+
+    db.session.flush()      # Save DeletedAccount first
 
     db.session.delete(candidate)
 
@@ -6141,8 +6148,13 @@ def admin():
 @app.route('/admin/users')
 @login_required
 def admin_users():
-    if not admin_only(): return "Access Denied"
-    return render_template('admin_users.html', users=User.query.all())
+    if not admin_only():
+        return "Access Denied"
+
+    return render_template(
+        'admin_users.html',
+        users=User.query.filter_by(is_deleted=False).all()
+    )
 
 @app.route('/export-users')
 @login_required
@@ -6949,7 +6961,9 @@ def admin_candidate_users():
     mobile = request.args.get('mobile', '')
     page = request.args.get('page', 1, type=int)
 
-    query = CandidateUser.query
+    query = CandidateUser.query.filter_by(
+        is_deleted=False
+    )
 
     if name:
         query = query.filter(
