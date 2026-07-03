@@ -589,6 +589,68 @@ style="width:120px;margin-bottom:20px;">
 
 </p>
 
-</div>  {% endif %}
+</div>  
 
-</div>  {% endblock %}
+{% endif %}
+
+</div>  
+
+<script>
+
+function filterApplicants(){
+
+    let search=document.getElementById("searchInput").value.toLowerCase();
+    let status=document.getElementById("statusFilter").value;
+    let type=document.getElementById("typeFilter").value;
+
+    document.querySelectorAll(".applicant-card").forEach(card=>{
+
+        let name=card.dataset.name;
+        let cardStatus=card.dataset.status;
+        let cardType=card.dataset.type;
+
+        let show=true;
+
+        if(search && !name.includes(search))
+            show=false;
+
+        if(status!="All" && cardStatus!=status)
+            show=false;
+
+        if(type!="All" && cardType!=type)
+            show=false;
+
+        card.style.display=show?"block":"none";
+
+    });
+
+}
+
+document.getElementById("searchInput")
+.addEventListener("keyup",filterApplicants);
+
+document.getElementById("statusFilter")
+.addEventListener("change",filterApplicants);
+
+document.getElementById("typeFilter")
+.addEventListener("change",filterApplicants);
+
+document.getElementById("sortFilter")
+.addEventListener("change",function(){
+
+    let container=document.querySelector(".container");
+    let cards=[...document.querySelectorAll(".applicant-card")];
+
+    if(this.value=="newest"){
+        cards.sort((a,b)=>b.dataset.id-a.dataset.id);
+    }else{
+        cards.sort((a,b)=>a.dataset.id-b.dataset.id);
+    }
+
+    cards.forEach(card=>container.appendChild(card));
+
+});
+
+</script>
+
+{% endblock %}
