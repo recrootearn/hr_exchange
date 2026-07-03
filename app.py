@@ -2710,8 +2710,14 @@ def register():
 
         if existing_hr_mobile or existing_candidate_mobile:
 
-            flash("Mobile number already exists")
-            return redirect('/register')
+            deleted = DeletedAccount.query.filter_by(
+                mobile=mobile
+            ).first()
+
+            if not deleted:
+
+               flash("Mobile number already exists")
+               return redirect('/register')
 
         # PROFILE PHOTO
 
@@ -2902,14 +2908,20 @@ def candidate_register():
             username=username
         ).first()
 
-        if existing_hr or existing_candidate:
+        if existing_hr_mobile or existing_candidate_mobile:
 
-            flash(
-                'Username already exists. Please choose another username.',
-                'danger'
-            )
+            deleted = DeletedAccount.query.filter_by(
+                mobile=mobile
+            ).first()
 
-            return redirect('/candidate-register')
+            if not deleted:
+
+                flash(
+                    'Mobile number already exists.',
+                    'danger'
+                )
+
+                return redirect('/candidate-register')
 
         # CHECK MOBILE
 
