@@ -3896,68 +3896,67 @@ def update_application_status(id):
                             type="referral_reward"
                         )
 
-                # ==========================================
-                # CANDIDATE -> CANDIDATE REFERRAL REWARD
-                # ==========================================
+    # ==========================================
+    # CANDIDATE -> CANDIDATE REFERRAL REWARD
+    # ==========================================
 
-                if (
-                    settings.enable_candidate_referral
-                    and candidate.referred_by_candidate_id
-                    and not candidate.candidate_referral_reward_given
-                ):
+    if (
+        settings.enable_candidate_referral
+        and candidate.referred_by_candidate_id
+        and not candidate.candidate_referral_reward_given
+    ):
 
-                    referring_candidate = CandidateUser.query.get(
-                        candidate.referred_by_candidate_id
-                    )
+        referring_candidate = CandidateUser.query.get(
+            candidate.referred_by_candidate_id
+        )
 
-                    if referring_candidate:
+        if referring_candidate:
 
-                        already_rewarded = ReferralRewardHistory.query.filter_by(
-                            mobile=candidate.mobile,
-                            reward_type="candidate"
-                        ).first()
+           already_rewarded = ReferralRewardHistory.query.filter_by(
+               mobile=candidate.mobile,
+               reward_type="candidate"
+           ).first()
 
-                        if not already_rewarded:
+           if not already_rewarded:
 
-                            safe_wallet_credit(
-                                referring_candidate,
-                                settings.candidate_to_candidate_reward
-                            )
+               safe_wallet_credit(
+                   referring_candidate,
+                   settings.candidate_to_candidate_reward
+               )
 
-                            referring_candidate.referral_earnings += (
-                                settings.candidate_to_candidate_reward
-                            )
+               referring_candidate.referral_earnings += (
+                   settings.candidate_to_candidate_reward
+               )
 
-                            referring_candidate.successful_referrals += 1
+               referring_candidate.successful_referrals += 1
 
-                            candidate.candidate_referral_reward_given = True
+               candidate.candidate_referral_reward_given = True
 
-                            db.session.add(
-                                ReferralRewardHistory(
-                                    
-                            mobile=candidate.mobile,
-                                    reward_type="hr"
-                                )
-                            )
+               db.session.add(
+                   ReferralRewardHistory(       
+                       mobile=candidate.mobile,
+                       reward_type="candidate"
+                   )
+               )
 
-                            db.session.add(
-                                CandidateWalletHistory(
-                                    candidate_id=referring_candidate.id,
-                                    amount=settings.candidate_to_candidate_reward,
-                                    action=f"Referral Reward - {candidate.full_name}"
-                                )
-                            )
+               db.session.add(
+                   CandidateWalletHistory(
+                       candidate_id=referring_candidate.id,
+                       amount=settings.candidate_to_candidate_reward,
+                       action=f"Referral Reward - {candidate.full_name}"
+                   )
+               )
 
-                            db.session.add(
-                                Notification(
-                                    user_id=referring_candidate.id,
-                                    user_type="candidate",
-                                    message=f"You earned ₹{settings.candidate_to_candidate_reward} because {candidate.full_name} completed Interview.",
-                                    link="/candidate-wallet",
-                                    image=candidate.profile_photo,
-                                    type="candidate_referral_reward"
-                                )
-                            )
+               db.session.add(
+                   Notification(
+                       user_id=referring_candidate.id,
+                       user_type="candidate",
+                       message=f"You earned ₹{settings.candidate_to_candidate_reward} because {candidate.full_name} completed Interview.",
+                       link="/candidate-wallet",
+                       image=candidate.profile_photo,
+                       type="candidate_referral_reward"
+                   )
+               )
 
     db.session.commit()
 
