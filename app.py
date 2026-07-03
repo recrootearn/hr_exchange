@@ -2908,6 +2908,16 @@ def candidate_register():
             username=username
         ).first()
 
+        # CHECK MOBILE
+
+        existing_hr_mobile = User.query.filter_by(
+            mobile=mobile
+        ).first()
+
+        existing_candidate_mobile = CandidateUser.query.filter_by(
+            mobile=mobile
+        ).first()
+
         if existing_hr_mobile or existing_candidate_mobile:
 
             deleted = DeletedAccount.query.filter_by(
@@ -2922,25 +2932,6 @@ def candidate_register():
                 )
 
                 return redirect('/candidate-register')
-
-        # CHECK MOBILE
-
-        existing_hr_mobile = User.query.filter_by(
-            mobile=mobile
-        ).first()
-
-        existing_candidate_mobile = CandidateUser.query.filter_by(
-            mobile=mobile
-        ).first()
-
-        if existing_hr_mobile or existing_candidate_mobile:
-
-            flash(
-                'Mobile number already exists.',
-                'danger'
-            )
-
-            return redirect('/candidate-register')
 
         # RESUME UPLOAD (OPTIONAL)
 
