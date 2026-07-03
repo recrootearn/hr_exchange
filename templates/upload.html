@@ -217,11 +217,16 @@ label{
 @media(max-width:768px){
 
     .mobile-swipe{
-        display:flex !important;
-        flex-wrap:nowrap !important;
-        overflow-x:scroll !important;
+        display:flex;
+        flex-wrap:nowrap;
+        overflow-x:auto;
         scroll-snap-type:x mandatory;
-        -webkit-overflow-scrolling:touch;
+    -webkit-overflow-scrolling:touch;
+        scrollbar-width:none;
+    }
+
+    .mobile-swipe::-webkit-scrollbar{
+        display:none;
     }
 
     .mobile-page{
@@ -230,14 +235,6 @@ label{
         scroll-snap-align:start;
     }
 
-}
-
-.upload-tabs{
-    display:none;
-}
-
-@media(max-width:768px){
-
     .upload-tabs{
         display:flex;
         background:white;
@@ -245,6 +242,7 @@ label{
         padding:5px;
         margin-bottom:15px;
         box-shadow:0 2px 10px rgba(0,0,0,.08);
+        max-width:500px;
     }
 
     .upload-tab{
@@ -265,8 +263,6 @@ label{
         );
         color:white;
     }
-
-}
 
 </style>
 
@@ -544,6 +540,27 @@ function goToUploadTab(index,btn){
     btn.classList.add('active');
 
 }
+
+const swipe = document.querySelector('.mobile-swipe');
+
+swipe.addEventListener('scroll', function(){
+
+    const index = Math.round(
+        swipe.scrollLeft / swipe.offsetWidth
+    );
+
+    document
+        .querySelectorAll('.upload-tab')
+        .forEach((tab,i)=>{
+
+            tab.classList.toggle(
+                'active',
+                i===index
+            );
+
+        });
+
+});
 
 </script>
 
