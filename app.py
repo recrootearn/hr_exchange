@@ -20,6 +20,7 @@ from flask import send_file
 import io
 from datetime import datetime,timedelta
 from zoneinfo import ZoneInfo
+from flask import jsonify
 
 IST = ZoneInfo("Asia/Kolkata")
 
@@ -1591,6 +1592,54 @@ def admin_business_settings():
         "admin_business_settings.html",
         settings=settings
     )
+
+@app.route("/api/save-fcm-token", methods=["POST"])
+def save_fcm_token():
+
+    data = request.get_json()
+
+    token = data.get("token")
+
+    if not token:
+        return jsonify({
+            "success": False,
+            "message": "Token missing"
+        }), 400
+
+    # HR Logged In
+    if current_user.is_authenticated:
+
+        current_user.fcm_token = token
+
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "user": "hr"
+        })
+
+    # Candidate Logged In
+    if "candidate_id" in session:
+
+        candidate = CandidateUser.query.get(
+            session["candidate_id"]
+        )
+
+        if candidate:
+
+            candidate.fcm_token = token
+
+            db.session.commit()
+
+            return jsonify({
+                "success": True,
+                "user": "candidate"
+            })
+
+    return jsonify({
+        "success": False,
+        "message": "Not logged in"
+    }), 401
 
 @app.route('/my-uploads')
 @login_required
