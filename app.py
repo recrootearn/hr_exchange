@@ -105,6 +105,7 @@ class User(UserMixin, db.Model):
     account_number = db.Column(db.String(200))
     ifsc_code = db.Column(db.String(100))
     session_token = db.Column(db.String(200))
+    fcm_token = db.Column(db.Text)
 
 
     account_holder_name = db.Column(db.String(200))
@@ -196,6 +197,8 @@ class CandidateUser(UserMixin, db.Model):
     is_deleted = db.Column(db.Boolean, default=False)
 
     session_token = db.Column(db.String(200))
+
+    fcm_token = db.Column(db.Text)
 
     career_level = db.Column(db.String(20))
 
