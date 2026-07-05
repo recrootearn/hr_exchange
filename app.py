@@ -3335,16 +3335,13 @@ def candidate_support():
 
         # NOTIFICATION
 
-        notification = Notification(
+        send_notification(
             user_id=candidate.id,
             user_type="candidate",
             message="Support ticket submitted successfully",
             link="/candidate-support",
-            type="support",
-            is_read=False
+            type="support"
         )
-
-        db.session.add(notification)
 
         db.session.commit()
 
@@ -4312,7 +4309,7 @@ def follow_hr(id):
 
         db.session.delete(existing)
 
-        notification = Notification(
+        send_notification(
             user_id=hr_id,
             user_type="hr",
             message=f"{candidate.full_name} unfollowed you",
@@ -4320,8 +4317,6 @@ def follow_hr(id):
             image=candidate.profile_photo,
             type="unfollow"
         )
-
-        db.session.add(notification)
 
     else:
 
@@ -4332,7 +4327,7 @@ def follow_hr(id):
             )
         )
 
-        notification = Notification(
+        send_notification(
             user_id=hr_id,
             user_type="hr",
             message=f"{candidate.full_name} started following you",
@@ -4340,8 +4335,6 @@ def follow_hr(id):
             image=candidate.profile_photo,
             type="follow"
         )
-
-        db.session.add(notification)
 
         # ==========================
         # DAILY FOLLOW TASK
@@ -4461,7 +4454,7 @@ def follow_hr_user(id):
 
         db.session.delete(existing)
 
-        notification = Notification(
+        send_notification(
             user_id=id,
             user_type="hr",
             message=f"{current_user.first_name} {current_user.last_name} unfollowed you",
@@ -4469,8 +4462,6 @@ def follow_hr_user(id):
             image=current_user.profile_photo,
             type="unfollow"
         )
-
-        db.session.add(notification)
 
     else:
 
@@ -4481,7 +4472,7 @@ def follow_hr_user(id):
             )
         )
 
-        notification = Notification(
+        send_notification(
             user_id=id,
             user_type="hr",
             message=f"{current_user.first_name} {current_user.last_name} started following you",
@@ -4489,8 +4480,6 @@ def follow_hr_user(id):
             image=current_user.profile_photo,
             type="follow"
         )
-
-        db.session.add(notification)
 
     db.session.commit()
 
@@ -4793,23 +4782,14 @@ def post_job():
 
         for f in followers:
 
-            notification = Notification(
-
+            send_notification(
                 user_id=f.follower_candidate_id,
-
                 user_type="candidate",
-
-                type="job_post",
-
                 message=f"{current_user.company} posted a new job: {job.job_title}",
-
                 link=f"/job/{job.id}",
-
-                image=first_image
-
+                image=first_image,
+                type="job_post"
             )
-
-            db.session.add(notification)
 
         db.session.commit()
 
@@ -5005,7 +4985,7 @@ def apply_job(job_id):
         session['candidate_id']
     )
 
-    notification = Notification(
+    send_notification(
         user_id=job.hr_id,
         user_type="hr",
         message=f"{candidate.full_name} applied for {job.job_title}",
@@ -5013,8 +4993,6 @@ def apply_job(job_id):
         image=candidate.profile_photo,
         type="job_apply"
     )
-
-    db.session.add(notification)
 
     # ==========================
     # DAILY APPLY TASK
@@ -5072,16 +5050,14 @@ def apply_job_hr(id):
 
     job = JobPost.query.get(id)
 
-    notification = Notification(
+    send_notification(
         user_id=job.hr_id,
-        user_type='hr',
-        message=f'{current_user.first_name} applied for your job',
-        link=f'/job-applicants/{id}',
+        user_type="hr",
+        message=f"{current_user.first_name} applied for your job",
+        link=f"/job-applicants/{id}",
         image=current_user.profile_photo,
-        type='job_application'
+        type="job_application"
     )
-
-    db.session.add(notification)
 
     db.session.commit()
 
@@ -7401,16 +7377,13 @@ def support():
 
         # NOTIFICATION
 
-        notification = Notification(
+        send_notification(
             user_id=current_user.id,
             user_type="hr",
             message="Support ticket submitted successfully",
             link=f"/ticket/{ticket.id}",
-            type="support",
-            is_read=False
+            type="support"
         )
-
-        db.session.add(notification)
 
         db.session.commit()
 
