@@ -21,6 +21,7 @@ import io
 from datetime import datetime,timedelta
 from zoneinfo import ZoneInfo
 from flask import jsonify
+from push_notification import send_push_notification
 
 IST = ZoneInfo("Asia/Kolkata")
 
@@ -1641,6 +1642,22 @@ def save_fcm_token():
         "success": False,
         "message": "Not logged in"
     }), 401
+
+@app.route("/test-push")
+def test_push():
+
+    token = "f771DnBkRs6QjmXrAIHLaL:APA91bGm9x_99JYNDV_q1uwvNmuR38h_vrux2G3WX5p-zvXPX-HNohyPO2oL6rzhN0bUx1lyE9LEvMovCviVq_pRL68gxBPAmaao7sqU3jPW3nuFql3ohQY"
+
+    response = send_push_notification(
+        token,
+        "RecrootEarn",
+        "🎉 Push Notifications are working!"
+    )
+
+    return {
+        "success": True,
+        "response": response
+    }
 
 @app.route('/my-uploads')
 @login_required
