@@ -16,9 +16,14 @@ def send_push_notification(token, title, body):
             title=title,
             body=body
         ),
+        data={
+            "title": title,
+            "body": body
+        },
+        android=messaging.AndroidConfig(
+            priority="high"
+        ),
         token=token,
     )
 
-    response = messaging.send(message)
-
-    return response
+    return messaging.send(message)
