@@ -6452,18 +6452,15 @@ def reply_ticket(id):
 
         # NOTIFICATION
 
-        notification = Notification(
+        send_notification(
             user_id=ticket.user_id,
             user_type=ticket.user_type,
             message=f"Support replied to your ticket: {ticket.subject}",
-            link=f"/support",
-            type="support",
-            is_read=False
+            link="/support",
+            type="support"
         )
 
-        db.session.add(notification)
-
-    db.session.commit()
+        db.session.commit()
 
     flash(
         "Reply sent successfully",
