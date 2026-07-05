@@ -1595,6 +1595,7 @@ def admin_business_settings():
 
 @app.route("/api/save-fcm-token", methods=["POST"])
 def save_fcm_token():
+    print("FCM API CALLED")
 
     data = request.get_json()
 
