@@ -1091,24 +1091,30 @@ def send_notification(
 ):
 
     db.session.add(
-
         Notification(
-
             user_id=user_id,
-
             user_type=user_type,
-
             message=message,
-
             link=link,
-
             image=image,
-
             type=type
-
         )
-
     )
+
+    try:
+        if user_type == "hr":
+            user = User.query.get(user_id)
+        else:
+            user = CandidateUser.query.get(user_id)
+
+        if user and user.fcm_token:
+            send_push_notification(
+                user.fcm_token,
+                "RecrootEarn",
+                message
+            )
+    except Exception as e:
+        print("Push notification error:", e)
 
 def check_daily_bonus(candidate):
 
