@@ -5632,7 +5632,7 @@ def login():
 
             db.session.commit()
 
-            login_user(user, remember=True)
+            login_user(user, remember=False)
 
             session.permanent = True
 
@@ -7990,23 +7990,35 @@ def load_user(user_id):
 @app.before_request
 def verify_single_device():
 
-    if current_user.is_authenticated:
+    if not current_user.is_authenticated:
+        return
 
-        # Session restored from Remember Me
-        if "session_token" not in session:
-            session["session_token"] = current_user.session_token
-            return
+    # Ignore static files
+    if request.endpoint == "static":
+        return
 
-        if session["session_token"] != current_user.session_token:
-            logout_user()
-            session.clear()
+    db.session.refresh(current_user)
 
-            flash(
-                "Your account was logged in from another device.",
-                "warning"
-            )
+    # First request after Remember Me restores login
+    if "session_token" not in session:
+        session["session_token"] = current_user.session_token
+        return
 
-            return redirect(url_for("login"))
+    # No session token stored in DB
+    if current_user.session_token is None:
+        return
+
+    # Another device logged in
+    if session.get("session_token") != current_user.session_token:
+        logout_user()
+        session.clear()
+
+        flash(
+            "Your account was logged in from another device.",
+            "warning"
+        )
+
+        return redirect(url_for("login"))
 
 if __name__ == '__main__':
 
