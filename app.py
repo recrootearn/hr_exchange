@@ -3224,7 +3224,10 @@ def candidate_login():
 
             session.clear()
 
-            session.permanent = True
+            is_app = request.headers.get("X-App") == "RecrootEarn"
+
+            if is_app:
+                session.permanent = True
 
             session["candidate_id"] = user.id
             session["candidate_session_token"] = token
@@ -5632,9 +5635,14 @@ def login():
 
             db.session.commit()
 
+            # Detect Android App
+            is_app = request.headers.get("X-App") == "RecrootEarn"
+
             login_user(user, remember=True)
 
-            session.permanent = True
+            # Keep app logged in
+            if is_app:
+                session.permanent = True
 
             session["session_token"] = token
 
