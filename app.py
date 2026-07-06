@@ -3208,9 +3208,9 @@ def candidate_login():
 
             db.session.commit()
 
-            session.permanent = True
-
             session.clear()
+
+            session.permanent = True
 
             session["candidate_id"] = user.id
             session["candidate_session_token"] = token
@@ -5618,7 +5618,7 @@ def login():
 
             db.session.commit()
 
-            login_user(user)
+            login_user(user, remember=True)
 
             session.permanent = True
 
