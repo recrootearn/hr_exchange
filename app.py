@@ -41,6 +41,8 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 
 app = Flask(__name__)
 
+app.permanent_session_lifetime = timedelta(days=365)
+
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 
 resend.api_key = "re_QT3qQPqz_Ngn6WAnA4A2ykKbH9CZEs6Fz"
@@ -3206,6 +3208,8 @@ def candidate_login():
 
             db.session.commit()
 
+            session.permanent = True
+
             session.clear()
 
             session["candidate_id"] = user.id
@@ -5479,7 +5483,7 @@ def feed_post(id):
 @app.route('/candidate-logout')
 def candidate_logout():
 
-    session.pop('candidate_id', None)
+    session.clear()
 
     return redirect('/candidate-login')
 
@@ -5616,6 +5620,8 @@ def login():
 
             login_user(user)
 
+            session.permanent = True
+
             session["session_token"] = token
 
             return redirect(url_for("home"))
@@ -5634,6 +5640,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    session clear()
     return redirect(url_for('login'))
 
 @app.route('/upload', methods=['GET', 'POST'])
