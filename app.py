@@ -6,7 +6,8 @@ from flask_login import logout_user, current_user
 import razorpay
 from flask import send_file
 import random
-import smtplib
+import smtpli
+import secrets
 import resend
 from email.mime.text import MIMEText
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -1264,7 +1265,7 @@ def inject_notifications():
 def landing():
 
     return render_template(
-        'splash.html'
+        'index.html'
     )
 
 @app.route('/home')
@@ -3223,6 +3224,10 @@ def candidate_login():
 
             user.session_token = token
 
+            # Generate App Token if not already present
+            if not user.app_token:
+                user.app_token = secrets.token_hex(64)
+
             db.session.commit()
 
             session.clear()
@@ -4095,6 +4100,52 @@ def admin_deleted_accounts():
         deleted_accounts=deleted_accounts,
         total_deleted=len(deleted_accounts)
     )
+
+from flask_login import login_user
+from flask import request, jsonify
+
+@app.route("/api/app-auto-login", methods=["POST"])
+def app_auto_login():
+
+    data = request.get_json()
+
+    token = data.get("app_token")
+
+    if not token:
+        return jsonify({
+            "success": False
+        }), 401
+
+    # HR
+    user = User.query.filter_by(app_token=token).first()
+
+    if user:
+
+        login_user(user, remember=True)
+
+        session["session_token"] = user.session_token
+
+        return jsonify({
+            "success": True,
+            "role": "hr"
+        })
+
+    # Candidate
+    candidate = CandidateUser.query.filter_by(app_token=token).first()
+
+    if candidate:
+
+        session["candidate_id"] = candidate.id
+        session["candidate_session_token"] = candidate.session_token
+
+        return jsonify({
+            "success": True,
+            "role": "candidate"
+        })
+
+    return jsonify({
+        "success": False
+    }), 401
 
 @app.route('/admin/referral-history')
 @login_required
@@ -5635,6 +5686,10 @@ def login():
             # Single device login
             token = str(uuid.uuid4())
             user.session_token = token
+
+            # Generate App Token if not already present
+            if not user.app_token:
+                user.app_token = secrets.token_hex(64)
 
             db.session.commit()
 
