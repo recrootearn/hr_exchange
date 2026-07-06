@@ -84,7 +84,6 @@ def generate_candidate_referral_code():
 # =========================
 # CONFIG & DB SETUP
 # =========================
-app.config['SECRET_KEY'] = 'secret123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 UPLOAD_FOLDER = 'static/uploads'
