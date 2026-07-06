@@ -124,6 +124,7 @@ class User(UserMixin, db.Model):
     ifsc_code = db.Column(db.String(100))
     session_token = db.Column(db.String(200))
     fcm_token = db.Column(db.Text)
+    app_token = db.Column(db.String(128), unique=True, nullable=True)
 
 
     account_holder_name = db.Column(db.String(200))
@@ -229,6 +230,8 @@ class CandidateUser(UserMixin, db.Model):
     education = db.Column(db.Text)
 
     interested_fields = db.Column(db.Text)
+
+    app_token = db.Column(db.String(128), unique=True, nullable=True)
 
     daily_reward_claimed = db.Column(
         db.Boolean,
