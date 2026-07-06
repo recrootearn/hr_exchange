@@ -5632,7 +5632,7 @@ def login():
 
             db.session.commit()
 
-            login_user(user, remember=False)
+            login_user(user, remember=True)
 
             session.permanent = True
 
