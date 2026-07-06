@@ -39,9 +39,18 @@ from sqlalchemy import or_
 
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
+from datetime import timedelta
+import secrets
+
 app = Flask(__name__)
 
+app.secret_key = "7sf7rth515t4h8ljyyj151577rgnmd62vlkg81bmej96cnsv365fvvdsebn"
+
 app.permanent_session_lifetime = timedelta(days=365)
+
+app.config["SESSION_COOKIE_SECURE"] = True
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 
