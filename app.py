@@ -6,7 +6,7 @@ from flask_login import logout_user, current_user
 import razorpay
 from flask import send_file
 import random
-import smtpli
+import smtplib
 import secrets
 import resend
 from email.mime.text import MIMEText
