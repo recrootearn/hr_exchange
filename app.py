@@ -7987,22 +7987,21 @@ def verify_single_device():
 
     if current_user.is_authenticated:
 
-        db_token = current_user.session_token
+        # Session restored from Remember Me
+        if "session_token" not in session:
+            session["session_token"] = current_user.session_token
+            return
 
-        current_session_token = session.get('session_token')
-
-        if db_token != current_session_token:
-
+        if session["session_token"] != current_user.session_token:
             logout_user()
-
             session.clear()
 
             flash(
-                'Your account was logged in from another device.',
-                'warning'
+                "Your account was logged in from another device.",
+                "warning"
             )
 
-            return redirect(url_for('login'))
+            return redirect(url_for("login"))
 
 if __name__ == '__main__':
 
