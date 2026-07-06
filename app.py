@@ -7990,6 +7990,11 @@ def load_user(user_id):
 @app.before_request
 def verify_single_device():
 
+    print("AUTH:", current_user.is_authenticated)
+    print("USER:", current_user.get_id() if current_user.is_authenticated else None)
+    print("SESSION:", dict(session))
+    print("TOKEN:", session.get("session_token"))
+
     if not current_user.is_authenticated:
         return
 
