@@ -1,14 +1,5 @@
 import time
-
 from zoneinfo import ZoneInfo
-
-IST = ZoneInfo("Asia/Kolkata")
-
-from app import app
-from app import db
-
-from app import BroadcastNotification
-
 from datetime import datetime
 
 from app import (
@@ -20,12 +11,15 @@ from app import (
     send_notification
 )
 
+IST = ZoneInfo("Asia/Kolkata")
+
+
 def check_notifications():
 
     with app.app_context():
 
         print("Checking notifications...")
-       print("Current IST time:", datetime.now(IST))
+        print("Current IST time:", datetime.now(IST))
 
         notifications = BroadcastNotification.query.filter(
             BroadcastNotification.status == "Scheduled"
@@ -96,6 +90,7 @@ def check_notifications():
 
         db.session.commit()
 
+
 if __name__ == "__main__":
 
     print("Notification Scheduler Started")
@@ -103,11 +98,9 @@ if __name__ == "__main__":
     while True:
 
         try:
-
             check_notifications()
 
         except Exception as e:
-
             print("Scheduler Error:", e)
 
         time.sleep(60)
