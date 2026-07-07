@@ -3169,7 +3169,7 @@ def admin_candidate_withdrawals():
 
 @app.route('/admin/template/<int:id>')
 @login_required
-def get_notification_template(id):
+def get_notification_template_old(id):
 
     template = NotificationTemplate.query.get_or_404(id)
 
