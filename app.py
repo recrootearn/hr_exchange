@@ -3506,10 +3506,17 @@ def candidate_profile():
             )
         ):
 
+            messages = [
+                f"🚀 Your profile is {completion}% complete. Complete it to unlock more job opportunities.",
+                "📄 Add your resume to increase your chances of getting hired.",
+                "⭐ Complete your profile to become more visible to recruiters.",
+                "🎯 You're just a few steps away from a 100% profile. Complete it today!"
+            ]
+
             send_notification(
                 user_id=candidate.id,
                 user_type="candidate",
-                message=f"🚀 Your profile is only {completion}% complete. Complete it to unlock more job opportunities.",
+                message=random.choice(messages),
                 link="/candidate-profile",
                 type="profile_completion"
             )
