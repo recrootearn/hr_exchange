@@ -2673,12 +2673,12 @@ def admin_send_notification():
     message = request.form.get("message")
     send_to = request.form.get("send_to")
 
-    broadcast = BroadcastNotification(
-        title=title,
-        message=message,
-        send_to=send_to,
-        status="Sent"
-    )
+        broadcast = BroadcastNotification(
+            title=title,
+            message=message,
+            send_to=send_to,
+            status="Sent"
+        )
 
 db.session.add(broadcast)
 
