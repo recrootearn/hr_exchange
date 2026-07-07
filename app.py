@@ -4091,7 +4091,7 @@ def update_application_status(id):
                         send_notification(
                             user_id=referring_hr.id,
                             user_type="hr",
-                            message=f🎉 Congratulations! ₹{settings.hr_to_candidate_reward} has been credited to your wallet for referring {candidate.full_name}.",
+                            message=f"Congratulations! ₹{settings.hr_to_candidate_reward} has been credited to your wallet for referring {candidate.full_name}.",
                             link="/wallet",
                             image=candidate.profile_photo,
                             type="referral_reward"
