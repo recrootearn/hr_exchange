@@ -1,5 +1,9 @@
 import time
 
+from zoneinfo import ZoneInfo
+
+IST = ZoneInfo("Asia/Kolkata")
+
 from app import app
 from app import db
 
@@ -37,7 +41,7 @@ def check_notifications():
 
         notifications = BroadcastNotification.query.filter(
             BroadcastNotification.status == "Scheduled",
-            BroadcastNotification.schedule_time <= datetime.now()
+            BroadcastNotification.schedule_time <= datetime.now(IST)
         ).all()
 
         for n in notifications:
