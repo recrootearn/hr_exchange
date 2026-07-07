@@ -23,6 +23,7 @@ from datetime import datetime,timedelta
 from zoneinfo import ZoneInfo
 from flask import jsonify
 from push_notification import send_push_notification
+from datetime import datetime, timedelta, date
 
 IST = ZoneInfo("Asia/Kolkata")
 
@@ -242,6 +243,9 @@ class CandidateUser(UserMixin, db.Model):
     interested_fields = db.Column(db.Text)
 
     app_token = db.Column(db.String(128), unique=True, nullable=True)
+
+    last_profile_reminder = db.Column(db.DateTime)
+    profile_reminders_today = db.Column(db.Integer, default=0)
 
     daily_reward_claimed = db.Column(
         db.Boolean,
@@ -3429,6 +3433,19 @@ def candidate_profile():
     candidate = CandidateUser.query.get(
         session['candidate_id']
     )
+  
+    # ----------------------------
+    # PROFILE REMINDER
+    # ----------------------------
+
+    today = date.today()
+
+    # Reset daily count
+    if (
+        candidate.last_profile_reminder is None or
+        candidate.last_profile_reminder.date() != today
+    ):
+        candidate.profile_reminders_today = 0
 
     followers_count = Follow.query.filter_by(
         followed_candidate_id=candidate.id
@@ -3478,6 +3495,29 @@ def candidate_profile():
             and candidate.designation
         ):
             completion += 10
+
+    if completion < 100:
+
+        if (
+            candidate.profile_reminders_today < 4 and
+            (
+                candidate.last_profile_reminder is None or
+                datetime.utcnow() - candidate.last_profile_reminder >= timedelta(hours=3)
+            )
+        ):
+
+            send_notification(
+                user_id=candidate.id,
+                user_type="candidate",
+                message=f"🚀 Your profile is only {completion}% complete. Complete it to unlock more job opportunities.",
+                link="/candidate-profile",
+                type="profile_completion"
+            )
+
+            candidate.last_profile_reminder = datetime.utcnow()
+            candidate.profile_reminders_today += 1
+
+            db.session.commit()
 
     else:
 
@@ -4001,7 +4041,7 @@ def update_application_status(id):
                         send_notification(
                             user_id=referring_hr.id,
                             user_type="hr",
-                            message=f"You earned ₹{settings.hr_to_candidate_reward} because {candidate.full_name} completed Interview.",
+                            message=f🎉 Congratulations! ₹{settings.hr_to_candidate_reward} has been credited to your wallet for referring {candidate.full_name}.",
                             link="/wallet",
                             image=candidate.profile_photo,
                             type="referral_reward"
@@ -4067,6 +4107,15 @@ def update_application_status(id):
                        image=candidate.profile_photo,
                        type="candidate_referral_reward"
                    )
+               )
+
+               send_notification(
+                   user_id=referring_candidate.id,
+                   user_type="candidate",
+                   message=f"🎉 Congratulations! ₹{settings.candidate_to_candidate_reward} has been credited to your wallet for referring {candidate.full_name}.",
+                   link="/candidate-wallet",
+                   image=candidate.profile_photo,
+                   type="candidate_referral_reward"
                )
 
     db.session.commit()
@@ -7614,90 +7663,90 @@ def payment_success():
     settings = get_business_settings()
 
     credits = session.get('buy_credits', 0)
-
     amount = session.get('buy_amount', 0)
 
     # ADD PAID CREDITS
     current_user.paid_credits += credits
 
+    # PUSH NOTIFICATION TO BUYER
+    send_notification(
+        user_id=current_user.id,
+        user_type="hr",
+        message=f"🎉 {credits} credits have been credited to your account.",
+        link="/credits",
+        type="credit_purchase"
+    )
+
     # SAVE PURCHASE RECORD
     purchase = CreditPurchase(
-
         user_id=current_user.id,
-
         package_name=f"{credits} Credit Pack",
-
         amount_paid=amount,
-
         credits_bought=credits,
-
         credits_remaining=credits,
-
         price_per_credit=amount / credits
-
     )
 
     db.session.add(purchase)
 
     # CREDIT HISTORY
     history = CreditHistory(
-
         user_id=current_user.id,
-
         amount=credits,
-
         action=f"Purchased {credits} Paid Credits"
-
     )
 
     db.session.add(history)
 
-    # REFERRAL REWARD
+    # -------------------------------------------------
+    # HR TO HR REFERRAL REWARD
+    # -------------------------------------------------
+
     if (
-        amount >= settings.hr_minimum_purchase and
-        current_user.referred_by and
-        not current_user.referral_purchase_reward_given
+        amount >= settings.hr_minimum_purchase
+        and current_user.referred_by
+        and not current_user.referral_purchase_reward_given
     ):
 
         referrer = User.query.filter_by(
             referral_code=current_user.referred_by
         ).first()
 
-        from datetime import date
+        if referrer:
 
-        # Reset daily count if new day
-        if getattr(referrer, "last_referral_reward_date", None) != date.today():
-            referrer.last_referral_reward_date = date.today()
-            referrer.daily_referral_rewards = 0
+            from datetime import date
 
-        if (
-            referrer and
-            referrer.daily_referral_rewards < settings.hr_daily_referral_limit
-        ):
-            referrer.wallet_balance += settings.hr_to_hr_reward
-            referrer.referral_earnings += settings.hr_to_hr_reward
+            # Reset daily count on new day
+            if referrer.last_referral_reward_date != date.today():
+                referrer.last_referral_reward_date = date.today()
+                referrer.daily_referral_rewards = 0
 
-            # Lifetime statistics
-            referrer.successful_referrals += 1
+            # Daily reward limit
+            if referrer.daily_referral_rewards < settings.hr_daily_referral_limit:
 
-            # Daily statistics
-            referrer.daily_referral_rewards += 1
+                referrer.wallet_balance += settings.hr_to_hr_reward
+                referrer.referral_earnings += settings.hr_to_hr_reward
+                referrer.successful_referrals += 1
+                referrer.daily_referral_rewards += 1
 
-            current_user.referral_purchase_reward_given = True
+                current_user.referral_purchase_reward_given = True
 
-            referrer.wallet_balance += settings.hr_to_hr_reward
-            referrer.referral_earnings += settings.hr_to_hr_reward
-            referrer.successful_referrals += 1
-
-            current_user.referral_purchase_reward_given = True
+                # PUSH NOTIFICATION TO REFERRER
+                send_notification(
+                    user_id=referrer.id,
+                    user_type="hr",
+                    message=f"🎉 Congratulations! ₹{settings.hr_to_hr_reward} has been credited to your wallet.",
+                    link="/wallet",
+                    type="referral_reward"
+                )
 
     db.session.commit()
 
-    # PREVENT DUPLICATE REWARDS
-    session.pop('buy_credits', None)
-    session.pop('buy_amount', None)
+    # PREVENT DUPLICATE REWARD
+    session.pop("buy_credits", None)
+    session.pop("buy_amount", None)
 
-    return redirect('/credits')
+    return redirect("/credits")
 
 @app.route('/wallet')
 @login_required
