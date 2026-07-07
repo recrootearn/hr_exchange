@@ -4461,34 +4461,6 @@ def delete_notification(id):
 
     return redirect("/admin/notification-center")
 
-@app.route('/admin/edit-notification/<int:id>', methods=['GET', 'POST'])
-@login_required
-def edit_notification(id):
-
-    notification = BroadcastNotification.query.get_or_404(id)
-
-    if request.method == "POST":
-
-        notification.title = request.form.get("title")
-
-        notification.message = request.form.get("message")
-
-        notification.send_to = request.form.get("send_to")
-
-        db.session.commit()
-
-        flash(
-            "Notification updated successfully.",
-            "success"
-        )
-
-        return redirect("/admin/notification-center")
-
-    return render_template(
-        "edit_notification.html",
-        notification=notification
-    )
-
 @app.route('/candidate-profile')
 def candidate_profile():
 
