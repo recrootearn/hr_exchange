@@ -709,6 +709,33 @@ class BusinessSettings(db.Model):
         onupdate=india_time
     )
 
+class BroadcastNotification(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(200), nullable=False)
+
+    message = db.Column(db.Text, nullable=False)
+
+    send_to = db.Column(db.String(30), nullable=False)
+    # hr
+    # candidate
+    # both
+
+    send_mode = db.Column(db.String(20), default="all")
+    # all
+    # selected
+
+    selected_users = db.Column(db.Text)
+
+    status = db.Column(db.String(20), default="Pending")
+    # Pending
+    # Sent
+
+    schedule_time = db.Column(db.DateTime)
+
+    created_at = db.Column(db.DateTime, default=india_time)
+
 class CreditPackage(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -1468,6 +1495,22 @@ def home():
 
         CandidateReview=CandidateReview,
         User=User
+    )
+
+@app.route('/admin/notification-center')
+@login_required
+def admin_notification_center():
+
+    if not current_user.is_admin:
+        return redirect('/dashboard')
+
+    notifications = BroadcastNotification.query.order_by(
+        BroadcastNotification.created_at.desc()
+    ).all()
+
+    return render_template(
+        'admin_notification_center.html',
+        notifications=notifications
     )
 
 @app.route('/admin/business-settings', methods=['GET', 'POST'])

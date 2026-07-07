@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow-lg border-0 rounded-4">
+
+        <div class="card-body">
+
+            <h2 class="fw-bold mb-3">
+                🔔 Notification Center
+            </h2>
+
+            <p class="text-muted">
+                Send push notifications to HRs and Candidates.
+            </p>
+
+            <form method="POST" action="/admin/send-notification">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Notification Title
+                    </label>
+
+                    <input
+                        type="text"
+                        name="title"
+                        class="form-control"
+                        placeholder="Enter notification title"
+                        required>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Notification Message
+                    </label>
+
+                    <textarea
+                        class="form-control"
+                        rows="4"
+                        name="message"
+                        placeholder="Enter notification message"
+                        required></textarea>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Send To
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="send_to">
+
+                        <option value="hr">
+                            All HR
+                        </option>
+
+                        <option value="candidate">
+                            All Candidates
+                        </option>
+
+                        <option value="both">
+                            Both HR & Candidates
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Schedule Date (Optional)
+                        </label>
+
+                        <input
+                            type="date"
+                            class="form-control"
+                            name="schedule_date">
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Schedule Time (Optional)
+                        </label>
+
+                        <input
+                            type="time"
+                            class="form-control"
+                            name="schedule_time">
+
+                    </div>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary btn-lg w-100">
+
+                    🔔 Send Notification
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow border-0 rounded-4 mt-4">
+
+        <div class="card-body">
+
+            <h4 class="fw-bold mb-3">
+
+                📜 Notification History
+
+            </h4>
+
+            {% if notifications %}
+
+                <table class="table table-bordered align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Title</th>
+
+                            <th>Audience</th>
+
+                            <th>Status</th>
+
+                            <th>Created</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for n in notifications %}
+
+                        <tr>
+
+                            <td>
+
+                                <strong>{{ n.title }}</strong>
+
+                                <br>
+
+                                <small class="text-muted">
+
+                                    {{ n.message }}
+
+                                </small>
+
+                            </td>
+
+                            <td>
+
+                                {{ n.send_to|title }}
+
+                            </td>
+
+                            <td>
+
+                                {% if n.status=="Sent" %}
+
+                                    <span class="badge bg-success">
+
+                                        Sent
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-warning text-dark">
+
+                                        Pending
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {{ n.created_at.strftime('%d %b %Y %I:%M %p') }}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="text-center py-5">
+
+                    <h5>No Notifications Yet</h5>
+
+                    <p class="text-muted">
+
+                        Notifications you send will appear here.
+
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
