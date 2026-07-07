@@ -140,6 +140,15 @@ class User(UserMixin, db.Model):
     )
     referral_code = db.Column(db.String(20), unique=True)
 
+    daily_referral_rewards = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    last_referral_reward_date = db.Column(
+        db.Date
+    )
+
     about_company = db.Column(db.Text)
 
     company_logo = db.Column(db.String(300))
@@ -7654,10 +7663,27 @@ def payment_success():
             referral_code=current_user.referred_by
         ).first()
 
+        from datetime import date
+
+        # Reset daily count if new day
+        if getattr(referrer, "last_referral_reward_date", None) != date.today():
+            referrer.last_referral_reward_date = date.today()
+            referrer.daily_referral_rewards = 0
+
         if (
             referrer and
-            referrer.successful_referrals < 10
+            referrer.daily_referral_rewards < settings.hr_daily_referral_limit
         ):
+            referrer.wallet_balance += settings.hr_to_hr_reward
+            referrer.referral_earnings += settings.hr_to_hr_reward
+
+            # Lifetime statistics
+            referrer.successful_referrals += 1
+
+            # Daily statistics
+            referrer.daily_referral_rewards += 1
+
+            current_user.referral_purchase_reward_given = True
 
             referrer.wallet_balance += settings.hr_to_hr_reward
             referrer.referral_earnings += settings.hr_to_hr_reward

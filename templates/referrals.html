@@ -130,12 +130,16 @@ body{
     <div class="reward-banner">
 
         <h4>
-            Earn ₹{{ settings.hr_to_hr_reward }} Per Successful Referral
+            Earn ₹{{ settings.hr_to_hr_reward }} Per Successful HR Referral
         </h4>
 
         <div>
             Reward is credited when your referred recruiter purchases a credit pack worth
             <strong>₹{{ settings.hr_minimum_purchase }}</strong> or more.
+            <br><br>
+            <strong>
+                Maximum {{ settings.hr_daily_referral_limit }} rewarded referrals per day.
+            </strong>
         </div>
 
     </div>
@@ -279,12 +283,12 @@ body{
     <div class="d-flex justify-content-between align-items-center mb-3">
 
         <h4 style="font-weight:800;margin:0;">
-            🏆 Referral Progress
+            🏆 Today's Reward Progress
         </h4>
 
         <span class="badge bg-primary rounded-pill px-3 py-2">
 
-            {{ current_user.successful_referrals }}/10
+            {{ current_user.daily_referral_rewards }}/{{ settings.hr_daily_referral_limit }}
 
         </span>
 
@@ -298,7 +302,7 @@ body{
         overflow:hidden;">
 
         <div style="
-            width:{{ (current_user.successful_referrals/10)*100 }}%;
+            width:{{ (current_user.daily_referral_rewards/settings.hr_daily_referral_limit)*100 }}%;
             height:100%;
             background:linear-gradient(90deg,#10b981,#22c55e);
             border-radius:50px;">
@@ -310,22 +314,24 @@ body{
     <div class="mt-3">
 
         <strong>
-
-            {{ current_user.successful_referrals }}
-
+            {{ current_user.daily_referral_rewards }}
         </strong>
 
         out of
 
-        <strong>10</strong>
+        <strong>{{ settings.hr_daily_referral_limit }}</strong>
 
-        successful referrals completed.
+        rewarded referrals completed today.
 
     </div>
 
     <small class="text-muted">
 
-        Complete all 10 referrals to maximize your referral rewards.
+        You can earn rewards for up to
+        <strong>{{ settings.hr_daily_referral_limit }}</strong>
+        successful HR referrals every day.
+        <br>
+        Counter resets automatically at 12:00 AM.
 
     </small>
 
@@ -640,13 +646,13 @@ body{
 
                 <h5 class="mt-2">
 
-                    10
+                    Daily Max
 
                 </h5>
 
                 <small class="text-muted">
 
-                    Referrals
+                    {{ settings.hr_daily_referral_limit }} Rewards
 
                 </small>
 
@@ -654,7 +660,7 @@ body{
 
                 <strong>
 
-                    ₹{{ settings.hr_to_hr_reward*10 }}
+                    ₹{{ settings.hr_to_hr_reward * settings.hr_daily_referral_limit }}
 
                 </strong>
 
