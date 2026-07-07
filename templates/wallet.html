@@ -166,51 +166,35 @@
 
 /* TABLE */
 
-.table-wrap{
+.history-list{
 
-    background:white;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
 
-    border-radius:22px;
+}
 
-    overflow:hidden;
+.history-ticket{
 
+    background:#fff;
+    border-radius:20px;
+    padding:20px;
     border:1px solid #eef2f7;
+    box-shadow:0 8px 20px rgba(0,0,0,.06);
+    transition:.3s;
+
 }
 
-.table{
+.history-ticket:hover{
 
-    margin-bottom:0;
+    transform:translateY(-2px);
+
 }
 
-.table th{
+.history-ticket hr{
 
-    background:#f9fafb;
+    margin:14px 0;
 
-    padding:16px;
-
-    font-size:14px;
-
-    font-weight:700;
-
-    color:#374151;
-
-    border:none;
-}
-
-.table td{
-
-    padding:16px;
-
-    vertical-align:middle;
-
-    border-color:#f3f4f6;
-}
-
-.amount-positive{
-
-    color:#059669;
-
-    font-weight:700;
 }
 
 /* EMPTY */
@@ -369,49 +353,98 @@
 
     {% if earnings %}
 
-    <div class="table-wrap">
+    <div class="history-list">
 
-        <table class="table">
+{% for e in earnings %}
 
-            <tr>
+<div class="history-ticket">
 
-                <th>Date</th>
+    <div class="d-flex justify-content-between align-items-center mb-3">
 
-                <th>Amount</th>
+        <div>
 
-                <th>Reason</th>
+            <div class="text-muted" style="font-size:13px;">
 
-            </tr>
+                Earnings
 
-            {% for e in earnings %}
+            </div>
 
-            <tr>
+            <div style="
+                font-size:28px;
+                font-weight:800;
+                color:#059669;">
 
-                <td>
+                +₹{{ e.amount }}
 
-                    {{ e.created_at.strftime('%d-%m-%Y %H:%M') }}
+            </div>
 
-                </td>
+        </div>
 
-                <td class="amount-positive">
+        <span class="badge bg-success rounded-pill px-3 py-2">
 
-                    +₹{{ e.amount }}
+            Credited
 
-                </td>
-
-                <td>
-
-                    {{ e.reason }}
-
-                </td>
-
-            </tr>
-
-            {% endfor %}
-
-        </table>
+        </span>
 
     </div>
+
+    <hr>
+
+    <div class="row">
+
+        <div class="col-6">
+
+            <small class="text-muted">
+
+                Date
+
+            </small>
+
+            <div style="font-weight:700;">
+
+                {{ e.created_at.strftime('%d %b %Y') }}
+
+            </div>
+
+        </div>
+
+        <div class="col-6 text-end">
+
+            <small class="text-muted">
+
+                Time
+
+            </small>
+
+            <div style="font-weight:700;">
+
+                {{ e.created_at.strftime('%I:%M %p') }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <hr>
+
+    <small class="text-muted">
+
+        Reason
+
+    </small>
+
+    <div style="font-weight:600;">
+
+        {{ e.reason }}
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
 
     {% else %}
 
