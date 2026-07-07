@@ -25,7 +25,7 @@ def check_notifications():
     with app.app_context():
 
         print("Checking notifications...")
-        print("Current server time:", datetime.now())
+       print("Current IST time:", datetime.now(IST))
 
         notifications = BroadcastNotification.query.filter(
             BroadcastNotification.status == "Scheduled"
@@ -45,6 +45,8 @@ def check_notifications():
         ).all()
 
         for n in notifications:
+
+            print(f"Sending notification {n.id}")
 
             full_message = f"{n.title}\n\n{n.message}"
 
