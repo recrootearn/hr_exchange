@@ -1,3 +1,10 @@
+import time
+
+from app import app
+from app import db
+
+from app import BroadcastNotification
+
 from datetime import datetime
 
 from app import (
@@ -69,3 +76,19 @@ def check_notifications():
             n.status = "Sent"
 
         db.session.commit()
+
+if __name__ == "__main__":
+
+    print("Notification Scheduler Started")
+
+    while True:
+
+        try:
+
+            check_notifications()
+
+        except Exception as e:
+
+            print("Scheduler Error:", e)
+
+        time.sleep(60)
