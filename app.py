@@ -2665,6 +2665,92 @@ def admin_candidate_withdrawals():
         withdrawals=withdrawals
     )
 
+@app.route('/admin/send-notification', methods=['POST'])
+@login_required
+def admin_send_notification():
+
+    title = request.form.get("title")
+    message = request.form.get("message")
+    send_to = request.form.get("send_to")
+
+    broadcast = BroadcastNotification(
+        title=title,
+        message=message,
+        send_to=send_to,
+        status="Sent"
+    )
+
+db.session.add(broadcast)
+
+    if not title or not message:
+        flash("Please fill all fields.", "danger")
+        return redirect("/admin/notification-center")
+
+    full_message = f"{title}\n\n{message}"
+
+    # ALL HR
+    if send_to == "hr":
+
+        users = User.query.all()
+
+        for user in users:
+
+            send_notification(
+                user_id=user.id,
+                user_type="hr",
+                message=full_message,
+                link="/dashboard",
+                type="admin_broadcast"
+            )
+
+    # ALL CANDIDATES
+    elif send_to == "candidate":
+
+        candidates = CandidateUser.query.all()
+
+        for candidate in candidates:
+
+            send_notification(
+                user_id=candidate.id,
+                user_type="candidate",
+                message=full_message,
+                link="/candidate-home",
+                type="admin_broadcast"
+            )
+
+    # BOTH
+    elif send_to == "both":
+
+        users = User.query.all()
+
+        for user in users:
+
+            send_notification(
+                user_id=user.id,
+                user_type="hr",
+                message=full_message,
+                link="/dashboard",
+                type="admin_broadcast"
+            )
+
+        candidates = CandidateUser.query.all()
+
+        for candidate in candidates:
+
+            send_notification(
+                user_id=candidate.id,
+                user_type="candidate",
+                message=full_message,
+                link="/candidate-home",
+                type="admin_broadcast"
+            )
+
+    db.session.commit()
+
+    flash("Push notification sent successfully.", "success")
+
+    return redirect("/admin/notification-center")
+
 @app.route('/approve-candidate-withdrawal/<int:id>')
 @login_required
 def approve_candidate_withdrawal(id):
