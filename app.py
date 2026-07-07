@@ -2758,6 +2758,59 @@ def admin_send_notification():
 
     return redirect("/admin/notification-center")
 
+@app.route('/admin/search-users')
+@login_required
+def admin_search_users():
+
+    q = request.args.get("q", "").strip()
+
+    user_type = request.args.get("type")
+
+    results = []
+
+    if len(q) < 2:
+        return jsonify(results)
+
+    if user_type == "hr":
+
+        users = User.query.filter(
+            db.or_(
+                User.first_name.ilike(f"%{q}%"),
+                User.last_name.ilike(f"%{q}%"),
+                User.username.ilike(f"%{q}%"),
+                User.mobile.ilike(f"%{q}%")
+            )
+        ).limit(20).all()
+
+        for u in users:
+
+            results.append({
+                "id": u.id,
+                "name": f"{u.first_name} {u.last_name}",
+                "username": u.username,
+                "mobile": u.mobile
+            })
+
+    elif user_type == "candidate":
+
+        candidates = CandidateUser.query.filter(
+            db.or_(
+                CandidateUser.full_name.ilike(f"%{q}%"),
+                CandidateUser.mobile.ilike(f"%{q}%")
+            )
+        ).limit(20).all()
+
+        for c in candidates:
+
+            results.append({
+                "id": c.id,
+                "name": c.full_name,
+                "username": "",
+                "mobile": c.mobile
+            })
+
+    return jsonify(results)
+
 @app.route('/approve-candidate-withdrawal/<int:id>')
 @login_required
 def approve_candidate_withdrawal(id):

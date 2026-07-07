@@ -292,4 +292,80 @@ sendTo.addEventListener("change", toggleSelectedUsers);
 
 </script>
 
+<script>
+
+let selectedIds = [];
+
+const searchBox = document.getElementById("userSearch");
+const resultBox = document.getElementById("userResults");
+const hiddenInput = document.getElementById("selectedUsers");
+
+searchBox.addEventListener("keyup", function(){
+
+    let keyword = this.value;
+
+    if(keyword.length < 2){
+
+        resultBox.innerHTML = "";
+        return;
+
+    }
+
+    let type = "";
+
+    if(sendTo.value === "selected_hr"){
+
+        type = "hr";
+
+    }else{
+
+        type = "candidate";
+
+    }
+
+    fetch(`/admin/search-users?q=${encodeURIComponent(keyword)}&type=${type}`)
+
+    .then(res => res.json())
+
+    .then(data=>{
+
+        resultBox.innerHTML="";
+
+        data.forEach(user=>{
+
+            let div=document.createElement("div");
+
+            div.className="list-group-item list-group-item-action";
+
+            div.style.cursor="pointer";
+
+            div.innerHTML=`
+                <strong>${user.name}</strong><br>
+                <small>${user.mobile}</small>
+            `;
+
+            div.onclick=function(){
+
+                if(!selectedIds.includes(user.id)){
+
+                    selectedIds.push(user.id);
+
+                    hiddenInput.value=selectedIds.join(",");
+
+                    div.classList.add("active");
+
+                }
+
+            };
+
+            resultBox.appendChild(div);
+
+        });
+
+    });
+
+});
+
+</script>
+
 {% endblock %}
