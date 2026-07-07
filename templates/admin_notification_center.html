@@ -4,356 +4,234 @@
 
 <div class="container mt-4">
 
-    <div class="card shadow-lg border-0 rounded-4">
+<div class="card shadow-lg border-0 rounded-4">
+
+<div class="card-body">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+<div>
+
+<h2 class="fw-bold mb-1">
+
+🔔 Notification Center
+
+</h2>
+
+<p class="text-muted mb-0">
+
+Send Push Notifications to HRs & Candidates
+
+</p>
+
+</div>
+
+<div>
+
+<a href="/admin/notification-templates"
+class="btn btn-outline-primary">
+
+📝 Templates
+
+</a>
+
+<a href="/admin/notification-automation"
+class="btn btn-outline-success ms-2">
+
+🤖 Automation
+
+</a>
+
+</div>
+
+</div>
+
+<form method="POST" action="/admin/send-notification">
+
+<!-- TEMPLATE -->
+
+<div class="mb-3">
+
+<label class="form-label fw-bold">
+
+Use Template
+
+</label>
+
+<select
+class="form-select"
+id="templateSelect">
+
+<option value="">
+
+Select Notification Template
+
+</option>
+
+{% for t in templates %}
+
+<option value="{{t.id}}">
+
+{{t.name}}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+<small class="text-muted">
+
+Selecting a template automatically fills Title, Message and Audience.
+
+</small>
+
+</div>
+
+<!-- TITLE -->
+
+<div class="mb-3">
+
+<label class="form-label fw-bold">
+
+Notification Title
+
+</label>
+
+<input
+type="text"
+id="title"
+name="title"
+class="form-control"
+placeholder="Enter Notification Title"
+required>
+
+</div>
+
+<!-- MESSAGE -->
+
+<div class="mb-3">
+
+<label class="form-label fw-bold">
+
+Notification Message
+
+</label>
+
+<textarea
+id="message"
+rows="5"
+name="message"
+class="form-control"
+placeholder="Enter Notification Message"
+required></textarea>
+
+<small class="text-muted">
+
+Variables:
+{{first_name}}
+{{amount}}
+{{wallet_balance}}
+{{credits}}
+
+</small>
+
+</div>
+
+<!-- SEND TO -->
+
+<div class="mb-3">
+
+<label class="form-label fw-bold">
+
+Audience
+
+</label>
+
+<select
+id="send_to"
+class="form-select"
+name="send_to">
+
+<option value="hr">
+
+👨‍💼 All HR
+
+</option>
+
+<option value="selected_hr">
+
+👨‍💼 Selected HR
+
+</option>
+
+<option value="candidate">
+
+👨‍🎓 All Candidates
+
+</option>
+
+<option value="selected_candidate">
+
+👨‍🎓 Selected Candidates
+
+</option>
+
+<option value="both">
+
+🌍 HR & Candidates
+
+</option>
+
+</select>
+
+</div>
+
+<input
+type="hidden"
+id="notification_link"
+name="notification_link"
+value="/">
+
+<!-- Selected Users -->
+
+<div
+    id="selectedUsersBox"
+    style="display:none;"
+    class="mt-3">
+
+    <div class="card border-0 bg-light rounded-4">
 
         <div class="card-body">
 
-            <h2 class="fw-bold mb-3">
-                🔔 Notification Center
-            </h2>
+            <label class="form-label fw-bold">
 
-            <p class="text-muted">
-                Send push notifications to HRs and Candidates.
-            </p>
+                👥 Select Users
 
-            <form method="POST" action="/admin/send-notification">
+            </label>
 
-                <!-- TEMPLATE -->
+            <input
+                type="text"
+                class="form-control"
+                id="userSearch"
+                placeholder="Search by Name, Username or Mobile">
 
-                <div class="mb-3">
+            <input
+                type="hidden"
+                id="selectedUsers"
+                name="selected_users">
 
-                    <label class="form-label">
-
-                        Use Template
-
-                    </label>
-
-                    <select
-                        class="form-select"
-                        id="templateSelect">
-
-                        <option value="">
-
-                            Select Template
-
-                        </option>
-
-                        {% for t in templates %}
-
-                        <option value="{{ t.id }}">
-
-                            {{ t.name }}
-
-                        </option>
-
-                        {% endfor %}
-
-                    </select>
-
-                </div>
-
-                <!-- TITLE -->
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-
-                        Notification Title
-
-                    </label>
-
-                    <input
-                        type="text"
-                        id="title"
-                        name="title"
-                        class="form-control"
-                        placeholder="Enter notification title"
-                        required>
-
-                </div>
-
-                <!-- MESSAGE -->
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-
-                        Notification Message
-
-                    </label>
-
-                    <textarea
-                        id="message"
-                        class="form-control"
-                        rows="4"
-                        name="message"
-                        placeholder="Enter notification message"
-                        required></textarea>
-
-                </div>
-
-                <!-- SEND TO -->
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-
-                        Send To
-
-                    </label>
-
-                    <select
-                        id="send_to"
-                        class="form-select"
-                        name="send_to">
-
-                        <option value="hr">
-
-                            👨‍💼 All HR
-
-                        </option>
-
-                        <option value="selected_hr">
-
-                            👨‍💼 Selected HR
-
-                        </option>
-
-                        <option value="candidate">
-
-                            👨‍🎓 All Candidates
-
-                        </option>
-
-                        <option value="selected_candidate">
-
-                            👨‍🎓 Selected Candidates
-
-                        </option>
-
-                        <option value="both">
-
-                            🌎 Both HR & Candidates
-
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <!-- Hidden Notification Link -->
-
-                <input
-                    type="hidden"
-                    id="notification_link"
-                    name="notification_link"
-                    value="/">
-
-                <!-- Selected Users -->
-
-                <div
-                    id="selectedUsersBox"
-                    style="display:none;"
-                    class="mt-3">
-
-                    <label class="form-label">
-
-                        Select Users
-
-                    </label>
-
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="userSearch"
-                        placeholder="Search by name, username or mobile">
-
-                    <input
-                        type="hidden"
-                        id="selectedUsers"
-                        name="selected_users">
-
-                    <div
-                        id="userResults"
-                        class="list-group mt-2">
-
-                    </div>
-
-                    <div
-                        id="selectedUsersList"
-                        class="mt-3">
-
-                    </div>
-
-                </div>
-
-                <!-- Schedule -->
-
-                <div class="row mt-3">
-
-                    <div class="col-md-6 mb-3">
-
-                        <label class="form-label">
-
-                            Schedule Date (Optional)
-
-                        </label>
-
-                        <input
-                            type="date"
-                            class="form-control"
-                            name="schedule_date">
-
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-
-                        <label class="form-label">
-
-                            Schedule Time (Optional)
-
-                        </label>
-
-                        <input
-                            type="time"
-                            class="form-control"
-                            name="schedule_time">
-
-                    </div>
-
-                </div>
-
-                <button
-                    type="submit"
-                    class="btn btn-primary btn-lg w-100">
-
-                    🔔 Send Notification
-
-                </button>
-
-            </form>
-
-        </div>
-
-    </div>
-
-    <!-- Notification History -->
-
-    <div class="card shadow border-0 rounded-4 mt-4">
-
-        <div class="card-body">
-
-            <h4 class="fw-bold mb-3">
-
-                📜 Notification History
-
-            </h4>
-
-            {% if notifications %}
-
-            <table class="table table-bordered align-middle">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Title</th>
-
-                        <th>Audience</th>
-
-                        <th>Status</th>
-
-                        <th>Created</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {% for n in notifications %}
-
-                    <tr>
-
-                        <td>
-
-                            <strong>
-
-                                {{ n.title }}
-
-                            </strong>
-
-                            <br>
-
-                            <small class="text-muted">
-
-                                {{ n.message }}
-
-                            </small>
-
-                        </td>
-
-                        <td>
-
-                            {{ n.send_to|title }}
-
-                        </td>
-
-                        <td>
-
-                            {% if n.status=="Sent" %}
-
-                            <span class="badge bg-success">
-
-                                Sent
-
-                            </span>
-
-                            {% else %}
-
-                            <span class="badge bg-warning text-dark">
-
-                                Pending
-
-                            </span>
-
-                            {% endif %}
-
-                        </td>
-
-                        <td>
-
-                            {{ n.created_at.strftime('%d %b %Y %I:%M %p') }}
-
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-            {% else %}
-
-            <div class="text-center py-5">
-
-                <h5>
-
-                    No Notifications Yet
-
-                </h5>
-
-                <p class="text-muted">
-
-                    Notifications you send will appear here.
-
-                </p>
+            <div
+                id="userResults"
+                class="list-group mt-3">
 
             </div>
 
-            {% endif %}
+            <div
+                id="selectedUsersList"
+                class="mt-3">
+
+            </div>
 
         </div>
 
@@ -361,10 +239,294 @@
 
 </div>
 
+<!-- Schedule -->
+
+<div class="row mt-4">
+
+    <div class="col-md-6">
+
+        <label class="form-label fw-bold">
+
+            📅 Schedule Date (Optional)
+
+        </label>
+
+        <input
+            type="date"
+            class="form-control"
+            name="schedule_date">
+
+    </div>
+
+    <div class="col-md-6">
+
+        <label class="form-label fw-bold">
+
+            ⏰ Schedule Time (Optional)
+
+        </label>
+
+        <input
+            type="time"
+            class="form-control"
+            name="schedule_time">
+
+    </div>
+
+</div>
+
+<!-- LIVE PREVIEW -->
+
+<div class="card mt-4 border-primary">
+
+    <div class="card-header bg-primary text-white">
+
+        📱 Notification Preview
+
+    </div>
+
+    <div class="card-body">
+
+        <h5 id="previewTitle">
+
+            Notification Title
+
+        </h5>
+
+        <hr>
+
+        <div
+            id="previewMessage"
+            style="white-space:pre-wrap;">
+
+            Notification Message
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="d-grid mt-4">
+
+    <button
+        type="submit"
+        class="btn btn-primary btn-lg">
+
+        🚀 Send Push Notification
+
+    </button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- Notification History -->
+
+<div class="card shadow border-0 rounded-4 mt-4">
+
+<div class="card-body">
+
+<h4 class="fw-bold mb-3">
+
+📜 Notification History
+
+</h4>
+
+{% if notifications %}
+
+<table class="table table-bordered align-middle">
+
+<thead>
+
+<tr>
+
+<th>Title</th>
+
+<th>Audience</th>
+
+<th>Status</th>
+
+<th>Created</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for n in notifications %}
+
+<tr>
+
+<td>
+
+<strong>
+
+{{ n.title }}
+
+</strong>
+
+<br>
+
+<small class="text-muted">
+
+{{ n.message }}
+
+</small>
+
+</td>
+
+<td>
+
+{{ n.send_to|title }}
+
+</td>
+
+<td>
+
+{% if n.status=="Sent" %}
+
+<span class="badge bg-success">
+
+Sent
+
+</span>
+
+{% elif n.status=="Scheduled" %}
+
+<span class="badge bg-warning">
+
+Scheduled
+
+</span>
+
+{% else %}
+
+<span class="badge bg-secondary">
+
+{{ n.status }}
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{{ n.created_at.strftime('%d %b %Y %I:%M %p') }}
+
+</td>
+
+<td>
+
+<a
+href="/admin/edit-notification/{{n.id}}"
+class="btn btn-warning btn-sm">
+
+✏
+
+</a>
+
+<a
+href="/admin/send-now/{{n.id}}"
+class="btn btn-success btn-sm">
+
+▶
+
+</a>
+
+<a
+href="/admin/pause-notification/{{n.id}}"
+class="btn btn-secondary btn-sm">
+
+{% if n.is_paused %}
+
+▶
+
+{% else %}
+
+⏸
+
+{% endif %}
+
+</a>
+
+<a
+href="/admin/delete-notification/{{n.id}}"
+class="btn btn-danger btn-sm"
+onclick="return confirm('Delete this notification?')">
+
+🗑
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% else %}
+
+<div class="text-center py-5">
+
+<h5>
+
+No Notifications Yet
+
+</h5>
+
+<p class="text-muted">
+
+Notifications you send will appear here.
+
+</p>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
 <script>
 
 const sendTo = document.getElementById("send_to");
 const selectedUsersBox = document.getElementById("selectedUsersBox");
+
+const titleInput = document.getElementById("title");
+const messageInput = document.getElementById("message");
+
+const previewTitle = document.getElementById("previewTitle");
+const previewMessage = document.getElementById("previewMessage");
+
+function updatePreview(){
+
+    previewTitle.innerText =
+        titleInput.value || "Notification Title";
+
+    previewMessage.innerText =
+        messageInput.value || "Notification Message";
+
+}
+
+titleInput.addEventListener("keyup", updatePreview);
+messageInput.addEventListener("keyup", updatePreview);
+
+updatePreview();
 
 function toggleSelectedUsers(){
 
@@ -421,6 +583,8 @@ document
         .getElementById("notification_link")
         .value=data.link;
 
+        updatePreview();
+
         toggleSelectedUsers();
 
     });
@@ -436,6 +600,7 @@ let selectedIds=[];
 const searchBox=document.getElementById("userSearch");
 const resultBox=document.getElementById("userResults");
 const hiddenInput=document.getElementById("selectedUsers");
+const chipBox=document.getElementById("selectedUsersList");
 
 searchBox.addEventListener("keyup",function(){
 
@@ -483,41 +648,39 @@ searchBox.addEventListener("keyup",function(){
 
             div.onclick=function(){
 
-                if(!selectedIds.includes(user.id)){
+                if(selectedIds.includes(user.id))
+                    return;
 
-                    selectedIds.push(user.id);
+                selectedIds.push(user.id);
 
-                    hiddenInput.value=selectedIds.join(",");
+                hiddenInput.value=selectedIds.join(",");
 
-                    div.classList.add("active");
+                div.classList.add("active");
 
-                    let chip=document.createElement("span");
+                let chip=document.createElement("span");
 
-                    chip.className="badge bg-primary me-2 mb-2 p-2";
+                chip.className="badge bg-primary me-2 mb-2 p-2";
 
-                    chip.id="chip_"+user.id;
+                chip.innerHTML=user.name+" ✕";
 
-                    chip.style.cursor="pointer";
+                chip.style.cursor="pointer";
 
-                    chip.innerHTML=user.name+" ✕";
+                chip.onclick=function(){
 
-                    chip.onclick=function(){
+                    selectedIds=selectedIds.filter(
+                        id=>id!=user.id
+                    );
 
-                        selectedIds=selectedIds.filter(id=>id!=user.id);
+                    hiddenInput.value=
+                        selectedIds.join(",");
 
-                        hiddenInput.value=selectedIds.join(",");
+                    chip.remove();
 
-                        chip.remove();
+                    div.classList.remove("active");
 
-                        div.classList.remove("active");
+                };
 
-                    };
-
-                    document
-                    .getElementById("selectedUsersList")
-                    .appendChild(chip);
-
-                }
+                chipBox.appendChild(chip);
 
             };
 

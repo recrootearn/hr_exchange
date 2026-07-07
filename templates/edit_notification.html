@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="card shadow rounded-4">
+
+<div class="card-body">
+
+<h2>
+
+✏ Edit Notification
+
+</h2>
+
+<form method="POST">
+
+<div class="mb-3">
+
+<label>
+
+Title
+
+</label>
+
+<input
+class="form-control"
+name="title"
+value="{{notification.title}}"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+
+Message
+
+</label>
+
+<textarea
+class="form-control"
+rows="5"
+name="message"
+required>{{notification.message}}</textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+
+Audience
+
+</label>
+
+<select
+class="form-select"
+name="send_to">
+
+<option value="hr"
+{% if notification.send_to=="hr" %}selected{% endif %}>
+All HR
+</option>
+
+<option value="selected_hr"
+{% if notification.send_to=="selected_hr" %}selected{% endif %}>
+Selected HR
+</option>
+
+<option value="candidate"
+{% if notification.send_to=="candidate" %}selected{% endif %}>
+All Candidates
+</option>
+
+<option value="selected_candidate"
+{% if notification.send_to=="selected_candidate" %}selected{% endif %}>
+Selected Candidates
+</option>
+
+<option value="both"
+{% if notification.send_to=="both" %}selected{% endif %}>
+Both
+</option>
+
+</select>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6">
+
+<label>
+
+Schedule Date
+
+</label>
+
+<input
+type="date"
+name="schedule_date"
+class="form-control">
+
+</div>
+
+<div class="col-md-6">
+
+<label>
+
+Schedule Time
+
+</label>
+
+<input
+type="time"
+name="schedule_time"
+class="form-control">
+
+</div>
+
+</div>
+
+<div class="mt-4">
+
+<button
+class="btn btn-success">
+
+💾 Update Notification
+
+</button>
+
+<a
+href="/admin/notification-center"
+class="btn btn-secondary">
+
+Cancel
+
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

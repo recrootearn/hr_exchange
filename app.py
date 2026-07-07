@@ -784,6 +784,16 @@ class BroadcastNotification(db.Model):
 
     created_at = db.Column(db.DateTime, default=india_time)
 
+    is_paused = db.Column(db.Boolean, default=False)
+
+    sent_at = db.Column(db.DateTime)
+
+    updated_at = db.Column(
+        db.DateTime,
+        default=india_time,
+        onupdate=india_time
+    )
+
 class NotificationTemplate(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -1216,34 +1226,133 @@ def send_notification(
     message,
     link="",
     image="",
-    type="general"
+    type="general",
+    extra=None
 ):
 
+    try:
+
+        if user_type == "hr":
+            user = User.query.get(user_id)
+        else:
+            user = CandidateUser.query.get(user_id)
+
+        message = replace_notification_variables(
+            message,
+            user,
+            extra
+        )
+
+    except Exception as e:
+
+        print("Variable replacement error:", e)
+
     db.session.add(
+
         Notification(
+
             user_id=user_id,
             user_type=user_type,
             message=message,
             link=link,
             image=image,
             type=type
+
         )
+
     )
 
     try:
-        if user_type == "hr":
-            user = User.query.get(user_id)
-        else:
-            user = CandidateUser.query.get(user_id)
 
         if user and user.fcm_token:
+
             send_push_notification(
+
                 user.fcm_token,
+
                 "RecrootEarn",
+
                 message
+
             )
+
     except Exception as e:
+
         print("Push notification error:", e)
+
+def replace_notification_variables(message, user=None, extra=None):
+
+    if extra is None:
+        extra = {}
+
+    if user:
+
+        # Common
+        message = message.replace(
+            "{{first_name}}",
+            getattr(user, "first_name", "") or getattr(user, "full_name", "")
+        )
+
+        message = message.replace(
+            "{{last_name}}",
+            getattr(user, "last_name", "")
+        )
+
+        message = message.replace(
+            "{{full_name}}",
+            getattr(user, "full_name", (
+                (getattr(user, "first_name", "") + " " +
+                 getattr(user, "last_name", "")).strip()
+            ))
+        )
+
+        message = message.replace(
+            "{{wallet_balance}}",
+            str(getattr(user, "wallet_balance", 0))
+        )
+
+        message = message.replace(
+            "{{city}}",
+            str(getattr(user, "city", ""))
+        )
+
+        message = message.replace(
+            "{{state}}",
+            str(getattr(user, "state", ""))
+        )
+
+        message = message.replace(
+            "{{company}}",
+            str(getattr(user, "company_name", ""))
+        )
+
+        message = message.replace(
+            "{{credits}}",
+            str(
+                getattr(user, "paid_credits", 0)
+                +
+                getattr(user, "free_credits", 0)
+            )
+        )
+
+        message = message.replace(
+            "{{paid_credits}}",
+            str(getattr(user, "paid_credits", 0))
+        )
+
+        message = message.replace(
+            "{{free_credits}}",
+            str(getattr(user, "free_credits", 0))
+        )
+
+    for key, value in extra.items():
+
+        message = message.replace(
+            "{{" + key + "}}",
+            str(value)
+        )
+
+    return message
 
 from datetime import timedelta
 
@@ -2090,6 +2199,123 @@ def admin_referrals():
         'admin_referrals.html',
         referral_data=referral_data
     )
+
+@app.route('/admin/install-default-notification-templates')
+@login_required
+def install_default_notification_templates():
+
+    defaults = [
+
+        {
+            "name":"👋 Welcome HR",
+            "title":"Welcome to RecrootEarn",
+            "message":"Welcome {{first_name}}! Complete your profile and start earning by recruiting candidates.",
+            "audience":"hr",
+            "link":"/dashboard"
+        },
+
+        {
+            "name":"👋 Welcome Candidate",
+            "title":"Welcome to RecrootEarn",
+            "message":"Welcome {{first_name}}! Complete your profile to unlock better job opportunities.",
+            "audience":"candidate",
+            "link":"/candidate-profile"
+        },
+
+        {
+            "name":"🔥 Complete Today's Streak",
+            "title":"Daily Streak Reminder",
+            "message":"Hi {{first_name}}, complete today's streak and earn exciting rewards!",
+            "audience":"both",
+            "link":"/dashboard"
+        },
+
+        {
+            "name":"📝 Complete Profile",
+            "title":"Complete Your Profile",
+            "message":"Your profile is {{profile_completion}}% complete. Finish it to improve visibility.",
+            "audience":"candidate",
+            "link":"/candidate-profile"
+        },
+
+        {
+            "name":"💳 Buy Credits",
+            "title":"Running Low on Credits",
+            "message":"Hi {{first_name}}, purchase more credits to continue unlocking candidates.",
+            "audience":"hr",
+            "link":"/credits"
+        },
+
+        {
+            "name":"🎉 Referral Reward",
+            "title":"Congratulations!",
+            "message":"₹{{amount}} has been credited to your wallet for your successful referral.",
+            "audience":"both",
+            "link":"/wallet"
+        },
+
+        {
+            "name":"💰 Wallet Credited",
+            "title":"Wallet Updated",
+            "message":"₹{{amount}} has been added to your wallet.",
+            "audience":"both",
+            "link":"/wallet"
+        },
+
+        {
+            "name":"📈 Upload Candidates",
+            "title":"Upload More Candidates",
+            "message":"Upload candidates today and increase your earnings.",
+            "audience":"hr",
+            "link":"/upload-candidate"
+        },
+
+        {
+            "name":"💼 Apply for Jobs",
+            "title":"New Jobs Waiting",
+            "message":"New jobs matching your profile are available. Apply now!",
+            "audience":"candidate",
+            "link":"/jobs"
+        },
+
+        {
+            "name":"🎊 Festival Wishes",
+            "title":"Best Wishes",
+            "message":"Wishing you and your family happiness and success.",
+            "audience":"both",
+            "link":"/"
+        }
+
+    ]
+
+    added = 0
+
+    for item in defaults:
+
+        exists = NotificationTemplate.query.filter_by(
+            name=item["name"]
+        ).first()
+
+        if not exists:
+
+            db.session.add(
+                NotificationTemplate(
+                    name=item["name"],
+                    title=item["title"],
+                    message=item["message"],
+                    audience=item["audience"],
+                    link=item["link"],
+                    is_active=True
+                )
+            )
+
+            added += 1
+
+    db.session.commit()
+
+    flash(f"{added} default templates installed successfully.","success")
+
+    return redirect("/admin/notification-templates")
 
 @app.route('/admin/delete-user/<int:user_id>')
 @login_required
@@ -2941,6 +3167,24 @@ def admin_candidate_withdrawals():
         withdrawals=withdrawals
     )
 
+@app.route('/admin/template/<int:id>')
+@login_required
+def get_notification_template(id):
+
+    template = NotificationTemplate.query.get_or_404(id)
+
+    return jsonify({
+
+        "title": template.title,
+
+        "message": template.message,
+
+        "audience": template.audience,
+
+        "link": template.link
+
+    })
+
 @app.route('/admin/send-notification', methods=['POST'])
 @login_required
 def admin_send_notification():
@@ -2949,20 +3193,51 @@ def admin_send_notification():
     message = request.form.get("message")
     send_to = request.form.get("send_to")
     selected_users = request.form.get("selected_users", "")
+    schedule_date = request.form.get("schedule_date")
+    schedule_time = request.form.get("schedule_time")
 
     if not title or not message:
         flash("Please fill all fields.", "danger")
         return redirect("/admin/notification-center")
 
     # Save notification history
+    from datetime import datetime
+
+    schedule_datetime = None
+    status = "Sent"
+
+    if schedule_date and schedule_time:
+
+        schedule_datetime = datetime.strptime(
+            f"{schedule_date} {schedule_time}",
+            "%Y-%m-%d %H:%M"
+        )
+
+        status = "Scheduled"
+
     broadcast = BroadcastNotification(
+
         title=title,
         message=message,
         send_to=send_to,
-        status="Sent"
+        selected_users=selected_users,
+        status=status,
+        schedule_time=schedule_datetime
+
     )
 
     db.session.add(broadcast)
+
+    if status == "Scheduled":
+
+        db.session.commit()
+
+        flash(
+            "Notification scheduled successfully.",
+            "success"
+        )
+
+        return redirect("/admin/notification-center")
 
     full_message = f"{title}\n\n{message}"
 
@@ -3939,6 +4214,280 @@ def candidate_general_info():
         return redirect('/candidate-login')
 
     return render_template('general_info.html')
+
+@app.route('/admin/send-now/<int:id>')
+@login_required
+def send_now_notification(id):
+
+    notification = BroadcastNotification.query.get_or_404(id)
+
+    full_message = f"{notification.title}\n\n{notification.message}"
+
+    # ==========================
+    # Selected HR
+    # ==========================
+    if notification.send_to == "selected_hr":
+
+        ids = [
+            int(x)
+            for x in notification.selected_users.split(",")
+            if x.strip()
+        ]
+
+        users = User.query.filter(
+            User.id.in_(ids)
+        ).all()
+
+        for user in users:
+
+            send_notification(
+
+                user_id=user.id,
+
+                user_type="hr",
+
+                message=full_message,
+
+                link="/dashboard",
+
+                type="admin_broadcast"
+
+            )
+
+    # ==========================
+    # All HR
+    # ==========================
+    elif notification.send_to == "hr":
+
+        users = User.query.all()
+
+        for user in users:
+
+            send_notification(
+
+                user_id=user.id,
+
+                user_type="hr",
+
+                message=full_message,
+
+                link="/dashboard",
+
+                type="admin_broadcast"
+
+            )
+
+    # ==========================
+    # Selected Candidate
+    # ==========================
+    elif notification.send_to == "selected_candidate":
+
+        ids = [
+            int(x)
+            for x in notification.selected_users.split(",")
+            if x.strip()
+        ]
+
+        candidates = CandidateUser.query.filter(
+            CandidateUser.id.in_(ids)
+        ).all()
+
+        for candidate in candidates:
+
+            send_notification(
+
+                user_id=candidate.id,
+
+                user_type="candidate",
+
+                message=full_message,
+
+                link="/candidate-home",
+
+                type="admin_broadcast"
+
+            )
+
+    # ==========================
+    # All Candidate
+    # ==========================
+    elif notification.send_to == "candidate":
+
+        candidates = CandidateUser.query.all()
+
+        for candidate in candidates:
+
+            send_notification(
+
+                user_id=candidate.id,
+
+                user_type="candidate",
+
+                message=full_message,
+
+                link="/candidate-home",
+
+                type="admin_broadcast"
+
+            )
+
+    # ==========================
+    # Both
+    # ==========================
+    elif notification.send_to == "both":
+
+        users = User.query.all()
+
+        for user in users:
+
+            send_notification(
+
+                user_id=user.id,
+
+                user_type="hr",
+
+                message=full_message,
+
+                link="/dashboard",
+
+                type="admin_broadcast"
+
+            )
+
+        candidates = CandidateUser.query.all()
+
+        for candidate in candidates:
+
+            send_notification(
+
+                user_id=candidate.id,
+
+                user_type="candidate",
+
+                message=full_message,
+
+                link="/candidate-home",
+
+                type="admin_broadcast"
+
+            )
+
+    notification.status = "Sent"
+
+    notification.sent_at = india_time()
+
+    db.session.commit()
+
+    flash(
+        "Notification sent successfully.",
+        "success"
+    )
+
+    return redirect("/admin/notification-center")
+
+@app.route('/admin/edit-notification/<int:id>', methods=['GET','POST'])
+@login_required
+def edit_notification(id):
+
+    notification = BroadcastNotification.query.get_or_404(id)
+
+    if request.method == "POST":
+
+        notification.title = request.form.get("title")
+
+        notification.message = request.form.get("message")
+
+        notification.send_to = request.form.get("send_to")
+
+        schedule_date = request.form.get("schedule_date")
+        schedule_time = request.form.get("schedule_time")
+
+        if schedule_date and schedule_time:
+
+            from datetime import datetime
+
+            notification.schedule_time = datetime.strptime(
+                f"{schedule_date} {schedule_time}",
+                "%Y-%m-%d %H:%M"
+            )
+
+            notification.status = "Scheduled"
+
+        db.session.commit()
+
+        flash(
+            "Notification updated successfully.",
+            "success"
+        )
+
+        return redirect("/admin/notification-center")
+
+    return render_template(
+        "edit_notification.html",
+        notification=notification
+    )
+
+@app.route('/admin/pause-notification/<int:id>')
+@login_required
+def pause_notification(id):
+
+    notification = BroadcastNotification.query.get_or_404(id)
+
+    notification.is_paused = not notification.is_paused
+
+    db.session.commit()
+
+    flash(
+        "Notification status updated.",
+        "success"
+    )
+
+    return redirect("/admin/notification-center")
+
+@app.route('/admin/delete-notification/<int:id>')
+@login_required
+def delete_notification(id):
+
+    notification = BroadcastNotification.query.get_or_404(id)
+
+    db.session.delete(notification)
+
+    db.session.commit()
+
+    flash(
+        "Notification deleted successfully.",
+        "success"
+    )
+
+    return redirect("/admin/notification-center")
+
+@app.route('/admin/edit-notification/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_notification(id):
+
+    notification = BroadcastNotification.query.get_or_404(id)
+
+    if request.method == "POST":
+
+        notification.title = request.form.get("title")
+
+        notification.message = request.form.get("message")
+
+        notification.send_to = request.form.get("send_to")
+
+        db.session.commit()
+
+        flash(
+            "Notification updated successfully.",
+            "success"
+        )
+
+        return redirect("/admin/notification-center")
+
+    return render_template(
+        "edit_notification.html",
+        notification=notification
+    )
 
 @app.route('/candidate-profile')
 def candidate_profile():

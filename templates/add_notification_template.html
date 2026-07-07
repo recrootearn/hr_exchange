@@ -4,125 +4,180 @@
 
 <div class="container mt-4">
 
-<div class="card shadow rounded-4">
+    <div class="card shadow-lg border-0 rounded-4">
 
-<div class="card-body">
+        <div class="card-body">
 
-<h2 class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
 
-➕ Add Notification Template
+                <h2 class="fw-bold mb-0">
+                    ➕ Add Notification Template
+                </h2>
 
-</h2>
+                <div>
 
-<form method="POST">
+                    <a href="/admin/install-default-notification-templates"
+                       class="btn btn-success">
 
-<div class="mb-3">
+                        ⚡ Install Default Templates
 
-<label>
+                    </a>
 
-Template Name
+                    <a href="/admin/notification-templates"
+                       class="btn btn-secondary">
 
-</label>
+                        ← Back
 
-<input
-class="form-control"
-name="name"
-required>
+                    </a>
 
-</div>
+                </div>
 
-<div class="mb-3">
+            </div>
 
-<label>
+            <form method="POST">
 
-Notification Title
+                <div class="mb-3">
 
-</label>
+                    <label class="form-label fw-bold">
 
-<input
-class="form-control"
-name="title"
-required>
+                        Template Name
 
-</div>
+                    </label>
 
-<div class="mb-3">
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="name"
+                        placeholder="Example: Welcome Candidate"
+                        required>
 
-<label>
+                </div>
 
-Notification Message
+                <div class="mb-3">
 
-</label>
+                    <label class="form-label fw-bold">
 
-<textarea
-class="form-control"
-rows="5"
-name="message"
-required></textarea>
+                        Notification Title
 
-</div>
+                    </label>
 
-<div class="mb-3">
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="title"
+                        placeholder="Example: Welcome to RecrootEarn"
+                        required>
 
-<label>
+                </div>
 
-Audience
+                <div class="mb-3">
 
-</label>
+                    <label class="form-label fw-bold">
 
-<select
-class="form-select"
-name="audience">
+                        Notification Message
 
-<option value="hr">
+                    </label>
 
-HR
+                    <textarea
+                        class="form-control"
+                        rows="6"
+                        name="message"
+                        placeholder="Write your notification..."
+                        required></textarea>
 
-</option>
+                    <small class="text-muted">
 
-<option value="candidate">
+                        Supported Variables:
+                        {{first_name}},
+                        {{last_name}},
+                        {{full_name}},
+                        {{amount}},
+                        {{credits}},
+                        {{wallet_balance}},
+                        {{profile_completion}}
 
-Candidate
+                    </small>
 
-</option>
+                </div>
 
-<option value="both">
+                <div class="row">
 
-Both
+                    <div class="col-md-6">
 
-</option>
+                        <div class="mb-3">
 
-</select>
+                            <label class="form-label fw-bold">
 
-</div>
+                                Audience
 
-<div class="mb-3">
+                            </label>
 
-<label>
+                            <select
+                                class="form-select"
+                                name="audience">
 
-Open Link
+                                <option value="hr">
 
-</label>
+                                    👨‍💼 HR
 
-<input
-class="form-control"
-name="link"
-value="/">
+                                </option>
 
-</div>
+                                <option value="candidate">
 
-<button
-class="btn btn-success">
+                                    👨‍🎓 Candidate
 
-Save Template
+                                </option>
 
-</button>
+                                <option value="both">
 
-</form>
+                                    🌍 Both
 
-</div>
+                                </option>
 
-</div>
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-bold">
+
+                                Open Link
+
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="link"
+                                value="/">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="d-grid">
+
+                    <button
+                        class="btn btn-primary btn-lg">
+
+                        💾 Save Template
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
 
 </div>
 
