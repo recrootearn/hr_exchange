@@ -2673,22 +2673,25 @@ def admin_send_notification():
     message = request.form.get("message")
     send_to = request.form.get("send_to")
 
-        broadcast = BroadcastNotification(
-            title=title,
-            message=message,
-            send_to=send_to,
-            status="Sent"
-        )
-
-db.session.add(broadcast)
-
     if not title or not message:
         flash("Please fill all fields.", "danger")
         return redirect("/admin/notification-center")
 
+    # Save notification history
+    broadcast = BroadcastNotification(
+        title=title,
+        message=message,
+        send_to=send_to,
+        status="Sent"
+    )
+
+    db.session.add(broadcast)
+
     full_message = f"{title}\n\n{message}"
 
-    # ALL HR
+    # ===========================
+    # SEND TO ALL HR
+    # ===========================
     if send_to == "hr":
 
         users = User.query.all()
@@ -2703,7 +2706,9 @@ db.session.add(broadcast)
                 type="admin_broadcast"
             )
 
-    # ALL CANDIDATES
+    # ===========================
+    # SEND TO ALL CANDIDATES
+    # ===========================
     elif send_to == "candidate":
 
         candidates = CandidateUser.query.all()
@@ -2718,7 +2723,9 @@ db.session.add(broadcast)
                 type="admin_broadcast"
             )
 
-    # BOTH
+    # ===========================
+    # SEND TO BOTH
+    # ===========================
     elif send_to == "both":
 
         users = User.query.all()
