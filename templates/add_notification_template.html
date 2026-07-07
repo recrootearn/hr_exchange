@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="card shadow rounded-4">
+
+<div class="card-body">
+
+<h2 class="mb-4">
+
+➕ Add Notification Template
+
+</h2>
+
+<form method="POST">
+
+<div class="mb-3">
+
+<label>
+
+Template Name
+
+</label>
+
+<input
+class="form-control"
+name="name"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+
+Notification Title
+
+</label>
+
+<input
+class="form-control"
+name="title"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+
+Notification Message
+
+</label>
+
+<textarea
+class="form-control"
+rows="5"
+name="message"
+required></textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+
+Audience
+
+</label>
+
+<select
+class="form-select"
+name="audience">
+
+<option value="hr">
+
+HR
+
+</option>
+
+<option value="candidate">
+
+Candidate
+
+</option>
+
+<option value="both">
+
+Both
+
+</option>
+
+</select>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+
+Open Link
+
+</label>
+
+<input
+class="form-control"
+name="link"
+value="/">
+
+</div>
+
+<button
+class="btn btn-success">
+
+Save Template
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

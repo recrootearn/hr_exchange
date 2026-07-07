@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h2 class="fw-bold">
+
+📝 Notification Templates
+
+</h2>
+
+<a href="/admin/add-notification-template"
+class="btn btn-primary">
+
+➕ Add Template
+
+</a>
+
+</div>
+
+<div class="card shadow rounded-4">
+
+<div class="card-body">
+
+{% if templates %}
+
+<table class="table align-middle">
+
+<thead>
+
+<tr>
+
+<th>Name</th>
+
+<th>Audience</th>
+
+<th>Title</th>
+
+<th width="180">
+Action
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for t in templates %}
+
+<tr>
+
+<td>
+
+<strong>
+
+{{ t.name }}
+
+</strong>
+
+</td>
+
+<td>
+
+{{ t.audience|title }}
+
+</td>
+
+<td>
+
+{{ t.title }}
+
+</td>
+
+<td>
+
+<a href="/admin/edit-template/{{t.id}}"
+class="btn btn-warning btn-sm">
+
+✏ Edit
+
+</a>
+
+<a href="/admin/delete-template/{{t.id}}"
+class="btn btn-danger btn-sm">
+
+🗑 Delete
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% else %}
+
+<div class="text-center py-5">
+
+<h4>
+
+No Templates Created
+
+</h4>
+
+<p class="text-muted">
+
+Create your first notification template.
+
+</p>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

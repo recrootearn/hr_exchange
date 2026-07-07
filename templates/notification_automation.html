@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2 class="fw-bold">
+            🤖 Automatic Notifications
+        </h2>
+
+        <a href="/admin/add-automation-rule"
+           class="btn btn-success">
+
+            ➕ Add Rule
+
+        </a>
+
+    </div>
+
+    <div class="card shadow border-0 rounded-4">
+
+        <div class="card-body">
+
+            {% if rules %}
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Rule</th>
+
+                        <th>Template</th>
+
+                        <th>Trigger</th>
+
+                        <th>Delay</th>
+
+                        <th>Status</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for rule in rules %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+
+                                {{ rule.name }}
+
+                            </strong>
+
+                        </td>
+
+                        <td>
+
+                            {{ rule.template.name }}
+
+                        </td>
+
+                        <td>
+
+                            {{ rule.trigger }}
+
+                        </td>
+
+                        <td>
+
+                            {{ rule.delay_hours }} Hour(s)
+
+                        </td>
+
+                        <td>
+
+                            {% if rule.enabled %}
+
+                            <span class="badge bg-success">
+
+                                Enabled
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-danger">
+
+                                Disabled
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <a
+                                href="/admin/edit-automation-rule/{{rule.id}}"
+                                class="btn btn-warning btn-sm">
+
+                                ✏ Edit
+
+                            </a>
+
+                            <a
+                                href="/admin/delete-automation-rule/{{rule.id}}"
+                                class="btn btn-danger btn-sm">
+
+                                🗑 Delete
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <div class="text-center py-5">
+
+                <div style="font-size:70px;">
+
+                    🤖
+
+                </div>
+
+                <h4>
+
+                    No Automation Rules
+
+                </h4>
+
+                <p class="text-muted">
+
+                    Create your first automatic notification rule.
+
+                </p>
+
+                <a
+                    href="/admin/add-automation-rule"
+                    class="btn btn-primary">
+
+                    Create First Rule
+
+                </a>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

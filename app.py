@@ -352,6 +352,28 @@ class CreditPurchase(db.Model):
 
     created_at = db.Column(db.DateTime, default=india_time)
 
+class NotificationQueue(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.Integer)
+
+    user_type = db.Column(db.String(20))
+
+    template_id = db.Column(db.Integer)
+
+    send_at = db.Column(db.DateTime)
+
+    status = db.Column(
+        db.String(20),
+        default="Pending"
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
 class ReferralRewardHistory(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -556,6 +578,32 @@ class Follow(db.Model):
         default=india_time
     )
 
+class NotificationAutomation(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    name = db.Column(db.String(200), nullable=False)
+
+    template_id = db.Column(
+        db.Integer,
+        db.ForeignKey("notification_template.id")
+    )
+
+    trigger = db.Column(db.String(100))
+
+    delay_hours = db.Column(db.Integer, default=0)
+
+    enabled = db.Column(db.Boolean, default=True)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+    template = db.relationship(
+        "NotificationTemplate"
+    )
+
 class JobImage(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -733,6 +781,27 @@ class BroadcastNotification(db.Model):
     # Sent
 
     schedule_time = db.Column(db.DateTime)
+
+    created_at = db.Column(db.DateTime, default=india_time)
+
+class NotificationTemplate(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    name = db.Column(db.String(150), nullable=False)
+
+    title = db.Column(db.String(200), nullable=False)
+
+    message = db.Column(db.Text, nullable=False)
+
+    audience = db.Column(db.String(30), default="both")
+    # hr
+    # candidate
+    # both
+
+    link = db.Column(db.String(300), default="/")
+
+    is_active = db.Column(db.Boolean, default=True)
 
     created_at = db.Column(db.DateTime, default=india_time)
 
@@ -1176,6 +1245,72 @@ def send_notification(
     except Exception as e:
         print("Push notification error:", e)
 
+from datetime import timedelta
+
+def run_notification_automation(trigger, user_id, user_type):
+
+    rule = NotificationAutomation.query.filter_by(
+        trigger=trigger,
+        enabled=True
+    ).first()
+
+    if not rule:
+        return
+
+    queue = NotificationQueue(
+
+        user_id=user_id,
+
+        user_type=user_type,
+
+        template_id=rule.template_id,
+
+        send_at=india_time() + timedelta(
+            hours=rule.delay_hours
+        )
+
+    )
+
+    db.session.add(queue)
+
+    db.session.commit()
+
+def process_notification_queue():
+
+    pending = NotificationQueue.query.filter(
+
+        NotificationQueue.status == "Pending",
+
+        NotificationQueue.send_at <= india_time()
+
+    ).all()
+
+    for item in pending:
+
+        template = NotificationTemplate.query.get(
+            item.template_id
+        )
+
+        if template:
+
+            send_notification(
+
+                user_id=item.user_id,
+
+                user_type=item.user_type,
+
+                message=f"{template.title}\n\n{template.message}",
+
+                link=template.link,
+
+                type="automation"
+
+            )
+
+        item.status = "Sent"
+
+    db.session.commit()
+
 def check_daily_bonus(candidate):
 
     if (
@@ -1508,9 +1643,36 @@ def admin_notification_center():
         BroadcastNotification.created_at.desc()
     ).all()
 
+    templates = NotificationTemplate.query.filter_by(
+        is_active=True
+    ).order_by(
+        NotificationTemplate.name.asc()
+    ).all()
+
     return render_template(
-        'admin_notification_center.html',
-        notifications=notifications
+        "admin_notification_center.html",
+        notifications=notifications,
+        templates=templates
+    )
+
+@app.route('/admin/notification-automation')
+@login_required
+def notification_automation():
+
+    rules = NotificationAutomation.query.all()
+
+    templates = NotificationTemplate.query.filter_by(
+        is_active=True
+    ).all()
+
+    return render_template(
+
+        "notification_automation.html",
+
+        rules=rules,
+
+        templates=templates
+
     )
 
 @app.route('/admin/business-settings', methods=['GET', 'POST'])
@@ -1740,6 +1902,120 @@ def test_push():
         "success": True,
         "response": response
     }
+
+@app.route('/admin/add-automation-rule', methods=['GET', 'POST'])
+@login_required
+def add_automation_rule():
+
+    templates = NotificationTemplate.query.filter_by(
+        is_active=True
+    ).all()
+
+    if request.method == "POST":
+
+        rule = NotificationAutomation(
+
+            name=request.form.get("name"),
+
+            template_id=request.form.get("template_id"),
+
+            trigger=request.form.get("trigger"),
+
+            delay_hours=int(
+                request.form.get("delay_hours", 0)
+            ),
+
+            enabled=True
+
+        )
+
+        db.session.add(rule)
+
+        db.session.commit()
+
+        flash(
+            "Automation Rule Created Successfully.",
+            "success"
+        )
+
+        return redirect(
+            "/admin/notification-automation"
+        )
+
+    return render_template(
+        "add_automation_rule.html",
+        templates=templates
+    )
+
+@app.route('/admin/notification-templates')
+@login_required
+def notification_templates():
+
+    templates = NotificationTemplate.query.order_by(
+        NotificationTemplate.id.desc()
+    ).all()
+
+    return render_template(
+        "notification_templates.html",
+        templates=templates
+    )
+
+@app.route('/admin/delete-template/<int:id>')
+@login_required
+def delete_notification_template(id):
+
+    template = NotificationTemplate.query.get_or_404(id)
+
+    db.session.delete(template)
+
+    db.session.commit()
+
+    flash("Template Deleted.","success")
+
+    return redirect("/admin/notification-templates")
+
+@app.route('/admin/get-template/<int:id>')
+@login_required
+def get_notification_template(id):
+
+    template = NotificationTemplate.query.get_or_404(id)
+
+    return jsonify({
+
+        "title": template.title,
+
+        "message": template.message,
+
+        "audience": template.audience,
+
+        "link": template.link
+
+    })
+
+@app.route('/admin/edit-template/<int:id>', methods=['GET','POST'])
+@login_required
+def edit_notification_template(id):
+
+    template = NotificationTemplate.query.get_or_404(id)
+
+    if request.method == "POST":
+
+        template.name = request.form.get("name")
+        template.title = request.form.get("title")
+        template.message = request.form.get("message")
+        template.audience = request.form.get("audience")
+        template.link = request.form.get("link")
+
+        db.session.commit()
+
+        flash("Template Updated Successfully.","success")
+
+        return redirect("/admin/notification-templates")
+
+    return render_template(
+        "edit_notification_template.html",
+        template=template
+    )
 
 @app.route('/my-uploads')
 @login_required
@@ -2672,6 +2948,7 @@ def admin_send_notification():
     title = request.form.get("title")
     message = request.form.get("message")
     send_to = request.form.get("send_to")
+    selected_users = request.form.get("selected_users", "")
 
     if not title or not message:
         flash("Please fill all fields.", "danger")
@@ -2690,9 +2967,34 @@ def admin_send_notification():
     full_message = f"{title}\n\n{message}"
 
     # ===========================
+    # SEND TO SELECTED HR
+    # ===========================
+    if send_to == "selected_hr":
+
+        ids = [
+            int(x)
+            for x in selected_users.split(",")
+            if x.strip()
+        ]
+
+        users = User.query.filter(
+            User.id.in_(ids)
+        ).all()
+
+        for user in users:
+
+            send_notification(
+                user_id=user.id,
+                user_type="hr",
+                message=full_message,
+                link="/dashboard",
+                type="admin_broadcast"
+            )
+
+    # ===========================
     # SEND TO ALL HR
     # ===========================
-    if send_to == "hr":
+    elif send_to == "hr":
 
         users = User.query.all()
 
@@ -2703,6 +3005,31 @@ def admin_send_notification():
                 user_type="hr",
                 message=full_message,
                 link="/dashboard",
+                type="admin_broadcast"
+            )
+
+    # ===========================
+    # SEND TO SELECTED CANDIDATES
+    # ===========================
+    elif send_to == "selected_candidate":
+
+        ids = [
+            int(x)
+            for x in selected_users.split(",")
+            if x.strip()
+        ]
+
+        candidates = CandidateUser.query.filter(
+            CandidateUser.id.in_(ids)
+        ).all()
+
+        for candidate in candidates:
+
+            send_notification(
+                user_id=candidate.id,
+                user_type="candidate",
+                message=full_message,
+                link="/candidate-home",
                 type="admin_broadcast"
             )
 

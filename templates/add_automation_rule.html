@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="card shadow rounded-4">
+
+<div class="card-body">
+
+<h2 class="mb-4">
+
+➕ Add Automation Rule
+
+</h2>
+
+<form method="POST">
+
+<div class="mb-3">
+
+<label>
+
+Rule Name
+
+</label>
+
+<input
+class="form-control"
+name="name"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+
+Notification Template
+
+</label>
+
+<select
+class="form-select"
+name="template_id">
+
+{% for t in templates %}
+
+<option value="{{t.id}}">
+
+{{t.name}}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+
+Trigger
+
+</label>
+
+<select
+class="form-select"
+name="trigger">
+
+<option value="candidate_registered">
+
+Candidate Registered
+
+</option>
+
+<option value="hr_registered">
+
+HR Registered
+
+</option>
+
+<option value="profile_incomplete">
+
+Profile Incomplete
+
+</option>
+
+<option value="daily_streak_pending">
+
+Daily Streak Pending
+
+</option>
+
+<option value="credits_finished">
+
+Credits Finished
+
+</option>
+
+<option value="wallet_credited">
+
+Wallet Credited
+
+</option>
+
+<option value="referral_reward">
+
+Referral Reward
+
+</option>
+
+</select>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+
+Delay (Hours)
+
+</label>
+
+<input
+type="number"
+class="form-control"
+value="0"
+name="delay_hours">
+
+</div>
+
+<button
+class="btn btn-success">
+
+Save Rule
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
