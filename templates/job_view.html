@@ -6,282 +6,279 @@
 
 .content{
     padding:0 !important;
-    background:#f3f6fb;
+    background:#f4f7fb;
 }
+
+/* ==========================
+   PAGE
+========================== */
 
 .job-page{
     max-width:950px;
     margin:auto;
-    padding:15px;
+    padding:18px;
 }
 
 .job-card{
-    background:white;
+    background:#fff;
     border-radius:22px;
     overflow:hidden;
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
 
+/* ==========================
+   HEADER
+========================== */
+
 .job-header{
-
-    background:linear-gradient(
-        135deg,
-        #2563eb,
-        #1d4ed8,
-        #3b82f6
-    );
-
-    color:white;
-
-    padding:22px;
-
+    background:linear-gradient(135deg,#2563eb,#1d4ed8,#3b82f6);
+    color:#fff;
+    padding:26px;
 }
 
 .company-row{
-
     display:flex;
-
     align-items:center;
-
-    gap:16px;
-
+    gap:18px;
 }
 
 .company-logo{
-
-    width:72px;
-    height:72px;
-
+    width:74px;
+    height:74px;
     border-radius:50%;
-
     overflow:hidden;
-
-    background:white;
-
+    background:#fff;
+    border:3px solid #fff;
     flex-shrink:0;
-
-    border:3px solid white;
-
 }
 
 .company-logo img{
-
     width:100%;
     height:100%;
     object-fit:cover;
-
 }
 
 .logo-letter{
-
     width:100%;
     height:100%;
-
     display:flex;
-    justify-content:center;
     align-items:center;
-
-    font-size:28px;
-    font-weight:700;
-
+    justify-content:center;
     color:#2563eb;
-
+    font-size:30px;
+    font-weight:700;
 }
 
 .company-info{
-
     flex:1;
-
 }
 
 .company-name{
-
-    font-size:24px;
+    font-size:25px;
     font-weight:700;
     line-height:1.2;
-
 }
 
 .company-location{
-
-    margin-top:4px;
+    margin-top:5px;
     font-size:15px;
-    opacity:.9;
-
+    opacity:.95;
 }
 
 .verify-row{
-
     display:flex;
-
-    gap:18px;
-
-    margin-top:8px;
-
     flex-wrap:wrap;
-
+    gap:15px;
+    margin-top:10px;
     font-size:14px;
-
     font-weight:600;
-
 }
 
 .verify-ok{
-
-    color:#b8ffb8;
-
+    color:#b7ffbc;
 }
 
 .verify-no{
-
-    color:#ffd0d0;
-
+    color:#ffd7d7;
 }
 
 .job-title{
-
-    margin-top:18px;
-
-    font-size:32px;
-
+    margin-top:22px;
+    font-size:36px;
     font-weight:800;
-
+    line-height:1.25;
 }
 
 .salary{
-
     display:inline-block;
-
-    margin-top:12px;
-
+    margin-top:16px;
     background:#DCFCE7;
-
     color:#166534;
-
-    padding:10px 20px;
-
-    border-radius:40px;
-
-    font-size:22px;
-
+    padding:11px 26px;
+    border-radius:50px;
+    font-size:23px;
     font-weight:700;
-
 }
 
+/* ==========================
+   BODY
+========================== */
+
 .job-body{
-
     padding:22px;
-
 }
 
 .section{
-
-    background:white;
-
-    border-radius:18px;
-
-    padding:22px;
-
-    margin-top:20px;
-
+    background:#fff;
     border:1px solid #ececec;
-
+    border-radius:18px;
+    padding:22px;
+    margin-top:18px;
 }
 
 .section-title{
-
-    font-size:20px;
-
+    font-size:22px;
     font-weight:700;
-
-    margin-bottom:18px;
-
+    margin-bottom:20px;
 }
 
+/* ==========================
+   INFO TABLE
+========================== */
+
 .info-table{
-
     display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:14px 30px;
-
+    grid-template-columns:1fr;
 }
 
 .info-item{
+    display:grid;
+    grid-template-columns:170px 1fr;
+    gap:18px;
+    align-items:start;
+    padding:15px 0;
+    border-bottom:1px solid #ededed;
+}
 
-    display:flex;
-
-    justify-content:space-between;
-
-    border-bottom:1px solid #f1f1f1;
-
-    padding:10px 0;
-
+.info-item:last-child{
+    border-bottom:none;
 }
 
 .info-label{
-
     color:#6b7280;
-
+    font-size:17px;
     font-weight:600;
-
 }
 
 .info-value{
-
-    font-weight:700;
-
     color:#111827;
-
+    font-size:17px;
+    font-weight:700;
+    text-align:left;
+    line-height:1.6;
+    word-break:break-word;
 }
+
+/* ==========================
+   GALLERY
+========================== */
+
+.job-gallery{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+.job-gallery img{
+    width:100%;
+    aspect-ratio:1;
+    object-fit:cover;
+    border-radius:12px;
+}
+
+/* ==========================
+   MOBILE
+========================== */
 
 @media(max-width:768px){
 
+.content{
+    padding:0 !important;
+}
+
+.job-page{
+    padding:0;
+}
+
+.job-card{
+    width:100%;
+    border-radius:0;
+    box-shadow:none;
+}
+
 .job-header{
-
-padding:18px;
-
+    padding:20px;
 }
 
 .company-row{
-
-align-items:flex-start;
-
+    align-items:flex-start;
 }
 
 .company-logo{
-
-width:60px;
-
-height:60px;
-
+    width:60px;
+    height:60px;
 }
 
 .company-name{
+    font-size:21px;
+}
 
-font-size:20px;
-
+.company-location{
+    font-size:14px;
 }
 
 .job-title{
-
-font-size:26px;
-
+    font-size:28px;
 }
 
 .salary{
-
-font-size:18px;
-
-padding:8px 18px;
-
+    font-size:19px;
+    padding:10px 22px;
 }
 
-.info-table{
+.job-body{
+    padding:14px;
+}
 
-grid-template-columns:1fr;
+.section{
+    margin:14px 0;
+    padding:18px;
+    border-radius:16px;
+}
 
+.section-title{
+    font-size:20px;
+}
+
+.info-item{
+    grid-template-columns:110px 1fr;
+    gap:12px;
+}
+
+.info-label{
+    font-size:15px;
+}
+
+.info-value{
+    font-size:15px;
+}
+
+.job-gallery{
+    grid-template-columns:repeat(2,1fr);
+}
+
+.desktop-buttons{
+    display:none;
 }
 
 }
@@ -386,527 +383,408 @@ grid-template-columns:1fr;
 
 <div class="section">
 
-<div class="section-title">
+    <div class="section-title">
+        📋 Job Information
+    </div>
 
-📋 Job Information
+    <div class="info-table">
 
-</div>
+        <div class="info-item">
+            <div class="info-label">📍 Location</div>
+            <div class="info-value">
+                {{ job.location or "Not Mentioned" }}
+            </div>
+        </div>
 
-<div class="info-table">
+        <div class="info-item">
+            <div class="info-label">💼 Experience</div>
+            <div class="info-value">
+                {% if job.eligibility=="Fresher" %}
+                    Freshers Welcome
+                {% elif job.experience_required %}
+                    {{ job.experience_required }}
+                {% else %}
+                    Not Mentioned
+                {% endif %}
+            </div>
+        </div>
 
-<div class="info-item">
-<div class="info-label">
-📍 Location
-</div>
-<div class="info-value">
-{{ job.location or "Not Mentioned" }}
-</div>
-</div>
+        <div class="info-item">
+            <div class="info-label">🕒 Employment</div>
+            <div class="info-value">
+                {{ job.employment_type or "Full Time" }}
+            </div>
+        </div>
 
-<div class="info-item">
-<div class="info-label">
-💼 Experience
-</div>
-<div class="info-value">
+        <div class="info-item">
+            <div class="info-label">🏢 Job Type</div>
+            <div class="info-value">
+                {{ job.job_type or "Not Mentioned" }}
+            </div>
+        </div>
 
-{% if job.eligibility=="Fresher" %}
+        <div class="info-item">
+            <div class="info-label">🎓 Education</div>
+            <div class="info-value">
+                {{ job.education or "Not Mentioned" }}
+            </div>
+        </div>
 
-Freshers Welcome
+        <div class="info-item">
+            <div class="info-label">👤 Gender</div>
+            <div class="info-value">
+                {{ job.gender or "Both" }}
+            </div>
+        </div>
 
-{% elif job.experience_required %}
+        <div class="info-item">
+            <div class="info-label">🎁 Incentive</div>
+            <div class="info-value">
+                {{ job.incentive or "Not Available" }}
+            </div>
+        </div>
 
-{{ job.experience_required }}
+        <div class="info-item">
+            <div class="info-label">📅 Working Days</div>
+            <div class="info-value">
+                {{ job.working_days or "Not Mentioned" }}
+            </div>
+        </div>
 
-{% else %}
-
-Not Mentioned
-
-{% endif %}
-
-</div>
-</div>
-
-<div class="info-item">
-<div class="info-label">
-🕒 Employment
-</div>
-<div class="info-value">
-{{ job.employment_type or "Full Time" }}
-</div>
-</div>
-
-<div class="info-item">
-<div class="info-label">
-🏢 Job Type
-</div>
-<div class="info-value">
-{{ job.job_type or "Not Mentioned" }}
-</div>
-</div>
-
-<div class="info-item">
-<div class="info-label">
-🎓 Education
-</div>
-<div class="info-value">
-{{ job.education or "Not Mentioned" }}
-</div>
-</div>
-
-<div class="info-item">
-<div class="info-label">
-👤 Gender
-</div>
-<div class="info-value">
-{{ job.gender or "Both" }}
-</div>
-</div>
-
-<div class="info-item">
-<div class="info-label">
-🎁 Incentive
-</div>
-<div class="info-value">
-{{ job.incentive or "Not Available" }}
-</div>
-</div>
-
-<div class="info-item">
-<div class="info-label">
-📅 Working Days
-</div>
-<div class="info-value">
-{{ job.working_days or "Not Mentioned" }}
-</div>
-</div>
+    </div>
 
 </div>
 
-</div>
 
 <div class="section">
 
-<div class="section-title">
+    <div class="section-title">
+        📝 Job Description
+    </div>
 
-📝 Job Description
+    <div style="line-height:1.9;color:#555;font-size:16px;">
 
-</div>
+        {% if job.description %}
 
-<div style="line-height:1.9;color:#555;">
+            {{ job.description|safe }}
 
-{% if job.description %}
+        {% else %}
 
-{{ job.description|safe }}
+            No description available.
 
-{% else %}
+        {% endif %}
 
-No description available.
-
-{% endif %}
-
-</div>
+    </div>
 
 </div>
+
 
 <div class="section">
 
-<div class="section-title">
+    <div class="section-title">
+        🎯 Interview Details
+    </div>
 
-🎯 Interview Details
+    <div class="info-table">
 
-</div>
+        <div class="info-item">
 
-<div class="info-table">
+            <div class="info-label">
+                📅 Interview Date
+            </div>
 
-<div class="info-item">
+            <div class="info-value">
 
-<div class="info-label">
+                {% if job.interview_from %}
 
-📅 Interview Date
+                    {{ job.interview_from }}
 
-</div>
+                    {% if job.interview_to %}
+                        to {{ job.interview_to }}
+                    {% endif %}
 
-<div class="info-value">
+                {% else %}
 
-{% if job.interview_from %}
+                    Not Mentioned
 
-{{ job.interview_from }}
+                {% endif %}
 
-{% if job.interview_to %}
+            </div>
 
-to {{ job.interview_to }}
+        </div>
 
-{% endif %}
+        <div class="info-item">
 
-{% else %}
+            <div class="info-label">
+                🕒 Interview Time
+            </div>
 
-Not Mentioned
+            <div class="info-value">
+                {{ job.interview_time or "Not Mentioned" }}
+            </div>
 
-{% endif %}
+        </div>
 
-</div>
+    </div>
 
-</div>
+    {% if job.interview_instructions %}
 
-<div class="info-item">
+    <div style="
+        margin-top:20px;
+        padding:18px;
+        background:#f8fafc;
+        border-left:4px solid #2563eb;
+        border-radius:14px;">
 
-<div class="info-label">
+        <strong>Interview Instructions</strong>
 
-🕒 Interview Time
+        <br><br>
 
-</div>
+        {{ job.interview_instructions }}
 
-<div class="info-value">
+    </div>
 
-{{ job.interview_time or "Not Mentioned" }}
-
-</div>
-
-</div>
-
-</div>
-
-{% if job.interview_instructions %}
-
-<div
-style="
-margin-top:18px;
-padding:18px;
-background:#f8fafc;
-border-radius:14px;
-border-left:4px solid #2563eb;
-">
-
-<strong>
-
-Interview Instructions
-
-</strong>
-
-<br><br>
-
-{{ job.interview_instructions }}
+    {% endif %}
 
 </div>
 
-{% endif %}
-
-</div>
 
 <div class="section">
 
-<div class="section-title">
+    <div class="section-title">
+        🏢 Company Information
+    </div>
 
-🏢 Company Information
+    <div class="info-table">
 
-</div>
+        <div class="info-item">
 
-<div class="info-table">
+            <div class="info-label">
+                🏢 Company
+            </div>
 
-<div class="info-item">
+            <div class="info-value">
+                {{ hr.company }}
+            </div>
 
-<div class="info-label">
+        </div>
 
-🏢 Company
+        <div class="info-item">
 
-</div>
+            <div class="info-label">
+                🌐 Website
+            </div>
 
-<div class="info-value">
+            <div class="info-value">
 
-{{ hr.company }}
+                {% if hr.company_website %}
 
-</div>
+                    <a href="{% if hr.company_website.startswith('http') %}{{ hr.company_website }}{% else %}https://{{ hr.company_website }}{% endif %}"
+                       target="_blank"
+                       style="text-decoration:none;font-weight:700;">
 
-</div>
+                        Visit Website
 
-<div class="info-item">
+                    </a>
 
-<div class="info-label">
+                {% else %}
 
-🌐 Website
+                    Not Available
 
-</div>
+                {% endif %}
 
-<div class="info-value">
+            </div>
 
-{% if hr.company_website %}
+        </div>
 
-<a
-href="{% if hr.company_website.startswith('http') %}{{ hr.company_website }}{% else %}https://{{ hr.company_website }}{% endif %}"
-target="_blank"
-style="
-text-decoration:none;
-font-weight:600;
-">
+        <div class="info-item">
 
-Visit Website
+            <div class="info-label">
+                📍 Address
+            </div>
 
-</a>
+            <div class="info-value">
+                {{ hr.full_company_address or "Not Available" }}
+            </div>
 
-{% else %}
+        </div>
 
-Not Available
+        <div class="info-item">
 
-{% endif %}
+            <div class="info-label">
+                🏷 HR Type
+            </div>
 
-</div>
+            <div class="info-value">
+                {{ hr.hr_type or "Company HR" }}
+            </div>
 
-</div>
+        </div>
 
-<div class="info-item">
+    </div>
 
-<div class="info-label">
+    {% if hr.about_company %}
 
-📍 Address
+    <div style="
+        margin-top:20px;
+        padding:18px;
+        background:#f8fafc;
+        border-left:4px solid #2563eb;
+        border-radius:14px;">
 
-</div>
+        <strong>About Company</strong>
 
-<div class="info-value">
+        <br><br>
 
-{{ hr.full_company_address or "Not Available" }}
+        {{ hr.about_company }}
 
-</div>
+    </div>
 
-</div>
-
-<div class="info-item">
-
-<div class="info-label">
-
-🏷 HR Type
-
-</div>
-
-<div class="info-value">
-
-{{ hr.hr_type or "Company HR" }}
-
-</div>
-
-</div>
-
-</div>
-
-{% if hr.about_company %}
-
-<div
-style="
-margin-top:20px;
-padding:18px;
-background:#F8FAFC;
-border-radius:14px;
-border-left:4px solid #2563eb;
-">
-
-<strong>
-
-About Company
-
-</strong>
-
-<br><br>
-
-{{ hr.about_company }}
+    {% endif %}
 
 </div>
 
-{% endif %}
-
-</div>
 
 {% if job.images %}
 
 <div class="section">
 
-<div class="section-title">
+    <div class="section-title">
+        📸 Job Gallery
+    </div>
 
-📸 Job Gallery
+    <div class="job-gallery">
 
-</div>
+        {% for image in job.images.split(",") %}
 
-<div
-style="
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:10px;
-">
+            <img src="/static/uploads/{{ image }}">
 
-{% for image in job.images.split(",") %}
+        {% endfor %}
 
-<img
-src="/static/uploads/{{ image }}"
-style="
-width:100%;
-aspect-ratio:1;
-object-fit:cover;
-border-radius:12px;
-">
-
-{% endfor %}
-
-</div>
+    </div>
 
 </div>
 
 {% endif %}
 
-<div class="section">
+<div class="section desktop-buttons">
 
-<div class="row g-3">
+    <div class="row g-3">
 
-<div class="col-md-4">
+        <div class="col-md-4">
 
-<a
-href="/company/{{ hr.id }}"
-class="btn btn-outline-primary w-100 py-3 fw-bold rounded-3">
+            <a href="/company/{{ hr.id }}"
+               class="btn btn-outline-primary w-100 py-3 fw-bold rounded-3">
 
-<i class="fas fa-building"></i>
+                <i class="fas fa-building"></i> View Company
 
-View Company
+            </a>
 
-</a>
+        </div>
 
-</div>
+        <div class="col-md-4">
 
-<div class="col-md-4">
+            {% if session.get('candidate_id') %}
 
-{% if session.get('candidate_id') %}
+                {% if job.id in applied_jobs %}
 
-{% if job.id in applied_jobs %}
+                    <button class="btn btn-success w-100 py-3 fw-bold rounded-3" disabled>
 
-<button
-class="btn btn-success w-100 py-3 fw-bold rounded-3"
-disabled>
+                        <i class="fas fa-check-circle"></i> Already Applied
 
-<i class="fas fa-check-circle"></i>
+                    </button>
 
-Already Applied
+                {% else %}
 
-</button>
+                    <a href="/apply-job/{{ job.id }}"
+                       class="btn btn-success w-100 py-3 fw-bold rounded-3">
 
-{% else %}
+                        <i class="fas fa-paper-plane"></i> Apply Job
 
-<a
-href="/apply-job/{{ job.id }}"
-class="btn btn-success w-100 py-3 fw-bold rounded-3">
+                    </a>
 
-<i class="fas fa-paper-plane"></i>
+                {% endif %}
 
-Apply Job
+            {% elif current_user.is_authenticated %}
 
-</a>
+                {% if job.id in applied_jobs %}
 
-{% endif %}
+                    <button class="btn btn-success w-100 py-3 fw-bold rounded-3" disabled>
 
-{% elif current_user.is_authenticated %}
+                        Already Applied
 
-{% if job.id in applied_jobs %}
+                    </button>
 
-<button
-class="btn btn-success w-100 py-3 fw-bold rounded-3"
-disabled>
+                {% else %}
 
-Already Applied
+                    <a href="/apply-job-hr/{{ job.id }}"
+                       class="btn btn-success w-100 py-3 fw-bold rounded-3">
 
-</button>
+                        <i class="fas fa-paper-plane"></i> Apply Job
 
-{% else %}
+                    </a>
 
-<a
-href="/apply-job-hr/{{ job.id }}"
-class="btn btn-success w-100 py-3 fw-bold rounded-3">
+                {% endif %}
 
-<i class="fas fa-paper-plane"></i>
+            {% endif %}
 
-Apply Job
+        </div>
 
-</a>
+        <div class="col-md-4">
 
-{% endif %}
+            <a href="/share-job/{{ job.id }}"
+               class="btn btn-primary w-100 py-3 fw-bold rounded-3">
 
-{% endif %}
+                <i class="fas fa-share-alt"></i> Share Job
 
-</div>
+            </a>
 
-<div class="col-md-4">
+        </div>
 
-<a
-href="/share-job/{{ job.id }}"
-class="btn btn-primary w-100 py-3 fw-bold rounded-3">
-
-<i class="fas fa-share-alt"></i>
-
-Share Job
-
-</a>
+    </div>
 
 </div>
 
 </div>
-
 </div>
-
-</div>
-
 </div>
 
 <style>
 
 .mobile-bottom-bar{
-
-position:fixed;
-
-left:0;
-
-right:0;
-
-bottom:0;
-
-background:white;
-
-padding:12px 15px;
-
-display:none;
-
-box-shadow:0 -6px 20px rgba(0,0,0,.15);
-
-z-index:999;
-
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    background:#fff;
+    padding:12px 15px;
+    display:none;
+    box-shadow:0 -6px 20px rgba(0,0,0,.15);
+    z-index:999;
 }
 
 .mobile-bottom-buttons{
-
-display:grid;
-
-grid-template-columns:1fr 1fr;
-
-gap:10px;
-
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:10px;
 }
 
 .mobile-bottom-buttons .btn{
-
-height:50px;
-
-border-radius:12px;
-
-font-weight:700;
-
+    height:52px;
+    border-radius:14px;
+    font-weight:700;
+    font-size:15px;
 }
 
 @media(max-width:768px){
 
-.mobile-bottom-bar{
+    .mobile-bottom-bar{
+        display:block;
+    }
 
-display:block;
-
-}
-
-body{
-
-padding-bottom:90px;
-
-}
+    body{
+        padding-bottom:90px;
+    }
 
 }
 
@@ -914,67 +792,67 @@ padding-bottom:90px;
 
 <div class="mobile-bottom-bar">
 
-<div class="mobile-bottom-buttons">
+    <div class="mobile-bottom-buttons">
 
-<a
-href="/company/{{ hr.id }}"
-class="btn btn-outline-primary">
+        <a href="/company/{{ hr.id }}"
+           class="btn btn-outline-primary">
 
-Company
+            Company
 
-</a>
+        </a>
 
-{% if session.get('candidate_id') %}
+        <a href="/share-job/{{ job.id }}"
+           class="btn btn-primary">
 
-{% if job.id in applied_jobs %}
+            Share
 
-<button
-class="btn btn-success"
-disabled>
+        </a>
 
-Applied
+        {% if session.get('candidate_id') %}
 
-</button>
+            {% if job.id in applied_jobs %}
 
-{% else %}
+                <button class="btn btn-success" disabled>
 
-<a
-href="/apply-job/{{ job.id }}"
-class="btn btn-success">
+                    Applied
 
-Apply
+                </button>
 
-</a>
+            {% else %}
 
-{% endif %}
+                <a href="/apply-job/{{ job.id }}"
+                   class="btn btn-success">
 
-{% elif current_user.is_authenticated %}
+                    Apply
 
-{% if job.id in applied_jobs %}
+                </a>
 
-<button
-class="btn btn-success"
-disabled>
+            {% endif %}
 
-Applied
+        {% elif current_user.is_authenticated %}
 
-</button>
+            {% if job.id in applied_jobs %}
 
-{% else %}
+                <button class="btn btn-success" disabled>
 
-<a
-href="/apply-job-hr/{{ job.id }}"
-class="btn btn-success">
+                    Applied
 
-Apply
+                </button>
 
-</a>
+            {% else %}
 
-{% endif %}
+                <a href="/apply-job-hr/{{ job.id }}"
+                   class="btn btn-success">
 
-{% endif %}
+                    Apply
 
-</div>
+                </a>
+
+            {% endif %}
+
+        {% endif %}
+
+    </div>
 
 </div>
 
