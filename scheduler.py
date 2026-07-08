@@ -87,6 +87,7 @@ def check_notifications():
                     )
 
             n.status = "Sent"
+            n.sent_at = datetime.now(IST)
 
         db.session.commit()
 

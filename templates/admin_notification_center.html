@@ -353,6 +353,10 @@ value="/">
 
 <th>Created</th>
 
+<th>Scheduled For</th>
+
+<th>Sent On</th>
+
 <th>Action</th>
 
 </tr>
@@ -420,9 +424,23 @@ Scheduled
 </td>
 
 <td>
+    {{ n.created_at.strftime('%d %b %Y %I:%M %p') if n.created_at else '-' }}
+</td>
 
-{{ n.created_at.strftime('%d %b %Y %I:%M %p') }}
+<td>
+    {% if n.schedule_time %}
+        {{ n.schedule_time.strftime('%d %b %Y %I:%M %p') }}
+    {% else %}
+        <span class="text-muted">Instant</span>
+    {% endif %}
+</td>
 
+<td>
+    {% if n.sent_at %}
+        {{ n.sent_at.strftime('%d %b %Y %I:%M %p') }}
+    {% else %}
+        <span class="text-warning">Pending</span>
+    {% endif %}
 </td>
 
 <td>

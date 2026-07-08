@@ -3378,6 +3378,9 @@ def admin_send_notification():
                 type="admin_broadcast"
             )
 
+    broadcast.sent_at = datetime.now(IST)
+    broadcast.status = "Sent"
+
     db.session.commit()
 
     flash("Push notification sent successfully.", "success")
