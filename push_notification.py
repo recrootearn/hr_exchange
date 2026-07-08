@@ -12,10 +12,6 @@ except ValueError:
 def send_push_notification(token, title, body):
 
     message = messaging.Message(
-        notification=messaging.Notification(
-            title=title,
-            body=body
-        ),
         data={
             "title": title,
             "body": body
