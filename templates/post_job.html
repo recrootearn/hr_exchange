@@ -447,22 +447,77 @@
 
 const imageInput = document.getElementById("images");
 
-imageInput.addEventListener("change", function () {
+let selectedFiles = [];
 
-    const container = document.getElementById("preview-container");
+imageInput.addEventListener("change", function(){
 
-    container.innerHTML = "";
+    Array.from(this.files).forEach(file=>{
 
-    Array.from(this.files).forEach(file => {
+        const exists = selectedFiles.some(f=>
+
+            f.name===file.name &&
+            f.size===file.size &&
+            f.lastModified===file.lastModified
+
+        );
+
+        if(!exists){
+
+            selectedFiles.push(file);
+
+        }
+
+    });
+
+    updateInputFiles();
+
+    renderPreview();
+
+});
+
+function updateInputFiles(){
+
+    const dt = new DataTransfer();
+
+    selectedFiles.forEach(file=>{
+
+        dt.items.add(file);
+
+    });
+
+    imageInput.files = dt.files;
+
+}
+
+function renderPreview(){
+
+    const container =
+    document.getElementById("preview-container");
+
+    container.innerHTML="";
+
+    selectedFiles.forEach((file,index)=>{
 
         const reader = new FileReader();
 
-        reader.onload = function (e) {
+        reader.onload=function(e){
 
             container.innerHTML += `
-                <div class="img-box">
-                    <img src="${e.target.result}">
-                </div>
+
+            <div class="img-box">
+
+                <img src="${e.target.result}">
+
+                <span
+                    class="remove-btn"
+                    onclick="removeImage(${index})">
+
+                    ×
+
+                </span>
+
+            </div>
+
             `;
 
         };
@@ -471,7 +526,17 @@ imageInput.addEventListener("change", function () {
 
     });
 
-});
+}
+
+function removeImage(index){
+
+    selectedFiles.splice(index,1);
+
+    updateInputFiles();
+
+    renderPreview();
+
+}
 
 document
 .getElementById("eligibility")
