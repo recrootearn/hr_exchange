@@ -6,397 +6,208 @@
 
 .content{
     padding:0 !important;
-    background:#f5f7fb;
 }
 
 .insta-profile{
     width:100%;
-    max-width:900px;
-    margin:auto;
-    background:#f5f7fb;
-    min-height:100vh;
+    background:white;
 }
 
 .profile-header{
-
-    background:linear-gradient(
-        135deg,
-        #2563eb,
-        #1d4ed8,
-        #3b82f6
-    );
-
-    color:white;
-
-    padding:35px 25px 25px;
-
-    border-bottom-left-radius:28px;
-    border-bottom-right-radius:28px;
-
-    box-shadow:0 10px 25px rgba(0,0,0,.12);
+    padding:20px;
 }
 
 .profile-row{
-
     display:flex;
     align-items:center;
     gap:20px;
 }
 
 .profile-pic{
-
-    width:110px;
-    height:110px;
-
+    width:95px;
+    height:95px;
     border-radius:50%;
-
     object-fit:cover;
-
-    border:5px solid white;
-
-    box-shadow:0 8px 25px rgba(0,0,0,.25);
+    border:3px solid #2563eb;
 }
 
 .profile-stats{
-
     flex:1;
-
     display:flex;
-
     justify-content:space-around;
 }
 
 .profile-stats div{
-
     text-align:center;
 }
 
 .profile-stats strong{
-
     display:block;
-
-    font-size:22px;
-
+    font-size:20px;
     font-weight:700;
 }
 
-.profile-stats small{
-
-    font-size:13px;
-
-    opacity:.9;
-}
-
 .profile-name{
-
-    margin-top:20px;
-
-    font-size:28px;
-
+    margin-top:15px;
+    font-size:18px;
     font-weight:700;
 }
 
 .company-name{
-
-    font-size:17px;
-
-    opacity:.95;
-
-    margin-top:4px;
+    font-size:15px;
+    color:#666;
 }
 
-.hr-badge{
+.bio{
+    margin-top:10px;
+    line-height:1.5;
+    font-size:14px;
+}
 
-    display:inline-block;
+.posts-tab{
+    border-top:1px solid #ddd;
+    text-align:center;
+    padding:12px;
+    font-weight:700;
+    letter-spacing:1px;
+}
 
-    margin-top:12px;
+.post-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:2px;
+}
 
-    padding:6px 14px;
+.post-item{
+    aspect-ratio:1/1;
+    overflow:hidden;
+    position:relative;
+    background:#f5f5f5;
+}
 
-    background:rgba(255,255,255,.18);
-
-    border:1px solid rgba(255,255,255,.35);
-
-    border-radius:50px;
-
-    font-size:13px;
-
-    font-weight:600;
-
-    backdrop-filter:blur(10px);
+.post-item img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
 }
 
 .action-buttons{
-
     display:flex;
-
-    gap:12px;
-
-    margin-top:22px;
+    gap:10px;
+    margin-top:15px;
 }
 
 .action-buttons .btn{
-
     flex:1;
-
-    height:48px;
-
-    border-radius:14px;
-
-    font-weight:700;
+    border-radius:10px;
+    font-weight:600;
 }
 
-.btn-edit{
+@media(min-width:768px){
 
-    background:white;
-
-    color:#2563eb;
-
-    border:none;
-}
-
-.btn-job{
-
-    background:#0f172a;
-
-    color:white;
-
-    border:none;
-}
-
-.profile-body{
-
-    padding:18px;
-}
-
-.card-box{
-
-    background:white;
-
-    border-radius:18px;
-
-    padding:18px;
-
-    margin-bottom:18px;
-
-    box-shadow:0 3px 15px rgba(0,0,0,.06);
-}
-
-.section-title{
-
-    font-size:16px;
-
-    font-weight:700;
-
-    margin-bottom:14px;
-
-    color:#111827;
-}
-
-@media(max-width:768px){
-
-    .profile-row{
-
-        flex-direction:column;
-
-        text-align:center;
+    .insta-profile{
+        max-width:935px;
+        margin:auto;
     }
 
-    .profile-stats{
+    .profile-header{
+        padding:40px;
+    }
 
-        width:100%;
-
-        margin-top:15px;
+    .profile-pic{
+        width:150px;
+        height:150px;
     }
 
     .profile-name{
-
-        text-align:center;
+        font-size:24px;
     }
 
     .company-name{
-
-        text-align:center;
+        font-size:18px;
     }
 
-    .hr-badge{
-
-        display:block;
-
-        width:max-content;
-
-        margin:12px auto 0;
+    .bio{
+        font-size:15px;
     }
-
 }
 
 </style>
 
 <div class="insta-profile">
 
-<div class="profile-header">
+    <div class="profile-header">
 
-<div class="profile-row">
+        <div class="profile-row">
 
-{% if current_user.profile_photo %}
+            {% if current_user.profile_photo %}
+                <img
+                src="/static/uploads/{{ current_user.profile_photo }}"
+                class="profile-pic">
+            {% else %}
+                <img
+                src="https://via.placeholder.com/300"
+                class="profile-pic">
+            {% endif %}
 
-<img
-src="/static/uploads/{{ current_user.profile_photo }}"
-class="profile-pic">
+            <div class="profile-stats">
 
-{% else %}
+                <div>
+                    <strong>{{ posts_count }}</strong>
+                    Posts
+                </div>
 
-<img
-src="https://via.placeholder.com/300"
-class="profile-pic">
+                <div>
+                    <strong>{{ followers_count }}</strong>
+                    Followers
+                </div>
 
-{% endif %}
+                <div>
+                    <strong>{{ following_count }}</strong>
+                    Following
+                </div>
 
-<div class="profile-stats">
+            </div>
 
-<div>
-
-<strong>{{ posts_count }}</strong>
-
-<small>Posts</small>
-
-</div>
-
-<div>
-
-<strong>{{ followers_count }}</strong>
-
-<small>Followers</small>
-
-</div>
-
-<div>
-
-<strong>{{ following_count }}</strong>
-
-<small>Following</small>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="profile-name">
-
-{{ current_user.first_name }}
-{{ current_user.last_name }}
-
-</div>
-
-<div class="company-name">
-
-{{ current_user.company }}
-
-</div>
-
-{% if current_user.hr_type %}
-
-<div class="hr-badge">
-
-{{ current_user.hr_type }}
-
-</div>
-
-{% endif %}
-
-<div class="action-buttons">
-
-<a
-href="/edit-profile"
-class="btn btn-edit">
-
-✏ Edit Profile
-
-</a>
-
-<a
-href="/post-job"
-class="btn btn-job">
-
-＋ Post Job
-
-</a>
-
-</div>
-
-</div>
-
-<div class="profile-body">
-
-<div class="card-box">
-
-    <div class="section-title">
-
-        <i class="fas fa-building text-primary me-2"></i>
-
-        Company Information
-
-    </div>
-
-    {% if current_user.company %}
-
-    <div class="d-flex mb-3">
-
-        <div style="width:28px;">
-            <i class="fas fa-building text-primary"></i>
         </div>
 
-        <div>
+        <div class="profile-name">
+            {{ current_user.first_name }}
+            {{ current_user.last_name }}
+        </div>
 
-            <strong>Company</strong><br>
-
+        <div class="company-name">
             {{ current_user.company }}
+        </div>
+
+        <div class="bio">
+
+            {{ current_user.about_company or "Hiring Across India" }}
+
+            <br>
+
+            📍 {{ current_user.company_city or "India" }}
+
+            {% if current_user.company_website %}
+            <br>
+            🌐 {{ current_user.company_website }}
+            {% endif %}
 
         </div>
 
-    </div>
+        <div class="action-buttons">
 
-    {% endif %}
+            <a href="/edit-profile"
+               class="btn btn-light">
 
-    {% if current_user.company_city %}
+                Edit Profile
 
-    <div class="d-flex mb-3">
+            </a>
 
-        <div style="width:28px;">
-            <i class="fas fa-map-marker-alt text-danger"></i>
-        </div>
+            <a href="/post-job"
+               class="btn btn-primary">
 
-        <div>
-
-            <strong>Location</strong><br>
-
-            {{ current_user.company_city }}
-
-        </div>
-
-    </div>
-
-    {% endif %}
-
-    {% if current_user.company_website %}
-
-    <div class="d-flex">
-
-        <div style="width:28px;">
-            <i class="fas fa-globe text-success"></i>
-        </div>
-
-        <div>
-
-            <strong>Website</strong><br>
-
-            <a
-                href="{{ current_user.company_website }}"
-                target="_blank"
-                style="text-decoration:none;">
-
-                {{ current_user.company_website }}
+                + Post Job
 
             </a>
 
@@ -404,119 +215,14 @@ class="btn btn-job">
 
     </div>
 
-    {% endif %}
+    <div class="posts-tab">
 
-</div>
-
-<div class="card-box">
-
-    <div class="section-title">
-
-        <i class="fas fa-info-circle text-primary me-2"></i>
-
-        About Company
+        <i class="fas fa-th"></i>
+        POSTS
 
     </div>
 
-    <p class="mb-0" style="line-height:1.8;">
-
-        {% if current_user.about_company %}
-
-            {{ current_user.about_company }}
-
-        {% else %}
-
-            Hiring Across India
-
-        {% endif %}
-
-    </p>
-
-</div>
-
-<div class="card-box">
-
-    <div class="section-title">
-
-        <i class="fas fa-shield-alt text-primary me-2"></i>
-
-        Verification
-
-    </div>
-
-    <div class="row">
-
-        <div class="col-12 mb-3">
-
-            <strong>MSME Certificate</strong>
-
-            <br>
-
-            {% if current_user.msme_certificate %}
-
-                <a
-                    href="/static/uploads/{{ current_user.msme_certificate }}"
-                    target="_blank"
-                    class="btn btn-success btn-sm mt-2">
-
-                    View Certificate
-
-                </a>
-
-            {% else %}
-
-                <span class="badge bg-secondary mt-2">
-
-                    Not Uploaded
-
-                </span>
-
-            {% endif %}
-
-        </div>
-
-        <div class="col-12">
-
-            <strong>Gumasta Certificate</strong>
-
-            <br>
-
-            {% if current_user.gumasta_certificate %}
-
-                <a
-                    href="/static/uploads/{{ current_user.gumasta_certificate }}"
-                    target="_blank"
-                    class="btn btn-primary btn-sm mt-2">
-
-                    View Certificate
-
-                </a>
-
-            {% else %}
-
-                <span class="badge bg-secondary mt-2">
-
-                    Not Uploaded
-
-                </span>
-
-            {% endif %}
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="posts-tab">
-
-    <i class="fas fa-th me-2"></i>
-
-    POSTS
-
-</div>
-
-<div class="post-grid">
+    <div class="post-grid">
 
 {% for job in jobs %}
 
@@ -526,72 +232,21 @@ class="btn btn-job">
 
         {% set first_image = job.images.split(',')[0] %}
 
-        <img
-            src="/static/uploads/{{ first_image }}"
-            loading="lazy">
+        <img src="/static/uploads/{{ first_image }}">
 
     {% elif job.image is not none and job.image != "" %}
 
-        <img
-            src="/static/uploads/{{ job.image }}"
-            loading="lazy">
+        <img src="/static/uploads/{{ job.image }}">
 
     {% else %}
 
-        <img
-            src="https://via.placeholder.com/500x500?text=JOB"
-            loading="lazy">
+        <img src="https://via.placeholder.com/500x500?text=JOB">
 
     {% endif %}
 
 </a>
 
-{% else %}
-
-<div
-    style="
-        grid-column:1/-1;
-        background:white;
-        padding:50px 20px;
-        text-align:center;
-        border-radius:18px;
-        box-shadow:0 3px 15px rgba(0,0,0,.08);
-    ">
-
-    <i
-        class="fas fa-briefcase"
-        style="
-            font-size:60px;
-            color:#2563eb;
-            margin-bottom:15px;
-        ">
-    </i>
-
-    <h4 class="fw-bold">
-
-        No Posts Yet
-
-    </h4>
-
-    <p class="text-muted mb-4">
-
-        Start hiring by posting your first job.
-
-    </p>
-
-    <a
-        href="/post-job"
-        class="btn btn-primary px-4">
-
-        + Post Your First Job
-
-    </a>
-
-</div>
-
 {% endfor %}
-
-</div>
 
 </div>
 
