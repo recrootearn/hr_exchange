@@ -11,7 +11,7 @@
 
 .insta-profile{
     width:100%;
-    max-width:935px;
+    max-width:900px;
     margin:auto;
     background:#f5f7fb;
     min-height:100vh;
@@ -28,35 +28,33 @@
 
     color:white;
 
-    padding:35px 25px 25px;
+    padding:20px 20px 18px;
 
-    border-bottom-left-radius:28px;
-    border-bottom-right-radius:28px;
+    border-bottom-left-radius:22px;
+    border-bottom-right-radius:22px;
 
-    box-shadow:0 10px 25px rgba(0,0,0,.15);
-
+    box-shadow:0 10px 25px rgba(0,0,0,.12);
 }
 
 .profile-row{
 
     display:flex;
     align-items:center;
-    gap:22px;
-
+    gap:18px;
 }
 
 .profile-pic{
 
-    width:110px;
-    height:110px;
+    width:82px;
+    height:82px;
 
     border-radius:50%;
+
     object-fit:cover;
 
-    border:5px solid white;
+    border:4px solid white;
 
-    box-shadow:0 8px 20px rgba(0,0,0,.25);
-
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
 }
 
 .profile-stats{
@@ -66,77 +64,108 @@
     display:flex;
 
     justify-content:space-around;
-
 }
 
 .profile-stats div{
 
     text-align:center;
-
 }
 
 .profile-stats strong{
 
     display:block;
 
-    font-size:24px;
+    font-size:22px;
 
     font-weight:700;
-
 }
 
 .profile-stats small{
 
-    display:block;
-
-    margin-top:3px;
-
     font-size:13px;
 
     opacity:.9;
-
 }
 
 .profile-name{
 
-    margin-top:18px;
+    margin-top:12px;
 
-    font-size:28px;
+    font-size:24px;
 
     font-weight:700;
 
+    text-align:center;
 }
 
 .company-name{
 
-    margin-top:3px;
+    text-align:center;
 
     font-size:17px;
 
     opacity:.95;
 
+    margin-top:5px;
+
+    line-height:1.6;
+}
+
+.company-name small{
+
+    color:#e7e7e7;
+
+    font-size:14px;
 }
 
 .hr-badge{
 
-    display:inline-block;
+    display:block;
 
-    margin-top:12px;
+    width:max-content;
 
-    padding:7px 15px;
+    margin:12px auto 0;
+
+    padding:6px 16px;
 
     background:rgba(255,255,255,.18);
 
+    border:1px solid rgba(255,255,255,.35);
+
     border-radius:50px;
-
-    border:1px solid rgba(255,255,255,.30);
-
-    backdrop-filter:blur(8px);
 
     font-size:13px;
 
     font-weight:600;
 
+    backdrop-filter:blur(10px);
+}
+
+.verify-row{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:25px;
+
+    flex-wrap:wrap;
+
+    margin-top:14px;
+
+    font-size:14px;
+
+    font-weight:600;
+}
+
+.verify-ok{
+
+    color:#8effa0;
+}
+
+.verify-no{
+
+    color:#ffd0d0;
 }
 
 .action-buttons{
@@ -145,8 +174,7 @@
 
     gap:12px;
 
-    margin-top:22px;
-
+    margin-top:18px;
 }
 
 .action-buttons .btn{
@@ -159,6 +187,7 @@
 
     font-weight:700;
 
+    font-size:18px;
 }
 
 .btn-edit{
@@ -168,67 +197,61 @@
     color:#2563eb;
 
     border:none;
-
 }
 
 .btn-job{
 
-    background:#0f172a;
+    background:#111827;
 
     color:white;
 
     border:none;
-
 }
 
-.profile-body{
+@media(max-width:768px){
 
-    padding:18px;
+    .profile-row{
 
-}
+        flex-direction:column;
 
-.card-box{
+        text-align:center;
+    }
 
-    background:white;
+    .profile-stats{
 
-    border-radius:18px;
+        width:100%;
 
-    padding:18px;
+        margin-top:10px;
+    }
 
-    margin-bottom:18px;
+    .profile-pic{
 
-    box-shadow:0 3px 12px rgba(0,0,0,.06);
+        width:82px;
+        height:82px;
+    }
 
-}
+    .action-buttons{
 
-.section-title{
-
-    font-size:17px;
-
-    font-weight:700;
-
-    margin-bottom:15px;
-
-    color:#111827;
+        flex-direction:row;
+    }
 
 }
-
-/* KEEPING YOUR INSTAGRAM POSTS GRID */
 
 .posts-tab{
 
-    border-top:1px solid #ddd;
+    margin-top:15px;
+
+    background:white;
 
     text-align:center;
 
-    padding:12px;
+    padding:14px;
 
     font-weight:700;
 
     letter-spacing:1px;
 
-    background:white;
-
+    border-radius:16px 16px 0 0;
 }
 
 .post-grid{
@@ -240,7 +263,6 @@
     gap:2px;
 
     background:white;
-
 }
 
 .post-item{
@@ -249,8 +271,7 @@
 
     overflow:hidden;
 
-    background:#f5f5f5;
-
+    background:#eee;
 }
 
 .post-item img{
@@ -261,50 +282,12 @@
 
     object-fit:cover;
 
+    transition:.3s;
 }
 
-@media(max-width:768px){
+.post-item img:hover{
 
-.profile-row{
-
-flex-direction:column;
-
-text-align:center;
-
-}
-
-.profile-stats{
-
-width:100%;
-
-margin-top:18px;
-
-}
-
-.profile-name{
-
-text-align:center;
-
-font-size:24px;
-
-}
-
-.company-name{
-
-text-align:center;
-
-}
-
-.hr-badge{
-
-display:block;
-
-width:max-content;
-
-margin:12px auto;
-
-}
-
+    transform:scale(1.05);
 }
 
 </style>
@@ -370,6 +353,20 @@ class="profile-pic">
 
 {{ current_user.company }}
 
+{% if current_user.company_city %}
+
+<br>
+
+<small>
+
+<i class="fas fa-map-marker-alt"></i>
+
+{{ current_user.company_city }}
+
+</small>
+
+{% endif %}
+
 </div>
 
 {% if current_user.hr_type %}
@@ -381,6 +378,62 @@ class="profile-pic">
 </div>
 
 {% endif %}
+
+<div class="verify-row">
+
+<div>
+
+{% if current_user.msme_certificate %}
+
+<span class="verify-ok">
+
+<i class="fas fa-check-circle"></i>
+
+MSME
+
+</span>
+
+{% else %}
+
+<span class="verify-no">
+
+<i class="fas fa-times-circle"></i>
+
+MSME
+
+</span>
+
+{% endif %}
+
+</div>
+
+<div>
+
+{% if current_user.gumasta_certificate %}
+
+<span class="verify-ok">
+
+<i class="fas fa-check-circle"></i>
+
+Gumasta
+
+</span>
+
+{% else %}
+
+<span class="verify-no">
+
+<i class="fas fa-times-circle"></i>
+
+Gumasta
+
+</span>
+
+{% endif %}
+
+</div>
+
+</div>
 
 <div class="action-buttons">
 
@@ -404,222 +457,11 @@ class="btn btn-job">
 
 </div>
 
-<div class="profile-body">
-
-<div class="card-box">
-
-    <div class="section-title">
-
-        <i class="fas fa-building text-primary me-2"></i>
-
-        Company Information
-
-    </div>
-
-    {% if current_user.company %}
-
-    <div class="d-flex align-items-start mb-3">
-
-        <div style="width:32px;">
-
-            <i class="fas fa-building text-primary"></i>
-
-        </div>
-
-        <div>
-
-            <strong>Company</strong>
-
-            <br>
-
-            {{ current_user.company }}
-
-        </div>
-
-    </div>
-
-    {% endif %}
-
-    {% if current_user.company_city %}
-
-    <div class="d-flex align-items-start mb-3">
-
-        <div style="width:32px;">
-
-            <i class="fas fa-map-marker-alt text-danger"></i>
-
-        </div>
-
-        <div>
-
-            <strong>Location</strong>
-
-            <br>
-
-            {{ current_user.company_city }}
-
-        </div>
-
-    </div>
-
-    {% endif %}
-
-    {% if current_user.company_website %}
-
-    <div class="d-flex align-items-start">
-
-        <div style="width:32px;">
-
-            <i class="fas fa-globe text-success"></i>
-
-        </div>
-
-        <div>
-
-            <strong>Website</strong>
-
-            <br>
-
-            <a
-                href="{{ current_user.company_website }}"
-                target="_blank"
-                style="
-                    text-decoration:none;
-                    word-break:break-word;
-                ">
-
-                {{ current_user.company_website }}
-
-            </a>
-
-        </div>
-
-    </div>
-
-    {% endif %}
-
-</div>
-
-<div class="card-box">
-
-    <div class="section-title">
-
-        <i class="fas fa-info-circle text-primary me-2"></i>
-
-        About Company
-
-    </div>
-
-    <p
-        style="
-            margin:0;
-            line-height:1.8;
-            color:#444;
-        ">
-
-        {% if current_user.about_company %}
-
-            {{ current_user.about_company }}
-
-        {% else %}
-
-            Hiring Across India
-
-        {% endif %}
-
-    </p>
-
-</div>
-
-<div class="card-box">
-
-    <div class="section-title">
-
-        <i class="fas fa-shield-alt text-primary me-2"></i>
-
-        Verification
-
-    </div>
-
-    <div class="row">
-
-        <div class="col-md-6 mb-3">
-
-            <strong>
-
-                MSME Certificate
-
-            </strong>
-
-            <br><br>
-
-            {% if current_user.msme_certificate %}
-
-            <a
-                href="/static/uploads/{{ current_user.msme_certificate }}"
-                target="_blank"
-                class="btn btn-success btn-sm">
-
-                View Certificate
-
-            </a>
-
-            {% else %}
-
-            <span class="badge bg-secondary">
-
-                Not Uploaded
-
-            </span>
-
-            {% endif %}
-
-        </div>
-
-        <div class="col-md-6">
-
-            <strong>
-
-                Gumasta Certificate
-
-            </strong>
-
-            <br><br>
-
-            {% if current_user.gumasta_certificate %}
-
-            <a
-                href="/static/uploads/{{ current_user.gumasta_certificate }}"
-                target="_blank"
-                class="btn btn-primary btn-sm">
-
-                View Certificate
-
-            </a>
-
-            {% else %}
-
-            <span class="badge bg-secondary">
-
-                Not Uploaded
-
-            </span>
-
-            {% endif %}
-
-        </div>
-
-    </div>
-
-</div>
-
-</div>
-
 <div class="posts-tab">
 
-    <i class="fas fa-th"></i>
+<i class="fas fa-th"></i>
 
-    POSTS
+POSTS
 
 </div>
 
@@ -658,9 +500,9 @@ class="btn btn-job">
 <div
 style="
 grid-column:1/-1;
+background:white;
 padding:60px 20px;
 text-align:center;
-background:white;
 ">
 
 <i
@@ -672,21 +514,13 @@ margin-bottom:15px;
 ">
 </i>
 
-<h4
-style="
-font-weight:700;
-margin-bottom:10px;
-">
+<h4 class="fw-bold">
 
 No Posts Yet
 
 </h4>
 
-<p
-style="
-color:#6b7280;
-margin-bottom:25px;
-">
+<p class="text-muted">
 
 Start hiring by posting your first job.
 
@@ -694,9 +528,9 @@ Start hiring by posting your first job.
 
 <a
 href="/post-job"
-class="btn btn-primary px-4">
+class="btn btn-primary mt-2">
 
-+ Post Job
++ Post Your First Job
 
 </a>
 
