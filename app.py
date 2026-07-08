@@ -8412,6 +8412,8 @@ def admin_delete_candidate(id):
 def job_share(job_id):
     return redirect(f'/job-details/{job_id}')
 
+from urllib.parse import quote
+
 @app.route('/share-job/<int:job_id>')
 def share_job(job_id):
 
@@ -8419,8 +8421,14 @@ def share_job(job_id):
 
     share_link = request.host_url.rstrip("/") + f"/job-view/{job.id}"
 
+    text = f"""📢 {job.job_title}
+
+Apply here:
+{share_link}
+"""
+
     return redirect(
-        f"https://wa.me/?text=📢 {job.job_title}%0A{share_link}"
+        "https://wa.me/?text=" + quote(text)
     )
 
 @app.route('/job/<int:job_id>')
