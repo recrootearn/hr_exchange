@@ -2641,6 +2641,30 @@ def admin_credit_packages():
         packages=packages
     )
 
+@app.route('/admin/add-notification-template', methods=['GET', 'POST'])
+@login_required
+def add_notification_template():
+
+    if request.method == "POST":
+
+        template = NotificationTemplate(
+            name=request.form.get("name"),
+            title=request.form.get("title"),
+            message=request.form.get("message"),
+            audience=request.form.get("audience"),
+            link=request.form.get("link"),
+            is_active=True
+        )
+
+        db.session.add(template)
+        db.session.commit()
+
+        flash("Notification Template Added Successfully.", "success")
+
+        return redirect("/admin/notification-templates")
+
+    return render_template("add_notification_template.html")
+
 @app.route("/add-credit-package", methods=["GET","POST"])
 @login_required
 def add_credit_package():
