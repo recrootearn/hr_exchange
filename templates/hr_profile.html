@@ -2,84 +2,585 @@
 
 {% block content %}
 
-<div class="candidate-card">
+<style>
 
-    <h2>
-        {{ hr.company }}
-    </h2>
+.content{
+    padding:0 !important;
+    background:#f5f7fb;
+}
 
-    <p>
-        📍 {{ hr.company_city or 'Location Not Added' }}
-    </p>
+.insta-profile{
+    width:100%;
+    max-width:900px;
+    margin:auto;
+    background:#f5f7fb;
+    min-height:100vh;
+}
 
-    <p>
-        {{ hr.about_company or 'No company description available.' }}
-    </p>
+.profile-header{
 
-    <a href="/follow-hr/{{ hr.id }}"
-       class="btn btn-primary mt-3">
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #1d4ed8,
+        #3b82f6
+    );
 
-        <i class="fas fa-user-plus"></i>
-        Follow Recruiter
+    color:white;
 
-    </a>
+    padding:20px 20px 18px;
 
-</div>
+    border-bottom-left-radius:22px;
+    border-bottom-right-radius:22px;
 
-<h3 class="mt-4 mb-3">
-    Active Jobs
-</h3>
+    box-shadow:0 10px 25px rgba(0,0,0,.12);
 
-{% if jobs %}
+}
 
-    {% for job in jobs %}
+.profile-row{
 
-    <div class="candidate-card">
+    display:flex;
 
-        <h4>
-            {{ job.job_title }}
-        </h4>
+    align-items:center;
 
-        <p>
-            📍 {{ job.location }}
-        </p>
+    gap:18px;
 
-        <p>
-            💰 ₹ {{ job.salary }}
-        </p>
+}
 
-        <p>
-            {{ job.description }}
-        </p>
+.profile-pic{
 
-        {% if job.image %}
-        <img
-            src="/static/uploads/{{ job.image }}"
-            class="img-fluid rounded mb-3"
-            style="max-height:250px;">
-        {% endif %}
+    width:82px;
 
-        <a href="/apply-job/{{ job.id }}"
-           class="btn btn-success">
+    height:82px;
 
-            Apply Job
+    border-radius:50%;
 
-        </a>
+    object-fit:cover;
 
-    </div>
+    border:4px solid white;
 
-    {% endfor %}
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
+
+}
+
+.avatar{
+
+    width:82px;
+
+    height:82px;
+
+    border-radius:50%;
+
+    background:white;
+
+    color:#2563eb;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:34px;
+
+    font-weight:700;
+
+    border:4px solid white;
+
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
+
+}
+
+.profile-stats{
+
+    flex:1;
+
+    display:flex;
+
+    justify-content:space-around;
+
+}
+
+.profile-stats div{
+
+    text-align:center;
+
+}
+
+.profile-stats strong{
+
+    display:block;
+
+    font-size:22px;
+
+    font-weight:700;
+
+}
+
+.profile-stats small{
+
+    display:block;
+
+    margin-top:3px;
+
+    font-size:13px;
+
+    opacity:.9;
+
+}
+
+.profile-name{
+
+    margin-top:12px;
+
+    text-align:center;
+
+    font-size:24px;
+
+    font-weight:700;
+
+}
+
+.company-name{
+
+    text-align:center;
+
+    font-size:17px;
+
+    margin-top:5px;
+
+    line-height:1.6;
+
+}
+
+.company-name small{
+
+    color:#ececec;
+
+    font-size:14px;
+
+}
+
+.verify-row{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:25px;
+
+    flex-wrap:wrap;
+
+    margin-top:14px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+
+.verify-ok{
+
+    color:#8CFF9A;
+
+}
+
+.verify-no{
+
+    color:#FFD6D6;
+
+}
+
+.follow-btn{
+
+    margin-top:18px;
+
+}
+
+.follow-btn .btn{
+
+    width:100%;
+
+    height:48px;
+
+    border-radius:14px;
+
+    font-size:16px;
+
+    font-weight:700;
+
+}
+
+.job-card{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:18px;
+
+    margin-top:16px;
+
+    box-shadow:0 3px 12px rgba(0,0,0,.06);
+
+}
+
+@media(max-width:768px){
+
+    .profile-row{
+
+        flex-direction:column;
+
+        text-align:center;
+
+    }
+
+    .profile-stats{
+
+        width:100%;
+
+        margin-top:10px;
+
+    }
+
+    .profile-pic,
+    .avatar{
+
+        width:82px;
+
+        height:82px;
+
+    }
+
+}
+
+.posts-tab{
+
+    margin-top:15px;
+
+    background:white;
+
+    text-align:center;
+
+    padding:14px;
+
+    font-weight:700;
+
+    letter-spacing:1px;
+
+    border-radius:16px 16px 0 0;
+
+}
+
+.post-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:2px;
+
+    background:white;
+
+}
+
+.post-item{
+
+    aspect-ratio:1/1;
+
+    overflow:hidden;
+
+    background:#eee;
+
+    display:block;
+
+}
+
+.post-item img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+    transition:.3s;
+
+}
+
+.post-item img:hover{
+
+    transform:scale(1.05);
+
+}
+
+.no-image-post{
+
+    width:100%;
+
+    height:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:#f3f4f6;
+
+    font-weight:600;
+
+    color:#111827;
+
+}
+
+</style>
+
+<div class="insta-profile">
+
+<div class="profile-header">
+
+<div class="profile-row">
+
+{% if hr.profile_photo %}
+
+<img
+src="/static/uploads/{{ hr.profile_photo }}"
+class="profile-pic">
 
 {% else %}
 
-<div class="candidate-card">
+<div class="avatar">
 
-    <h5>
-        No Active Jobs Available
-    </h5>
+{{ hr.first_name[0] }}
 
 </div>
 
 {% endif %}
+
+<div class="profile-stats">
+
+<div>
+
+<strong>{{ jobs|length }}</strong>
+
+<small>Posts</small>
+
+</div>
+
+<div>
+
+<strong>{{ followers_count if followers_count is defined else 0 }}</strong>
+
+<small>Followers</small>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="profile-name">
+
+{{ hr.first_name }}
+{{ hr.last_name }}
+
+</div>
+
+<div class="company-name">
+
+{{ hr.company }}
+
+{% if hr.company_city %}
+
+<br>
+
+<small>
+
+<i class="fas fa-map-marker-alt"></i>
+
+{{ hr.company_city }}
+
+</small>
+
+{% endif %}
+
+</div>
+
+<div class="verify-row">
+
+<div>
+
+{% if hr.msme_certificate %}
+
+<span class="verify-ok">
+
+<i class="fas fa-check-circle"></i>
+
+MSME
+
+</span>
+
+{% else %}
+
+<span class="verify-no">
+
+<i class="fas fa-times-circle"></i>
+
+MSME
+
+</span>
+
+{% endif %}
+
+</div>
+
+<div>
+
+{% if hr.gumasta_certificate %}
+
+<span class="verify-ok">
+
+<i class="fas fa-check-circle"></i>
+
+Gumasta
+
+</span>
+
+{% else %}
+
+<span class="verify-no">
+
+<i class="fas fa-times-circle"></i>
+
+Gumasta
+
+</span>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<div class="follow-btn">
+
+<a
+href="/follow-hr/{{ hr.id }}"
+class="btn btn-primary">
+
+<i class="fas fa-user-plus"></i>
+
+Follow Recruiter
+
+</a>
+
+</div>
+
+</div>
+
+<div class="posts-tab">
+
+<i class="fas fa-th"></i>
+
+ACTIVE JOBS
+
+</div>
+
+<div class="post-grid">
+
+{% for job in jobs %}
+
+<a
+href="/candidate-feed?selected={{ job.id }}"
+class="post-item">
+
+    {% if job.images and job.images != "" %}
+
+        {% set first_image = job.images.split(',')[0] %}
+
+        <img
+            src="/static/uploads/{{ first_image }}"
+            loading="lazy">
+
+    {% elif job.image and job.image != "" %}
+
+        <img
+            src="/static/uploads/{{ job.image }}"
+            loading="lazy">
+
+    {% else %}
+
+        <div class="no-image-post">
+
+            <div>
+
+                <i
+                class="fas fa-briefcase"
+                style="
+                font-size:30px;
+                color:#2563eb;
+                margin-bottom:8px;
+                ">
+                </i>
+
+                <br>
+
+                {{ job.job_title }}
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</a>
+
+{% else %}
+
+<div
+style="
+grid-column:1/-1;
+background:white;
+padding:60px 20px;
+text-align:center;
+">
+
+<i
+class="fas fa-briefcase"
+style="
+font-size:60px;
+color:#2563eb;
+margin-bottom:15px;
+">
+</i>
+
+<h4
+style="
+font-weight:700;
+margin-bottom:10px;
+">
+
+No Active Jobs
+
+</h4>
+
+<p
+style="
+color:#6b7280;
+margin-bottom:25px;
+">
+
+This recruiter hasn't posted any jobs yet.
+
+</p>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
 
 {% endblock %}
