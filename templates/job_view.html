@@ -6,29 +6,20 @@
 
 .content{
     padding:0 !important;
-    background:#f4f7fb;
+    background:#f3f6fb;
 }
 
 .job-page{
-
-    max-width:980px;
-
+    max-width:950px;
     margin:auto;
-
-    padding:18px;
-
+    padding:15px;
 }
 
 .job-card{
-
     background:white;
-
-    border-radius:24px;
-
+    border-radius:22px;
     overflow:hidden;
-
     box-shadow:0 8px 25px rgba(0,0,0,.08);
-
 }
 
 .job-header{
@@ -42,7 +33,7 @@
 
     color:white;
 
-    padding:25px;
+    padding:22px;
 
 }
 
@@ -52,34 +43,31 @@
 
     align-items:center;
 
-    gap:18px;
+    gap:16px;
 
 }
 
 .company-logo{
 
-    width:85px;
-
-    height:85px;
+    width:72px;
+    height:72px;
 
     border-radius:50%;
 
-    background:white;
-
     overflow:hidden;
+
+    background:white;
 
     flex-shrink:0;
 
-    border:4px solid white;
+    border:3px solid white;
 
 }
 
 .company-logo img{
 
     width:100%;
-
     height:100%;
-
     object-fit:cover;
 
 }
@@ -87,20 +75,16 @@
 .logo-letter{
 
     width:100%;
-
     height:100%;
 
     display:flex;
-
     justify-content:center;
-
     align-items:center;
 
-    color:#2563eb;
-
-    font-size:34px;
-
+    font-size:28px;
     font-weight:700;
+
+    color:#2563eb;
 
 }
 
@@ -112,17 +96,17 @@
 
 .company-name{
 
-    font-size:30px;
-
+    font-size:24px;
     font-weight:700;
+    line-height:1.2;
 
 }
 
 .company-location{
 
-    margin-top:6px;
-
-    opacity:.95;
+    margin-top:4px;
+    font-size:15px;
+    opacity:.9;
 
 }
 
@@ -132,9 +116,11 @@
 
     gap:18px;
 
+    margin-top:8px;
+
     flex-wrap:wrap;
 
-    margin-top:12px;
+    font-size:14px;
 
     font-weight:600;
 
@@ -142,21 +128,21 @@
 
 .verify-ok{
 
-    color:#8CFF9A;
+    color:#b8ffb8;
 
 }
 
 .verify-no{
 
-    color:#FFD5D5;
+    color:#ffd0d0;
 
 }
 
 .job-title{
 
-    margin-top:24px;
+    margin-top:18px;
 
-    font-size:34px;
+    font-size:32px;
 
     font-weight:800;
 
@@ -166,7 +152,7 @@
 
     display:inline-block;
 
-    margin-top:14px;
+    margin-top:12px;
 
     background:#DCFCE7;
 
@@ -188,63 +174,23 @@
 
 }
 
-.quick-grid{
-
-    display:grid;
-
-    grid-template-columns:repeat(2,1fr);
-
-    gap:14px;
-
-}
-
-.info-box{
-
-    background:#F8FAFC;
-
-    border-radius:16px;
-
-    padding:15px;
-
-    border-left:5px solid #2563eb;
-
-}
-
-.info-label{
-
-    color:#6B7280;
-
-    font-size:13px;
-
-}
-
-.info-value{
-
-    margin-top:4px;
-
-    font-size:16px;
-
-    font-weight:700;
-
-}
-
 .section{
-
-    margin-top:22px;
 
     background:white;
 
     border-radius:18px;
 
-    border:1px solid #ECECEC;
-
     padding:22px;
+
+    margin-top:20px;
+
+    border:1px solid #ececec;
 
 }
 
 .section-title{
 
-    font-size:22px;
+    font-size:20px;
 
     font-weight:700;
 
@@ -252,29 +198,87 @@
 
 }
 
+.info-table{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:14px 30px;
+
+}
+
+.info-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    border-bottom:1px solid #f1f1f1;
+
+    padding:10px 0;
+
+}
+
+.info-label{
+
+    color:#6b7280;
+
+    font-weight:600;
+
+}
+
+.info-value{
+
+    font-weight:700;
+
+    color:#111827;
+
+}
+
 @media(max-width:768px){
+
+.job-header{
+
+padding:18px;
+
+}
 
 .company-row{
 
-flex-direction:column;
+align-items:flex-start;
 
-text-align:center;
+}
+
+.company-logo{
+
+width:60px;
+
+height:60px;
 
 }
 
 .company-name{
 
-font-size:24px;
+font-size:20px;
 
 }
 
 .job-title{
 
-font-size:28px;
+font-size:26px;
 
 }
 
-.quick-grid{
+.salary{
+
+font-size:18px;
+
+padding:8px 18px;
+
+}
+
+.info-table{
 
 grid-template-columns:1fr;
 
@@ -324,7 +328,7 @@ grid-template-columns:1fr;
 
 <div class="company-location">
 
-📍 {{ hr.company_city or "Location Not Mentioned" }}
+📍 {{ hr.company_city or "India" }}
 
 </div>
 
@@ -334,7 +338,7 @@ grid-template-columns:1fr;
 
 {% if hr.msme_certificate %}
 
-✔ MSME
+✔ MSME Verified
 
 {% else %}
 
@@ -348,7 +352,7 @@ grid-template-columns:1fr;
 
 {% if hr.gumasta_certificate %}
 
-✔ Gumasta
+✔ Gumasta Verified
 
 {% else %}
 
@@ -380,41 +384,38 @@ grid-template-columns:1fr;
 
 <div class="job-body">
 
-<div class="quick-grid">
+<div class="section">
 
-<div class="info-box">
+<div class="section-title">
 
+📋 Job Information
+
+</div>
+
+<div class="info-table">
+
+<div class="info-item">
 <div class="info-label">
-
 📍 Location
-
 </div>
-
 <div class="info-value">
-
-{{ job.location }}
-
+{{ job.location or "Not Mentioned" }}
+</div>
 </div>
 
-</div>
-
-<div class="info-box">
-
+<div class="info-item">
 <div class="info-label">
-
 💼 Experience
-
 </div>
-
 <div class="info-value">
 
-{% if job.eligibility=="Experience" %}
-
-{{ job.experience_required or "Experience Required" }}
-
-{% elif job.eligibility=="Fresher" %}
+{% if job.eligibility=="Fresher" %}
 
 Freshers Welcome
+
+{% elif job.experience_required %}
+
+{{ job.experience_required }}
 
 {% else %}
 
@@ -423,101 +424,60 @@ Not Mentioned
 {% endif %}
 
 </div>
-
 </div>
 
-<div class="info-box">
-
+<div class="info-item">
 <div class="info-label">
-
 🕒 Employment
-
 </div>
-
 <div class="info-value">
-
 {{ job.employment_type or "Full Time" }}
-
+</div>
 </div>
 
-</div>
-
-<div class="info-box">
-
+<div class="info-item">
 <div class="info-label">
-
 🏢 Job Type
-
 </div>
-
 <div class="info-value">
-
 {{ job.job_type or "Not Mentioned" }}
-
+</div>
 </div>
 
-</div>
-
-<div class="info-box">
-
+<div class="info-item">
 <div class="info-label">
-
 🎓 Education
-
 </div>
-
 <div class="info-value">
-
 {{ job.education or "Not Mentioned" }}
-
+</div>
 </div>
 
-</div>
-
-<div class="info-box">
-
+<div class="info-item">
 <div class="info-label">
-
 👤 Gender
-
 </div>
-
 <div class="info-value">
-
 {{ job.gender or "Both" }}
-
+</div>
 </div>
 
-</div>
-
-<div class="info-box">
-
+<div class="info-item">
 <div class="info-label">
-
 🎁 Incentive
-
 </div>
-
 <div class="info-value">
-
 {{ job.incentive or "Not Available" }}
-
+</div>
 </div>
 
-</div>
-
-<div class="info-box">
-
+<div class="info-item">
 <div class="info-label">
-
 📅 Working Days
-
 </div>
-
 <div class="info-value">
-
 {{ job.working_days or "Not Mentioned" }}
-
+</div>
 </div>
 
 </div>
@@ -532,14 +492,17 @@ Not Mentioned
 
 </div>
 
-<div
-style="
-line-height:1.9;
-font-size:15px;
-color:#555;
-">
+<div style="line-height:1.9;color:#555;">
+
+{% if job.description %}
 
 {{ job.description|safe }}
+
+{% else %}
+
+No description available.
+
+{% endif %}
 
 </div>
 
@@ -549,37 +512,43 @@ color:#555;
 
 <div class="section-title">
 
-🎯 Interview Information
+🎯 Interview Details
 
 </div>
 
-<div class="quick-grid">
+<div class="info-table">
 
-<div class="info-box">
+<div class="info-item">
 
 <div class="info-label">
 
-📅 Interview Dates
+📅 Interview Date
 
 </div>
 
 <div class="info-value">
 
-{{ job.interview_from or "N/A" }}
+{% if job.interview_from %}
 
-<br>
+{{ job.interview_from }}
 
-to
+{% if job.interview_to %}
 
-<br>
+to {{ job.interview_to }}
 
-{{ job.interview_to or "N/A" }}
+{% endif %}
+
+{% else %}
+
+Not Mentioned
+
+{% endif %}
 
 </div>
 
 </div>
 
-<div class="info-box">
+<div class="info-item">
 
 <div class="info-label">
 
@@ -601,10 +570,11 @@ to
 
 <div
 style="
-margin-top:20px;
-background:#f8fafc;
+margin-top:18px;
 padding:18px;
+background:#f8fafc;
 border-radius:14px;
+border-left:4px solid #2563eb;
 ">
 
 <strong>
@@ -631,9 +601,9 @@ Interview Instructions
 
 </div>
 
-<div class="quick-grid">
+<div class="info-table">
 
-<div class="info-box">
+<div class="info-item">
 
 <div class="info-label">
 
@@ -649,7 +619,7 @@ Interview Instructions
 
 </div>
 
-<div class="info-box">
+<div class="info-item">
 
 <div class="info-label">
 
@@ -664,7 +634,10 @@ Interview Instructions
 <a
 href="{% if hr.company_website.startswith('http') %}{{ hr.company_website }}{% else %}https://{{ hr.company_website }}{% endif %}"
 target="_blank"
-style="text-decoration:none;">
+style="
+text-decoration:none;
+font-weight:600;
+">
 
 Visit Website
 
@@ -680,45 +653,54 @@ Not Available
 
 </div>
 
-</div>
+<div class="info-item">
 
-{% if hr.full_company_address %}
+<div class="info-label">
 
-<div
-style="
-margin-top:18px;
-background:#F8FAFC;
-padding:18px;
-border-radius:14px;
-">
-
-<strong>
-
-📍 Company Address
-
-</strong>
-
-<br><br>
-
-{{ hr.full_company_address }}
+📍 Address
 
 </div>
 
-{% endif %}
+<div class="info-value">
+
+{{ hr.full_company_address or "Not Available" }}
+
+</div>
+
+</div>
+
+<div class="info-item">
+
+<div class="info-label">
+
+🏷 HR Type
+
+</div>
+
+<div class="info-value">
+
+{{ hr.hr_type or "Company HR" }}
+
+</div>
+
+</div>
+
+</div>
 
 {% if hr.about_company %}
 
 <div
 style="
-margin-top:18px;
-background:#F8FAFC;
+margin-top:20px;
 padding:18px;
+background:#F8FAFC;
 border-radius:14px;
+border-left:4px solid #2563eb;
 ">
 
 <strong>
 
-ℹ About Company
+About Company
 
 </strong>
 
@@ -770,19 +752,13 @@ border-radius:12px;
 
 <div class="section">
 
-<div class="section-title">
-
-🚀 Quick Actions
-
-</div>
-
 <div class="row g-3">
 
 <div class="col-md-4">
 
 <a
 href="/company/{{ hr.id }}"
-class="btn btn-outline-primary w-100 py-3 fw-bold">
+class="btn btn-outline-primary w-100 py-3 fw-bold rounded-3">
 
 <i class="fas fa-building"></i>
 
@@ -799,7 +775,7 @@ View Company
 {% if job.id in applied_jobs %}
 
 <button
-class="btn btn-success w-100 py-3 fw-bold"
+class="btn btn-success w-100 py-3 fw-bold rounded-3"
 disabled>
 
 <i class="fas fa-check-circle"></i>
@@ -812,7 +788,7 @@ Already Applied
 
 <a
 href="/apply-job/{{ job.id }}"
-class="btn btn-success w-100 py-3 fw-bold">
+class="btn btn-success w-100 py-3 fw-bold rounded-3">
 
 <i class="fas fa-paper-plane"></i>
 
@@ -827,10 +803,8 @@ Apply Job
 {% if job.id in applied_jobs %}
 
 <button
-class="btn btn-success w-100 py-3 fw-bold"
+class="btn btn-success w-100 py-3 fw-bold rounded-3"
 disabled>
-
-<i class="fas fa-check-circle"></i>
 
 Already Applied
 
@@ -840,7 +814,7 @@ Already Applied
 
 <a
 href="/apply-job-hr/{{ job.id }}"
-class="btn btn-success w-100 py-3 fw-bold">
+class="btn btn-success w-100 py-3 fw-bold rounded-3">
 
 <i class="fas fa-paper-plane"></i>
 
@@ -858,7 +832,7 @@ Apply Job
 
 <a
 href="/share-job/{{ job.id }}"
-class="btn btn-primary w-100 py-3 fw-bold">
+class="btn btn-primary w-100 py-3 fw-bold rounded-3">
 
 <i class="fas fa-share-alt"></i>
 
@@ -890,7 +864,7 @@ bottom:0;
 
 background:white;
 
-padding:10px 15px;
+padding:12px 15px;
 
 display:none;
 
@@ -912,7 +886,7 @@ gap:10px;
 
 .mobile-bottom-buttons .btn{
 
-height:48px;
+height:50px;
 
 border-radius:12px;
 
@@ -930,7 +904,7 @@ display:block;
 
 body{
 
-padding-bottom:85px;
+padding-bottom:90px;
 
 }
 
