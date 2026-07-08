@@ -579,6 +579,12 @@ body{
     z-index:9999;
 
     box-shadow:0 8px 25px rgba(0,0,0,.15);
+
+    transition:transform .30s ease;
+}
+
+.bottom-nav.hide{
+    transform:translateX(-50%) translateY(120px);
 }
 
 .nav-btn{
@@ -1148,6 +1154,31 @@ document.querySelectorAll(".nav-btn").forEach(btn => {
         btn.classList.add("active");
 
     }
+
+});
+
+</script>
+
+<script>
+
+let lastScroll = 0;
+
+window.addEventListener("scroll", function(){
+
+    const nav = document.querySelector(".bottom-nav");
+    if(!nav) return;
+
+    const currentScroll = window.pageYOffset;
+
+    if(currentScroll <= 20){
+        nav.classList.remove("hide");
+    }else if(currentScroll > lastScroll){
+        nav.classList.add("hide");
+    }else{
+        nav.classList.remove("hide");
+    }
+
+    lastScroll = currentScroll;
 
 });
 
