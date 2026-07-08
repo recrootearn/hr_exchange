@@ -445,52 +445,24 @@
 
 </div><script>
 
-let selectedFiles=[];
+const imageInput = document.getElementById("images");
 
-document
-.getElementById('images')
-.addEventListener('change',function(e){
+imageInput.addEventListener("change", function () {
 
-    selectedFiles=[
-        ...selectedFiles,
-        ...e.target.files
-    ];
+    const container = document.getElementById("preview-container");
 
-    renderPreview();
+    container.innerHTML = "";
 
-});
+    Array.from(this.files).forEach(file => {
 
-function renderPreview(){
+        const reader = new FileReader();
 
-    let container=
-    document.getElementById(
-        'preview-container'
-    );
-
-    container.innerHTML='';
-
-    selectedFiles.forEach((file,index)=>{
-
-        let reader=new FileReader();
-
-        reader.onload=function(ev){
+        reader.onload = function (e) {
 
             container.innerHTML += `
-
-            <div class="img-box">
-
-                <img src="${ev.target.result}">
-
-                <span
-                    class="remove-btn"
-                    onclick="removeImage(${index})">
-
-                    ×
-
-                </span>
-
-            </div>
-
+                <div class="img-box">
+                    <img src="${e.target.result}">
+                </div>
             `;
 
         };
@@ -499,15 +471,7 @@ function renderPreview(){
 
     });
 
-}
-
-function removeImage(index){
-
-    selectedFiles.splice(index,1);
-
-    renderPreview();
-
-}
+});
 
 document
 .getElementById("eligibility")
