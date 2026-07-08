@@ -5937,7 +5937,7 @@ def candidate_notifications():
         notifications=notifications
     )
 
-@app.route('/post-job', methods=['GET','POST'])
+@app.route('/post-job', methods=['GET', 'POST'])
 @login_required
 def post_job():
 
@@ -5951,9 +5951,7 @@ def post_job():
 
             if file and file.filename:
 
-                filename = secure_filename(
-                    file.filename
-                )
+                filename = secure_filename(file.filename)
 
                 file.save(
                     os.path.join(
@@ -5980,19 +5978,19 @@ def post_job():
 
             job_timing=request.form.get("job_timing"),
 
-            working_days = request.form.get("working_days"),
+            working_days=request.form.get("working_days"),
 
-            job_type = request.form.get("job_type"),
+            job_type=request.form.get("job_type"),
 
-            eligibility = request.form.get("eligibility"),
+            eligibility=request.form.get("eligibility"),
 
-            experience_required = request.form.get("experience_required"),
-         
-            employment_type = request.form.get("employment_type"),
+            experience_required=request.form.get("experience_required"),
 
-            education = request.form.get("education"),
+            employment_type=request.form.get("employment_type"),
 
-            gender = request.form.get("gender"),
+            education=request.form.get("education"),
+
+            gender=request.form.get("gender"),
 
             interview_from=request.form.get("interview_from"),
 
@@ -6011,7 +6009,9 @@ def post_job():
         db.session.add(job)
         db.session.commit()
 
+        # ===========================
         # NOTIFY FOLLOWERS
+        # ===========================
 
         followers = Follow.query.filter_by(
             followed_hr_id=current_user.id
@@ -6019,14 +6019,26 @@ def post_job():
 
         first_image = (
             saved_images[0]
-            if len(saved_images) > 0
+            if saved_images
             else ""
         )
 
         for f in followers:
 
+            # Skip invalid follow records
+            if not f.follower_candidate_id:
+                continue
+
+            candidate = CandidateUser.query.get(
+                f.follower_candidate_id
+            )
+
+            # Skip if candidate no longer exists
+            if not candidate:
+                continue
+
             send_notification(
-                user_id=f.follower_candidate_id,
+                user_id=candidate.id,
                 user_type="candidate",
                 message=f"{current_user.company} posted a new job: {job.job_title}",
                 link=f"/job/{job.id}",
@@ -6035,6 +6047,8 @@ def post_job():
             )
 
         db.session.commit()
+
+        flash("Job posted successfully.", "success")
 
         return redirect('/my-jobs')
 
