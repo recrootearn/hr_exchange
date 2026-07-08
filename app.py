@@ -1949,6 +1949,7 @@ def admin_business_settings():
 
 @app.route("/api/save-fcm-token", methods=["POST"])
 def save_fcm_token():
+
     print("FCM API CALLED")
 
     data = request.get_json()
@@ -1961,8 +1962,27 @@ def save_fcm_token():
             "message": "Token missing"
         }), 400
 
+    # ===========================
     # HR Logged In
+    # ===========================
     if current_user.is_authenticated:
+
+        # Remove this token from every other HR
+        User.query.filter(
+            User.fcm_token == token,
+            User.id != current_user.id
+        ).update(
+            {"fcm_token": None},
+            synchronize_session=False
+        )
+
+        # Remove this token from every candidate
+        CandidateUser.query.filter(
+            CandidateUser.fcm_token == token
+        ).update(
+            {"fcm_token": None},
+            synchronize_session=False
+        )
 
         current_user.fcm_token = token
 
@@ -1973,7 +1993,9 @@ def save_fcm_token():
             "user": "hr"
         })
 
+    # ===========================
     # Candidate Logged In
+    # ===========================
     if "candidate_id" in session:
 
         candidate = CandidateUser.query.get(
@@ -1981,6 +2003,23 @@ def save_fcm_token():
         )
 
         if candidate:
+
+            # Remove this token from every HR
+            User.query.filter(
+                User.fcm_token == token
+            ).update(
+                {"fcm_token": None},
+                synchronize_session=False
+            )
+
+            # Remove this token from every other Candidate
+            CandidateUser.query.filter(
+                CandidateUser.fcm_token == token,
+                CandidateUser.id != candidate.id
+            ).update(
+                {"fcm_token": None},
+                synchronize_session=False
+            )
 
             candidate.fcm_token = token
 
