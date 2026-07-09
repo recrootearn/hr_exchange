@@ -6735,23 +6735,21 @@ def open_candidate_notification(id):
 @app.template_filter('timeago')
 def timeago(dt):
 
-    now = datetime.utcnow()
+    now = datetime.now()
 
-    diff = now - dt
-
-    seconds = diff.total_seconds()
+    seconds = int((now - dt).total_seconds())
 
     if seconds < 60:
         return "Just now"
 
-    if seconds < 3600:
-        return f"{int(seconds/60)}m ago"
+    elif seconds < 3600:
+        return f"{seconds // 60}m ago"
 
-    if seconds < 86400:
-        return f"{int(seconds/3600)}h ago"
+    elif seconds < 86400:
+        return f"{seconds // 3600}h ago"
 
-    if seconds < 604800:
-        return f"{int(seconds/86400)}d ago"
+    elif seconds < 604800:
+        return f"{seconds // 86400}d ago"
 
     return dt.strftime("%d %b %Y")
 
