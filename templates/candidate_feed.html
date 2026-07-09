@@ -2,11 +2,15 @@
 
 {% block content %}
 
-<div class="mb-2">
+<link
+rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+<div class="desktop-feed">
+
+<div class="feed-filter">
 
 <form method="GET">
-
-<div class="input-group">
 
 <select
 name="location"
@@ -14,22 +18,18 @@ class="form-select"
 onchange="this.form.submit()">
 
 <option
-    value=""
-    {% if not selected_location %}selected{% endif %}>
-
-    🌎 All Locations
-
+value=""
+{% if not selected_location %}selected{% endif %}>
+🌍 All Locations
 </option>
 
 {% for city in locations %}
 
 <option
-    value="{{ city }}"
-    {% if selected_location and selected_location.lower() == city.lower() %}
-        selected
-    {% endif %}>
+value="{{ city }}"
+{% if selected_location and selected_location.lower()==city.lower() %}selected{% endif %}>
 
-    {{ city }}
+{{ city }}
 
 </option>
 
@@ -37,207 +37,190 @@ onchange="this.form.submit()">
 
 </select>
 
-</div>
-
 </form>
 
 </div>
 
-<div class="desktop-feed">
-
 {% for job in jobs %}
 
-<div id="post{{ job.id }}"
-     class="candidate-card feed-card">
+<div
+id="post{{ job.id }}"
+class="feed-card">
 
-    <!-- HEADER -->
+<div class="feed-header">
 
-    <div class="feed-header">
+<div class="feed-left">
 
-        <div class="feed-avatar">
+<div class="feed-avatar">
 
-            {% if job.company_name %}
-                {{ job.company_name[:1].upper() }}
-            {% else %}
-                R
-            {% endif %}
-
-        </div>
-
-        <div>
-
-            <div class="feed-company">
-
-                <a href="/company/{{ job.hr_id }}"
-                   style="text-decoration:none;color:inherit;">
-
-                    {{ job.company_name }}
-
-                </a>
-
-            </div>
-
-            <div class="feed-meta">
-                📍 {{ job.location }}
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- IMAGE -->
-
-    {% if job.images %}
-
-    <a href="/company/{{ job.hr_id }}">
-
-        <div id="carousel{{ job.id }}"
-     class="carousel slide">
-
-    <div class="carousel-inner">
-
-        {% for img in job.images.split(',') %}
-
-        <div class="carousel-item {% if loop.first %}active{% endif %}">
-
-            <img
-            src="/static/uploads/{{ img }}"
-            class="feed-image">
-
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-    <button
-    class="carousel-control-prev"
-    type="button"
-    data-bs-target="#carousel{{ job.id }}"
-    data-bs-slide="prev">
-
-        <span class="carousel-control-prev-icon"></span>
-
-    </button>
-
-    <button
-    class="carousel-control-next"
-    type="button"
-    data-bs-target="#carousel{{ job.id }}"
-    data-bs-slide="next">
-
-        <span class="carousel-control-next-icon"></span>
-
-    </button>
+{% if job.company_name %}
+{{ job.company_name[:1].upper() }}
+{% else %}
+R
+{% endif %}
 
 </div>
 
-    </a>
+<div>
 
-    {% endif %}
+<div class="feed-company">
 
-    <!-- CONTENT -->
+<a
+href="/company/{{ job.hr_id }}"
+style="text-decoration:none;color:inherit;">
 
-    <div class="p-3">
+{{ job.company_name }}
 
-        <h4 class="job-title">
-            {{ job.job_title }}
-        </h4>
+</a>
 
-        <div class="salary-tag">
-            ₹ {{ job.salary }}
-        </div>
+</div>
 
-        <p class="mt-3">
+<div class="feed-location">
 
-            {{ job.description[:140] }}
+📍 {{ job.location }}
 
-            {% if job.description|length > 140 %}
+</div>
 
-            <span id="dots{{ job.id }}">
-                ...
-            </span>
+</div>
 
-            <span
-            id="more{{ job.id }}"
-            style="display:none;">
+</div>
 
-                {{ job.description[140:] }}
+</div>
 
-            </span>
+{% if job.images %}
 
-            <a href="#"
-               id="btn{{ job.id }}"
-               onclick="toggleText({{ job.id }});return false;">
+<div class="swiper feedSwiper">
 
-                See More
+<div class="swiper-wrapper">
 
-            </a>
+{% for img in job.images.split(',') %}
 
-            {% endif %}
+<div class="swiper-slide">
 
-        </p>
+<a href="/company/{{ job.hr_id }}">
 
-        <div class="feed-buttons">
+<img
+src="/static/uploads/{{ img }}"
+class="feed-image">
 
-            <!-- View Job -->
+</a>
 
-            <a href="/job-view/{{ job.id }}"
-               class="btn btn-info">
+</div>
 
-                <i class="fas fa-eye"></i>
-                View Job
+{% endfor %}
 
-            </a>
+</div>
 
-            <!-- Apply -->
+<div class="swiper-pagination"></div>
 
-            {% if job.id in applied_jobs %}
+</div>
 
-            <button
-                class="btn btn-success"
-                disabled>
+{% endif %}
 
-                <i class="fas fa-check-circle"></i>
-                Applied
+<div class="feed-content">
 
-            </button>
+<h4 class="job-title">
 
-            {% else %}
+{{ job.job_title }}
 
-            <a href="/apply-job/{{ job.id }}"
-               class="btn btn-primary">
+</h4>
 
-               <i class="fas fa-paper-plane"></i>
-               Apply Now
+<div class="salary-tag">
 
-            </a>
+₹ {{ job.salary }}
 
-            {% endif %}
+</div>
 
-            <!-- Share -->
+<p class="job-description">
 
-            <a href="/share-job/{{ job.id }}"
-               class="btn btn-success">
+{{ job.description[:140] }}
 
-                <i class="fab fa-whatsapp"></i>
-                Share
+{% if job.description|length > 140 %}
 
-            </a>
+<span id="dots{{ job.id }}">...</span>
 
-        </div>
+<span
+id="more{{ job.id }}"
+style="display:none;">
 
-    </div>
+{{ job.description[140:] }}
+
+</span>
+
+<a
+href="#"
+id="btn{{ job.id }}"
+onclick="toggleText({{ job.id }});return false;">
+
+See More
+
+</a>
+
+{% endif %}
+
+</p>
+
+<div class="feed-buttons">
+
+<a
+href="/job-view/{{ job.id }}"
+class="btn btn-info">
+
+<i class="fas fa-eye"></i>
+
+View Job
+
+</a>
+
+{% if job.id in applied_jobs %}
+
+<button
+class="btn btn-success"
+disabled>
+
+<i class="fas fa-check-circle"></i>
+
+Applied
+
+</button>
+
+{% else %}
+
+<a
+href="/apply-job/{{ job.id }}"
+class="btn btn-primary">
+
+<i class="fas fa-paper-plane"></i>
+
+Apply
+
+</a>
+
+{% endif %}
+
+<a
+href="/share-job/{{ job.id }}"
+class="btn btn-success">
+
+<i class="fab fa-whatsapp"></i>
+
+Share
+
+</a>
+
+</div>
+
+</div>
 
 </div>
 
 {% else %}
 
-<div class="stats-card text-center">
+<div class="empty-feed">
 
-    <h4>No Jobs Available</h4>
+<h3>No Jobs Available</h3>
 
-    <p>Please check again later.</p>
+<p>Please check again later.</p>
 
 </div>
 
@@ -247,191 +230,453 @@ onchange="this.form.submit()">
 
 <style>
 
+.content{
+    padding:0!important;
+    background:#eef2f7;
+}
+
+.desktop-feed{
+
+    width:100%;
+
+}
+
+.feed-filter{
+
+    padding:12px;
+
+}
+
+.feed-filter .form-select{
+
+    height:52px;
+
+    border-radius:16px;
+
+    font-size:16px;
+
+    font-weight:600;
+
+}
+
 .feed-card{
+
     background:#fff;
-    border-radius:20px;
+
+    width:100%;
+
+    margin-bottom:14px;
+
     overflow:hidden;
-    margin-bottom:25px;
-    padding:0 !important;
-    box-shadow:0 2px 12px rgba(0,0,0,.08);
-    border:1px solid #eee;
+
+    border:none;
+
+    box-shadow:none;
+
 }
 
 .feed-header{
+
     display:flex;
+
+    justify-content:space-between;
+
     align-items:center;
+
+    padding:12px;
+
+}
+
+.feed-left{
+
+    display:flex;
+
+    align-items:center;
+
     gap:12px;
-    padding:14px 16px;
+
 }
 
 .feed-avatar{
-    width:48px;
-    height:48px;
+
+    width:52px;
+
+    height:52px;
+
     border-radius:50%;
+
     background:linear-gradient(
         135deg,
         #2563eb,
         #7c3aed
     );
-    color:white;
+
+    color:#fff;
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
-    font-size:18px;
+
+    font-size:20px;
+
     font-weight:700;
+
 }
 
 .feed-company{
-    font-size:16px;
+
+    font-size:17px;
+
     font-weight:700;
+
 }
 
-.feed-meta{
-    font-size:13px;
+.feed-location{
+
     color:#6b7280;
+
+    font-size:13px;
+
 }
 
 .feed-image{
+
     width:100%;
-    height:auto;
+
+    aspect-ratio:1/1;
+
+    object-fit:cover;
+
     display:block;
-    object-fit:contain;
-    background:#fff;
+
+}
+
+.feed-content{
+
+    padding:14px;
+
 }
 
 .job-title{
+
+    font-size:24px;
+
     font-weight:700;
-    margin-bottom:10px;
+
+    color:#111827;
+
+    margin-bottom:12px;
+
 }
 
 .salary-tag{
-    display:inline-block;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
     background:#dcfce7;
+
     color:#15803d;
-    padding:8px 14px;
-    border-radius:20px;
+
     font-weight:700;
+
+    font-size:16px;
+
+    padding:10px 18px;
+
+    border-radius:30px;
+
+}
+
+.job-description{
+
+    margin-top:16px;
+
+    color:#374151;
+
+    line-height:1.7;
+
+    font-size:15px;
+
+}
+
+.job-description a{
+
+    text-decoration:none;
+
+    font-weight:700;
+
 }
 
 .feed-buttons{
-    display:flex;
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
     gap:10px;
-    margin-top:20px;
+
+    margin-top:18px;
+
 }
 
 .feed-buttons .btn{
-    flex:1;
-    height:50px;
+
+    height:48px;
+
+    border-radius:14px;
 
     display:flex;
+
     align-items:center;
+
     justify-content:center;
 
     gap:6px;
 
-    border-radius:14px;
-    font-weight:600;
+    font-weight:700;
 
     padding:0;
+
 }
 
-.feed-buttons .btn i{
+.feed-buttons i{
+
     font-size:16px;
+
 }
 
-.btn-success{
-    background:#16a34a !important;
-    border-color:#16a34a !important;
+.swiper{
+
+    width:100%;
+
+}
+
+.swiper-pagination-bullet{
+
+    background:#fff;
+
+    opacity:.6;
+
+}
+
+.swiper-pagination-bullet-active{
+
+    background:#2563eb;
+
+    opacity:1;
+
+}
+
+.empty-feed{
+
+    text-align:center;
+
+    background:#fff;
+
+    padding:60px 20px;
+
+    margin:15px;
+
+    border-radius:18px;
+
+}
+
+.empty-feed h3{
+
+    margin-bottom:8px;
+
+    font-weight:700;
+
 }
 
 @media(max-width:768px){
 
-    .feed-image{
-        width:100%;
-        height:auto;
-        max-height:none;
-    }
+.content{
 
-    .feed-buttons{
-        gap:8px;
-    }
-
-    .feed-buttons .btn{
-        height:48px;
-        font-size:14px;
-
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
+padding:0!important;
 
 }
 
-/* ==========================
-   Desktop Only
-   ========================== */
+.container,
 
-@media (min-width:992px){
+.container-fluid{
 
-    .desktop-feed{
-        max-width:650px;
-        margin:0 auto;
-    }
+padding:0!important;
+
+}
+
+.desktop-feed{
+
+width:100%;
+
+}
+
+.feed-filter{
+
+padding:10px;
+
+}
+
+.feed-filter .form-select{
+
+height:54px;
+
+border-radius:16px;
+
+font-size:16px;
+
+}
+
+.feed-card{
+
+border-radius:0;
+
+margin-bottom:12px;
+
+}
+
+.feed-header{
+
+padding:12px;
+
+}
+
+.feed-avatar{
+
+width:48px;
+
+height:48px;
+
+font-size:18px;
+
+}
+
+.feed-company{
+
+font-size:17px;
+
+}
+
+.feed-image{
+
+width:100%;
+
+aspect-ratio:1/1;
+
+object-fit:cover;
+
+}
+
+.feed-content{
+
+padding:14px;
+
+}
+
+.feed-buttons{
+
+gap:8px;
+
+}
+
+.feed-buttons .btn{
+
+height:46px;
+
+font-size:13px;
+
+}
+
+}
+
+@media(min-width:992px){
+
+.desktop-feed{
+
+max-width:650px;
+
+margin:auto;
+
+}
 
 }
 
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 <script>
+
+document.querySelectorAll(".feedSwiper").forEach(function(swiper){
+
+    new Swiper(swiper,{
+
+        slidesPerView:1,
+
+        spaceBetween:0,
+
+        speed:350,
+
+        pagination:{
+            el:swiper.querySelector(".swiper-pagination"),
+            clickable:true
+        }
+
+    });
+
+});
 
 function toggleText(id){
 
-    let more =
-    document.getElementById("more"+id);
+    let more=document.getElementById("more"+id);
 
-    let dots =
-    document.getElementById("dots"+id);
+    let dots=document.getElementById("dots"+id);
 
-    let btn =
-    document.getElementById("btn"+id);
+    let btn=document.getElementById("btn"+id);
 
     if(more.style.display==="none"){
 
         more.style.display="inline";
+
         dots.style.display="none";
+
         btn.innerHTML="See Less";
 
     }else{
 
         more.style.display="none";
+
         dots.style.display="inline";
+
         btn.innerHTML="See More";
 
     }
 
 }
 
-</script>
+window.addEventListener("load",function(){
 
-<script>
-
-window.onload=function(){
-
-    let target=
-    document.getElementById(
-        "post{{ selected_id }}"
-    );
+    let target=document.getElementById("post{{ selected_id }}");
 
     if(target){
 
         target.scrollIntoView({
-            behavior:'smooth',
-            block:'center'
+
+            behavior:"smooth",
+
+            block:"center"
+
         });
 
     }
 
-}
+});
 
 </script>
 
