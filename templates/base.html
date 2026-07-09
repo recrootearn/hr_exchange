@@ -711,44 +711,24 @@ body{
 
 }
 
-.flash-actions{
-
-    width:100%;
-
-    display:flex;
-
-    justify-content:center;
-
-    margin-top:20px;
-
-}
-
-.flash-actions .btn{
-
-    width:180px;
-
-    height:48px;
-
-    border-radius:12px;
-
-    font-size:18px;
-
-    font-weight:700;
-
-}
-
 .flash-box{
+
+    position:relative;
 
     width:92%;
     max-width:360px;
 
-    background:white;
+    background:#fff;
 
-    border-radius:22px;
+    border-radius:24px;
 
-    padding:26px 22px;
+    padding:28px 24px;
 
     text-align:center;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
 
     box-shadow:0 20px 45px rgba(0,0,0,.25);
 
@@ -760,49 +740,57 @@ body{
 
     position:absolute;
 
-    top:15px;
+    top:14px;
+    right:14px;
 
-    right:15px;
-
-    width:35px;
-
-    height:35px;
+    width:36px;
+    height:36px;
 
     border:none;
 
-    background:none;
+    background:#f3f4f6;
 
-    font-size:30px;
-
-    color:#999;
+    border-radius:50%;
 
     display:flex;
-
     align-items:center;
-
     justify-content:center;
 
+    font-size:26px;
+    font-weight:700;
+
+    color:#6b7280;
+
     cursor:pointer;
+
+    z-index:1000;
+
+    transition:.2s;
 
 }
 
 .flash-close:hover{
 
-    color:#111;
+    background:#e5e7eb;
+
+    color:#111827;
 
 }
 
 .flash-icon{
 
-    font-size:55px;
+    font-size:60px;
 
+    margin-top:6px;
     margin-bottom:12px;
+
+    line-height:1;
 
 }
 
 .flash-title{
 
-    font-size:24px;
+    font-size:30px;
 
     font-weight:700;
 
@@ -814,11 +802,73 @@ body{
 
 .flash-message{
 
-    font-size:16px;
+    font-size:18px;
 
     color:#555;
 
     line-height:1.6;
+
+    text-align:center;
+
+}
+
+.flash-actions{
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    margin-top:22px;
+
+}
+
+.flash-actions .btn{
+
+    width:180px;
+
+    height:50px;
+
+    border-radius:12px;
+
+    font-size:18px;
+
+    font-weight:700;
+
+}
+
+@keyframes popupFlash{
+
+    from{
+
+        opacity:0;
+        transform:scale(.8);
+
+    }
+
+    to{
+
+        opacity:1;
+        transform:scale(1);
+
+    }
+
+}
+
+@keyframes fadeFlash{
+
+    from{
+
+        opacity:0;
+
+    }
+
+    to{
+
+        opacity:1;
+
+    }
 
 }
 
@@ -1297,10 +1347,6 @@ function toggleSidebar(){
                 onclick="closeFlash()">
             &times;
         </button>
-
-        <div class="flash-title">
-            Notification
-        </div>
 
         <div class="flash-message">
             {{ messages[0][1] }}
