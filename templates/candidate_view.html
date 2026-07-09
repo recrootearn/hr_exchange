@@ -4,220 +4,455 @@
 
 <style>
 
-.profile-box{
-    max-width:950px;
-    margin:12px auto;
+.content{
+    padding:0 !important;
+    background:#eef3fb;
+}
+
+.profile-wrapper{
+    max-width:980px;
+    margin:0 auto;
+    padding:12px;
+}
+
+.profile-card{
     background:#fff;
-    border-radius:20px;
-    padding:20px;
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:0 8px 28px rgba(0,0,0,.08);
 }
 
-.profile-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:20px;
+.profile-header{
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #1d4ed8,
+        #3b82f6
+    );
+
+    color:#fff;
+
+    padding:34px 24px 26px;
+
+    position:relative;
+
 }
 
-.profile-left{
+.profile-main{
+
     display:flex;
-    gap:20px;
-    flex:1;
+    align-items:center;
+    gap:22px;
+
 }
 
 .profile-pic{
-    width:120px;
-    height:120px;
+
+    width:130px;
+    height:130px;
+
     border-radius:50%;
+
     overflow:hidden;
-    background:#f2f2f2;
-    border:4px solid #0d6efd;
+
+    border:5px solid #fff;
+
+    background:#fff;
+
     flex-shrink:0;
+
 }
 
 .profile-pic img{
+
     width:100%;
     height:100%;
     object-fit:cover;
+
 }
 
 .profile-initial{
+
     width:100%;
     height:100%;
+
     display:flex;
-    justify-content:center;
     align-items:center;
-    font-size:48px;
-    color:white;
-    background:#2563eb;
-    font-weight:bold;
+    justify-content:center;
+
+    font-size:52px;
+    font-weight:700;
+
+    color:#2563eb;
+
 }
 
 .profile-info{
+
     flex:1;
+
 }
 
 .profile-name{
-    font-size:30px;
-    font-weight:700;
-    color:#111827;
+
+    font-size:34px;
+    font-weight:800;
+
+    line-height:1.15;
+
 }
 
 .profile-designation{
+
+    margin-top:5px;
+
     font-size:18px;
-    color:#666;
-    margin-top:3px;
+
+    opacity:.95;
+
 }
 
 .profile-company{
-    color:#777;
-    margin-top:4px;
+
+    margin-top:8px;
+
+    font-size:15px;
+
+    opacity:.92;
+
 }
 
 .profile-location{
-    color:#777;
-    margin-top:4px;
+
+    margin-top:5px;
+
+    font-size:15px;
+
+    opacity:.92;
+
 }
 
 .stats{
+
     display:flex;
-    gap:15px;
+    gap:14px;
+
     margin-top:18px;
+
 }
 
 .stat-box{
-    background:#f8fafc;
-    border-radius:15px;
-    padding:12px 18px;
+
+    background:rgba(255,255,255,.18);
+
+    border:1px solid rgba(255,255,255,.22);
+
+    backdrop-filter:blur(8px);
+
+    border-radius:16px;
+
+    min-width:110px;
+
     text-align:center;
-    min-width:90px;
+
+    padding:14px;
+
 }
 
 .stat-box h4{
+
     margin:0;
-    color:#0d6efd;
-    font-weight:700;
+
+    font-size:28px;
+
+    font-weight:800;
+
+    color:#fff;
+
 }
 
 .stat-box small{
-    color:#666;
+
+    color:#eef2ff;
+
+    font-size:13px;
+
 }
 
 .action-buttons{
+
     display:flex;
+
     gap:10px;
+
     flex-wrap:wrap;
-    margin-top:15px;
+
+    margin-top:22px;
+
 }
 
 .action-buttons .btn{
-    border-radius:10px;
-    font-weight:600;
-}
 
-.section-card{
-    margin-top:18px;
-    border:none;
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow:0 4px 18px rgba(0,0,0,.08);
-}
+    height:48px;
 
-.section-header{
-    background:#0d6efd;
-    color:white;
-    padding:14px 20px;
-    font-size:18px;
+    border-radius:14px;
+
     font-weight:700;
+
+    padding:0 20px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
 }
 
-.section-body{
-    padding:20px;
+.profile-body{
+
+    padding:22px;
+
 }
 
-.badge-skill{
-    display:inline-block;
-    padding:8px 14px;
-    border-radius:30px;
-    background:#0d6efd;
-    color:white;
-    margin:4px;
+.section{
+
+    padding:22px 0;
+
+    border-top:1px solid #edf1f7;
+
 }
 
-.badge-field{
-    display:inline-block;
-    padding:8px 14px;
-    border-radius:30px;
-    background:#198754;
-    color:white;
-    margin:4px;
+.section:first-child{
+
+    border-top:none;
+
+}
+
+.section-title{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:#111827;
+
+    margin-bottom:18px;
+
+}
+
+.info-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+    gap:20px;
+
+    padding:13px 0;
+
+    border-bottom:1px solid #f1f4f8;
+
+}
+
+.info-row:last-child{
+
+    border-bottom:none;
+
+}
+
+.info-label{
+
+    color:#6b7280;
+
+    font-weight:600;
+
+}
+
+.info-value{
+
+    color:#111827;
+
+    font-weight:700;
+
+    text-align:right;
+
+    max-width:58%;
+
+}
+
+.skill-chip,
+.field-chip{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:8px 16px;
+
+    border-radius:50px;
+
+    margin:5px;
+
+    color:#fff;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.skill-chip{
+
+    background:#2563eb;
+
+}
+
+.field-chip{
+
+    background:#10b981;
+
+}
+
+.resume-box{
+
+    background:#f8fafc;
+
+    border:1px solid #e7edf5;
+
+    border-radius:18px;
+
+    padding:18px;
+
 }
 
 @media(max-width:768px){
 
-.profile-box{
-    margin:6px;
-    padding:15px;
+.profile-wrapper{
+
+padding:0;
+
 }
 
-.profile-top{
-    flex-direction:column;
+.profile-card{
+
+border-radius:0;
+
+box-shadow:none;
+
 }
 
-.profile-left{
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-    gap:12px;
+.profile-header{
+
+padding:26px 18px;
+
+}
+
+.profile-main{
+
+flex-direction:column;
+
+text-align:center;
+
+gap:14px;
+
+}
+
+.profile-pic{
+
+width:110px;
+height:110px;
+
 }
 
 .profile-name{
-    font-size:24px;
+
+font-size:28px;
+
 }
 
 .profile-designation{
-    font-size:16px;
+
+font-size:16px;
+
 }
 
 .stats{
-    justify-content:center;
-    gap:10px;
-    margin-top:12px;
+
+justify-content:center;
+
+flex-wrap:wrap;
+
+margin-top:16px;
+
 }
 
 .stat-box{
-    min-width:82px;
-    padding:10px;
+
+flex:1;
+
+min-width:110px;
+
 }
 
 .action-buttons{
-    justify-content:center;
-    margin-top:10px;
+
+justify-content:center;
+
 }
 
 .action-buttons .btn{
-    flex:1;
-    min-width:140px;
+
+flex:1;
+
+min-width:145px;
+
 }
 
-.section-card{
-    margin-top:12px;
+.profile-body{
+
+padding:18px;
+
 }
 
-.section-body{
-    padding:15px;
+.info-row{
+
+flex-direction:column;
+
+gap:5px;
+
+}
+
+.info-value{
+
+text-align:left;
+
+max-width:100%;
+
+}
+
+.section{
+
+padding:18px 0;
+
 }
 
 }
 
 </style>
 
-<div class="profile-box">
+<div class="profile-wrapper">
 
-<div class="profile-top">
+<div class="profile-card">
 
-<div class="profile-left">
+<div class="profile-header">
+
+<div class="profile-main">
 
 <div class="profile-pic">
 
@@ -280,6 +515,7 @@
 <div class="stat-box">
 
 <h4>{{ following_count|default(0,true) }}</h4>
+
 <small>Following</small>
 
 </div>
@@ -290,7 +526,8 @@
 
 {% if is_following %}
 
-<a href="/follow-candidate/{{ candidate.id }}"
+<a
+href="/follow-candidate/{{ candidate.id }}"
 class="btn btn-success">
 
 Following ✓
@@ -299,7 +536,8 @@ Following ✓
 
 {% else %}
 
-<a href="/follow-candidate/{{ candidate.id }}"
+<a
+href="/follow-candidate/{{ candidate.id }}"
 class="btn btn-primary">
 
 Follow
@@ -310,35 +548,39 @@ Follow
 
 {% if contact_unlocked %}
 
-<a href="tel:{{ candidate.mobile }}"
+<a
+href="tel:{{ candidate.mobile }}"
 class="btn btn-success">
 
-Call
+<i class="fas fa-phone"></i>&nbsp;Call
 
 </a>
 
-<a href="https://wa.me/{{ candidate.mobile }}"
+<a
+href="https://wa.me/{{ candidate.mobile }}"
 target="_blank"
 class="btn btn-success">
 
-WhatsApp
+<i class="fab fa-whatsapp"></i>&nbsp;WhatsApp
 
 </a>
 
-<a href="mailto:{{ candidate.email }}"
+<a
+href="mailto:{{ candidate.email }}"
 class="btn btn-info">
 
-Email
+<i class="fas fa-envelope"></i>&nbsp;Email
 
 </a>
 
 {% if candidate.resume_file %}
 
-<a href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}"
+<a
+href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}"
 target="_blank"
 class="btn btn-secondary">
 
-Resume
+<i class="fas fa-file-pdf"></i>&nbsp;Resume
 
 </a>
 
@@ -346,7 +588,8 @@ Resume
 
 {% else %}
 
-<a href="/unlock-contact/{{ candidate.id }}"
+<a
+href="/unlock-contact/{{ candidate.id }}"
 class="btn btn-warning">
 
 🔓 Unlock Contact ({{ settings.discover_unlock_credits }} Credits)
@@ -363,57 +606,75 @@ class="btn btn-warning">
 
 </div>
 
-<div class="section-card">
+<div class="profile-body">
 
-    <div class="section-header">
+<div class="section">
+
+    <div class="section-title">
 
         👤 Personal Information
 
     </div>
 
-    <div class="section-body">
+    <div class="info-row">
 
-        <div class="row">
+        <div class="info-label">
 
-            <div class="col-md-6 mb-3">
+            Full Name
 
-                <b>Full Name</b>
+        </div>
 
-                <br>
+        <div class="info-value">
 
-                {{ candidate.full_name }}
+            {{ candidate.full_name }}
 
-            </div>
+        </div>
 
-            <div class="col-md-6 mb-3">
+    </div>
 
-                <b>Qualification</b>
+    <div class="info-row">
 
-                <br>
+        <div class="info-label">
 
-                {{ candidate.qualification or "Not Added" }}
+            Qualification
 
-            </div>
+        </div>
 
-            <div class="col-md-6 mb-3">
+        <div class="info-value">
 
-                <b>Date of Birth</b>
+            {{ candidate.qualification or "Not Added" }}
 
-                <br>
+        </div>
 
-                {{ candidate.dob.strftime('%d %b %Y') if candidate.dob else "Not Added" }}
+    </div>
 
-            </div>
+    <div class="info-row">
 
-            <div class="col-md-6 mb-3">
+        <div class="info-label">
 
-                <b>City</b>
+            Date of Birth
 
-                <br>
+        </div>
 
-                {{ candidate.city or "Not Added" }}
+        <div class="info-value">
 
-            </div>
+            {{ candidate.dob.strftime('%d %b %Y') if candidate.dob else "Not Added" }}
+
+        </div>
+
+    </div>
+
+    <div class="info-row">
+
+        <div class="info-label">
+
+            City
+
+        </div>
+
+        <div class="info-value">
+
+            {{ candidate.city or "Not Added" }}
 
         </div>
 
@@ -421,81 +682,97 @@ class="btn btn-warning">
 
 </div>
 
-<div class="section-card">
+<div class="section">
 
-    <div class="section-header" style="background:#198754;">
+    <div class="section-title">
 
         💼 Career Details
 
     </div>
 
-    <div class="section-body">
+    <div class="info-row">
 
-        <div class="row">
+        <div class="info-label">
 
-            <div class="col-md-6 mb-3">
+            Career Level
 
-                <b>Career Level</b>
+        </div>
 
-                <br>
+        <div class="info-value">
 
-                {{ candidate.career_level or "Not Added" }}
-
-            </div>
-
-            {% if candidate.career_level and candidate.career_level|trim|lower == "experienced" %}
-
-            <div class="col-md-6 mb-3">
-
-                <b>Company Name</b>
-
-                <br>
-
-                {{ candidate.company_name or "Not Added" }}
-
-            </div>
-
-            <div class="col-md-6 mb-3">
-
-                <b>Designation</b>
-
-                <br>
-
-                {{ candidate.designation or "Not Added" }}
-
-            </div>
-
-            <div class="col-md-6 mb-3">
-
-                <b>Experience</b>
-
-                <br>
-
-                {{ candidate.experience_from or "-" }}
-
-                →
-
-                {{ candidate.experience_to or "Present" }}
-
-            </div>
-
-            {% endif %}
+            {{ candidate.career_level or "Not Added" }}
 
         </div>
 
     </div>
 
+    {% if candidate.career_level and candidate.career_level|trim|lower=="experienced" %}
+
+    <div class="info-row">
+
+        <div class="info-label">
+
+            Company
+
+        </div>
+
+        <div class="info-value">
+
+            {{ candidate.company_name or "Not Added" }}
+
+        </div>
+
+    </div>
+
+    <div class="info-row">
+
+        <div class="info-label">
+
+            Designation
+
+        </div>
+
+        <div class="info-value">
+
+            {{ candidate.designation or "Not Added" }}
+
+        </div>
+
+    </div>
+
+    <div class="info-row">
+
+        <div class="info-label">
+
+            Experience
+
+        </div>
+
+        <div class="info-value">
+
+            {{ candidate.experience_from or "-" }}
+
+            →
+
+            {{ candidate.experience_to or "Present" }}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
 </div>
 
-<div class="section-card">
+<div class="section">
 
-    <div class="section-header" style="background:#0dcaf0;">
+    <div class="section-title">
 
         🎓 Education
 
     </div>
 
-    <div class="section-body">
+    <div style="line-height:1.8;color:#374151;">
 
         {{ candidate.education or "Education Not Added" }}
 
@@ -503,79 +780,79 @@ class="btn btn-warning">
 
 </div>
 
-<div class="section-card">
+<div class="section">
 
-    <div class="section-header" style="background:#ffc107;color:#111;">
+    <div class="section-title">
 
         🛠 Skills
 
     </div>
 
-    <div class="section-body">
+    {% if candidate.skills %}
 
-        {% if candidate.skills %}
+        {% for skill in candidate.skills.split(",") %}
 
-            {% for skill in candidate.skills.split(',') %}
+            <span class="skill-chip">
 
-                <span class="badge-skill">
+                {{ skill.strip() }}
 
-                    {{ skill.strip() }}
+            </span>
 
-                </span>
+        {% endfor %}
 
-            {% endfor %}
+    {% else %}
 
-        {% else %}
+        <span style="color:#6b7280;">
 
             Skills Not Added
 
-        {% endif %}
+        </span>
 
-    </div>
+    {% endif %}
 
 </div>
 
-<div class="section-card">
+<div class="section">
 
-    <div class="section-header" style="background:#6c757d;">
+    <div class="section-title">
 
         🎯 Interested Fields
 
     </div>
 
-    <div class="section-body">
+    {% if candidate.interested_fields %}
 
-        {% if candidate.interested_fields %}
+        {% for field in candidate.interested_fields.split(",") %}
 
-            {% for field in candidate.interested_fields.split(',') %}
+            <span class="field-chip">
 
-                <span class="badge-field">
+                {{ field.strip() }}
 
-                    {{ field.strip() }}
+            </span>
 
-                </span>
+        {% endfor %}
 
-            {% endfor %}
+    {% else %}
 
-        {% else %}
+        <span style="color:#6b7280;">
 
             Interested Fields Not Added
 
-        {% endif %}
+        </span>
 
-    </div>
+    {% endif %}
 
 </div>
 
-<div class="section-card">
+<div class="section">
 
-    <div class="section-header" style="background:#212529;">
+    <div class="section-title">
 
         📝 About Me
 
     </div>
 
-    <div class="section-body">
+    <div style="line-height:1.8;color:#374151;">
 
         {{ candidate.about_me or "No description added yet." }}
 
@@ -583,44 +860,163 @@ class="btn btn-warning">
 
 </div>
 
-<div class="section-card">
+<div class="section">
 
-    <div class="section-header">
+    <div class="section-title">
 
         📄 Resume
 
     </div>
 
-    <div class="section-body text-center">
+    {% if candidate.resume_file %}
 
-        {% if contact_unlocked and candidate.resume_file %}
+    <div class="resume-box">
+
+        <div
+        style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:16px;
+        flex-wrap:wrap;
+        ">
+
+            <div>
+
+                <div
+                style="
+                font-size:18px;
+                font-weight:700;
+                color:#111827;
+                ">
+
+                    Resume Available
+
+                </div>
+
+                {% if contact_unlocked %}
+
+                <div
+                style="
+                margin-top:5px;
+                color:#6b7280;
+                ">
+
+                    Download the latest uploaded resume.
+
+                </div>
+
+                {% else %}
+
+                <div
+                style="
+                margin-top:5px;
+                color:#6b7280;
+                ">
+
+                    Unlock contact to access the resume.
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            {% if contact_unlocked %}
 
             <a
             href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}"
             target="_blank"
-            class="btn btn-success">
+            class="btn btn-success"
+            style="
+            min-width:190px;
+            height:48px;
+            border-radius:14px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:700;
+            ">
+
+                <i class="fas fa-download me-2"></i>
 
                 Download Resume
 
             </a>
 
-        {% elif candidate.resume_file %}
+            {% else %}
 
             <a
             href="/unlock-contact/{{ candidate.id }}"
-            class="btn btn-warning">
+            class="btn btn-warning"
+            style="
+            min-width:220px;
+            height:48px;
+            border-radius:14px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:700;
+            ">
 
-                🔒 Unlock Resume (2 Credits)
+                🔓 Unlock Resume ({{ settings.discover_unlock_credits }} Credits)
 
             </a>
 
-        {% else %}
+            {% endif %}
 
-            Resume Not Uploaded
-
-        {% endif %}
+        </div>
 
     </div>
+
+    {% else %}
+
+    <div class="resume-box">
+
+        <div
+        style="
+        text-align:center;
+        padding:10px;
+        ">
+
+            <div
+            style="
+            font-size:52px;
+            ">
+
+                📄
+
+            </div>
+
+            <div
+            style="
+            margin-top:10px;
+            font-size:18px;
+            font-weight:700;
+            color:#111827;
+            ">
+
+                Resume Not Uploaded
+
+            </div>
+
+            <div
+            style="
+            margin-top:5px;
+            color:#6b7280;
+            ">
+
+                This candidate hasn't uploaded a resume yet.
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
 
 </div>
 
