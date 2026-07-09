@@ -6137,16 +6137,33 @@ def candidate_feed():
         selected_location=selected_location
     )
 
+from sqlalchemy import func
+
 @app.route('/discover-hr')
 def discover_hr():
 
-    city = request.args.get('city', '')
+    city = request.args.get('city', '').strip()
+
+    # Get all unique cities (case-insensitive)
+    cities = (
+        db.session.query(func.lower(User.company_city))
+        .filter(
+            User.is_approved == True,
+            User.company_city.isnot(None),
+            User.company_city != ""
+        )
+        .distinct()
+        .order_by(func.lower(User.company_city))
+        .all()
+    )
+
+    cities = [c[0].title() for c in cities]
 
     query = User.query.filter_by(is_approved=True)
 
     if city:
         query = query.filter(
-            User.company_city.contains(city)
+            func.lower(User.company_city) == city.lower()
         )
 
     hrs = query.order_by(
@@ -6168,6 +6185,7 @@ def discover_hr():
         "discover_hr.html",
         hrs=hrs,
         city=city,
+        cities=cities,
         following_ids=following_ids
     )
 
