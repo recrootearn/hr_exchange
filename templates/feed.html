@@ -2,6 +2,10 @@
 
 {% block content %}
 
+<link
+rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
 <div class="mb-2">
 
 <form method="GET">
@@ -89,46 +93,27 @@ onchange="this.form.submit()">
 
     <a href="/company/{{ job.hr_id }}">
 
-        <div id="carousel{{ job.id }}"
-     class="carousel slide">
+        <div class="swiper feedSwiper">
 
-    <div class="carousel-inner">
+        <div class="swiper-wrapper">
 
         {% for img in job.images.split(',') %}
 
-        <div class="carousel-item {% if loop.first %}active{% endif %}">
+        <div class="swiper-slide">
 
-            <img
-            src="/static/uploads/{{ img }}"
-            class="feed-image">
+        <img
+        src="/static/uploads/{{ img }}"
+        class="feed-image">
 
         </div>
 
         {% endfor %}
 
-    </div>
+        </div>
 
-    <button
-    class="carousel-control-prev"
-    type="button"
-    data-bs-target="#carousel{{ job.id }}"
-    data-bs-slide="prev">
+        <div class="swiper-pagination"></div>
 
-        <span class="carousel-control-prev-icon"></span>
-
-    </button>
-
-    <button
-    class="carousel-control-next"
-    type="button"
-    data-bs-target="#carousel{{ job.id }}"
-    data-bs-slide="next">
-
-        <span class="carousel-control-next-icon"></span>
-
-    </button>
-
-</div>
+        </div>
 
     </a>
 
@@ -184,7 +169,7 @@ onchange="this.form.submit()">
                class="btn btn-info">
 
                 <i class="fas fa-eye"></i>
-                View Job
+                View
 
             </a>
 
@@ -207,7 +192,7 @@ onchange="this.form.submit()">
                class="btn btn-primary">
 
                <i class="fas fa-paper-plane"></i>
-               Apply Now
+               Apply
 
             </a>
 
@@ -391,6 +376,34 @@ onchange="this.form.submit()">
 
 }
 
+.swiper{
+
+width:100%;
+
+}
+
+.swiper-slide{
+
+width:100%;
+
+}
+
+.swiper-pagination-bullet{
+
+background:white;
+
+opacity:.6;
+
+}
+
+.swiper-pagination-bullet-active{
+
+background:#2563eb;
+
+opacity:1;
+
+}
+
 </style>
 
 <script>
@@ -443,6 +456,32 @@ window.onload=function(){
     }
 
 }
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+
+document.querySelectorAll(".feedSwiper").forEach(function(swiper){
+
+new Swiper(swiper,{
+
+slidesPerView:1,
+
+spaceBetween:0,
+
+pagination:{
+
+el:swiper.querySelector(".swiper-pagination"),
+
+clickable:true
+
+}
+
+});
+
+});
 
 </script>
 
