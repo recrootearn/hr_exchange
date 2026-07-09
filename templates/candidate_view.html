@@ -182,11 +182,11 @@
 
 .action-buttons{
 
-    display:flex;
+    display:grid;
 
-    gap:10px;
+    grid-template-columns:1fr 1fr;
 
-    flex-wrap:wrap;
+    gap:12px;
 
     margin-top:22px;
 
@@ -194,19 +194,25 @@
 
 .action-buttons .btn{
 
-    height:48px;
+    min-height:58px;
 
     border-radius:14px;
 
     font-weight:700;
-
-    padding:0 20px;
 
     display:flex;
 
     align-items:center;
 
     justify-content:center;
+
+    text-align:center;
+
+    padding:10px 14px;
+
+    white-space:normal;
+
+    line-height:1.3;
 
 }
 
@@ -592,7 +598,15 @@ class="btn btn-secondary">
 href="/unlock-contact/{{ candidate.id }}"
 class="btn btn-warning">
 
-🔓 Unlock Contact ({{ settings.discover_unlock_credits }} Credits)
+<i class="fas fa-lock-open me-2"></i>
+
+<div style="display:flex;flex-direction:column;line-height:1.2;">
+
+    <span>Unlock Contact</span>
+
+    <small>{{ settings.discover_unlock_credits }} Credits</small>
+
+</div>
 
 </a>
 
