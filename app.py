@@ -467,6 +467,8 @@ class JobPost(db.Model):
 
     image = db.Column(db.Text)
 
+    office_address = db.Column(db.String(255))  
+
     images = db.Column(db.Text)
 
     created_at = db.Column(
@@ -5943,7 +5945,7 @@ def post_job():
 
     if request.method == 'POST':
 
-        files = request.files.getlist('images')
+        files = request.files.getlist("images")
 
         saved_images = []
 
@@ -5955,12 +5957,22 @@ def post_job():
 
                 file.save(
                     os.path.join(
-                        app.config['UPLOAD_FOLDER'],
+                        app.config["UPLOAD_FOLDER"],
                         filename
                     )
                 )
 
                 saved_images.append(filename)
+
+        job_timing = (
+            f"{request.form.get('working_from')} - "
+            f"{request.form.get('working_to')}"
+        )
+
+        interview_time = (
+            f"{request.form.get('interview_time_from')} - "
+            f"{request.form.get('interview_time_to')}"
+        )
 
         job = JobPost(
 
@@ -5968,25 +5980,29 @@ def post_job():
 
             company_name=current_user.company,
 
-            job_title=request.form['job_title'],
+            job_title=request.form["job_title"],
 
-            location=request.form['location'],
+            # City selected from dropdown
+            location=request.form["location"].strip().title(),
 
-            salary=request.form['salary'],
+            # Office address
+            office_address=request.form.get("office_address"),
+
+            salary=request.form["salary"],
 
             incentive=request.form.get("incentive"),
 
-            job_timing=request.form.get("job_timing"),
+            job_timing=job_timing,
 
             working_days=request.form.get("working_days"),
 
             job_type=request.form.get("job_type"),
 
+            employment_type=request.form.get("employment_type"),
+
             eligibility=request.form.get("eligibility"),
 
             experience_required=request.form.get("experience_required"),
-
-            employment_type=request.form.get("employment_type"),
 
             education=request.form.get("education"),
 
@@ -5996,11 +6012,11 @@ def post_job():
 
             interview_to=request.form.get("interview_to"),
 
-            interview_time=request.form.get("interview_time"),
+            interview_time=interview_time,
 
             interview_instructions=request.form.get("interview_instructions"),
 
-            description=request.form['description'],
+            description=request.form["description"],
 
             images=",".join(saved_images)
 
@@ -6025,7 +6041,6 @@ def post_job():
 
         for f in followers:
 
-            # Skip invalid follow records
             if not f.follower_candidate_id:
                 continue
 
@@ -6033,26 +6048,35 @@ def post_job():
                 f.follower_candidate_id
             )
 
-            # Skip if candidate no longer exists
             if not candidate:
                 continue
 
             send_notification(
+
                 user_id=candidate.id,
+
                 user_type="candidate",
+
                 message=f"{current_user.company} posted a new job: {job.job_title}",
+
                 link=f"/job/{job.id}",
+
                 image=first_image,
+
                 type="job_post"
+
             )
 
         db.session.commit()
 
-        flash("Job posted successfully.", "success")
+        flash(
+            "Job posted successfully.",
+            "success"
+        )
 
-        return redirect('/my-jobs')
+        return redirect("/my-jobs")
 
-    return render_template('post_job.html')
+    return render_template("post_job.html")
 
 @app.route('/job/<int:id>')
 def view_job(id):
