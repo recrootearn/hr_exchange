@@ -6,16 +6,27 @@
 
 .content{
     padding:0 !important;
-    background:#f4f7fc;
+    background:#eef3fb;
 }
 
-.profile-box{
+.profile-wrapper{
 
-    width:100%;
-    max-width:100%;
+    max-width:900px;
+    margin:auto;
 
-    margin:0;
     padding:0;
+
+}
+
+.profile-card{
+
+    background:#fff;
+
+    border-radius:0;
+
+    overflow:hidden;
+
+    box-shadow:none;
 
 }
 
@@ -23,22 +34,20 @@
 
     background:linear-gradient(135deg,#2563eb,#1d4ed8,#3b82f6);
 
-    color:white;
+    padding:35px 22px 24px;
 
-    padding:28px 18px 18px;
-
-    border-radius:0 0 28px 28px;
+    color:#fff;
 
     text-align:center;
 
-    box-shadow:0 8px 25px rgba(0,0,0,.15);
+    position:relative;
 
 }
 
-.profile-pic{
+.profile-photo{
 
-    width:120px;
-    height:120px;
+    width:125px;
+    height:125px;
 
     margin:auto;
 
@@ -46,9 +55,9 @@
 
     overflow:hidden;
 
-    border:5px solid white;
+    border:5px solid #fff;
 
-    background:white;
+    background:#fff;
 
     display:flex;
     align-items:center;
@@ -61,7 +70,7 @@
 
 }
 
-.profile-pic img{
+.profile-photo img{
 
     width:100%;
     height:100%;
@@ -71,11 +80,11 @@
 
 .profile-name{
 
-    margin-top:16px;
-
     font-size:30px;
 
     font-weight:800;
+
+    margin-top:16px;
 
     line-height:1.2;
 
@@ -93,33 +102,39 @@
 
 .profile-location{
 
-    margin-top:6px;
+    margin-top:8px;
 
     font-size:15px;
 
-    opacity:.95;
+    opacity:.9;
 
 }
 
-.profile-progress{
+.progress-title{
 
     margin-top:18px;
+
+    font-size:13px;
+
+    font-weight:600;
 
 }
 
 .progress{
 
-    height:12px;
+    height:11px;
+
+    margin-top:8px;
 
     border-radius:30px;
 
-    overflow:hidden;
-
-    background:rgba(255,255,255,.35);
+    background:rgba(255,255,255,.30);
 
 }
 
 .progress-bar{
+
+    font-size:10px;
 
     font-weight:700;
 
@@ -133,11 +148,23 @@
 
     height:50px;
 
+    border:none;
+
     border-radius:14px;
 
-    font-size:17px;
+    background:#fff;
+
+    color:#2563eb;
 
     font-weight:700;
+
+    font-size:16px;
+
+}
+
+.profile-body{
+
+    padding:18px;
 
 }
 
@@ -147,41 +174,39 @@
 
     grid-template-columns:1fr 1fr;
 
-    gap:12px;
+    gap:14px;
 
-    margin:16px;
+    margin-bottom:20px;
 
 }
 
-.stat-card{
+.stat{
 
-    background:white;
+    background:#f8fafc;
 
-    border-radius:18px;
+    border-radius:16px;
 
-    padding:18px 10px;
+    padding:18px;
 
     text-align:center;
 
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-
 }
 
-.stat-card h3{
+.stat h2{
 
     margin:0;
 
-    color:#2563eb;
-
     font-size:30px;
+
+    color:#2563eb;
 
     font-weight:800;
 
 }
 
-.stat-card p{
+.stat p{
 
-    margin:5px 0 0;
+    margin:6px 0 0;
 
     color:#6b7280;
 
@@ -189,39 +214,29 @@
 
 }
 
-.card{
+.section{
 
-    margin:12px 12px 0 !important;
+    padding:20px 0;
 
-    border:none !important;
-
-    border-radius:18px !important;
-
-    overflow:hidden;
-
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
+    border-top:1px solid #eceff3;
 
 }
 
-.card-header{
+.section:first-child{
 
-    background:#2563eb !important;
+    border-top:none;
 
-    color:white !important;
+}
 
-    padding:14px 18px;
+.section-title{
 
-    font-size:19px;
+    font-size:20px;
 
     font-weight:700;
 
-    border:none;
+    color:#111827;
 
-}
-
-.card-body{
-
-    padding:18px;
+    margin-bottom:18px;
 
 }
 
@@ -231,11 +246,11 @@
 
     justify-content:space-between;
 
-    align-items:flex-start;
+    gap:18px;
 
     padding:12px 0;
 
-    border-bottom:1px solid #ececec;
+    border-bottom:1px solid #f1f3f6;
 
 }
 
@@ -245,7 +260,7 @@
 
 }
 
-.info-title{
+.info-label{
 
     color:#6b7280;
 
@@ -255,73 +270,147 @@
 
 .info-value{
 
-    color:#111827;
-
     font-weight:700;
+
+    color:#111827;
 
     text-align:right;
 
-    max-width:55%;
-
 }
 
-.badge{
+.skill{
+
+    display:inline-block;
+
+    padding:8px 16px;
+
+    background:#2563eb;
+
+    color:#fff;
+
+    border-radius:50px;
+
+    margin:5px;
 
     font-size:13px;
 
-    padding:8px 15px;
+    font-weight:600;
 
-    margin:4px;
+}
 
-    border-radius:30px;
+.field{
+
+    display:inline-block;
+
+    padding:8px 16px;
+
+    background:#10b981;
+
+    color:#fff;
+
+    border-radius:50px;
+
+    margin:5px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.resume-card{
+
+    background:#f8fafc;
+
+    border-radius:16px;
+
+    padding:18px;
 
 }
 
 @media(max-width:768px){
 
+.content{
+
+padding:0 !important;
+
+}
+
+.profile-wrapper{
+
+max-width:100%;
+
+}
+
 .profile-header{
 
-padding:24px 16px 16px;
+padding:28px 18px 20px;
+
+}
+
+.profile-photo{
+
+width:105px;
+
+height:105px;
+
+font-size:40px;
 
 }
 
 .profile-name{
 
-font-size:26px;
+font-size:25px;
 
 }
 
-.profile-pic{
+.profile-body{
 
-width:110px;
-
-height:110px;
+padding:14px;
 
 }
 
 .stats{
 
-margin:12px;
-
 gap:10px;
 
 }
 
-.stat-card{
+.stat{
 
-padding:14px 8px;
-
-}
-
-.card{
-
-margin:10px 10px 0 !important;
+padding:15px;
 
 }
 
-.card-body{
+.stat h2{
 
-padding:16px;
+font-size:26px;
+
+}
+
+.section{
+
+padding:16px 0;
+
+}
+
+.info-row{
+
+flex-direction:column;
+
+gap:4px;
+
+}
+
+.info-value{
+
+text-align:left;
+
+}
+
+.edit-btn{
+
+height:48px;
 
 }
 
@@ -329,11 +418,13 @@ padding:16px;
 
 </style>
 
-<div class="profile-box">
+<div class="profile-wrapper">
+
+<div class="profile-card">
 
 <div class="profile-header">
 
-<div class="profile-pic">
+<div class="profile-photo">
 
 {% if candidate.profile_photo %}
 
@@ -365,7 +456,11 @@ padding:16px;
 
 </div>
 
-<div class="profile-progress">
+<div class="progress-title">
+
+Profile Completion {{ profile_completion }}%
+
+</div>
 
 <div class="progress">
 
@@ -373,23 +468,13 @@ padding:16px;
 class="progress-bar bg-success"
 style="width:{{ profile_completion }}%;">
 
-{{ profile_completion }}%
-
-</div>
-
-</div>
-
-<div style="margin-top:6px;font-size:13px;">
-
-Profile Completion
-
 </div>
 
 </div>
 
 <a
 href="{{ url_for('edit_candidate_profile') }}"
-class="btn btn-light edit-btn">
+class="btn edit-btn">
 
 ✏ Edit Profile
 
@@ -397,19 +482,21 @@ class="btn btn-light edit-btn">
 
 </div>
 
+<div class="profile-body">
+
 <div class="stats">
 
-<div class="stat-card">
+<div class="stat">
 
-<h3>{{ followers_count }}</h3>
+<h2>{{ followers_count }}</h2>
 
 <p>Followers</p>
 
 </div>
 
-<div class="stat-card">
+<div class="stat">
 
-<h3>{{ following_count }}</h3>
+<h2>{{ following_count }}</h2>
 
 <p>Following</p>
 
@@ -417,149 +504,143 @@ class="btn btn-light edit-btn">
 
 </div>
 
-<div class="card">
+<div class="section">
 
-    <div class="card-header">
+    <div class="section-title">
 
         💼 Career Details
 
     </div>
 
-    <div class="card-body">
+    <div class="info-row">
 
-        <div class="info-row">
+        <div class="info-label">
 
-            <div class="info-title">
-
-                Career Level
-
-            </div>
-
-            <div class="info-value">
-
-                {{ candidate.career_level or "Not Added" }}
-
-            </div>
+            Career Level
 
         </div>
 
-        {% if candidate.career_level and candidate.career_level|trim|lower == "experienced" %}
+        <div class="info-value">
 
-        <div class="info-row">
-
-            <div class="info-title">
-
-                Company
-
-            </div>
-
-            <div class="info-value">
-
-                {{ candidate.company_name or "Not Added" }}
-
-            </div>
+            {{ candidate.career_level or "Not Added" }}
 
         </div>
-
-        <div class="info-row">
-
-            <div class="info-title">
-
-                Designation
-
-            </div>
-
-            <div class="info-value">
-
-                {{ candidate.designation or "Not Added" }}
-
-            </div>
-
-        </div>
-
-        <div class="info-row">
-
-            <div class="info-title">
-
-                Experience
-
-            </div>
-
-            <div class="info-value">
-
-                {{ candidate.experience_from or "-" }}
-
-                →
-
-                {{ candidate.experience_to or "Present" }}
-
-            </div>
-
-        </div>
-
-        {% endif %}
 
     </div>
 
+    {% if candidate.career_level and candidate.career_level|trim|lower == "experienced" %}
+
+    <div class="info-row">
+
+        <div class="info-label">
+
+            Company Name
+
+        </div>
+
+        <div class="info-value">
+
+            {{ candidate.company_name or "Not Added" }}
+
+        </div>
+
+    </div>
+
+    <div class="info-row">
+
+        <div class="info-label">
+
+            Designation
+
+        </div>
+
+        <div class="info-value">
+
+            {{ candidate.designation or "Not Added" }}
+
+        </div>
+
+    </div>
+
+    <div class="info-row">
+
+        <div class="info-label">
+
+            Experience
+
+        </div>
+
+        <div class="info-value">
+
+            {{ candidate.experience_from or "-" }}
+            →
+            {{ candidate.experience_to or "Present" }}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
 </div>
 
-<div class="card">
+<div class="section">
 
-    <div class="card-header">
+    <div class="section-title">
 
         🎓 Education
 
     </div>
 
-    <div class="card-body">
+    {% if candidate.education %}
 
-        {% if candidate.education %}
+    <div class="info-row">
 
-        <div class="info-row">
+        <div class="info-label">
 
-            <div class="info-title">
-
-                Qualification
-
-            </div>
-
-            <div class="info-value">
-
-                {{ candidate.education }}
-
-            </div>
+            Qualification
 
         </div>
 
-        {% else %}
+        <div class="info-value">
 
-        <div style="color:#6b7280;">
-
-            Education details not added.
+            {{ candidate.education }}
 
         </div>
-
-        {% endif %}
 
     </div>
 
+    {% else %}
+
+    <div
+    style="
+    color:#6b7280;
+    font-size:15px;
+    ">
+
+        Education details not added.
+
+    </div>
+
+    {% endif %}
+
 </div>
 
-<div class="card">
+<div class="section">
 
-    <div class="card-header">
+    <div class="section-title">
 
         🛠 Skills
 
     </div>
 
-    <div class="card-body">
+    {% if candidate.skills %}
 
-        {% if candidate.skills %}
+        <div>
 
-            {% for skill in candidate.skills.split(',') %}
+            {% for skill in candidate.skills.split(",") %}
 
-                <span class="badge bg-primary">
+                <span class="skill">
 
                     {{ skill.strip() }}
 
@@ -567,35 +648,39 @@ class="btn btn-light edit-btn">
 
             {% endfor %}
 
-        {% else %}
+        </div>
 
-            <div style="color:#6b7280;">
+    {% else %}
 
-                Skills not added.
+        <div
+        style="
+        color:#6b7280;
+        font-size:15px;
+        ">
 
-            </div>
+            Skills not added.
 
-        {% endif %}
+        </div>
 
-    </div>
+    {% endif %}
 
 </div>
 
-<div class="card">
+<div class="section">
 
-    <div class="card-header">
+    <div class="section-title">
 
         🎯 Interested Fields
 
     </div>
 
-    <div class="card-body">
+    {% if candidate.interested_fields %}
 
-        {% if candidate.interested_fields %}
+        <div>
 
-            {% for field in candidate.interested_fields.split(',') %}
+            {% for field in candidate.interested_fields.split(",") %}
 
-                <span class="badge bg-success">
+                <span class="field">
 
                     {{ field.strip() }}
 
@@ -603,69 +688,78 @@ class="btn btn-light edit-btn">
 
             {% endfor %}
 
-        {% else %}
+        </div>
 
-            <div style="color:#6b7280;">
+    {% else %}
 
-                No interested fields selected.
+        <div
+        style="
+        color:#6b7280;
+        font-size:15px;
+        ">
 
-            </div>
+            No interested fields selected.
 
-        {% endif %}
+        </div>
 
-    </div>
+    {% endif %}
 
 </div>
 
-<div class="card">
+<div class="section">
 
-    <div class="card-header">
+    <div class="section-title">
 
         📝 About Me
 
     </div>
 
-    <div class="card-body">
+    {% if candidate.about_me %}
 
-        {% if candidate.about_me %}
+        <div
+        style="
+        color:#374151;
+        line-height:1.8;
+        font-size:15px;
+        ">
 
-            <div style="line-height:1.8;color:#374151;">
+            {{ candidate.about_me }}
 
-                {{ candidate.about_me }}
+        </div>
 
-            </div>
+    {% else %}
 
-        {% else %}
+        <div
+        style="
+        color:#6b7280;
+        font-size:15px;
+        ">
 
-            <div style="color:#6b7280;">
+            No description added yet.
 
-                No description added yet.
+        </div>
 
-            </div>
-
-        {% endif %}
-
-    </div>
+    {% endif %}
 
 </div>
 
-<div class="card">
+<div class="section">
 
-    <div class="card-header">
+    <div class="section-title">
 
         📄 Resume
 
     </div>
 
-    <div class="card-body">
+    {% if candidate.resume_file %}
 
-        {% if candidate.resume_file %}
+    <div class="resume-card">
 
         <div
         style="
         display:flex;
-        align-items:center;
         justify-content:space-between;
+        align-items:center;
         gap:15px;
         flex-wrap:wrap;
         ">
@@ -674,7 +768,7 @@ class="btn btn-light edit-btn">
 
                 <div
                 style="
-                font-size:17px;
+                font-size:18px;
                 font-weight:700;
                 color:#111827;
                 ">
@@ -686,11 +780,11 @@ class="btn btn-light edit-btn">
                 <div
                 style="
                 color:#6b7280;
+                margin-top:4px;
                 font-size:14px;
-                margin-top:3px;
                 ">
 
-                    Download your latest resume anytime.
+                    Download your latest resume.
 
                 </div>
 
@@ -701,12 +795,12 @@ class="btn btn-light edit-btn">
             target="_blank"
             class="btn btn-success"
             style="
-            min-width:180px;
+            min-width:190px;
             height:48px;
+            border-radius:12px;
             display:flex;
             align-items:center;
             justify-content:center;
-            border-radius:12px;
             font-weight:700;
             ">
 
@@ -718,19 +812,21 @@ class="btn btn-light edit-btn">
 
         </div>
 
-        {% else %}
+    </div>
+
+    {% else %}
+
+    <div class="resume-card">
 
         <div
         style="
         text-align:center;
-        color:#6b7280;
-        padding:12px 0;
+        padding:10px 0;
         ">
 
             <div
             style="
-            font-size:45px;
-            margin-bottom:10px;
+            font-size:52px;
             ">
 
                 📄
@@ -739,8 +835,10 @@ class="btn btn-light edit-btn">
 
             <div
             style="
-            font-size:17px;
-            font-weight:600;
+            margin-top:10px;
+            font-size:18px;
+            font-weight:700;
+            color:#111827;
             ">
 
                 Resume Not Uploaded
@@ -749,19 +847,21 @@ class="btn btn-light edit-btn">
 
             <div
             style="
-            margin-top:6px;
-            font-size:14px;
+            color:#6b7280;
+            margin-top:5px;
             ">
 
-                Upload your resume to get better visibility.
+                Upload your resume to improve your profile.
 
             </div>
 
         </div>
 
-        {% endif %}
-
     </div>
+
+    {% endif %}
+
+</div>
 
 </div>
 
