@@ -13,17 +13,23 @@ name="location"
 class="form-select"
 onchange="this.form.submit()">
 
-<option value="">
-🌍 All Locations
+<option
+    value=""
+    {% if not selected_location %}selected{% endif %}>
+
+    🌎 All Locations
+
 </option>
 
 {% for city in locations %}
 
 <option
-value="{{ city }}"
-{% if city==selected_location %}selected{% endif %}>
+    value="{{ city }}"
+    {% if selected_location and selected_location.lower() == city.lower() %}
+        selected
+    {% endif %}>
 
-{{ city }}
+    {{ city }}
 
 </option>
 

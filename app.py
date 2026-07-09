@@ -6082,33 +6082,37 @@ def my_jobs():
         jobs=jobs
     )
 
+from sqlalchemy import func
+
 @app.route('/candidate-feed')
 def candidate_feed():
 
-    selected_location = request.args.get('location', '')
+    selected_location = request.args.get('location', '').strip()
 
     jobs_query = JobPost.query
 
     if selected_location:
         jobs_query = jobs_query.filter(
-            JobPost.location == selected_location
+            func.lower(JobPost.location) == selected_location.lower()
         )
 
     jobs = jobs_query.order_by(
         JobPost.created_at.desc()
     ).all()
 
-    locations = db.session.query(
-        JobPost.location
-    ).distinct().order_by(
-        JobPost.location
-    ).all()
+    # Available Locations (case-insensitive)
+    locations = (
+        db.session.query(func.lower(JobPost.location))
+        .filter(
+            JobPost.location.isnot(None),
+            JobPost.location != ""
+        )
+        .distinct()
+        .order_by(func.lower(JobPost.location))
+        .all()
+    )
 
-    locations = [
-        loc[0]
-        for loc in locations
-        if loc[0]
-    ]
+    locations = [loc[0].title() for loc in locations]
 
     selected_id = request.args.get(
         'selected',
@@ -6189,32 +6193,34 @@ def discover_hr():
         following_ids=following_ids
     )
 
+from sqlalchemy import func
+
 @app.route('/discover-candidates')
 @login_required
 def discover_candidates():
 
-    city = request.args.get('city', '')
+    city = request.args.get('city', '').strip()
 
-    # Available Cities
+    # Available Cities (case-insensitive)
     cities = (
-        db.session.query(CandidateUser.city)
+        db.session.query(func.lower(CandidateUser.city))
         .filter(
             CandidateUser.city.isnot(None),
             CandidateUser.city != ""
         )
         .distinct()
-        .order_by(CandidateUser.city.asc())
+        .order_by(func.lower(CandidateUser.city))
         .all()
     )
 
-    cities = [c[0] for c in cities]
+    cities = [c[0].title() for c in cities]
 
     # CANDIDATES
     candidate_query = CandidateUser.query
 
     if city:
         candidate_query = candidate_query.filter(
-            CandidateUser.city == city
+            func.lower(CandidateUser.city) == city.lower()
         )
 
     candidates = candidate_query.order_by(
@@ -6229,7 +6235,7 @@ def discover_candidates():
 
     if city:
         hr_query = hr_query.filter(
-            User.company_city == city
+            func.lower(User.company_city) == city.lower()
         )
 
     hrs = hr_query.order_by(
@@ -6394,15 +6400,15 @@ def applied_jobs():
 @login_required
 def feed():
 
-    selected_location = request.args.get("location", "")
+    selected_location = request.args.get("location", "").strip()
 
     query = JobPost.query.filter(
         JobPost.hr_id != current_user.id
     )
 
     if selected_location:
-        query = query.filter_by(
-            location=selected_location
+        query = query.filter(
+            func.lower(JobPost.location) == selected_location.lower()
         )
 
     jobs = query.order_by(
@@ -6419,18 +6425,19 @@ def feed():
         for app in applications
     ]
 
-    # Cities already available in database
-    locations = db.session.query(
-        JobPost.location
-    ).distinct().order_by(
-        JobPost.location
-    ).all()
+    # Available locations (case-insensitive)
+    locations = (
+        db.session.query(func.lower(JobPost.location))
+        .filter(
+            JobPost.location.isnot(None),
+            JobPost.location != ""
+        )
+        .distinct()
+        .order_by(func.lower(JobPost.location))
+        .all()
+    )
 
-    locations = [
-        city[0]
-        for city in locations
-        if city[0]
-    ]
+    locations = [loc[0].title() for loc in locations]
 
     return render_template(
         "feed.html",
