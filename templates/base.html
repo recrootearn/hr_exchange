@@ -711,6 +711,32 @@ body{
 
 }
 
+.flash-actions{
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    margin-top:20px;
+
+}
+
+.flash-actions .btn{
+
+    width:180px;
+
+    height:48px;
+
+    border-radius:12px;
+
+    font-size:18px;
+
+    font-weight:700;
+
+}
+
 .flash-box{
 
     width:92%;
@@ -732,15 +758,29 @@ body{
 
 .flash-close{
 
-    float:right;
+    position:absolute;
+
+    top:15px;
+
+    right:15px;
+
+    width:35px;
+
+    height:35px;
 
     border:none;
 
     background:none;
 
-    font-size:26px;
+    font-size:30px;
 
     color:#999;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
 
     cursor:pointer;
 
@@ -1258,10 +1298,6 @@ function toggleSidebar(){
             &times;
         </button>
 
-        <div class="flash-icon">
-            ⚠️
-        </div>
-
         <div class="flash-title">
             Notification
         </div>
@@ -1270,13 +1306,11 @@ function toggleSidebar(){
             {{ messages[0][1] }}
         </div>
 
-        <button
-            class="btn btn-primary mt-3"
-            onclick="closeFlash()">
-
-            OK
-
+        <div class="flash-actions">
+            <button class="btn btn-primary" onclick="closeFlash()">
+                OK
         </button>
+        </div>
 
     </div>
 
