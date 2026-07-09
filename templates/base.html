@@ -694,6 +694,130 @@ body{
     animation: contentFade .18s ease;
 }
 
+.flash-overlay{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    z-index:999999;
+
+    animation:fadeFlash .25s ease;
+
+}
+
+.flash-box{
+
+    width:92%;
+    max-width:360px;
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:26px 22px;
+
+    text-align:center;
+
+    box-shadow:0 20px 45px rgba(0,0,0,.25);
+
+    animation:popupFlash .28s ease;
+
+}
+
+.flash-close{
+
+    float:right;
+
+    border:none;
+
+    background:none;
+
+    font-size:26px;
+
+    color:#999;
+
+    cursor:pointer;
+
+}
+
+.flash-close:hover{
+
+    color:#111;
+
+}
+
+.flash-icon{
+
+    font-size:55px;
+
+    margin-bottom:12px;
+
+}
+
+.flash-title{
+
+    font-size:24px;
+
+    font-weight:700;
+
+    color:#111827;
+
+    margin-bottom:10px;
+
+}
+
+.flash-message{
+
+    font-size:16px;
+
+    color:#555;
+
+    line-height:1.6;
+
+}
+
+@keyframes popupFlash{
+
+    from{
+
+        opacity:0;
+
+        transform:scale(.75);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:scale(1);
+
+    }
+
+}
+
+@keyframes fadeFlash{
+
+    from{
+
+        opacity:0;
+
+    }
+
+    to{
+
+        opacity:1;
+
+    }
+
+}
+
 @keyframes contentFade{
     from{
         opacity:0;
@@ -1122,22 +1246,42 @@ function toggleSidebar(){
 
 {% if request.endpoint != 'login' %}
 
-{% with messages = get_flashed_messages() %}
+{% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
-<div style="
-position:fixed;
-top:20px;
-right:20px;
-background:#fff3cd;
-color:#856404;
-padding:12px 18px;
-border-radius:10px;
-box-shadow:0 4px 12px rgba(0,0,0,0.2);
-z-index:9999;
-font-weight:600;
-">
-    {{ messages[0] }}
+
+<div id="flashOverlay" class="flash-overlay">
+
+    <div class="flash-box">
+
+        <button class="flash-close"
+                onclick="closeFlash()">
+            &times;
+        </button>
+
+        <div class="flash-icon">
+            ⚠️
+        </div>
+
+        <div class="flash-title">
+            Notification
+        </div>
+
+        <div class="flash-message">
+            {{ messages[0][1] }}
+        </div>
+
+        <button
+            class="btn btn-primary mt-3"
+            onclick="closeFlash()">
+
+            OK
+
+        </button>
+
+    </div>
+
 </div>
+
 {% endif %}
 {% endwith %}
 
@@ -1156,6 +1300,29 @@ document.querySelectorAll(".nav-btn").forEach(btn => {
     }
 
 });
+
+</script>
+
+<script>
+
+function closeFlash(){
+
+    const box =
+    document.getElementById("flashOverlay");
+
+    if(box){
+
+        box.style.display="none";
+
+    }
+
+}
+
+setTimeout(function(){
+
+    closeFlash();
+
+},3000);
 
 </script>
 
