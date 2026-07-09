@@ -6177,13 +6177,26 @@ def discover_candidates():
 
     city = request.args.get('city', '')
 
-    # CANDIDATES
+    # Available Cities
+    cities = (
+        db.session.query(CandidateUser.city)
+        .filter(
+            CandidateUser.city.isnot(None),
+            CandidateUser.city != ""
+        )
+        .distinct()
+        .order_by(CandidateUser.city.asc())
+        .all()
+    )
 
+    cities = [c[0] for c in cities]
+
+    # CANDIDATES
     candidate_query = CandidateUser.query
 
     if city:
         candidate_query = candidate_query.filter(
-            CandidateUser.city.contains(city)
+            CandidateUser.city == city
         )
 
     candidates = candidate_query.order_by(
@@ -6191,16 +6204,15 @@ def discover_candidates():
     ).all()
 
     # HRS
-
     hr_query = User.query.filter(
-    User.is_admin == False,
-    User.id != current_user.id
+        User.is_admin == False,
+        User.id != current_user.id
     )
 
     if city:
         hr_query = hr_query.filter(
-            User.company_city.contains(city)
-    )
+            User.company_city == city
+        )
 
     hrs = hr_query.order_by(
         User.id.desc()
@@ -6211,6 +6223,7 @@ def discover_candidates():
         candidates=candidates,
         hrs=hrs,
         city=city,
+        cities=cities,
         Follow=Follow
     )
 
