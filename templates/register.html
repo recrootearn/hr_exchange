@@ -392,62 +392,80 @@ select.form-control{
                 <i class="fas fa-phone"></i>
 
                 <input
-                type="tel"
-                name="mobile"
-                class="form-control"
-                maxlength="10"
-                inputmode="numeric"
-                placeholder="Enter Mobile Number"
-                required
-                oninput="
-                this.value=this.value.replace(/[^0-9]/g,'');
-                if(this.value.length>0 && !/^[6-9]/.test(this.value)){
-                    this.value='';
-                }
-                this.value=this.value.slice(0,10);
-                ">
+                    type="tel"
+                    id="mobile"
+                    name="mobile"
+                    class="form-control"
+                    maxlength="10"
+                    inputmode="numeric"
+                    placeholder="Enter Mobile Number"
+                    required
+                    oninput="
+                        this.value=this.value.replace(/[^0-9]/g,'');
+                        if(this.value.length>0 && !/^[6-9]/.test(this.value)){
+                            this.value='';
+                        }
+                        this.value=this.value.slice(0,10);
+                    ">
 
-                <small id="mobileStatus"></small>
+            </div>
 
-                <div class="mt-2">
+            <small
+                id="mobileStatus"
+                class="d-block mt-2">
+            </small>
 
-                    <button
-                        type="button"
-                        id="sendOtpBtn"
-                        class="btn btn-primary w-100">
-                        Send OTP
-                    </button>
+            <div class="mt-2">
 
-                </div>
+                <button
+                    type="button"
+                    id="sendOtpBtn"
+                    class="btn btn-primary w-100">
 
-                <div id="otpSection" style="display:none;" class="mt-3">
+                    Send OTP
 
-                    <input
-                        type="text"
-                        id="otp"
-                        class="form-control"
-                        maxlength="6"
-                        placeholder="Enter OTP">
+                </button>
 
-                    <button
-                        type="button"
-                        id="verifyOtpBtn"
-                        class="btn btn-success w-100 mt-2">
-                        Verify OTP
-                    </button>
+            </div>
 
-                    <button
-                        type="button"
-                        id="resendOtpBtn"
-                        class="btn btn-link w-100 mt-2"
-                        style="display:none;">
-                        Resend OTP
-                    </button>
+            <div
+                id="otpSection"
+                style="display:none;"
+                class="mt-3">
 
-                    <small id="otpMessage"></small>
+                <input
+                    type="text"
+                    id="otp"
+                    name="otp"
+                    class="form-control"
+                    maxlength="6"
+                    inputmode="numeric"
+                    placeholder="Enter 6 Digit OTP">
 
-                </div>  
-  
+                <button
+                    type="button"
+                    id="verifyOtpBtn"
+                    class="btn btn-success w-100 mt-2">
+
+                    Verify OTP
+
+                </button>
+
+                <button
+                    type="button"
+                    id="resendOtpBtn"
+                    class="btn btn-link w-100 mt-2"
+                    style="display:none;">
+
+                    Resend OTP
+
+                </button>
+
+                <small
+                    id="otpMessage"
+                    class="d-block mt-2">
+                </small>
+
             </div>
 
         </div>
