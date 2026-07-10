@@ -456,6 +456,41 @@ document.querySelector('input[name="mobile"]').addEventListener("input", functio
 
 <script>
 
+var configuration = {
+
+    widgetId: "36676a676343313137323133",
+
+    tokenAuth: "546033TFUN4xUNi6a436063P1",
+
+    identifier: null,
+
+    exposeMethods: true,
+
+    success: function (data) {
+
+        console.log("MSG91 Success:", data);
+
+        window.msg91Data = data;
+
+    },
+
+    failure: function (error) {
+
+        console.log("MSG91 Error:", error);
+
+    }
+
+};
+
+</script>
+
+<script
+src="https://verify.msg91.com/otp-provider.js"
+onload="initSendOTP(configuration)">
+</script>
+
+<script>
+
 let candidateOtpVerified = false;
 
 // SEND OTP
@@ -470,36 +505,58 @@ document.getElementById("sendOtpBtn").onclick = function () {
             "<span class='text-danger'>Enter a valid mobile number.</span>";
 
         return;
+
     }
 
-    fetch("/candidate-send-otp", {
-
-        method: "POST",
-
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-
-        body: "mobile=" + encodeURIComponent(mobile)
-
-    })
+    fetch("/check-mobile?mobile=" + mobile)
 
     .then(r => r.json())
 
     .then(data => {
 
-        document.getElementById("otpStatus").innerHTML = data.message;
+        if (data.exists) {
 
-        if (data.success) {
+            document.getElementById("otpStatus").innerHTML =
+            "<span class='text-danger'>Mobile already registered.</span>";
 
-            document.getElementById("otpBox").style.display = "block";
+            return;
 
         }
+
+        window.sendOtp(
+
+            "91" + mobile,
+
+            function(data){
+
+                console.log("MSG91 SEND OTP", data);
+
+                msg91ReqId =
+                    data.reqId ||
+                    data.requestId ||
+                    "";
+
+                document.getElementById("otpBox").style.display = "block";
+
+                document.getElementById("otpStatus").innerHTML =
+                "<span class='text-success'>OTP Sent Successfully.</span>";
+
+            },
+
+            function(error){
+
+                console.log(error);
+
+                document.getElementById("otpStatus").innerHTML =
+                "<span class='text-danger'>Unable to send OTP.</span>";
+
+            }
+
+        );
 
     });
 
 };
-
 
 // VERIFY OTP
 
@@ -531,7 +588,11 @@ document.getElementById("verifyOtpBtn").onclick = function () {
 
         if (data.success) {
 
-            candidateOtpVerified = true;
+            let candidateOtpVerified = false;
+
+            let msg91ReqId = "";
+
+            let msg91AccessToken = "";
 
             document.getElementById("verifyOtpBtn").disabled = true;
 
