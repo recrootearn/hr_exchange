@@ -2134,6 +2134,96 @@ def test_push():
         "response": response
     }
 
+@app.route("/candidate-send-otp", methods=["POST"])
+def candidate_send_otp():
+
+    mobile = request.form.get("mobile", "").strip()
+
+    if len(mobile) != 10:
+        return jsonify({
+            "success": False,
+            "message": "Enter a valid mobile number."
+        })
+
+    # Duplicate check
+    if CandidateUser.query.filter_by(mobile=mobile).first():
+        return jsonify({
+            "success": False,
+            "message": "❌ Mobile number already registered."
+        })
+
+    try:
+        result = send_msg91_otp(mobile)
+
+        return jsonify({
+            "success": True,
+            "message": "✅ OTP sent successfully."
+        })
+
+    except Exception as e:
+
+        print(e)
+
+        return jsonify({
+            "success": False,
+            "message": "Unable to send OTP."
+        })
+
+@app.route("/candidate-verify-otp", methods=["POST"])
+def candidate_verify_otp():
+
+    mobile = request.form.get("mobile", "").strip()
+    otp = request.form.get("otp", "").strip()
+
+    try:
+
+        result = verify_msg91_otp(mobile, otp)
+
+        if result.get("type") == "success":
+
+            session["candidate_mobile_verified"] = True
+            session["candidate_mobile"] = mobile
+
+            return jsonify({
+                "success": True,
+                "message": "✅ Mobile verified successfully."
+            })
+
+        return jsonify({
+            "success": False,
+            "message": "❌ Invalid OTP."
+        })
+
+    except Exception as e:
+
+        print(e)
+
+        return jsonify({
+            "success": False,
+            "message": "OTP verification failed."
+        })
+
+@app.route("/candidate-resend-otp", methods=["POST"])
+def candidate_resend_otp():
+
+    mobile = request.form.get("mobile", "").strip()
+
+    try:
+
+        send_msg91_otp(mobile)
+
+        return jsonify({
+            "success": True,
+            "message": "✅ OTP resent successfully."
+        })
+
+    except Exception:
+
+        return jsonify({
+            "success": False,
+            "message": "Unable to resend OTP."
+        })
+
 @app.route("/send-otp", methods=["POST"])
 def send_otp():
 
@@ -4022,6 +4112,18 @@ def candidate_register():
 
     if request.method == 'POST':
 
+        # ==========================
+        # OTP VERIFICATION CHECK
+        # ==========================
+        if not session.get("candidate_otp_verified"):
+
+            flash(
+                "Please verify your mobile number first.",
+                "danger"
+            )
+
+            return redirect('/candidate-register')
+
         full_name = request.form['full_name']
         mobile = request.form['mobile'].strip()
         email = request.form['email'].strip().lower()
@@ -4039,7 +4141,7 @@ def candidate_register():
 
         if not referred_hr:
             referred_candidate = CandidateUser.query.filter_by(
-        candidate_referral_code=entered_code
+                candidate_referral_code=entered_code
             ).first()
 
         # VALIDATE INDIAN MOBILE NUMBER
@@ -4062,6 +4164,15 @@ def candidate_register():
         existing_candidate = CandidateUser.query.filter_by(
             username=username
         ).first()
+
+        if existing_hr or existing_candidate:
+
+            flash(
+                "Username already exists.",
+                "danger"
+            )
+
+            return redirect('/candidate-register')
 
         # CHECK MOBILE
 
@@ -4136,9 +4247,10 @@ def candidate_register():
 
         if request.form.get("dob"):
             dob = datetime.strptime(
-        request.form.get("dob"),
+                request.form.get("dob"),
                 "%Y-%m-%d"
             ).date()
+
         city = request.form.get("city")
         qualification = request.form.get("qualification")
 
@@ -4181,7 +4293,7 @@ def candidate_register():
             candidate_referral_code=generate_candidate_referral_code(),
 
             referred_by_candidate_code=(
-            referred_candidate.candidate_referral_code
+                referred_candidate.candidate_referral_code
                 if referred_candidate
                 else None
             ),
@@ -4197,6 +4309,13 @@ def candidate_register():
         db.session.add(candidate)
 
         db.session.commit()
+
+        # ==========================
+        # CLEAR OTP SESSION
+        # ==========================
+        session.pop("candidate_otp_mobile", None)
+        session.pop("candidate_otp_verified", None)
+        session.pop("candidate_mobile", None)
 
         flash(
             'Registration Successful. Please Login.',
