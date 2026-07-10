@@ -468,7 +468,8 @@ var configuration = {
 
     success: function (data) {
 
-        console.log("MSG91 Success:", data);
+        alert(JSON.stringify(data));
+        console.log("MSG91 SEND OTP", data);
 
         window.msg91Data = data;
 
@@ -545,6 +546,7 @@ document.getElementById("sendOtpBtn").onclick = function () {
 
             function(error){
 
+                alert(JSON.stringify(error));
                 console.log(error);
 
                 document.getElementById("otpStatus").innerHTML =
