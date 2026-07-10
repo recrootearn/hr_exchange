@@ -2143,23 +2143,15 @@ def test_push():
 @app.route("/send-otp", methods=["POST"])
 def send_otp():
 
+    print("===== SEND OTP ROUTE CALLED =====")
+
     mobile = request.form.get("mobile", "").strip()
 
-    if not mobile:
-
-        return jsonify({
-            "success": False,
-            "message": "Mobile number required."
-        })
-
-    if len(mobile) != 10:
-
-        return jsonify({
-            "success": False,
-            "message": "Invalid mobile number."
-        })
+    print("Mobile:", mobile)
 
     response = send_msg91_otp(mobile)
+
+    print("MSG91 RESPONSE:", response)
 
     if response.get("type") == "success":
 
@@ -2173,7 +2165,7 @@ def send_otp():
 
     return jsonify({
         "success": False,
-        "message": response.get("message", "Unable to send OTP.")
+        "message": str(response)
     })
 
 @app.route("/verify-otp", methods=["POST"])
