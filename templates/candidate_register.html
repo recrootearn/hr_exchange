@@ -467,7 +467,7 @@ var configuration = {
 
     tokenAuth: "546033TFUN4xUNi6a436063P1",
 
-    identifier: null,
+    identifier: "919584642181",
 
     exposeMethods: true,
 
@@ -531,7 +531,16 @@ document.getElementById("sendOtpBtn").onclick = function () {
 
         }
 
-        window.sendOtp(
+        if (!window.isCaptchaVerified()) {
+
+    document.getElementById("otpStatus").innerHTML =
+        "<span class='text-danger'>Please complete the captcha.</span>";
+
+    return;
+
+}
+
+window.sendOtp(
 
     "91" + mobile,
 
