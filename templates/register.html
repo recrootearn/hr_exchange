@@ -949,109 +949,264 @@ document.querySelector('input[name="mobile"]').addEventListener("input", functio
 
 <script>
 
-const sendBtn = document.getElementById("sendOtpBtn");
-const verifyBtn = document.getElementById("verifyOtpBtn");
-const resendBtn = document.getElementById("resendOtpBtn");
+document.addEventListener("DOMContentLoaded", function () {
 
-const registerBtn = document.getElementById("registerBtn");
+    const sendBtn = document.getElementById("sendOtpBtn");
+    const verifyBtn = document.getElementById("verifyOtpBtn");
+    const resendBtn = document.getElementById("resendOtpBtn");
+    const registerBtn = document.getElementById("registerBtn");
 
-sendBtn.onclick = function(){
+    const mobileInput = document.getElementById("mobile");
+    const otpInput = document.getElementById("otp");
 
-    fetch("/send-otp",{
+    const otpSection = document.getElementById("otpSection");
+    const otpMessage = document.getElementById("otpMessage");
 
-        method:"POST",
+    if (!sendBtn || !verifyBtn || !resendBtn || !registerBtn || !mobileInput) {
+        console.log("OTP Elements Missing");
+        return;
+    }
 
-        headers:{
-            "Content-Type":"application/x-www-form-urlencoded"
-        },
+    // =========================
+    // SEND OTP
+    // =========================
 
-        body:"mobile="+
-        document.getElementById("mobile").value
+    sendBtn.addEventListener("click", function () {
 
-    })
+        let mobile = mobileInput.value.trim();
 
-    .then(r=>r.json())
+        if (!/^[6-9]\d{9}$/.test(mobile)) {
 
-    .then(data=>{
+            otpMessage.innerHTML = "Please enter a valid mobile number.";
+            otpMessage.style.color = "red";
 
-        document.getElementById("otpMessage").innerHTML=data.message;
-
-        if(data.success){
-
-            document.getElementById("otpSection").style.display="block";
-
-            resendBtn.style.display="block";
-
-        }
-
-    });
-
-};
-
-verifyBtn.onclick=function(){
-
-    fetch("/verify-otp",{
-
-        method:"POST",
-
-        headers:{
-            "Content-Type":"application/x-www-form-urlencoded"
-        },
-
-        body=
-
-        "mobile="+
-        document.getElementById("mobile").value+
-
-        "&otp="+
-        document.getElementById("otp").value
-
-    })
-
-    .then(r=>r.json())
-
-    .then(data=>{
-
-        document.getElementById("otpMessage").innerHTML=data.message;
-
-        if(data.success){
-
-            registerBtn.disabled=false;
-
-            sendBtn.disabled=true;
-
-            verifyBtn.disabled=true;
+            return;
 
         }
 
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = "Sending OTP...";
+
+        fetch("/send-otp", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+
+            body: "mobile=" + encodeURIComponent(mobile)
+
+        })
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            otpMessage.innerHTML = data.message;
+
+            if (data.success) {
+
+                otpMessage.style.color = "green";
+
+                otpSection.style.display = "block";
+
+                let seconds = 30;
+
+                resendBtn.style.display = "none";
+
+                let timer = setInterval(function () {
+
+                    seconds--;
+
+                    otpMessage.innerHTML =
+                        "OTP Sent. Resend available in " +
+                        seconds +
+                        " sec";
+
+                    if (seconds <= 0) {
+
+                        clearInterval(timer);
+
+                        otpMessage.innerHTML = "";
+
+                        resendBtn.style.display = "block";
+
+                    }
+
+                }, 1000);
+
+            }
+
+            else {
+
+                otpMessage.style.color = "red";
+
+            }
+
+        })
+
+        .catch(function (err) {
+
+            console.log(err);
+
+            otpMessage.innerHTML =
+                "Unable to connect to server.";
+
+            otpMessage.style.color = "red";
+
+        })
+
+        .finally(function () {
+
+            sendBtn.disabled = false;
+
+            sendBtn.innerHTML = "Send OTP";
+
+        });
+
     });
 
-};
+    // =========================
+    // VERIFY OTP
+    // =========================
 
-resendBtn.onclick=function(){
+    verifyBtn.addEventListener("click", function () {
 
-    fetch("/resend-otp",{
+        let mobile = mobileInput.value.trim();
 
-        method:"POST",
+        let otp = otpInput.value.trim();
 
-        headers:{
-            "Content-Type":"application/x-www-form-urlencoded"
-        },
+        if (otp.length != 6) {
 
-        body:"mobile="+
-        document.getElementById("mobile").value
+            otpMessage.innerHTML = "Enter 6 digit OTP.";
 
-    })
+            otpMessage.style.color = "red";
 
-    .then(r=>r.json())
+            return;
 
-    .then(data=>{
+        }
 
-        document.getElementById("otpMessage").innerHTML=data.message;
+        verifyBtn.disabled = true;
+
+        verifyBtn.innerHTML = "Verifying...";
+
+        fetch("/verify-otp", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+
+            body:
+
+                "mobile=" +
+                encodeURIComponent(mobile) +
+
+                "&otp=" +
+                encodeURIComponent(otp)
+
+        })
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            otpMessage.innerHTML = data.message;
+
+            if (data.success) {
+
+                otpMessage.style.color = "green";
+
+                registerBtn.disabled = false;
+
+                mobileInput.readOnly = true;
+
+                otpInput.readOnly = true;
+
+                sendBtn.disabled = true;
+
+                verifyBtn.disabled = true;
+
+                resendBtn.style.display = "none";
+
+            }
+
+            else {
+
+                otpMessage.style.color = "red";
+
+                verifyBtn.disabled = false;
+
+                verifyBtn.innerHTML = "Verify OTP";
+
+            }
+
+        })
+
+        .catch(function (err) {
+
+            console.log(err);
+
+            otpMessage.innerHTML =
+                "Unable to verify OTP.";
+
+            otpMessage.style.color = "red";
+
+            verifyBtn.disabled = false;
+
+            verifyBtn.innerHTML = "Verify OTP";
+
+        });
 
     });
 
-};
+    // =========================
+    // RESEND OTP
+    // =========================
+
+    resendBtn.addEventListener("click", function () {
+
+        let mobile = mobileInput.value.trim();
+
+        fetch("/resend-otp", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+
+            body:
+                "mobile=" +
+                encodeURIComponent(mobile)
+
+        })
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            otpMessage.innerHTML = data.message;
+
+            otpMessage.style.color =
+                data.success ? "green" : "red";
+
+        })
+
+        .catch(function () {
+
+            otpMessage.innerHTML =
+                "Unable to resend OTP.";
+
+            otpMessage.style.color = "red";
+
+        });
+
+    });
+
+});
 
 </script>
 
