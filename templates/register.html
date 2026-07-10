@@ -421,6 +421,11 @@ select.form-control{
 
     </button>
 
+    <small
+        id="mobileStatus"
+        class="d-block mt-2">
+    </small>
+
     <div
         id="otpStatus"
         class="alert alert-success mt-2"
@@ -970,21 +975,40 @@ onload="initSendOTP(configuration)">
 
 <script>
 
-document.getElementById("verifyMobileBtn").onclick=function(){
+document.getElementById("verifyMobileBtn").onclick = function () {
 
-    var mobile=document.getElementById("mobile").value.trim();
+    var mobile = document.getElementById("mobile").value.trim();
 
-    if(mobile.length!=10){
-
+    if (mobile.length != 10) {
         alert("Enter valid mobile number.");
-
         return;
-
     }
 
-    configuration.identifier="91"+mobile;
+    // First check if number already exists
+    fetch('/check-mobile?mobile=' + mobile)
+    .then(r => r.json())
+    .then(data => {
 
-    initSendOTP(configuration);
+        if (data.exists) {
+
+            document.getElementById("mobileStatus").innerHTML =
+                "❌ Mobile already registered";
+
+            document.getElementById("mobileStatus").style.color = "red";
+
+            return;
+        }
+
+        document.getElementById("mobileStatus").innerHTML =
+            "✅ Mobile available";
+
+        document.getElementById("mobileStatus").style.color = "green";
+
+        configuration.identifier = "91" + mobile;
+
+        initSendOTP(configuration);
+
+    });
 
 };
 
