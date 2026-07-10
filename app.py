@@ -1270,6 +1270,9 @@ def send_msg91_otp(mobile):
         data=payload
     )
 
+    print("STATUS:", response.status_code)
+    print("RESPONSE:", response.text)
+
     return response.json()
 
 # ==========================
