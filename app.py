@@ -1242,36 +1242,30 @@ def safe_wallet_debit(user, amount):
 
 def send_msg91_otp(mobile):
 
+    print("===== CALLING MSG91 =====")
+    print("AUTH:", MSG91_AUTH_KEY)
+    print("TEMPLATE:", MSG91_TEMPLATE_ID)
+    print("SENDER:", MSG91_SENDER_ID)
+    print("MOBILE:", mobile)
+
     url = "https://control.msg91.com/api/v5/otp"
 
     headers = {
-
         "authkey": MSG91_AUTH_KEY
-
     }
 
     payload = {
-
         "mobile": "91" + mobile,
-
         "template_id": MSG91_TEMPLATE_ID,
-
+        "sender": MSG91_SENDER_ID,
         "otp_length": 6,
-
-        "otp_expiry": 10,
-
-        "sender": MSG91_SENDER_ID
-
+        "otp_expiry": 10
     }
 
-    response = requests.post(
-        url,
-        headers=headers,
-        data=payload
-    )
+    response = requests.post(url, headers=headers, data=payload)
 
     print("STATUS:", response.status_code)
-    print("RESPONSE:", response.text)
+    print("BODY:", response.text)
 
     return response.json()
 
