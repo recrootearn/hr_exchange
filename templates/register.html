@@ -385,90 +385,60 @@ select.form-control{
 
         <div class="form-group">
 
-            <label class="form-label">Mobile Number</label>
+            <div class="form-group">
 
-            <div class="input-box">
+    <label class="form-label">Mobile Number</label>
 
-                <i class="fas fa-phone"></i>
+    <div class="input-box">
 
-                <input
-                    type="tel"
-                    id="mobile"
-                    name="mobile"
-                    class="form-control"
-                    maxlength="10"
-                    inputmode="numeric"
-                    placeholder="Enter Mobile Number"
-                    required
-                    oninput="
-                        this.value=this.value.replace(/[^0-9]/g,'');
-                        if(this.value.length>0 && !/^[6-9]/.test(this.value)){
-                            this.value='';
-                        }
-                        this.value=this.value.slice(0,10);
-                    ">
+        <i class="fas fa-phone"></i>
 
-            </div>
+        <input
+            type="tel"
+            id="mobile"
+            name="mobile"
+            class="form-control"
+            maxlength="10"
+            inputmode="numeric"
+            placeholder="Enter Mobile Number"
+            required
+            oninput="
+                this.value=this.value.replace(/[^0-9]/g,'');
+                if(this.value.length>0 && !/^[6-9]/.test(this.value)){
+                    this.value='';
+                }
+                this.value=this.value.slice(0,10);
+            ">
 
-            <small
-                id="mobileStatus"
-                class="d-block mt-2">
-            </small>
+    </div>
 
-            <div class="mt-2">
+    <button
+        type="button"
+        id="verifyMobileBtn"
+        class="btn btn-primary w-100 mt-2">
 
-                <button
-                    type="button"
-                    id="sendOtpBtn"
-                    class="btn btn-primary w-100">
+        Verify Mobile Number
 
-                    Send OTP
+    </button>
 
-                </button>
+    <div
+        id="otpStatus"
+        class="alert alert-success mt-2"
+        style="display:none;">
 
-            </div>
+    </div>
 
-            <div
-                id="otpSection"
-                style="display:none;"
-                class="mt-3">
+    <input
+        type="hidden"
+        id="msg91AccessToken"
+        name="msg91AccessToken">
 
-                <input
-                    type="text"
-                    id="otp"
-                    name="otp"
-                    class="form-control"
-                    maxlength="6"
-                    inputmode="numeric"
-                    placeholder="Enter 6 Digit OTP">
+    <input
+        type="hidden"
+        id="mobileVerified"
+        value="0">
 
-                <button
-                    type="button"
-                    id="verifyOtpBtn"
-                    class="btn btn-success w-100 mt-2">
-
-                    Verify OTP
-
-                </button>
-
-                <button
-                    type="button"
-                    id="resendOtpBtn"
-                    class="btn btn-link w-100 mt-2"
-                    style="display:none;">
-
-                    Resend OTP
-
-                </button>
-
-                <small
-                    id="otpMessage"
-                    class="d-block mt-2">
-                </small>
-
-            </div>
-
-        </div>
+</div>
 
         <div class="form-group">
 
@@ -949,264 +919,74 @@ document.querySelector('input[name="mobile"]').addEventListener("input", functio
 
 <script>
 
-document.addEventListener("DOMContentLoaded", function () {
+var configuration = {
 
-    const sendBtn = document.getElementById("sendOtpBtn");
-    const verifyBtn = document.getElementById("verifyOtpBtn");
-    const resendBtn = document.getElementById("resendOtpBtn");
-    const registerBtn = document.getElementById("registerBtn");
+    widgetId: "36676a676343313137323133",
 
-    const mobileInput = document.getElementById("mobile");
-    const otpInput = document.getElementById("otp");
+    tokenAuth: "546033TFUN4xUNi6a436063P1",
 
-    const otpSection = document.getElementById("otpSection");
-    const otpMessage = document.getElementById("otpMessage");
+    identifier: "",
 
-    if (!sendBtn || !verifyBtn || !resendBtn || !registerBtn || !mobileInput) {
-        console.log("OTP Elements Missing");
-        return;
+    exposeMethods: true,
+
+    success: function(data){
+
+        console.log(data);
+
+        document.getElementById("msg91AccessToken").value =
+            data.accessToken || data.token || "";
+
+        document.getElementById("mobileVerified").value = "1";
+
+        document.getElementById("registerBtn").disabled = false;
+
+        document.getElementById("verifyMobileBtn").disabled = true;
+
+        document.getElementById("mobile").readOnly = true;
+
+        document.getElementById("otpStatus").style.display="block";
+
+        document.getElementById("otpStatus").innerHTML =
+        "✅ Mobile Number Verified Successfully";
+
+    },
+
+    failure: function(error){
+
+        console.log(error);
+
+        alert("OTP Verification Failed.");
+
     }
 
-    // =========================
-    // SEND OTP
-    // =========================
+};
 
-    sendBtn.addEventListener("click", function () {
+</script>
 
-        let mobile = mobileInput.value.trim();
+<script
+src="https://verify.msg91.com/otp-provider.js"
+onload="initSendOTP(configuration)">
+</script>
 
-        if (!/^[6-9]\d{9}$/.test(mobile)) {
+<script>
 
-            otpMessage.innerHTML = "Please enter a valid mobile number.";
-            otpMessage.style.color = "red";
+document.getElementById("verifyMobileBtn").onclick=function(){
 
-            return;
+    var mobile=document.getElementById("mobile").value.trim();
 
-        }
+    if(mobile.length!=10){
 
-        sendBtn.disabled = true;
-        sendBtn.innerHTML = "Sending OTP...";
+        alert("Enter valid mobile number.");
 
-        fetch("/send-otp", {
+        return;
 
-            method: "POST",
+    }
 
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
+    configuration.identifier="91"+mobile;
 
-            body: "mobile=" + encodeURIComponent(mobile)
+    initSendOTP(configuration);
 
-        })
-
-        .then(response => response.json())
-
-        .then(data => {
-
-            otpMessage.innerHTML = data.message;
-
-            if (data.success) {
-
-                otpMessage.style.color = "green";
-
-                otpSection.style.display = "block";
-
-                let seconds = 30;
-
-                resendBtn.style.display = "none";
-
-                let timer = setInterval(function () {
-
-                    seconds--;
-
-                    otpMessage.innerHTML =
-                        "OTP Sent. Resend available in " +
-                        seconds +
-                        " sec";
-
-                    if (seconds <= 0) {
-
-                        clearInterval(timer);
-
-                        otpMessage.innerHTML = "";
-
-                        resendBtn.style.display = "block";
-
-                    }
-
-                }, 1000);
-
-            }
-
-            else {
-
-                otpMessage.style.color = "red";
-
-            }
-
-        })
-
-        .catch(function (err) {
-
-            console.log(err);
-
-            otpMessage.innerHTML =
-                "Unable to connect to server.";
-
-            otpMessage.style.color = "red";
-
-        })
-
-        .finally(function () {
-
-            sendBtn.disabled = false;
-
-            sendBtn.innerHTML = "Send OTP";
-
-        });
-
-    });
-
-    // =========================
-    // VERIFY OTP
-    // =========================
-
-    verifyBtn.addEventListener("click", function () {
-
-        let mobile = mobileInput.value.trim();
-
-        let otp = otpInput.value.trim();
-
-        if (otp.length != 6) {
-
-            otpMessage.innerHTML = "Enter 6 digit OTP.";
-
-            otpMessage.style.color = "red";
-
-            return;
-
-        }
-
-        verifyBtn.disabled = true;
-
-        verifyBtn.innerHTML = "Verifying...";
-
-        fetch("/verify-otp", {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-
-            body:
-
-                "mobile=" +
-                encodeURIComponent(mobile) +
-
-                "&otp=" +
-                encodeURIComponent(otp)
-
-        })
-
-        .then(response => response.json())
-
-        .then(data => {
-
-            otpMessage.innerHTML = data.message;
-
-            if (data.success) {
-
-                otpMessage.style.color = "green";
-
-                registerBtn.disabled = false;
-
-                mobileInput.readOnly = true;
-
-                otpInput.readOnly = true;
-
-                sendBtn.disabled = true;
-
-                verifyBtn.disabled = true;
-
-                resendBtn.style.display = "none";
-
-            }
-
-            else {
-
-                otpMessage.style.color = "red";
-
-                verifyBtn.disabled = false;
-
-                verifyBtn.innerHTML = "Verify OTP";
-
-            }
-
-        })
-
-        .catch(function (err) {
-
-            console.log(err);
-
-            otpMessage.innerHTML =
-                "Unable to verify OTP.";
-
-            otpMessage.style.color = "red";
-
-            verifyBtn.disabled = false;
-
-            verifyBtn.innerHTML = "Verify OTP";
-
-        });
-
-    });
-
-    // =========================
-    // RESEND OTP
-    // =========================
-
-    resendBtn.addEventListener("click", function () {
-
-        let mobile = mobileInput.value.trim();
-
-        fetch("/resend-otp", {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-
-            body:
-                "mobile=" +
-                encodeURIComponent(mobile)
-
-        })
-
-        .then(response => response.json())
-
-        .then(data => {
-
-            otpMessage.innerHTML = data.message;
-
-            otpMessage.style.color =
-                data.success ? "green" : "red";
-
-        })
-
-        .catch(function () {
-
-            otpMessage.innerHTML =
-                "Unable to resend OTP.";
-
-            otpMessage.style.color = "red";
-
-        });
-
-    });
-
-});
+};
 
 </script>
 
