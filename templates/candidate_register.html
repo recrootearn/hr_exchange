@@ -546,37 +546,25 @@ window.sendOtp(
 
     function(data){
 
-        alert("Captcha Verified : " + window.isCaptchaVerified());
+        alert("SUCCESS CALLBACK");
 
-        console.log("MSG91 SEND OTP", data);
+        alert(JSON.stringify(data));
 
-        msg91ReqId =
-            data.reqId ||
-            data.requestId ||
-            "";
-
-        document.getElementById("otpBox").style.display = "block";
-
-        document.getElementById("otpStatus").innerHTML =
-        "<span class='text-success'>OTP Sent Successfully.</span>";
+        console.log(data);
 
     },
 
-            function(error){
+    function(error){
 
-                alert(JSON.stringify(error));
-                console.log(error);
+        alert("ERROR CALLBACK");
 
-                document.getElementById("otpStatus").innerHTML =
-                "<span class='text-danger'>Unable to send OTP.</span>";
+        alert(JSON.stringify(error));
 
-            }
+        console.log(error);
 
-        );
+    }
 
-    });
-
-};
+);
 
 // VERIFY OTP
 
