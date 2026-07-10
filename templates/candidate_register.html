@@ -137,6 +137,11 @@ body{
 
             <div id="otpSection" class="mt-3">
 
+    <div
+    id="msg91Captcha"
+    class="mt-3 mb-3 d-flex justify-content-center">
+    </div>
+
     <button
         type="button"
         class="btn btn-primary w-100"
@@ -466,6 +471,8 @@ var configuration = {
 
     exposeMethods: true,
 
+    captchaRenderId: "msg91Captcha",
+
     success: function (data) {
 
         alert(JSON.stringify(data));
@@ -526,23 +533,25 @@ document.getElementById("sendOtpBtn").onclick = function () {
 
         window.sendOtp(
 
-            "91" + mobile,
+    "91" + mobile,
 
-            function(data){
+    function(data){
 
-                console.log("MSG91 SEND OTP", data);
+        alert("Captcha Verified : " + window.isCaptchaVerified());
 
-                msg91ReqId =
-                    data.reqId ||
-                    data.requestId ||
-                    "";
+        console.log("MSG91 SEND OTP", data);
 
-                document.getElementById("otpBox").style.display = "block";
+        msg91ReqId =
+            data.reqId ||
+            data.requestId ||
+            "";
 
-                document.getElementById("otpStatus").innerHTML =
-                "<span class='text-success'>OTP Sent Successfully.</span>";
+        document.getElementById("otpBox").style.display = "block";
 
-            },
+        document.getElementById("otpStatus").innerHTML =
+        "<span class='text-success'>OTP Sent Successfully.</span>";
+
+    },
 
             function(error){
 
