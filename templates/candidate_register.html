@@ -348,8 +348,24 @@ body{
             required>
         </div>
 
-        <button class="btn-register">
-            Create Candidate Account
+        <input
+        type="hidden"
+        id="msg91AccessToken"
+        name="msg91_access_token">
+
+        <input
+        type="hidden"
+        id="msg91ReqId"
+        name="msg91_req_id">
+
+        <button
+        type="submit"
+        class="btn-register"
+        id="registerBtn"
+        disabled>
+
+        Create Candidate Account
+
         </button>
 
     </form>
@@ -461,30 +477,179 @@ document.querySelector('input[name="mobile"]').addEventListener("input", functio
 
 <script>
 
+let candidateOtpVerified = false;
+
+// ==========================
+// SEND OTP
+// ==========================
+
+document.getElementById("sendOtpBtn").onclick = function () {
+
+    let mobile = document.querySelector("[name='mobile']").value.trim();
+
+    if (!/^[6-9]\d{9}$/.test(mobile)) {
+
+        document.getElementById("otpStatus").innerHTML =
+        "<span class='text-danger'>Enter valid mobile number.</span>";
+
+        return;
+    }
+
+    fetch("/check-mobile?mobile=" + mobile)
+
+    .then(r => r.json())
+
+    .then(data => {
+
+        if(data.exists){
+
+            document.getElementById("otpStatus").innerHTML =
+            "<span class='text-danger'>Mobile already registered.</span>";
+
+            return;
+        }
+
+        if(!window.isCaptchaVerified()){
+
+            document.getElementById("otpStatus").innerHTML =
+            "<span class='text-danger'>Please complete captcha.</span>";
+
+            return;
+        }
+
+        document.getElementById("otpStatus").innerHTML =
+        "<span class='text-primary'>Sending OTP...</span>";
+
+        window.sendOtp(
+
+            "91"+mobile,
+
+            function(response){
+
+                console.log(response);
+
+                msg91ReqId =
+                    response.reqId ||
+                    response.requestId ||
+                    "";
+
+                document.getElementById("msg91ReqId").value =
+                    msg91ReqId;
+
+                document.getElementById("otpBox").style.display =
+                    "block";
+
+                document.getElementById("otpStatus").innerHTML =
+                "<span class='text-success'>OTP Sent Successfully.</span>";
+
+            },
+
+            function(error){
+
+                console.log(error);
+
+                document.getElementById("otpStatus").innerHTML =
+                "<span class='text-danger'>Unable to send OTP.</span>";
+
+            }
+
+        );
+
+    });
+
+};
+
+
+
+// ==========================
+// RESEND OTP
+// ==========================
+
+document.getElementById("resendOtpBtn").onclick = function () {
+
+    if(msg91ReqId==""){
+
+        document.getElementById("otpStatus").innerHTML =
+        "<span class='text-danger'>Send OTP first.</span>";
+
+        return;
+
+    }
+
+    window.retryOtp(
+
+        null,
+
+        function(data){
+
+            console.log(data);
+
+            document.getElementById("otpStatus").innerHTML =
+            "<span class='text-success'>OTP Resent.</span>";
+
+        },
+
+        function(error){
+
+            console.log(error);
+
+            document.getElementById("otpStatus").innerHTML =
+            "<span class='text-danger'>Unable to resend OTP.</span>";
+
+        },
+
+        msg91ReqId
+
+    );
+
+};
+
+</script>
+
+<script>
+
+let candidateOtpVerified = false;
+let msg91ReqId = "";
+let msg91AccessToken = "";
+
 var configuration = {
 
     widgetId: "36676a676343313137323133",
 
     tokenAuth: "546033TFUN4xUNi6a436063P1",
 
-    identifier: "919584642181",
+    identifier: "",
 
     exposeMethods: true,
 
     captchaRenderId: "msg91Captcha",
 
-    success: function (data) {
+    success: function(data){
 
-        alert(JSON.stringify(data));
-        console.log("MSG91 SEND OTP", data);
+        console.log("MSG91 Success", data);
 
         window.msg91Data = data;
 
+        if(data.accessToken){
+            msg91AccessToken = data.accessToken;
+        }
+
+        if(data.reqId){
+            msg91ReqId = data.reqId;
+        }
+
+        if(data.requestId){
+            msg91ReqId = data.requestId;
+        }
+
     },
 
-    failure: function (error) {
+    failure:function(error){
 
-        console.log("MSG91 Error:", error);
+        console.log("MSG91 Error",error);
+
+        document.getElementById("otpStatus").innerHTML =
+        "<span class='text-danger'>MSG91 Initialization Failed</span>";
 
     }
 
@@ -495,154 +660,6 @@ var configuration = {
 <script
 src="https://verify.msg91.com/otp-provider.js"
 onload="initSendOTP(configuration)">
-</script>
-
-<script>
-
-let candidateOtpVerified = false;
-
-// SEND OTP
-
-document.getElementById("sendOtpBtn").onclick = function () {
-
-    let mobile = document.querySelector('[name="mobile"]').value.trim();
-
-    if (!/^[6-9]\d{9}$/.test(mobile)) {
-
-        document.getElementById("otpStatus").innerHTML =
-            "<span class='text-danger'>Enter a valid mobile number.</span>";
-
-        return;
-
-    }
-
-    fetch("/check-mobile?mobile=" + mobile)
-
-    .then(r => r.json())
-
-    .then(data => {
-
-        if (data.exists) {
-
-            document.getElementById("otpStatus").innerHTML =
-            "<span class='text-danger'>Mobile already registered.</span>";
-
-            return;
-
-        }
-
-        if (!window.isCaptchaVerified()) {
-
-    document.getElementById("otpStatus").innerHTML =
-        "<span class='text-danger'>Please complete the captcha.</span>";
-
-    return;
-
-}
-
-window.sendOtp(
-
-    "91" + mobile,
-
-    function(data){
-
-        alert("SUCCESS CALLBACK");
-
-        alert(JSON.stringify(data));
-
-        console.log(data);
-
-    },
-
-    function(error){
-
-        alert("ERROR CALLBACK");
-
-        alert(JSON.stringify(error));
-
-        console.log(error);
-
-    }
-
-);
-
-// VERIFY OTP
-
-document.getElementById("verifyOtpBtn").onclick = function () {
-
-    let mobile = document.querySelector('[name="mobile"]').value.trim();
-
-    let otp = document.getElementById("otp").value.trim();
-
-    fetch("/candidate-verify-otp", {
-
-        method: "POST",
-
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-
-        body:
-            "mobile=" + encodeURIComponent(mobile)
-            + "&otp=" + encodeURIComponent(otp)
-
-    })
-
-    .then(r => r.json())
-
-    .then(data => {
-
-        document.getElementById("otpStatus").innerHTML = data.message;
-
-        if (data.success) {
-
-            let candidateOtpVerified = false;
-
-            let msg91ReqId = "";
-
-            let msg91AccessToken = "";
-
-            document.getElementById("verifyOtpBtn").disabled = true;
-
-            document.getElementById("sendOtpBtn").disabled = true;
-
-            document.getElementById("otp").readOnly = true;
-
-        }
-
-    });
-
-};
-
-
-// RESEND OTP
-
-document.getElementById("resendOtpBtn").onclick = function () {
-
-    let mobile = document.querySelector('[name="mobile"]').value.trim();
-
-    fetch("/candidate-resend-otp", {
-
-        method: "POST",
-
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-
-        body: "mobile=" + encodeURIComponent(mobile)
-
-    })
-
-    .then(r => r.json())
-
-    .then(data => {
-
-        document.getElementById("otpStatus").innerHTML = data.message;
-
-    });
-
-};
-
 </script>
 
 </body>
