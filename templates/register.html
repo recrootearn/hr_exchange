@@ -408,6 +408,46 @@ select.form-control{
                 ">
 
                 <small id="mobileStatus"></small>
+
+                <div class="mt-2">
+
+                    <button
+                        type="button"
+                        id="sendOtpBtn"
+                        class="btn btn-primary w-100">
+                        Send OTP
+                    </button>
+
+                </div>
+
+                <div id="otpSection" style="display:none;" class="mt-3">
+
+                    <input
+                        type="text"
+                        id="otp"
+                        class="form-control"
+                        maxlength="6"
+                        placeholder="Enter OTP">
+
+                    <button
+                        type="button"
+                        id="verifyOtpBtn"
+                        class="btn btn-success w-100 mt-2">
+                        Verify OTP
+                    </button>
+
+                    <button
+                        type="button"
+                        id="resendOtpBtn"
+                        class="btn btn-link w-100 mt-2"
+                        style="display:none;">
+                        Resend OTP
+                    </button>
+
+                    <small id="otpMessage"></small>
+
+                </div>  
+  
             </div>
 
         </div>
@@ -676,7 +716,11 @@ line-height:1.6;
 
 </div>
 
-<button class="register-btn">
+<button
+    type="submit"
+    class="register-btn"
+    id="registerBtn"
+    disabled>
 
     Create Account
 
@@ -883,6 +927,114 @@ document.querySelector('input[name="mobile"]').addEventListener("input", functio
     }
 
 });
+</script>
+
+<script>
+
+const sendBtn = document.getElementById("sendOtpBtn");
+const verifyBtn = document.getElementById("verifyOtpBtn");
+const resendBtn = document.getElementById("resendOtpBtn");
+
+const registerBtn = document.getElementById("registerBtn");
+
+sendBtn.onclick = function(){
+
+    fetch("/send-otp",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+
+        body:"mobile="+
+        document.getElementById("mobile").value
+
+    })
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        document.getElementById("otpMessage").innerHTML=data.message;
+
+        if(data.success){
+
+            document.getElementById("otpSection").style.display="block";
+
+            resendBtn.style.display="block";
+
+        }
+
+    });
+
+};
+
+verifyBtn.onclick=function(){
+
+    fetch("/verify-otp",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+
+        body=
+
+        "mobile="+
+        document.getElementById("mobile").value+
+
+        "&otp="+
+        document.getElementById("otp").value
+
+    })
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        document.getElementById("otpMessage").innerHTML=data.message;
+
+        if(data.success){
+
+            registerBtn.disabled=false;
+
+            sendBtn.disabled=true;
+
+            verifyBtn.disabled=true;
+
+        }
+
+    });
+
+};
+
+resendBtn.onclick=function(){
+
+    fetch("/resend-otp",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+
+        body:"mobile="+
+        document.getElementById("mobile").value
+
+    })
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        document.getElementById("otpMessage").innerHTML=data.message;
+
+    });
+
+};
+
 </script>
 
 </body>

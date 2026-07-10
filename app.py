@@ -1,4 +1,6 @@
 import logging
+import requests
+import time
 import random
 import uuid
 from flask import session
@@ -45,6 +47,18 @@ from datetime import timedelta
 import secrets
 
 app = Flask(__name__)
+
+# ==========================
+# MSG91 OTP CONFIGURATION
+# ==========================
+
+MSG91_AUTH_KEY = "546033TFUN4xUNi6a436063P1"
+
+MSG91_TEMPLATE_ID = "1207178351134664809"
+
+MSG91_SENDER_ID = "RCRTRN"
+
+OTP_EXPIRY = 600
 
 app.secret_key = "7sf7rth515t4h8ljyyj151577rgnmd62vlkg81bmej96cnsv365fvvdsebn"
 
@@ -1222,6 +1236,76 @@ def safe_wallet_debit(user, amount):
 
     return True
 
+# ==========================
+# SEND OTP USING MSG91
+# ==========================
+
+def send_msg91_otp(mobile):
+
+    url = "https://control.msg91.com/api/v5/otp"
+
+    headers = {
+
+        "authkey": MSG91_AUTH_KEY
+
+    }
+
+    payload = {
+
+        "mobile": "91" + mobile,
+
+        "template_id": MSG91_TEMPLATE_ID,
+
+        "otp_length": 6,
+
+        "otp_expiry": 10,
+
+        "sender": MSG91_SENDER_ID
+
+    }
+
+    response = requests.post(
+        url,
+        headers=headers,
+        data=payload
+    )
+
+    return response.json()
+
+# ==========================
+# VERIFY OTP
+# ==========================
+
+def verify_msg91_otp(mobile, otp):
+
+    url = "https://control.msg91.com/api/v5/otp/verify"
+
+    headers = {
+
+        "authkey": MSG91_AUTH_KEY
+
+    }
+
+    payload = {
+
+        "mobile": "91" + mobile,
+
+        "otp": otp
+
+    }
+
+    response = requests.post(
+
+        url,
+
+        headers=headers,
+
+        data=payload
+
+    )
+
+    return response.json()
+
 def send_notification(
     user_id,
     user_type,
@@ -2052,6 +2136,91 @@ def test_push():
         "success": True,
         "response": response
     }
+
+@app.route("/send-otp", methods=["POST"])
+def send_otp():
+
+    mobile = request.form.get("mobile", "").strip()
+
+    if not mobile:
+
+        return jsonify({
+            "success": False,
+            "message": "Mobile number required."
+        })
+
+    if len(mobile) != 10:
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid mobile number."
+        })
+
+    response = send_msg91_otp(mobile)
+
+    if response.get("type") == "success":
+
+        session["otp_mobile"] = mobile
+        session["otp_verified"] = False
+
+        return jsonify({
+            "success": True,
+            "message": "OTP sent successfully."
+        })
+
+    return jsonify({
+        "success": False,
+        "message": response.get("message", "Unable to send OTP.")
+    })
+
+@app.route("/verify-otp", methods=["POST"])
+def verify_otp():
+
+    mobile = request.form.get("mobile", "").strip()
+
+    otp = request.form.get("otp", "").strip()
+
+    if mobile != session.get("otp_mobile"):
+
+        return jsonify({
+            "success": False,
+            "message": "Mobile number mismatch."
+        })
+
+    response = verify_msg91_otp(mobile, otp)
+
+    if response.get("type") == "success":
+
+        session["otp_verified"] = True
+
+        return jsonify({
+            "success": True,
+            "message": "Mobile verified successfully."
+        })
+
+    return jsonify({
+        "success": False,
+        "message": "Invalid OTP."
+    })
+
+@app.route("/resend-otp", methods=["POST"])
+def resend_otp():
+
+    mobile = request.form.get("mobile", "").strip()
+
+    response = send_msg91_otp(mobile)
+
+    if response.get("type") == "success":
+
+        return jsonify({
+            "success": True,
+            "message": "OTP resent successfully."
+        })
+
+    return jsonify({
+        "success": False,
+        "message": "Unable to resend OTP."
+    })
 
 @app.route('/admin/add-automation-rule', methods=['GET', 'POST'])
 @login_required
@@ -3658,6 +3827,28 @@ def register():
 
             return redirect('/register')
 
+        # ==========================
+        # OTP VERIFICATION CHECK
+        # ==========================
+
+        if not session.get("otp_verified", False):
+
+            flash(
+                "Please verify your mobile number using OTP.",
+                "danger"
+            )
+
+            return redirect('/register')
+
+        if session.get("otp_mobile") != mobile:
+
+            flash(
+                "OTP verification does not match the entered mobile number.",
+                "danger"
+            )
+
+            return redirect('/register')
+
         existing_hr = User.query.filter_by(
             username=username
         ).first()
@@ -3824,6 +4015,10 @@ def register():
 
         db.session.add(user)
         db.session.commit()
+
+        # Clear OTP session after successful registration
+        session.pop("otp_verified", None)
+        session.pop("otp_mobile", None)
 
         return render_template(
             'register_success.html'
