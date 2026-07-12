@@ -5048,13 +5048,6 @@ def edit_candidate_profile():
 
             candidate.resume_file = filename
 
-        db.session.commit()
-
-        flash(
-            "Profile Updated",
-            "success"
-        )
-
     # ----------------------------
     # PROFILE COMPLETION
     # ----------------------------
@@ -5099,6 +5092,22 @@ def edit_candidate_profile():
     else:
 
         completion += 10
+
+    # Save profile completion
+    candidate.profile_completion = completion
+
+    db.session.commit()
+
+    if request.method == 'POST':
+
+        flash(
+            "Profile Updated",
+            "success"
+        )
+
+        return redirect(
+            url_for("edit_candidate_profile")
+        )
 
     return render_template(
 
