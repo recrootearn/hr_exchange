@@ -7061,10 +7061,13 @@ def open_candidate_notification(id):
 
     return redirect('/candidate-notifications')
 
-@app.template_filter('timeago')
+@app.template_filter("timeago")
 def timeago(dt):
 
-    now = datetime.now()
+    if not dt:
+        return ""
+
+    now = india_time()
 
     seconds = int((now - dt).total_seconds())
 
@@ -7072,13 +7075,16 @@ def timeago(dt):
         return "Just now"
 
     elif seconds < 3600:
-        return f"{seconds // 60}m ago"
+        mins = seconds // 60
+        return f"{mins} min ago"
 
     elif seconds < 86400:
-        return f"{seconds // 3600}h ago"
+        hrs = seconds // 3600
+        return f"{hrs} hr ago"
 
     elif seconds < 604800:
-        return f"{seconds // 86400}d ago"
+        days = seconds // 86400
+        return f"{days} day ago"
 
     return dt.strftime("%d %b %Y")
 
