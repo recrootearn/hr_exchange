@@ -2197,7 +2197,7 @@ def candidate_verify_otp():
 
         if result.get("type") == "success":
 
-            session["candidate_mobile_verified"] = True
+            session["candidate_otp_verified"] = True
             session["candidate_mobile"] = mobile
 
             return jsonify({
