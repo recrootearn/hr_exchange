@@ -1142,9 +1142,13 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 def admin_only():
-    """Helper to check if current user is Harshit"""
-    if not current_user.is_authenticated or current_user.username.upper() != "HARSHIT":
+
+    if (
+        not current_user.is_authenticated
+        or current_user.mobile != "6261568334"
+    ):
         return False
+
     return True
 
 def get_business_settings():
@@ -7242,7 +7246,7 @@ def login():
             if user.is_admin:
 
                 return redirect(
-                    url_for("admin_dashboard")
+                    url_for("admin")
                 )
 
             # NORMAL HR
@@ -8814,15 +8818,18 @@ def public_job(job_id):
 @app.route('/make-admin')
 def make_admin():
 
-    user = User.query.filter_by(username="HARSHIT").first()
+    user = User.query.filter_by(
+        mobile="6261568334"
+    ).first()
 
     if user:
+
         user.is_admin = True
         user.is_approved = True
 
         db.session.commit()
 
-        return "HARSHIT is now admin"
+        return "6261568334 is now admin"
 
     return "User not found"
 
