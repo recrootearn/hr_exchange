@@ -331,16 +331,6 @@ body{
             required>
         </div>
 
-        <input
-        type="hidden"
-        id="msg91AccessToken"
-        name="msg91AccessToken">
-
-        <input
-        type="hidden"
-        id="mobileVerified"
-        value="0">
-
         <button
         type="submit"
         class="btn-register"
@@ -458,6 +448,8 @@ document.querySelector('input[name="mobile"]').addEventListener("input", functio
 });
 </script>
 
+<script>
+
 var configuration = {
 
     widgetId: "36676a676343313137323133",
@@ -483,10 +475,10 @@ var configuration = {
 
         document.getElementById("mobile").readOnly = true;
 
-        document.getElementById("otpStatus").style.display="block";
+        document.getElementById("otpStatus").style.display = "block";
 
         document.getElementById("otpStatus").innerHTML =
-        "✅ Mobile Number Verified Successfully";
+            "✅ Mobile Number Verified Successfully";
 
     },
 
@@ -500,22 +492,28 @@ var configuration = {
 
 };
 
-<script
-src="https://verify.msg91.com/otp-provider.js">
 </script>
+
+<script src="https://verify.msg91.com/otp-provider.js"></script>
+
+<script>
 
 document.getElementById("verifyMobileBtn").onclick = function () {
 
     var mobile = document.getElementById("mobile").value.trim();
 
     if (mobile.length != 10) {
+
         alert("Enter valid mobile number.");
+
         return;
+
     }
 
-    // First check if number already exists
     fetch('/check-mobile?mobile=' + mobile)
+
     .then(r => r.json())
+
     .then(data => {
 
         if (data.exists) {
@@ -526,6 +524,7 @@ document.getElementById("verifyMobileBtn").onclick = function () {
             document.getElementById("mobileStatus").style.color = "red";
 
             return;
+
         }
 
         document.getElementById("mobileStatus").innerHTML =
@@ -541,5 +540,8 @@ document.getElementById("verifyMobileBtn").onclick = function () {
 
 };
 
+</script>
+
 </body>
+
 </html>
