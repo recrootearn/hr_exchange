@@ -4123,6 +4123,18 @@ def register():
         'register.html'
     )
 
+@app.route("/candidate-otp-success", methods=["POST"])
+def candidate_otp_success():
+
+    data = request.get_json()
+
+    session["candidate_otp_verified"] = True
+    session["candidate_mobile"] = data.get("mobile")
+
+    return jsonify({
+        "success": True
+    })
+
 @app.route('/candidate-register', methods=['GET', 'POST'])
 def candidate_register():
 
