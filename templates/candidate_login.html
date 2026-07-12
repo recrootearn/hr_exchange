@@ -742,16 +742,13 @@ body{
                         <i class="fas fa-user"></i>
 
                         <input
-                        type="text"
-                        name="username"
-                        placeholder="Enter Mobile Number"
-                        style="text-transform:uppercase;"
-                        oninput="
-                        if(isNaN(this.value)){
-                        this.value=this.value.toUpperCase().replace(/\s/g,'');
-                        }
-                        "
-                        required>
+                            type="text"
+                            name="mobile"
+                            placeholder="Enter Mobile Number"
+                            maxlength="10"
+                            inputmode="numeric"
+                            pattern="[6-9][0-9]{9}"
+                            required>
 
                     </div>
 

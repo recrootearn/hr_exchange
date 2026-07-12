@@ -258,6 +258,8 @@ class CandidateUser(UserMixin, db.Model):
 
     app_token = db.Column(db.String(128), unique=True, nullable=True)
 
+    profile_completion = db.Column(db.Integer, default=0)
+
     last_profile_reminder = db.Column(db.DateTime)
     profile_reminders_today = db.Column(db.Integer, default=0)
 
