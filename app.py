@@ -7069,22 +7069,30 @@ def timeago(dt):
 
     now = india_time()
 
+    if dt.tzinfo is None:
+        dt = now.replace(
+            year=dt.year,
+            month=dt.month,
+            day=dt.day,
+            hour=dt.hour,
+            minute=dt.minute,
+            second=dt.second,
+            microsecond=dt.microsecond
+        )
+
     seconds = int((now - dt).total_seconds())
 
     if seconds < 60:
         return "Just now"
 
     elif seconds < 3600:
-        mins = seconds // 60
-        return f"{mins} min ago"
+        return f"{seconds // 60}m ago"
 
     elif seconds < 86400:
-        hrs = seconds // 3600
-        return f"{hrs} hr ago"
+        return f"{seconds // 3600}h ago"
 
     elif seconds < 604800:
-        days = seconds // 86400
-        return f"{days} day ago"
+        return f"{seconds // 86400}d ago"
 
     return dt.strftime("%d %b %Y")
 
