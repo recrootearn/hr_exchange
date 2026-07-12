@@ -2030,6 +2030,22 @@ def admin_business_settings():
         settings=settings
     )
 
+import requests
+
+@app.route('/verify-otp-backend', methods=['POST'])
+def verify_otp_backend():
+    req_id = request.form.get('msg91_req_id')
+    otp = request.form.get('otp')
+    
+    # Call MSG91 API to verify
+    url = f"https://control.msg91.com/api/v5/otp/verify?otp={otp}&request_id={req_id}"
+    headers = {"authkey": "546033TFUN4xUNi6a436063P1"} # Use your actual auth key
+    response = requests.get(url, headers=headers)
+    
+    if response.json().get('type') == 'success':
+        return jsonify({"status": "verified"})
+    return jsonify({"status": "failed"}), 400
+
 @app.route("/api/save-fcm-token", methods=["POST"])
 def save_fcm_token():
 
