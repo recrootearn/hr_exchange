@@ -433,7 +433,7 @@ class DeletedAccount(db.Model):
 
     full_name = db.Column(db.String(200))
 
-    mobile = db.Column(db.String(20), unique=True)
+    mobile = db.Column(db.String(20), nullable=False)
 
     email = db.Column(db.String(150))
 
