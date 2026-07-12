@@ -435,6 +435,37 @@ Gumasta
 
 </div>
 
+<div class="mt-4">
+
+    <div class="d-flex justify-content-between mb-2">
+
+        <strong>Profile Completion</strong>
+
+        <strong>{{ current_user.profile_completion or 0 }}%</strong>
+
+    </div>
+
+    <div
+        class="progress"
+        style="
+            height:12px;
+            border-radius:30px;
+            background:rgba(255,255,255,.25);
+        ">
+
+        <div
+            class="progress-bar bg-success"
+            role="progressbar"
+            style="
+                width:{{ current_user.profile_completion or 0 }}%;
+                border-radius:30px;
+            ">
+        </div>
+
+    </div>
+
+</div>
+
 <div class="action-buttons">
 
 <a

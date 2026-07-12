@@ -191,6 +191,20 @@ class User(UserMixin, db.Model):
 
     referral_earnings = db.Column(db.Float, default=0)
 
+    profile_completion = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    last_profile_reminder = db.Column(
+        db.DateTime
+    )
+
+    profile_reminders_today = db.Column(
+        db.Integer,
+        default=0
+    )
+
     referral_purchase_reward_given = db.Column(
        db.Boolean,
        default=False
@@ -1625,6 +1639,53 @@ def inject_notifications():
     return dict(
         unread_notifications=unread_notifications
     )
+
+@app.before_request
+def check_hr_profile():
+
+    # Not logged in
+    if not current_user.is_authenticated:
+        return
+
+    # Admin can access everything
+    if current_user.is_admin:
+        return
+
+    # Routes allowed without profile completion
+    allowed_routes = [
+
+        "home",
+
+        "profile",
+
+        "edit_profile",
+
+        "logout",
+
+        "notifications",
+
+        "notification_redirect",
+
+        "mark_notifications_read",
+
+        "static"
+
+    ]
+
+    if request.endpoint in allowed_routes:
+        return
+
+    # Check profile completion
+    if (current_user.profile_completion or 0) < 80:
+
+        flash(
+            "Complete at least 80% of your profile to unlock all features.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("edit_profile")
+        )
 
 @app.before_request
 def check_candidate_profile():
@@ -3951,12 +4012,16 @@ def register():
 
     if request.method == 'POST':
 
-        # CHECK USERNAME
-
-        username = request.form['username'].strip().upper()
         mobile = request.form['mobile'].strip()
 
-        # VALIDATE INDIAN MOBILE NUMBER
+        password = request.form['password']
+
+        entered_referral = request.form.get(
+            "referral_code",
+            ""
+        ).strip().upper()
+
+        # VALIDATE MOBILE
 
         if not re.fullmatch(r"[6-9]\d{9}", mobile):
 
@@ -3967,11 +4032,9 @@ def register():
 
             return redirect('/register')
 
-        # ==========================
-        # OTP VERIFICATION CHECK
-        # ==========================
+        # OTP CHECK
 
-        if not session.get("otp_verified", False):
+        if not session.get("otp_verified"):
 
             flash(
                 "Please verify your mobile number using OTP.",
@@ -3989,28 +4052,17 @@ def register():
 
             return redirect('/register')
 
+        # MOBILE EXISTS
+
         existing_hr = User.query.filter_by(
-            username=username
+            mobile=mobile
         ).first()
 
         existing_candidate = CandidateUser.query.filter_by(
-            username=username
+            mobile=mobile
         ).first()
 
         if existing_hr or existing_candidate:
-
-            flash("Username already exists")
-            return redirect('/register')
-
-        existing_hr_mobile = User.query.filter_by(
-            mobile=mobile
-        ).first()
-
-        existing_candidate_mobile = CandidateUser.query.filter_by(
-            mobile=mobile
-        ).first()
-
-        if existing_hr_mobile or existing_candidate_mobile:
 
             deleted = DeletedAccount.query.filter_by(
                 mobile=mobile
@@ -4018,79 +4070,14 @@ def register():
 
             if not deleted:
 
-               flash("Mobile number already exists")
-               return redirect('/register')
-
-        # PROFILE PHOTO
-
-        photo = request.files.get('photo')
-
-        if photo and photo.filename:
-
-            filename = secure_filename(
-                photo.filename
-            )
-
-            photo.save(
-                os.path.join(
-                    app.config['UPLOAD_FOLDER'],
-                    filename
+                flash(
+                    "Mobile number already exists.",
+                    "danger"
                 )
-            )
 
-            profile_photo = filename
-
-        else:
-
-            profile_photo = "default.png"
-
-        # MSME CERTIFICATE
-
-        msme_name = ""
-
-        msme_file = request.files.get(
-            'msme_certificate'
-        )
-
-        if msme_file and msme_file.filename:
-
-            msme_name = secure_filename(
-                msme_file.filename
-            )
-
-            msme_file.save(
-                os.path.join(
-                    app.config['UPLOAD_FOLDER'],
-                    msme_name
-                )
-            )
-
-        # GUMASTA CERTIFICATE
-
-        gumasta_name = ""
-
-        gumasta_file = request.files.get(
-            'gumasta_certificate'
-        )
-
-        if gumasta_file and gumasta_file.filename:
-
-            gumasta_name = secure_filename(
-                gumasta_file.filename
-            )
-
-            gumasta_file.save(
-                os.path.join(
-                    app.config['UPLOAD_FOLDER'],
-                    gumasta_name
-                )
-            )
+                return redirect('/register')
 
         # REFERRAL
-
-        entered_referral = request.form.get(
-            'referral_code'
-        )
 
         referrer = None
 
@@ -4104,68 +4091,50 @@ def register():
 
         user = User(
 
-            first_name=request.form['first_name'],
-
-            last_name=request.form['last_name'],
-
             mobile=mobile,
 
-            email = request.form['email'].strip().lower(),
+            password=generate_password_hash(password),
 
-            company=request.form['company'],
- 
-            company_city=request.form.get("company_city"),
+            referral_code=generate_referral_code(),
 
-            full_company_address=request.form.get("full_company_address"),
-
-            company_website=request.form.get("company_website"),
-
-            hr_type=request.form['hr_type'],
-
-            username=username,
-
-            password=generate_password_hash(
-                request.form['password']
+            referred_by=(
+                referrer.referral_code
+                if referrer
+                else None
             ),
-
-            profile_photo=profile_photo,
-
-            msme_certificate=msme_name,
-
-            gumasta_certificate=gumasta_name,
 
             is_approved=True,
 
-            referral_code=generate_referral_code()
+            profile_photo="default.png"
 
         )
 
-        if referrer:
+        # ADMIN ACCOUNT
+        # Replace with your mobile number
 
-            user.referred_by = (
-                referrer.referral_code
-            )
+        if mobile == "6261568334":
+
+            user.is_admin = True
+
+        db.session.add(user)
+
+        if referrer:
 
             referrer.total_referrals += 1
 
-        if username == "HARSHIT":
-
-            user.is_admin = True
-            user.is_approved = True
-
-        db.session.add(user)
         db.session.commit()
 
-        # Clear OTP session after successful registration
+        # CLEAR OTP SESSION
+
         session.pop("otp_verified", None)
         session.pop("otp_mobile", None)
 
         return render_template(
-            'register_success.html'
+            "register_success.html"
         )
 
     return render_template(
-        'register.html'
+        "register.html"
     )
 
 @app.route("/candidate-otp-success", methods=["POST"])
@@ -7195,36 +7164,26 @@ def login():
 
     if request.method == 'POST':
 
-        login_id = request.form['username'].strip()
+        login_id = request.form['mobile'].strip()
+
         password = request.form['password'].strip()
 
-        # If not mobile number, convert username to uppercase
-        if not login_id.isdigit():
-            login_id = login_id.upper()
+        # LOGIN USING MOBILE ONLY
 
-        # Try login using mobile number
         user = User.query.filter_by(
             mobile=login_id
         ).first()
 
-        # Otherwise try username
-        if not user:
-
-            user = User.query.filter_by(
-                username=login_id
-            ).first()
-
         print("LOGIN =", login_id)
 
         if user:
-            logging.warning(f"FOUND USER = {user.username}")
             print("APPROVED =", user.is_approved)
             print("FAILED LOGINS =", user.failed_logins)
         else:
             logging.warning("USER NOT FOUND")
 
         if not user:
-            flash("Invalid Username or Password", "danger")
+            flash("Invalid Mobile Number or Password", "danger")
             return redirect(url_for("login"))
 
         if user.is_deleted:
@@ -7235,45 +7194,73 @@ def login():
             flash("Your account has been blocked. Contact Admin.", "danger")
             return redirect(url_for("login"))
 
-        if not user.is_approved and user.username.upper() != "HARSHIT":
-            flash("Your account is pending approval.", "warning")
+        # ADMIN CAN LOGIN EVEN IF NOT APPROVED
+
+        if not user.is_approved and not user.is_admin:
+
+            flash(
+                "Your account is pending approval.",
+                "warning"
+            )
+
             return redirect(url_for("login"))
 
         if check_password_hash(user.password, password):
 
             user.failed_logins = 0
+
             user.last_login = datetime.utcnow()
 
-            # Single device login
+            # SINGLE DEVICE LOGIN
+
             token = str(uuid.uuid4())
+
             user.session_token = token
 
-            # Generate App Token if not already present
+            # APP TOKEN
+
             if not user.app_token:
+
                 user.app_token = secrets.token_hex(64)
 
             db.session.commit()
 
-            # Detect Android App
-            is_app = request.headers.get("X-App") == "RecrootEarn"
-
             login_user(user, remember=True)
 
-            # Keep app logged in
+            is_app = (
+                request.headers.get("X-App")
+                == "RecrootEarn"
+            )
+
             if is_app:
                 session.permanent = True
 
             session["session_token"] = token
 
-            return redirect(url_for("home"))
+            # ADMIN REDIRECT
 
-        else:
+            if user.is_admin:
 
-            user.failed_logins += 1
-            db.session.commit()
+                return redirect(
+                    url_for("admin_dashboard")
+                )
 
-            flash("Invalid Username or Password", "danger")
-            return redirect(url_for("login"))
+            # NORMAL HR
+
+            return redirect(
+                url_for("home")
+            )
+
+        user.failed_logins += 1
+
+        db.session.commit()
+
+        flash(
+            "Invalid Mobile Number or Password",
+            "danger"
+        )
+
+        return redirect(url_for("login"))
 
     return render_template("login.html")
 
@@ -8965,8 +8952,18 @@ def edit_profile():
 
     if request.method == 'POST':
 
-        # Editable Fields
+        # ----------------------------
+        # PERSONAL DETAILS
+        # ----------------------------
+
+        current_user.first_name = request.form.get('first_name')
+        current_user.last_name = request.form.get('last_name')
         current_user.email = request.form.get('email')
+
+        # ----------------------------
+        # COMPANY DETAILS
+        # ----------------------------
+
         current_user.company = request.form.get('company')
         current_user.hr_type = request.form.get('hr_type')
         current_user.company_city = request.form.get('company_city')
@@ -8974,15 +8971,21 @@ def edit_profile():
         current_user.company_website = request.form.get('company_website')
         current_user.about_company = request.form.get('about_company')
 
-        # Optional Bank Details
+        # ----------------------------
+        # BANK DETAILS
+        # ----------------------------
+
         current_user.account_holder_name = request.form.get('account_holder_name')
         current_user.bank_name = request.form.get('bank_name')
         current_user.account_number = request.form.get('account_number')
         current_user.ifsc_code = request.form.get('ifsc_code')
         current_user.upi_id = request.form.get('upi_id')
 
-        # Profile Photo
-        photo = request.files.get('photo')
+        # ----------------------------
+        # PROFILE PHOTO
+        # ----------------------------
+
+        photo = request.files.get("photo")
 
         if photo and photo.filename:
 
@@ -8997,17 +9000,97 @@ def edit_profile():
 
             current_user.profile_photo = filename
 
+        # ----------------------------
+        # MSME CERTIFICATE
+        # ----------------------------
+
+        msme = request.files.get("msme_certificate")
+
+        if msme and msme.filename:
+
+            filename = secure_filename(msme.filename)
+
+            msme.save(
+                os.path.join(
+                    app.config['UPLOAD_FOLDER'],
+                    filename
+                )
+            )
+
+            current_user.msme_certificate = filename
+
+        # ----------------------------
+        # GUMASTA CERTIFICATE
+        # ----------------------------
+
+        gumasta = request.files.get("gumasta_certificate")
+
+        if gumasta and gumasta.filename:
+
+            filename = secure_filename(gumasta.filename)
+
+            gumasta.save(
+                os.path.join(
+                    app.config['UPLOAD_FOLDER'],
+                    filename
+                )
+            )
+
+            current_user.gumasta_certificate = filename
+
+        # ----------------------------
+        # PROFILE COMPLETION
+        # ----------------------------
+
+        completion = 0
+
+        if current_user.profile_photo:
+            completion += 10
+
+        if current_user.first_name:
+            completion += 10
+
+        if current_user.last_name:
+            completion += 10
+
+        if current_user.email:
+            completion += 10
+
+        if current_user.company:
+            completion += 10
+
+        if current_user.company_city:
+            completion += 10
+
+        if current_user.full_company_address:
+            completion += 10
+
+        if current_user.company_website:
+            completion += 10
+
+        if current_user.hr_type:
+            completion += 10
+
+        if (
+            current_user.msme_certificate
+            or current_user.gumasta_certificate
+        ):
+            completion += 10
+
+        current_user.profile_completion = completion
+
         db.session.commit()
 
         flash(
-            'Profile Updated Successfully',
-            'success'
+            "Profile Updated Successfully",
+            "success"
         )
 
-        return redirect('/profile')
+        return redirect(url_for("profile"))
 
     return render_template(
-        'edit_profile.html'
+        "edit_profile.html",
+        profile_completion=current_user.profile_completion or 0
     )
 
 # =========================

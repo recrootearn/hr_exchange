@@ -733,7 +733,7 @@ body{
 
                     <div class="input-label">
 
-                        HR/Company Username/Mobile Number
+                        HR/Company Mobile Number
 
                     </div>
 
@@ -742,14 +742,18 @@ body{
                         <i class="fas fa-user"></i>
 
                         <input
-                        type="text"
-                        name="username"
-                        placeholder="Enter Username or Mobile Number"
-                        style="text-transform:uppercase;"
+                        type="tel"
+                        name="mobile"
+                        placeholder="Enter Mobile Number"
+                        maxlength="10"
+                        inputmode="numeric"
+                        pattern="[6-9][0-9]{9}"
                         oninput="
-                        if(isNaN(this.value)){
-                        this.value=this.value.toUpperCase().replace(/\s/g,'');
+                        this.value=this.value.replace(/[^0-9]/g,'');
+                        if(this.value.length>0 && !/^[6-9]/.test(this.value)){
+                        this.value='';
                         }
+                        this.value=this.value.slice(0,10);
                         "
                         required>
 
