@@ -1,142 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Candidate Registration - RecrootEarn</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Candidate Registration - RecrootEarn
+</title>
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+rel="stylesheet">
 
 <style>
 
 body{
+
     min-height:100vh;
+
     display:flex;
+
     justify-content:center;
+
     align-items:center;
+
     background:linear-gradient(
         135deg,
         #0057b8,
         #0074e8,
         #39d11f
     );
+
     font-family:Arial,sans-serif;
+
 }
 
 .card-box{
+
     width:100%;
+
     max-width:500px;
+
     background:white;
+
     border-radius:25px;
+
     padding:35px;
+
     box-shadow:0 20px 50px rgba(0,0,0,.25);
+
 }
 
 .logo{
+
     text-align:center;
+
     margin-bottom:15px;
+
 }
 
 .logo img{
+
     width:220px;
+
     max-width:100%;
+
 }
 
 .tagline{
+
     text-align:center;
+
     color:#6b7280;
+
     margin-bottom:25px;
+
 }
 
 .title{
+
     text-align:center;
+
     font-size:28px;
+
     font-weight:700;
+
     margin-bottom:25px;
+
 }
 
 .form-control{
+
     height:52px;
+
     border-radius:12px;
+
 }
 
 .btn-register{
+
     width:100%;
+
     height:52px;
+
     border:none;
+
     border-radius:12px;
+
     background:linear-gradient(
         135deg,
         #0057b8,
         #0074e8
     );
+
     color:white;
+
     font-weight:700;
+
     margin-top:10px;
+
 }
 
 .login-link{
+
     text-align:center;
+
     margin-top:20px;
+
 }
 
 .login-link a{
+
     text-decoration:none;
+
     color:#0d63c9;
+
     font-weight:700;
+
 }
 
 </style>
 
 </head>
+
 <body>
 
 <div class="card-box">
 
     <div class="logo">
-        <img src="{{ url_for('static', filename='images/logo.png') }}">
+
+        <img
+        src="{{ url_for('static', filename='images/logo.png') }}">
+
     </div>
 
     <div class="tagline">
+
         Recruit • Connect • Earn
+
     </div>
 
     <div class="title">
+
         Candidate Registration
-    </div>
-
-    <form method="POST" enctype="multipart/form-data">
-
-        <div class="mb-3">
-            <label class="form-label">Mobile Number</label>
-
-    <div class="input-box">
-
-        <i class="fas fa-phone"></i>
-
-        <input
-            type="tel"
-            id="mobile"
-            name="mobile"
-            class="form-control"
-            maxlength="10"
-            inputmode="numeric"
-            placeholder="Enter Mobile Number"
-            required
-            oninput="
-                this.value=this.value.replace(/[^0-9]/g,'');
-                if(this.value.length>0 && !/^[6-9]/.test(this.value)){
-                    this.value='';
-                }
-                this.value=this.value.slice(0,10);
-            ">
 
     </div>
+
+    <form
+    method="POST">
+
+<div class="mb-3">
+
+    <label class="form-label">
+        Mobile Number
+    </label>
+
+    <input
+        type="tel"
+        id="mobile"
+        name="mobile"
+        class="form-control"
+        maxlength="10"
+        inputmode="numeric"
+        placeholder="Enter Mobile Number"
+        required
+        oninput="
+            this.value=this.value.replace(/[^0-9]/g,'');
+            if(this.value.length>0 && !/^[6-9]/.test(this.value)){
+                this.value='';
+            }
+            this.value=this.value.slice(0,10);
+        ">
 
     <button
         type="button"
         id="verifyMobileBtn"
-        class="btn btn-primary w-100 mt-2">
+        class="btn btn-primary w-100 mt-3">
 
         Verify Mobile Number
 
@@ -151,7 +215,6 @@ body{
         id="otpStatus"
         class="alert alert-success mt-2"
         style="display:none;">
-
     </div>
 
     <input
@@ -163,188 +226,205 @@ body{
         type="hidden"
         id="mobileVerified"
         value="0">
-        </div>
 
-        <div class="mb-3">
-            <label class="form-label">
-                Referral Code (Optional)
-        </label>
+</div>
 
-        <input
-            type="text"
-            name="referral_code"
-            value="{{ referral_code }}"
-            class="form-control"
-            placeholder="Enter Referral Code">
-        </div>
+<div class="mb-3">
 
-        <div class="mb-3">
-            <input
-            type="password"
-            class="form-control"
-            name="password"
-            placeholder="Password"
-            required>
-        </div>
+    <label class="form-label">
+        Referral Code (Optional)
+    </label>
 
-        <button
-        type="submit"
-        class="btn-register"
-        id="registerBtn"
-        disabled>
+    <input
+        type="text"
+        name="referral_code"
+        value="{{ referral_code }}"
+        class="form-control"
+        placeholder="Enter Referral Code">
 
-        Create Candidate Account
+</div>
 
-        </button>
+<div class="mb-3">
 
-    </form>
+    <label class="form-label">
+        Password
+    </label>
 
-    <div class="login-link">
-        Already have an account?
-        <a href="/candidate-login">Login</a>
-    </div>
+    <input
+        type="password"
+        class="form-control"
+        name="password"
+        placeholder="Create Password"
+        required>
+
+</div>
+
+<button
+    type="submit"
+    class="btn-register"
+    id="registerBtn"
+    disabled>
+
+    Create Candidate Account
+
+</button>
+
+</form>
+
+<div class="login-link">
+
+    Already have an account?
+
+    <a href="/candidate-login">
+
+        Login
+
+    </a>
+
+</div>
 
 </div>
 
 <script>
 
-document.querySelector('[name="username"]').addEventListener('blur', function(){
-
-    fetch('/check-username?username=' + this.value.toUpperCase())
-
-    .then(r => r.json())
-
-    .then(data => {
-
-        const s = document.getElementById('usernameStatus');
-
-        if(data.exists){
-
-            s.innerHTML = '❌ Username already taken';
-            s.style.color = 'red';
-
-        }else{
-
-            s.innerHTML = '✅ Username available';
-            s.style.color = 'green';
-
-        }
-
-    });
-
-});
-
-document.querySelector('[name="mobile"]').addEventListener('blur', function(){
-
-    fetch('/check-mobile?mobile=' + this.value)
-
-    .then(r => r.json())
-
-    .then(data => {
-
-        const s = document.getElementById('mobileStatus');
-
-        if(data.exists){
-
-            s.innerHTML = '❌ Mobile already registered';
-            s.style.color = 'red';
-
-        }else{
-
-            s.innerHTML = '✅ Mobile available';
-            s.style.color = 'green';
-
-        }
-
-    });
-
-});
-
-document.querySelector('input[name="email"]').addEventListener('blur', function () {
-
-    fetch('/check-email?email=' + encodeURIComponent(this.value))
-
-    .then(r => r.json())
-
-    .then(data => {
-
-        const s = document.getElementById('emailStatus');
-
-        if(data.exists){
-
-            s.innerHTML = "❌ Email already registered";
-            s.style.color = "red";
-
-        }else{
-
-            s.innerHTML = "✅ Email available";
-            s.style.color = "green";
-
-        }
-
-    });
-
-});
-
-</script>
-
-<script>
-document.querySelector('input[name="mobile"]').addEventListener("input", function () {
+document
+.querySelector('input[name="mobile"]')
+.addEventListener("input", function(){
 
     this.value = this.value.replace(/\D/g, "");
 
-    if (this.value.length === 1 && !/[6-9]/.test(this.value)) {
+    if(
+        this.value.length == 1 &&
+        !/[6-9]/.test(this.value)
+    ){
         this.value = "";
     }
 
-    if (this.value.length > 10) {
-        this.value = this.value.slice(0, 10);
+    if(this.value.length > 10){
+        this.value = this.value.slice(0,10);
     }
 
 });
+
+document
+.querySelector('input[name="mobile"]')
+.addEventListener("blur", function(){
+
+    let mobile = this.value.trim();
+
+    if(mobile.length != 10){
+        return;
+    }
+
+    fetch("/check-mobile?mobile=" + mobile)
+
+    .then(r => r.json())
+
+    .then(data=>{
+
+        let status =
+        document.getElementById("mobileStatus");
+
+        if(data.exists){
+
+            status.innerHTML =
+            "❌ Mobile already registered";
+
+            status.style.color = "red";
+
+            document
+            .getElementById("verifyMobileBtn")
+            .disabled = true;
+
+        }
+
+        else{
+
+            status.innerHTML =
+            "✅ Mobile available";
+
+            status.style.color = "green";
+
+            document
+            .getElementById("verifyMobileBtn")
+            .disabled = false;
+
+        }
+
+    });
+
+});
+
 </script>
 
 <script>
 
 var configuration = {
 
-    widgetId: "36676a676343313137323133",
+    widgetId:
+    "36676a676343313137323133",
 
-    tokenAuth: "546033TFUN4xUNi6a436063P1",
+    tokenAuth:
+    "546033TFUN4xUNi6a436063P1",
 
-    identifier: "",
+    identifier:"",
 
-    exposeMethods: false,
+    exposeMethods:false,
 
-    success: function(data){
+success: function(data){
 
-        console.log(data);
+    console.log(data);
 
-        document.getElementById("msg91AccessToken").value =
-            data.accessToken || data.token || "";
+    document.getElementById("msg91AccessToken").value =
+        data.accessToken || data.token || "";
 
-        document.getElementById("mobileVerified").value = "1";
+    document.getElementById("mobileVerified").value = "1";
 
-        document.getElementById("registerBtn").disabled = false;
+    // SAVE OTP VERIFIED SESSION IN FLASK
+    fetch("/candidate-otp-success",{
 
-        document.getElementById("verifyMobileBtn").disabled = true;
+        method:"POST",
 
-        document.getElementById("mobile").readOnly = true;
+        headers:{
+            "Content-Type":"application/json"
+        },
 
-        document.getElementById("otpStatus").style.display = "block";
+        body:JSON.stringify({
 
-        document.getElementById("otpStatus").innerHTML =
+            mobile:document.getElementById("mobile").value
+
+        })
+
+    })
+
+    .then(r=>r.json())
+
+    .then(res=>{
+
+        console.log(res);
+
+        document.getElementById("registerBtn").disabled=false;
+
+        document.getElementById("verifyMobileBtn").disabled=true;
+
+        document.getElementById("mobile").readOnly=true;
+
+        document.getElementById("otpStatus").style.display="block";
+
+        document.getElementById("otpStatus").innerHTML=
             "✅ Mobile Number Verified Successfully";
 
-    },
+    });
 
-    failure: function(error){
+},
 
-        console.log(error);
+failure:function(error){
 
-        alert("OTP Verification Failed.");
+    console.log(error);
 
-    }
+    alert("OTP Verification Failed.");
+
+}
 
 };
 
@@ -354,11 +434,11 @@ var configuration = {
 
 <script>
 
-document.getElementById("verifyMobileBtn").onclick = function () {
+document.getElementById("verifyMobileBtn").onclick=function(){
 
-    var mobile = document.getElementById("mobile").value.trim();
+    let mobile=document.getElementById("mobile").value.trim();
 
-    if (mobile.length != 10) {
+    if(mobile.length!=10){
 
         alert("Enter valid mobile number.");
 
@@ -366,29 +446,29 @@ document.getElementById("verifyMobileBtn").onclick = function () {
 
     }
 
-    fetch('/check-mobile?mobile=' + mobile)
+    fetch("/check-mobile?mobile="+mobile)
 
-    .then(r => r.json())
+    .then(r=>r.json())
 
-    .then(data => {
+    .then(data=>{
 
-        if (data.exists) {
+        if(data.exists){
 
-            document.getElementById("mobileStatus").innerHTML =
+            document.getElementById("mobileStatus").innerHTML=
                 "❌ Mobile already registered";
 
-            document.getElementById("mobileStatus").style.color = "red";
+            document.getElementById("mobileStatus").style.color="red";
 
             return;
 
         }
 
-        document.getElementById("mobileStatus").innerHTML =
+        document.getElementById("mobileStatus").innerHTML=
             "✅ Mobile available";
 
-        document.getElementById("mobileStatus").style.color = "green";
+        document.getElementById("mobileStatus").style.color="green";
 
-        configuration.identifier = "91" + mobile;
+        configuration.identifier="91"+mobile;
 
         initSendOTP(configuration);
 
