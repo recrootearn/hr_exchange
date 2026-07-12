@@ -1624,6 +1624,49 @@ def inject_notifications():
         unread_notifications=unread_notifications
     )
 
+@app.before_request
+def check_candidate_profile():
+
+    # Candidate not logged in
+    if "candidate_id" not in session:
+        return
+
+    # Routes allowed even if profile is incomplete
+    allowed_routes = [
+
+        "candidate_dashboard",
+
+        "candidate_profile",
+
+        "edit_candidate_profile",
+
+        "candidate_logout",
+
+        "static"
+
+    ]
+
+    if request.endpoint in allowed_routes:
+        return
+
+    candidate = CandidateUser.query.get(
+        session["candidate_id"]
+    )
+
+    if not candidate:
+        return
+
+    if (candidate.profile_completion or 0) < 80:
+
+        flash(
+            "Complete at least 80% of your profile to unlock all features.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("edit_candidate_profile")
+        )
+
 # =========================
 # USER ROUTES
 # =========================
@@ -4152,14 +4195,21 @@ def candidate_register():
 
             return redirect('/candidate-register')
 
-        full_name = request.form['full_name']
+        # ==========================
+        # BASIC DETAILS
+        # ==========================
+
         mobile = request.form['mobile'].strip()
-        email = request.form['email'].strip().lower()
-        username = request.form['username'].strip().upper()
         password = request.form['password']
+
         entered_code = request.form.get(
-            "referral_code", ""
+            "referral_code",
+            ""
         ).strip().upper()
+
+        # ==========================
+        # FIND REFERRER
+        # ==========================
 
         referred_hr = User.query.filter_by(
             referral_code=entered_code
@@ -4168,11 +4218,14 @@ def candidate_register():
         referred_candidate = None
 
         if not referred_hr:
+
             referred_candidate = CandidateUser.query.filter_by(
                 candidate_referral_code=entered_code
             ).first()
 
-        # VALIDATE INDIAN MOBILE NUMBER
+        # ==========================
+        # VALIDATE MOBILE
+        # ==========================
 
         if not re.fullmatch(r"[6-9]\d{9}", mobile):
 
@@ -4183,26 +4236,9 @@ def candidate_register():
 
             return redirect('/candidate-register')
 
-        # CHECK USERNAME
-
-        existing_hr = User.query.filter_by(
-            username=username
-        ).first()
-
-        existing_candidate = CandidateUser.query.filter_by(
-            username=username
-        ).first()
-
-        if existing_hr or existing_candidate:
-
-            flash(
-                "Username already exists.",
-                "danger"
-            )
-
-            return redirect('/candidate-register')
-
+        # ==========================
         # CHECK MOBILE
+        # ==========================
 
         existing_hr_mobile = User.query.filter_by(
             mobile=mobile
@@ -4221,90 +4257,23 @@ def candidate_register():
             if not deleted:
 
                 flash(
-                    'Mobile number already exists.',
-                    'danger'
+                    "Mobile number already exists.",
+                    "danger"
                 )
 
                 return redirect('/candidate-register')
 
-        # RESUME UPLOAD (OPTIONAL)
-
-        resume_name = ""
-
-        resume_file = request.files.get(
-            'resume_file'
-        )
-
-        if resume_file and resume_file.filename:
-
-            resume_name = secure_filename(
-                resume_file.filename
-            )
-
-            resume_file.save(
-                os.path.join(
-                    app.config['UPLOAD_FOLDER'],
-                    resume_name
-                )
-            )
-
-        # PROFILE PHOTO (OPTIONAL)
-
-        profile_photo_name = ""
-
-        profile_photo = request.files.get(
-            "profile_photo"
-        )
-
-        if profile_photo and profile_photo.filename:
-
-            profile_photo_name = secure_filename(
-                profile_photo.filename
-            )
-
-            profile_photo.save(
-                os.path.join(
-                    app.config['UPLOAD_FOLDER'],
-                    profile_photo_name
-                )
-            )
-
-        # OTHER DETAILS
-
-        dob = None
-
-        if request.form.get("dob"):
-            dob = datetime.strptime(
-                request.form.get("dob"),
-                "%Y-%m-%d"
-            ).date()
-
-        city = request.form.get("city")
-        qualification = request.form.get("qualification")
-
+        # ==========================
         # CREATE CANDIDATE
+        # ==========================
 
         candidate = CandidateUser(
 
-            full_name=full_name,
-
             mobile=mobile,
-
-            email=email,
-
-            username=username,
 
             password=generate_password_hash(password),
 
-            dob=dob,
-
-            city=city,
-
-            qualification=qualification,
-
-            profile_photo=profile_photo_name,
-
-            resume_file=resume_name,
+            candidate_referral_code=generate_candidate_referral_code(),
 
             referred_by_hr_id=(
                 referred_hr.id
@@ -4317,8 +4286,6 @@ def candidate_register():
                 if referred_hr
                 else None
             ),
-
-            candidate_referral_code=generate_candidate_referral_code(),
 
             referred_by_candidate_code=(
                 referred_candidate.candidate_referral_code
@@ -4341,13 +4308,14 @@ def candidate_register():
         # ==========================
         # CLEAR OTP SESSION
         # ==========================
+
         session.pop("candidate_otp_mobile", None)
         session.pop("candidate_otp_verified", None)
         session.pop("candidate_mobile", None)
 
         flash(
-            'Registration Successful. Please Login.',
-            'success'
+            "Registration Successful. Please Login.",
+            "success"
         )
 
         return redirect('/candidate-login')
@@ -4367,16 +4335,11 @@ def candidate_login():
         import uuid
         from datetime import date
 
-        login_id = request.form['username'].strip()
+        mobile = request.form['mobile'].strip()
         password = request.form['password']
 
-        # Username login should be case-insensitive
-        if not login_id.isdigit():
-            login_id = login_id.upper()
-
-        # Login using username
         user = CandidateUser.query.filter_by(
-            username=login_id
+            mobile=mobile
         ).first()
 
         # (Optional) If candidates can also login with mobile
@@ -4451,7 +4414,7 @@ def candidate_login():
             return redirect("/candidate-dashboard")
 
         flash(
-            "Invalid Username or Password",
+            "Invalid Mobile Number or Password",
             "danger"
         )
 
