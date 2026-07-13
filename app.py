@@ -3068,6 +3068,112 @@ def admin_credit_packages():
         packages=packages
     )
 
+@app.route("/send-forgot-otp", methods=["POST"])
+def send_forgot_otp():
+
+    mobile = request.form.get("mobile", "").strip()
+
+    if len(mobile) != 10:
+        return jsonify({
+            "success": False,
+            "message": "Enter valid mobile number."
+        })
+
+    # Search HR
+    user = User.query.filter_by(
+        mobile=mobile,
+        is_deleted=False
+    ).first()
+
+    # Search Candidate
+    if not user:
+        user = CandidateUser.query.filter_by(
+            mobile=mobile,
+            is_deleted=False
+        ).first()
+
+    if not user:
+
+        return jsonify({
+            "success": False,
+            "message": "No account found with this mobile number."
+        })
+
+    result = send_msg91_otp(mobile)
+
+    if result.get("type") == "success":
+
+        session["forgot_mobile"] = mobile
+        session["forgot_verified"] = False
+
+        return jsonify({
+            "success": True,
+            "message": "OTP sent successfully."
+        })
+
+    return jsonify({
+        "success": False,
+        "message": "Unable to send OTP."
+    })
+
+@app.route("/verify-forgot-otp", methods=["POST"])
+def verify_forgot_otp():
+
+    mobile = request.form.get("mobile", "").strip()
+    otp = request.form.get("otp", "").strip()
+
+    if mobile != session.get("forgot_mobile"):
+
+        return jsonify({
+            "success": False,
+            "message": "Mobile number mismatch."
+        })
+
+    result = verify_msg91_otp(mobile, otp)
+
+    if result.get("type") == "success":
+
+        session["forgot_verified"] = True
+
+        return jsonify({
+            "success": True,
+            "message": "OTP verified successfully."
+        })
+
+    return jsonify({
+        "success": False,
+        "message": "Invalid OTP."
+    })
+
+@app.route("/verify-forgot-otp", methods=["POST"])
+def verify_forgot_otp():
+
+    mobile = request.form.get("mobile", "").strip()
+    otp = request.form.get("otp", "").strip()
+
+    if mobile != session.get("forgot_mobile"):
+
+        return jsonify({
+            "success": False,
+            "message": "Mobile number mismatch."
+        })
+
+    result = verify_msg91_otp(mobile, otp)
+
+    if result.get("type") == "success":
+
+        session["forgot_verified"] = True
+
+        return jsonify({
+            "success": True,
+            "message": "OTP verified successfully."
+        })
+
+    return jsonify({
+        "success": False,
+        "message": "Invalid OTP."
+    })
+
 @app.route('/admin/add-notification-template', methods=['GET', 'POST'])
 @login_required
 def add_notification_template():
