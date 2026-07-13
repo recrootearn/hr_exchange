@@ -1,68 +1,246 @@
-{% extends "base.html" %}
+,{% extends "base.html" %}
 
 {% block content %}
 
-<body>
+<style>
 
-<div class="container-fluid py-4">
+body{
+    background:#eef3fb;
+}
 
-<div class="row justify-content-center">
+.post-job-wrapper{
+    max-width:850px;
+    margin:20px auto 100px;
+    padding:12px;
+}
 
-<div class="col-xl-7 col-lg-8 col-md-10 col-12">
+.post-job-card{
 
-<div class="card shadow-lg border-0">
+    background:#fff;
 
-<div class="card-body p-lg-5 p-4">
+    border-radius:24px;
 
-<div class="text-center mb-4">
+    overflow:hidden;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
+
+}
+
+.post-header{
+
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+
+    color:#fff;
+
+    padding:32px 20px;
+
+    text-align:center;
+
+}
+
+.post-header h2{
+
+    font-size:32px;
+
+    font-weight:800;
+
+    margin:0;
+
+}
+
+.post-header p{
+
+    margin-top:8px;
+
+    opacity:.9;
+
+}
+
+.profile-photo{
+
+    width:110px;
+
+    height:110px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:4px solid rgba(255,255,255,.9);
+
+    margin-bottom:15px;
+
+    background:#fff;
+
+}
+
+.form-section{
+
+    padding:22px;
+
+    border-bottom:1px solid #eef2f7;
+
+}
+
+.section-title{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:#111827;
+
+    margin-bottom:18px;
+
+}
+
+.form-label{
+
+    font-weight:700;
+
+    color:#374151;
+
+    margin-bottom:8px;
+
+}
+
+.form-control,
+.form-select{
+
+    min-height:56px;
+
+    border-radius:16px !important;
+
+    border:1px solid #d7dce5;
+
+    font-size:16px;
+
+    padding:14px 16px !important;
+
+}
+
+.form-control:focus,
+.form-select:focus{
+
+    border-color:#2563eb;
+
+    box-shadow:0 0 0 .2rem rgba(37,99,235,.15);
+
+}
+
+textarea.form-control{
+
+    min-height:130px;
+
+    resize:none;
+
+}
+
+.progress{
+
+    height:10px;
+
+    border-radius:20px;
+
+}
+
+.progress-bar{
+
+    border-radius:20px;
+
+}
+
+.submit-btn{
+
+    width:100%;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+
+    color:#fff;
+
+    font-size:18px;
+
+    font-weight:700;
+
+}
+
+@media(max-width:768px){
+
+.post-job-wrapper{
+
+margin:0 0 90px;
+
+padding:0;
+
+}
+
+.post-job-card{
+
+border-radius:0;
+
+box-shadow:none;
+
+}
+
+.post-header{
+
+padding:28px 16px;
+
+}
+
+.form-section{
+
+padding:18px;
+
+}
+
+}
+
+</style>
+
+<div class="post-job-wrapper">
+
+<div class="post-job-card">
+
+<div class="post-header">
 
 {% if current_user.profile_photo %}
 
 <img
 src="/static/uploads/{{ current_user.profile_photo }}"
-class="rounded-circle shadow"
-style="
-width:110px;
-height:110px;
-object-fit:cover;
-border:4px solid #fff;
-">
+class="profile-photo">
 
 {% else %}
 
 <img
 src="/static/uploads/default.png"
-class="rounded-circle shadow"
-style="
-width:110px;
-height:110px;
-object-fit:cover;
-border:4px solid #fff;
-">
+class="profile-photo">
 
 {% endif %}
 
-<h2 class="fw-bold mt-3">
+<h2>👤 Edit Profile</h2>
 
-Edit Profile
-
-</h2>
-
-<p class="text-light mb-0">
-
-Update your profile information
-
-</p>
+<p>Update your professional information</p>
 
 </div>
 
+<form
+method="POST"
+enctype="multipart/form-data">
+
 {% if profile_completion %}
 
-<div class="mb-4">
+<div class="form-section">
 
 <div class="d-flex justify-content-between">
 
-<span>
+<span class="fw-bold">
 
 Profile Completion
 
@@ -76,19 +254,11 @@ Profile Completion
 
 </div>
 
-<div
-class="progress mt-2"
-style="
-height:10px;
-border-radius:20px;
-">
+<div class="progress mt-2">
 
 <div
 class="progress-bar bg-success"
-style="
-width:{{ profile_completion }}%;
-border-radius:20px;
-">
+style="width:{{ profile_completion }}%;">
 
 </div>
 
@@ -98,13 +268,17 @@ border-radius:20px;
 
 {% endif %}
 
-<form
-method="POST"
-enctype="multipart/form-data">
+<div class="form-section">
 
-<!-- First Name -->
+<div class="section-title">
 
-<div class="mb-3">
+👤 Personal Information
+
+</div>
+
+<div class="row g-3">
+
+<div class="col-md-6">
 
 <label class="form-label">
 
@@ -120,9 +294,7 @@ value="{{ current_user.first_name }}">
 
 </div>
 
-<!-- Last Name -->
-
-<div class="mb-3">
+<div class="col-md-6">
 
 <label class="form-label">
 
@@ -138,9 +310,7 @@ value="{{ current_user.last_name }}">
 
 </div>
 
-<!-- Mobile -->
-
-<div class="mb-3">
+<div class="col-md-6">
 
 <label class="form-label">
 
@@ -156,9 +326,7 @@ readonly>
 
 </div>
 
-<!-- Email -->
-
-<div class="mb-3">
+<div class="col-md-6">
 
 <label class="form-label">
 
@@ -174,9 +342,21 @@ value="{{ current_user.email }}">
 
 </div>
 
-<!-- Company -->
+</div>
 
-<div class="mb-3">
+</div>
+
+<div class="form-section">
+
+<div class="section-title">
+
+🏢 Company Information
+
+</div>
+
+<div class="row g-3">
+
+<div class="col-md-6">
 
 <label class="form-label">
 
@@ -192,9 +372,43 @@ value="{{ current_user.company }}">
 
 </div>
 
-<!-- Company City -->
+<div class="col-md-6">
 
-<div class="mb-3">
+<label class="form-label">
+
+HR Type
+
+</label>
+
+<select
+name="hr_type"
+class="form-select">
+
+<option
+value="Company HR"
+{% if current_user.hr_type=="Company HR" %}
+selected
+{% endif %}>
+
+Company HR
+
+</option>
+
+<option
+value="Consultancy HR"
+{% if current_user.hr_type=="Consultancy HR" %}
+selected
+{% endif %}>
+
+Consultancy HR
+
+</option>
+
+</select>
+
+</div>
+
+<div class="col-md-6">
 
 <label class="form-label">
 
@@ -210,26 +424,7 @@ value="{{ current_user.company_city }}">
 
 </div>
 
-<!-- Company Address -->
-
-<div class="mb-3">
-
-<label class="form-label">
-
-Full Company Address
-
-</label>
-
-<textarea
-name="full_company_address"
-class="form-control"
-rows="4">{{ current_user.full_company_address }}</textarea>
-
-</div>
-
-<!-- Company Website -->
-
-<div class="mb-3">
+<div class="col-md-6">
 
 <label class="form-label">
 
@@ -246,76 +441,49 @@ value="{{ current_user.company_website }}">
 
 </div>
 
-<!-- HR Type -->
-
-<div class="mb-4">
+<div class="col-12">
 
 <label class="form-label">
 
-HR Type
+Full Company Address
 
 </label>
 
-<select
-name="hr_type"
-class="form-select">
-
-<option value="Company HR"
-{% if current_user.hr_type=="Company HR" %}
-selected
-{% endif %}>
-
-Company HR
-
-</option>
-
-<option value="Consultancy HR"
-{% if current_user.hr_type=="Consultancy HR" %}
-selected
-{% endif %}>
-
-Consultancy HR
-
-</option>
-
-</select>
+<textarea
+name="full_company_address"
+class="form-control"
+rows="4">{{ current_user.full_company_address }}</textarea>
 
 </div>
 
-<!-- Change Profile Photo -->
+</div>
 
-<div class="mb-4">
+</div>
+
+<div class="form-section">
+
+<div class="section-title">
+
+📷 Profile Photo
+
+</div>
+
+<div class="row g-3">
+
+<div class="col-12">
 
 <label class="form-label">
 
-Profile Photo
+Change Profile Photo
 
 </label>
-
-{% if current_user.profile_photo %}
-
-<div class="text-center mb-3">
-
-<img
-src="/static/uploads/{{ current_user.profile_photo }}"
-class="rounded-circle shadow"
-style="
-width:120px;
-height:120px;
-object-fit:cover;
-border:4px solid #ffffff;
-">
-
-</div>
-
-{% endif %}
 
 <input
 type="file"
 name="photo"
 class="form-control">
 
-<small class="text-light">
+<small class="text-muted">
 
 Upload JPG, JPEG or PNG image.
 
@@ -323,9 +491,21 @@ Upload JPG, JPEG or PNG image.
 
 </div>
 
-<!-- MSME Certificate -->
+</div>
 
-<div class="mb-4">
+</div>
+
+<div class="form-section">
+
+<div class="section-title">
+
+📄 Verification Documents
+
+</div>
+
+<div class="row g-4">
+
+<div class="col-md-6">
 
 <label class="form-label">
 
@@ -335,18 +515,14 @@ MSME Certificate
 
 {% if current_user.msme_certificate %}
 
-<div class="mb-2">
-
 <a
 href="/static/uploads/{{ current_user.msme_certificate }}"
 target="_blank"
-class="btn btn-success w-100">
+class="btn btn-success w-100 mb-3">
 
-View Uploaded MSME Certificate
+✅ View Uploaded MSME Certificate
 
 </a>
-
-</div>
 
 {% endif %}
 
@@ -355,11 +531,15 @@ type="file"
 name="msme_certificate"
 class="form-control">
 
+<small class="text-muted">
+
+Upload MSME Registration Certificate
+
+</small>
+
 </div>
 
-<!-- Gumasta Certificate -->
-
-<div class="mb-4">
+<div class="col-md-6">
 
 <label class="form-label">
 
@@ -369,18 +549,14 @@ Gumasta Certificate
 
 {% if current_user.gumasta_certificate %}
 
-<div class="mb-2">
-
 <a
 href="/static/uploads/{{ current_user.gumasta_certificate }}"
 target="_blank"
-class="btn btn-primary w-100">
+class="btn btn-primary w-100 mb-3">
 
-View Uploaded Gumasta Certificate
+✅ View Uploaded Gumasta Certificate
 
 </a>
-
-</div>
 
 {% endif %}
 
@@ -389,25 +565,31 @@ type="file"
 name="gumasta_certificate"
 class="form-control">
 
+<small class="text-muted">
+
+Upload Gumasta / Shop Establishment Certificate
+
+</small>
+
 </div>
 
-<!-- Update Button -->
+</div>
+
+</div>
+
+<div class="form-section">
 
 <button
 type="submit"
-class="btn-save mt-4">
+class="submit-btn">
 
-Update Profile
+💾 Update Profile
 
 </button>
 
+</div>
+
 </form>
-
-</div>
-
-</div>
-
-</div>
 
 </div>
 
@@ -512,7 +694,7 @@ photoInput.files=dt.files;
 
 "image/jpeg",
 
-0.8
+0.80
 
 );
 
@@ -530,10 +712,4 @@ reader.readAsDataURL(file);
 
 </script>
 
-</body>
-
-</html>
-
-</form>
-
-</div>{% endblock %}
+{% endblock %}
