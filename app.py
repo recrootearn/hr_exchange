@@ -3145,27 +3145,19 @@ def verify_forgot_otp():
         "message": "Invalid OTP."
     })
 
-@app.route("/change-password", methods=["POST"])
+@app.route("/change-password", methods=["GET", "POST"])
 def change_password():
 
-    if not session.get("forgot_verified"):
+    if "forgot_mobile" not in session:
 
-        return jsonify({
-            "success": False,
-            "message": "Please verify OTP first."
-        })
+        flash(
+            "Please verify your mobile number first.",
+            "warning"
+        )
 
-    mobile = session.get("forgot_mobile")
+        return redirect(url_for("forgot_password"))
 
-    password = request.form.get("password")
-    confirm = request.form.get("confirm_password")
-
-    if password != confirm:
-
-        return jsonify({
-            "success": False,
-            "message": "Passwords do not match."
-        })
+    mobile = session["forgot_mobile"]
 
     user = User.query.filter_by(
         mobile=mobile,
@@ -3181,22 +3173,43 @@ def change_password():
 
     if not user:
 
-        return jsonify({
-            "success": False,
-            "message": "Account not found."
-        })
+        flash(
+            "Account not found.",
+            "danger"
+        )
 
-    user.password = generate_password_hash(password)
+        session.pop("forgot_mobile", None)
 
-    db.session.commit()
+        return redirect(url_for("forgot_password"))
 
-    session.pop("forgot_mobile", None)
-    session.pop("forgot_verified", None)
+    if request.method == "POST":
 
-    return jsonify({
-        "success": True,
-        "message": "Password changed successfully."
-    })
+        password = request.form.get("password")
+        confirm = request.form.get("confirm_password")
+
+        if password != confirm:
+
+            flash(
+                "Passwords do not match.",
+                "danger"
+            )
+
+            return redirect(url_for("change_password"))
+
+        user.password = generate_password_hash(password)
+
+        db.session.commit()
+
+        session.pop("forgot_mobile", None)
+
+        flash(
+            "Password changed successfully.",
+            "success"
+        )
+
+        return redirect(url_for("login"))
+
+    return render_template("change_password.html")
 
 @app.route('/admin/add-notification-template', methods=['GET', 'POST'])
 @login_required
@@ -9796,6 +9809,53 @@ def add_review(id):
     db.session.commit()
 
     return redirect(url_for('home'))
+
+@app.route("/forgot-password-success", methods=["POST"])
+def forgot_password_success():
+
+    mobile = request.json.get("mobile")
+
+    user = User.query.filter_by(
+        mobile=mobile,
+        is_deleted=False
+    ).first()
+
+    if not user:
+        user = CandidateUser.query.filter_by(
+            mobile=mobile,
+            is_deleted=False
+        ).first()
+
+    if not user:
+        return jsonify({
+            "success": False
+        })
+
+    session["forgot_mobile"] = mobile
+
+    return jsonify({
+        "success": True
+    })
+
+@app.route("/check-forgot-mobile")
+def check_forgot_mobile():
+
+    mobile = request.args.get("mobile", "").strip()
+
+    user = User.query.filter_by(
+        mobile=mobile,
+        is_deleted=False
+    ).first()
+
+    if not user:
+        user = CandidateUser.query.filter_by(
+            mobile=mobile,
+            is_deleted=False
+        ).first()
+
+    return jsonify({
+        "exists": user is not None
+    })
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
