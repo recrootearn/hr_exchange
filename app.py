@@ -9828,40 +9828,6 @@ def forgot_password():
         'forgot_password.html'
     )
 
-@app.route('/change-password', methods=['GET', 'POST'])
-def change_password():
-
-    if 'reset_user_id' not in session:
-
-        return redirect('/forgot-password')
-
-    user = User.query.get(
-        session['reset_user_id']
-    )
-
-    if request.method == 'POST':
-
-        password = request.form['password']
-
-        user.password = generate_password_hash(
-            password
-        )
-
-        db.session.commit()
-
-        session.pop('reset_user_id')
-
-        flash(
-            'Password Changed Successfully',
-            'success'
-        )
-
-        return render_template('register_success.html')
-
-    return render_template(
-        'change_password.html'
-    )
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
