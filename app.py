@@ -3145,33 +3145,57 @@ def verify_forgot_otp():
         "message": "Invalid OTP."
     })
 
-@app.route("/verify-forgot-otp", methods=["POST"])
-def verify_forgot_otp():
+@app.route("/change-password", methods=["POST"])
+def change_password():
 
-    mobile = request.form.get("mobile", "").strip()
-    otp = request.form.get("otp", "").strip()
-
-    if mobile != session.get("forgot_mobile"):
+    if not session.get("forgot_verified"):
 
         return jsonify({
             "success": False,
-            "message": "Mobile number mismatch."
+            "message": "Please verify OTP first."
         })
 
-    result = verify_msg91_otp(mobile, otp)
+    mobile = session.get("forgot_mobile")
 
-    if result.get("type") == "success":
+    password = request.form.get("password")
+    confirm = request.form.get("confirm_password")
 
-        session["forgot_verified"] = True
+    if password != confirm:
 
         return jsonify({
-            "success": True,
-            "message": "OTP verified successfully."
+            "success": False,
+            "message": "Passwords do not match."
         })
 
+    user = User.query.filter_by(
+        mobile=mobile,
+        is_deleted=False
+    ).first()
+
+    if not user:
+
+        user = CandidateUser.query.filter_by(
+            mobile=mobile,
+            is_deleted=False
+        ).first()
+
+    if not user:
+
+        return jsonify({
+            "success": False,
+            "message": "Account not found."
+        })
+
+    user.password = generate_password_hash(password)
+
+    db.session.commit()
+
+    session.pop("forgot_mobile", None)
+    session.pop("forgot_verified", None)
+
     return jsonify({
-        "success": False,
-        "message": "Invalid OTP."
+        "success": True,
+        "message": "Password changed successfully."
     })
 
 @app.route('/admin/add-notification-template', methods=['GET', 'POST'])
