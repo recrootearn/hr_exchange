@@ -661,7 +661,19 @@ var configuration = {
         document.getElementById("otpStatus").innerHTML =
         "✅ Mobile Number Verified Successfully";
 
-    },
+        fetch("/otp-success", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                mobile: document.getElementById("mobile").value
+            })
+        })
+        .then(res => res.json())
+        .then(data => console.log(data));
+
+        },
 
     failure: function(error){
 

@@ -2565,6 +2565,18 @@ def my_uploads():
         Unlock=Unlock
     )
 
+@app.route("/otp-success", methods=["POST"])
+def otp_success():
+
+    data = request.get_json()
+
+    session["otp_verified"] = True
+    session["otp_mobile"] = data.get("mobile")
+
+    return jsonify({
+        "success": True
+    })
+
 @app.route('/general-info')
 @login_required
 def general_info():
