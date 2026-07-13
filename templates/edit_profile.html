@@ -1,218 +1,148 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-
-<title>Edit Profile</title>
-
-<link
-href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-rel="stylesheet">
-
-<style>
-
-body{
-
-    background:linear-gradient(
-        135deg,
-        #0f172a,
-        #1e1b4b,
-        #581c87
-    );
-
-    min-height:100vh;
-
-    margin:0;
-
-    padding:20px;
-
-    font-family:Arial,sans-serif;
-
-}
-
-.card{
-
-    width:100%;
-
-    max-width:700px;
-
-    margin:20px auto;
-
-    border:none;
-
-    border-radius:24px;
-
-    padding:30px;
-
-    background:rgba(255,255,255,.10);
-
-    backdrop-filter:blur(18px);
-
-    color:#fff;
-
-    box-shadow:0 10px 30px rgba(0,0,0,.25);
-
-}
-
-.form-label{
-
-    font-size:14px;
-
-    font-weight:600;
-
-    margin-bottom:6px;
-
-}
-
-.form-control{
-
-    width:100%;
-
-    min-height:52px;
-
-    border-radius:14px;
-
-    margin-bottom:16px;
-
-    font-size:15px;
-
-}
-
-textarea.form-control{
-
-    min-height:110px;
-
-    resize:none;
-
-}
-
-.btn-save{
-
-    width:100%;
-
-    height:54px;
-
-    border:none;
-
-    border-radius:14px;
-
-    background:linear-gradient(
-        135deg,
-        #6366f1,
-        #a855f7
-    );
-
-    color:#fff;
-
-    font-size:17px;
-
-    font-weight:700;
-
-    margin-top:10px;
-
-}
-
-.btn-danger{
-
-    height:52px;
-
-    border-radius:14px;
-
-    font-weight:600;
-
-}
-
-.alert{
-
-    border-radius:12px;
-
-}
-
-@media (max-width:768px){
-
-    body{
-
-        padding:12px;
-
-    }
-
-    .card{
-
-        padding:18px;
-
-        border-radius:18px;
-
-        margin:8px auto;
-
-    }
-
-    h1{
-
-        font-size:28px;
-
-    }
-
-    .form-control{
-
-        min-height:48px;
-
-        font-size:14px;
-
-    }
-
-    .btn-save,
-
-    .btn-danger{
-
-        height:50px;
-
-        font-size:15px;
-
-    }
-
-}
-
-</style>
-
-</head>
-
 <body>
 
-<div class="card">
+<div class="container-fluid py-4">
 
-    <h1 class="mb-4 text-center">
+<div class="row justify-content-center">
 
-        Edit Profile
+<div class="col-xl-7 col-lg-8 col-md-10 col-12">
 
-    </h1>
+<div class="card shadow-lg border-0">
 
-    <form
-    method="POST"
-    enctype="multipart/form-data">
+<div class="card-body p-lg-5 p-4">
 
-        <!-- First Name -->
+<div class="text-center mb-4">
 
-<label class="form-label">First Name</label>
+{% if current_user.profile_photo %}
+
+<img
+src="/static/uploads/{{ current_user.profile_photo }}"
+class="rounded-circle shadow"
+style="
+width:110px;
+height:110px;
+object-fit:cover;
+border:4px solid #fff;
+">
+
+{% else %}
+
+<img
+src="/static/uploads/default.png"
+class="rounded-circle shadow"
+style="
+width:110px;
+height:110px;
+object-fit:cover;
+border:4px solid #fff;
+">
+
+{% endif %}
+
+<h2 class="fw-bold mt-3">
+
+Edit Profile
+
+</h2>
+
+<p class="text-light mb-0">
+
+Update your profile information
+
+</p>
+
+</div>
+
+{% if profile_completion %}
+
+<div class="mb-4">
+
+<div class="d-flex justify-content-between">
+
+<span>
+
+Profile Completion
+
+</span>
+
+<strong>
+
+{{ profile_completion }}%
+
+</strong>
+
+</div>
+
+<div
+class="progress mt-2"
+style="
+height:10px;
+border-radius:20px;
+">
+
+<div
+class="progress-bar bg-success"
+style="
+width:{{ profile_completion }}%;
+border-radius:20px;
+">
+
+</div>
+
+</div>
+
+</div>
+
+{% endif %}
+
+<form
+method="POST"
+enctype="multipart/form-data">
+
+<!-- First Name -->
+
+<div class="mb-3">
+
+<label class="form-label">
+
+First Name
+
+</label>
 
 <input
 type="text"
+name="first_name"
 class="form-control"
-value="{{ current_user.first_name }}"
-disabled>
+value="{{ current_user.first_name }}">
+
+</div>
 
 <!-- Last Name -->
 
-<label class="form-label mt-3">Last Name</label>
+<div class="mb-3">
+
+<label class="form-label">
+
+Last Name
+
+</label>
 
 <input
 type="text"
+name="last_name"
 class="form-control"
-value="{{ current_user.last_name }}"
-disabled>
+value="{{ current_user.last_name }}">
+
+</div>
 
 <!-- Mobile -->
 
-<label class="form-label mt-3">Mobile Number</label>
+<div class="mb-3">
+
+<label class="form-label">
+
+Mobile Number
+
+</label>
 
 <input
 type="text"
@@ -220,9 +150,17 @@ class="form-control"
 value="{{ current_user.mobile }}"
 readonly>
 
+</div>
+
 <!-- Email -->
 
-<label class="form-label mt-3">Email</label>
+<div class="mb-3">
+
+<label class="form-label">
+
+Email Address
+
+</label>
 
 <input
 type="email"
@@ -230,9 +168,17 @@ name="email"
 class="form-control"
 value="{{ current_user.email }}">
 
-<!-- Company Name -->
+</div>
 
-<label class="form-label mt-3">Company Name</label>
+<!-- Company -->
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Company Name
+
+</label>
 
 <input
 type="text"
@@ -240,9 +186,17 @@ name="company"
 class="form-control"
 value="{{ current_user.company }}">
 
+</div>
+
 <!-- Company City -->
 
-<label class="form-label mt-3">Company City</label>
+<div class="mb-3">
+
+<label class="form-label">
+
+Company City
+
+</label>
 
 <input
 type="text"
@@ -250,220 +204,325 @@ name="company_city"
 class="form-control"
 value="{{ current_user.company_city }}">
 
-<!-- Full Company Address -->
+</div>
 
-<label class="form-label mt-3">Full Company Address</label>
+<!-- Company Address -->
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Full Company Address
+
+</label>
 
 <textarea
 name="full_company_address"
 class="form-control"
 rows="4">{{ current_user.full_company_address }}</textarea>
 
+</div>
+
 <!-- Company Website -->
 
-<label class="form-label mt-3">Company Website</label>
+<div class="mb-3">
+
+<label class="form-label">
+
+Company Website
+
+</label>
 
 <input
 type="text"
 name="company_website"
 class="form-control"
-value="{{ current_user.company_website }}"
-placeholder="https://company.com">
+placeholder="https://company.com"
+value="{{ current_user.company_website }}">
+
+</div>
 
 <!-- HR Type -->
 
-<label class="form-label mt-3">HR Type</label>
+<div class="mb-4">
+
+<label class="form-label">
+
+HR Type
+
+</label>
 
 <select
 name="hr_type"
-class="form-control">
-
-<option value="Consultancy HR"
-{% if current_user.hr_type=="Consultancy HR" %}
-selected
-{% endif %}>
-Consultancy HR
-</option>
+class="form-select">
 
 <option value="Company HR"
 {% if current_user.hr_type=="Company HR" %}
 selected
 {% endif %}>
+
 Company HR
+
+</option>
+
+<option value="Consultancy HR"
+{% if current_user.hr_type=="Consultancy HR" %}
+selected
+{% endif %}>
+
+Consultancy HR
+
 </option>
 
 </select>
 
-<!-- Profile Photo -->
+</div>
 
-<label class="form-label mt-3">
-Change Profile Photo
+<!-- Change Profile Photo -->
+
+<div class="mb-4">
+
+<label class="form-label">
+
+Profile Photo
+
 </label>
+
+{% if current_user.profile_photo %}
+
+<div class="text-center mb-3">
+
+<img
+src="/static/uploads/{{ current_user.profile_photo }}"
+class="rounded-circle shadow"
+style="
+width:120px;
+height:120px;
+object-fit:cover;
+border:4px solid #ffffff;
+">
+
+</div>
+
+{% endif %}
 
 <input
 type="file"
 name="photo"
 class="form-control">
 
-<!-- MSME -->
+<small class="text-light">
 
-<label class="form-label mt-3">
+Upload JPG, JPEG or PNG image.
+
+</small>
+
+</div>
+
+<!-- MSME Certificate -->
+
+<div class="mb-4">
+
+<label class="form-label">
+
 MSME Certificate
+
 </label>
 
 {% if current_user.msme_certificate %}
 
+<div class="mb-2">
+
 <a
 href="/static/uploads/{{ current_user.msme_certificate }}"
 target="_blank"
-class="btn btn-success w-100 mb-3">
+class="btn btn-success w-100">
 
-View MSME Certificate
+View Uploaded MSME Certificate
 
 </a>
 
-{% else %}
-
-<div class="alert alert-secondary">
-Not Uploaded
 </div>
 
 {% endif %}
 
-<!-- Gumasta -->
+<input
+type="file"
+name="msme_certificate"
+class="form-control">
+
+</div>
+
+<!-- Gumasta Certificate -->
+
+<div class="mb-4">
 
 <label class="form-label">
+
 Gumasta Certificate
+
 </label>
 
 {% if current_user.gumasta_certificate %}
 
+<div class="mb-2">
+
 <a
 href="/static/uploads/{{ current_user.gumasta_certificate }}"
 target="_blank"
-class="btn btn-primary w-100 mb-3">
+class="btn btn-primary w-100">
 
-View Gumasta Certificate
+View Uploaded Gumasta Certificate
 
 </a>
 
-{% else %}
-
-<div class="alert alert-secondary">
-Not Uploaded
 </div>
 
 {% endif %}
 
-<!-- Save -->
+<input
+type="file"
+name="gumasta_certificate"
+class="form-control">
+
+</div>
+
+<!-- Update Button -->
 
 <button
 type="submit"
-class="btn-save">
+class="btn-save mt-4">
 
 Update Profile
 
 </button>
 
-<hr>
-
-<a
-href="/delete-account"
-class="btn btn-danger w-100"
-onclick="return confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')">
-
-Delete Account
-
-</a>
-
 </form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 <script>
 
-document.querySelector('input[name="photo"]').addEventListener(
+const photoInput =
+document.querySelector('input[name="photo"]');
+
+if(photoInput){
+
+photoInput.addEventListener(
 'change',
 function(e){
 
-    let file = e.target.files[0];
+let file=e.target.files[0];
 
-    if(!file) return;
+if(!file) return;
 
-    let reader = new FileReader();
+let reader=new FileReader();
 
-    reader.onload = function(event){
+reader.onload=function(event){
 
-        let img = new Image();
+let img=new Image();
 
-        img.onload = function(){
+img.onload=function(){
 
-            let canvas =
-            document.createElement('canvas');
+let canvas=document.createElement("canvas");
 
-            let maxSize = 800;
+let maxSize=800;
 
-            let width = img.width;
-            let height = img.height;
+let width=img.width;
 
-            if(width > height){
+let height=img.height;
 
-                if(width > maxSize){
-                    height *= maxSize / width;
-                    width = maxSize;
-                }
+if(width>height){
 
-            }else{
+if(width>maxSize){
 
-                if(height > maxSize){
-                    width *= maxSize / height;
-                    height = maxSize;
-                }
+height*=maxSize/width;
 
-            }
+width=maxSize;
 
-            canvas.width = width;
-            canvas.height = height;
+}
 
-            let ctx = canvas.getContext('2d');
+}else{
 
-            ctx.drawImage(
-                img,
-                0,
-                0,
-                width,
-                height
-            );
+if(height>maxSize){
 
-            canvas.toBlob(function(blob){
+width*=maxSize/height;
 
-                let compressedFile =
-                new File(
-                    [blob],
-                    file.name,
-                    {
-                        type:'image/jpeg'
-                    }
-                );
+height=maxSize;
 
-                let dt =
-                new DataTransfer();
+}
 
-                dt.items.add(compressedFile);
+}
 
-                document.querySelector(
-                    'input[name="photo"]'
-                ).files = dt.files;
+canvas.width=width;
 
-            },'image/jpeg',0.8);
+canvas.height=height;
 
-        };
+let ctx=canvas.getContext("2d");
 
-        img.src = event.target.result;
+ctx.drawImage(
 
-    };
+img,
 
-    reader.readAsDataURL(file);
+0,
+
+0,
+
+width,
+
+height
+
+);
+
+canvas.toBlob(function(blob){
+
+let compressedFile=new File(
+
+[blob],
+
+file.name,
+
+{
+
+type:"image/jpeg"
+
+}
+
+);
+
+let dt=new DataTransfer();
+
+dt.items.add(compressedFile);
+
+photoInput.files=dt.files;
+
+},
+
+"image/jpeg",
+
+0.8
+
+);
+
+};
+
+img.src=event.target.result;
+
+};
+
+reader.readAsDataURL(file);
 
 });
+
+}
 
 </script>
 
