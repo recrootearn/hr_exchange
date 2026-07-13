@@ -4,116 +4,174 @@
 
 <style>
 
-.referral-hero{
-    background:linear-gradient(135deg,#2563eb,#7c3aed);
-    color:white;
-    padding:30px;
+body{
+    background:#f5f7fb;
+}
+
+.main-card{
+    background:#ffffff;
     border-radius:24px;
-    margin-bottom:25px;
+    padding:22px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+    margin-bottom:20px;
 }
 
-.referral-hero h1{
-    font-size:40px;
+.page-title{
+    font-size:28px;
     font-weight:800;
-    margin-top:10px;
+    color:#111827;
 }
 
-.stats-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:15px;
-    margin-bottom:25px;
+.page-subtitle{
+    color:#6b7280;
+    margin-bottom:20px;
 }
 
-.stats-card{
-    background:white;
-    padding:24px;
+.reward-banner{
+    background:linear-gradient(135deg,#2563eb,#3b82f6);
+    color:white;
     border-radius:20px;
-    box-shadow:0 4px 18px rgba(0,0,0,.08);
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.reward-banner h4{
+    font-weight:800;
+    margin-bottom:8px;
+}
+
+.referral-box{
+    border:2px dashed #dbeafe;
+    background:#f8fbff;
+    border-radius:18px;
+    padding:18px;
+    margin-top:15px;
+}
+
+.referral-label{
+    color:#6b7280;
+    font-size:13px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+}
+
+.referral-value{
+    font-size:24px;
+    font-weight:800;
+    color:#2563eb;
+    margin-top:6px;
+    word-break:break-all;
+}
+
+.action-btn{
+    border:none;
+    border-radius:50px;
+    padding:12px 18px;
+    font-weight:700;
+    width:100%;
+    margin-top:12px;
+}
+
+.copy-btn{
+    background:#2563eb;
+    color:white;
+}
+
+.copy-btn:hover{
+    background:#1d4ed8;
+}
+
+.whatsapp-btn{
+    background:#25D366;
+    color:white;
+    text-decoration:none;
+    display:block;
     text-align:center;
 }
 
-.stats-card h5{
-    color:#6b7280;
-}
-
-.stats-card h2{
-    font-size:32px;
-    font-weight:800;
-}
-
-.live-box{
-    background:white;
-    padding:20px;
-    border-radius:20px;
-    margin-bottom:20px;
-    box-shadow:0 4px 18px rgba(0,0,0,.08);
-}
-
-.progress-bg{
-    background:#e5e7eb;
-    height:16px;
-    border-radius:30px;
-    overflow:hidden;
-}
-
-.progress-fill{
-    height:100%;
-    background:linear-gradient(90deg,#10b981,#22c55e);
-}
-
-.share-btn{
-    background:#25D366;
+.whatsapp-btn:hover{
     color:white;
-    padding:12px 20px;
-    border-radius:12px;
-    text-decoration:none;
+    background:#20bf5b;
 }
 
 @media(max-width:768px){
 
-.stats-grid{
-grid-template-columns:1fr;
+.page-title{
+font-size:24px;
 }
 
-.referral-hero h1{
-font-size:30px;
+.referral-value{
+font-size:18px;
 }
 
 }
 
 </style>
 
-<div class="referral-hero">
+<div class="main-card">
 
-<h2>
-🎁 Candidate Referral Program
-</h2>
+<div class="text-center">
 
-<p>
+<div style="font-size:42px;">
 
-Earn
-₹{{ settings.candidate_to_candidate_reward }}
+🎁
 
-when your referred candidate
+</div>
 
-completes profile and HR marks
+<div class="page-title">
 
+Candidate Referral Program
+
+</div>
+
+<div class="page-subtitle">
+
+Invite friends and earn rewards when they complete their journey.
+
+</div>
+
+</div>
+
+<div class="reward-banner">
+
+<h4>
+
+💰 Earn ₹{{ settings.candidate_to_candidate_reward }}
+
+</h4>
+
+<p class="mb-0">
+
+Share your referral code.
+Your friend must complete profile,
+apply for a job,
+and HR should mark
 <strong>Interview Done</strong>.
 
 </p>
 
-<h1>
+</div>
+
+<div class="referral-box">
+
+<div class="referral-label">
+
+Your Referral Code
+
+</div>
+
+<div class="referral-value">
 
 {{ candidate.candidate_referral_code }}
 
-</h1>
+</div>
 
 <button
 
 onclick="navigator.clipboard.writeText('{{ candidate.candidate_referral_code }}')"
 
-style="background:white;color:#2563eb;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;">
+class="action-btn copy-btn">
 
 📋 Copy Referral Code
 
@@ -121,13 +179,79 @@ style="background:white;color:#2563eb;border:none;padding:10px 20px;border-radiu
 
 </div>
 
-<div class="stats-grid">
+<div class="referral-box">
 
-<div class="stats-card">
+<div class="referral-label">
 
-<h5>Total Referrals</h5>
+Your Referral Link
 
-<h2>
+</div>
+
+<div
+class="referral-value"
+style="font-size:15px;">
+
+{{ referral_link }}
+
+</div>
+
+<div class="row mt-2">
+
+<div class="col-6">
+
+<button
+
+onclick="navigator.clipboard.writeText('{{ referral_link }}')"
+
+class="action-btn copy-btn">
+
+📋 Copy Link
+
+</button>
+
+</div>
+
+<div class="col-6">
+
+<a
+
+href="https://wa.me/?text=Join%20RecrootEarn%20using%20my%20referral%20link%20{{ referral_link }}"
+
+target="_blank"
+
+class="action-btn whatsapp-btn">
+
+📲 Share Link
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="row g-3 mb-4">
+
+<div class="col-6 col-md-4">
+
+<div class="main-card text-center">
+
+<div style="font-size:34px;">
+
+👥
+
+</div>
+
+<div style="color:#6b7280;font-size:13px;">
+
+Total Referrals
+
+</div>
+
+<h2 style="font-weight:800;color:#2563eb;">
 
 {{ candidate.total_referrals }}
 
@@ -135,11 +259,25 @@ style="background:white;color:#2563eb;border:none;padding:10px 20px;border-radiu
 
 </div>
 
-<div class="stats-card">
+</div>
 
-<h5>Successful Referrals</h5>
+<div class="col-6 col-md-4">
 
-<h2>
+<div class="main-card text-center">
+
+<div style="font-size:34px;">
+
+✅
+
+</div>
+
+<div style="color:#6b7280;font-size:13px;">
+
+Successful
+
+</div>
+
+<h2 style="font-weight:800;color:#10b981;">
 
 {{ candidate.successful_referrals }}
 
@@ -147,11 +285,25 @@ style="background:white;color:#2563eb;border:none;padding:10px 20px;border-radiu
 
 </div>
 
-<div class="stats-card">
+</div>
 
-<h5>Referral Earnings</h5>
+<div class="col-12 col-md-4">
 
-<h2>
+<div class="main-card text-center">
+
+<div style="font-size:34px;">
+
+💰
+
+</div>
+
+<div style="color:#6b7280;font-size:13px;">
+
+Total Earnings
+
+</div>
+
+<h2 style="font-weight:800;color:#059669;">
 
 ₹{{ candidate.referral_earnings }}
 
@@ -161,187 +313,500 @@ style="background:white;color:#2563eb;border:none;padding:10px 20px;border-radiu
 
 </div>
 
-<div class="live-box">
-
-<h4>
-
-🔗 Your Referral Link
-
-</h4>
-
-<input
-
-class="form-control"
-
-readonly
-
-value="{{ referral_link }}">
-
-<br>
-
-<a
-
-class="share-btn"
-
-target="_blank"
-
-href="https://wa.me/?text=Join%20RecrootEarn%20using%20my%20referral%20link%20{{ referral_link }}">
-
-📲 Share On WhatsApp
-
-</a>
-
 </div>
 
-<div class="live-box">
+<!-- REFERRAL PROGRESS -->
 
-<h4>
+<div class="main-card">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+<h4 style="font-weight:800;margin:0;">
 
 🏆 Referral Progress
 
 </h4>
 
-<div class="progress-bg">
-
-<div
-
-class="progress-fill"
-
-style="width:{{ candidate.successful_referrals }}%;">
-
-</div>
-
-</div>
-
-<p class="mt-3">
+<span
+class="badge bg-primary rounded-pill px-3 py-2">
 
 {{ candidate.successful_referrals }}
 
-Successful Referrals
+Successful
+
+</span>
+
+</div>
+
+<div
+style="
+width:100%;
+height:16px;
+background:#e5e7eb;
+border-radius:50px;
+overflow:hidden;">
+
+<div
+style="
+width:{% if candidate.total_referrals %}{{ (candidate.successful_referrals/candidate.total_referrals)*100 }}{% else %}0{% endif %}%;
+height:100%;
+background:linear-gradient(90deg,#10b981,#22c55e);
+border-radius:50px;">
+
+</div>
+
+</div>
+
+<div class="mt-3">
+
+<strong>
+
+{{ candidate.successful_referrals }}
+
+</strong>
+
+successful referrals out of
+
+<strong>
+
+{{ candidate.total_referrals }}
+
+</strong>
+
+total referrals.
+
+</div>
+
+<small class="text-muted">
+
+Complete profile →
+Apply for Job →
+Interview Done →
+Reward Credited.
+
+</small>
+
+</div>
+
+<!-- REWARD CARD -->
+
+<div
+class="main-card"
+style="background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;">
+
+<div class="row align-items-center">
+
+<div class="col-8">
+
+<h3 style="font-weight:800;">
+
+Earn ₹{{ settings.candidate_to_candidate_reward }}
+
+</h3>
+
+<p style="margin-bottom:0;">
+
+Every referred candidate who completes profile,
+applies for a job and HR marks
+<b>Interview Done</b>
+earns you an instant reward.
 
 </p>
 
 </div>
 
-<div class="live-box">
+<div class="col-4 text-end">
 
-    <h4>👥 Referral History</h4>
+<div style="font-size:58px;">
 
-    {% if referrals %}
-
-        {% for user in referrals %}
-
-        <div class="live-item">
-
-            <strong>{{ user.full_name }}</strong>
-
-            <br>
-
-            {{ user.mobile }}
-
-            <br><br>
-
-            {% if user.candidate_referral_reward_given %}
-
-                <span style="color:#10b981;font-weight:bold;">
-                    💰 Reward Paid
-                </span>
-
-            {% elif user.profile_photo
-                    and user.resume_file
-                    and user.city
-                    and user.qualification %}
-
-                <span style="color:#2563eb;font-weight:bold;">
-                    ✅ Profile Completed
-                </span>
-
-            {% else %}
-
-                <span style="color:#f59e0b;font-weight:bold;">
-                    ⏳ Registered
-                </span>
-
-            {% endif %}
-
-        </div>
-
-        {% endfor %}
-
-    {% else %}
-
-        <div class="live-item">
-
-            No referrals yet.
-
-        </div>
-
-    {% endif %}
+🎁
 
 </div>
 
-<div class="live-box">
-
-<h4>💰 Reward Rules</h4>
-
-<div class="live-item">
-✅ Share your referral code
-</div>
-
-<div class="live-item">
-✅ Friend registers using your referral code
-</div>
-
-<div class="live-item">
-✅ Friend completes 100% profile
-</div>
-
-<div class="live-item">
-✅ Friend applies for a job
-</div>
-
-<div class="live-item">
-✅ HR marks Interview Done
-</div>
-
-<div class="live-item">
-💰 Earn ₹{{ settings.candidate_to_candidate_reward }}
 </div>
 
 </div>
 
-<div class="live-box">
+</div>
 
-<h4>🚀 Potential Earnings</h4>
+<!-- REFERRAL HISTORY -->
 
-<div class="live-item">
+<div class="main-card">
 
-1 Referral =
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+<h4 style="font-weight:800;">
+
+👥 Referral History
+
+</h4>
+
+<span
+class="badge bg-primary rounded-pill">
+
+{{ referrals|length }}
+
+</span>
+
+</div>
+
+{% if referrals %}
+
+{% for user in referrals %}
+
+<div class="border rounded-4 p-3 mb-3">
+
+<div class="d-flex justify-content-between align-items-center">
+
+<div>
+
+<h5
+class="mb-1"
+style="font-weight:700;">
+
+{{ user.full_name }}
+
+</h5>
+
+<small class="text-muted">
+
+{{ user.mobile }}
+
+</small>
+
+</div>
+
+{% if user.candidate_referral_reward_given %}
+
+<span
+class="badge bg-success rounded-pill px-3 py-2">
+
+Reward Credited
+
+</span>
+
+{% elif user.profile_photo
+and user.resume_file
+and user.city
+and user.qualification %}
+
+<span
+class="badge bg-primary rounded-pill px-3 py-2">
+
+Profile Completed
+
+</span>
+
+{% else %}
+
+<span
+class="badge bg-warning text-dark rounded-pill px-3 py-2">
+
+Registered
+
+</span>
+
+{% endif %}
+
+</div>
+
+<hr>
+
+{% if user.candidate_referral_reward_given %}
+
+<div
+style="
+color:#10b981;
+font-weight:600;">
+
+✅ Reward Successfully Credited
+
+</div>
+
+{% elif user.profile_photo
+and user.resume_file
+and user.city
+and user.qualification %}
+
+<div
+style="
+color:#2563eb;
+font-weight:600;">
+
+✅ Profile Completed
+
+</div>
+
+{% else %}
+
+<div
+style="
+color:#f59e0b;
+font-weight:600;">
+
+⏳ Waiting for Profile Completion
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<div class="text-center py-5">
+
+<div style="font-size:60px;">
+
+👥
+
+</div>
+
+<h4>
+
+No Referrals Yet
+
+</h4>
+
+<p class="text-muted">
+
+Invite your friends and start earning today.
+
+</p>
+
+</div>
+
+{% endif %}
+
+</div>
+
+<!-- HOW IT WORKS -->
+
+<div class="main-card">
+
+<h4
+style="font-weight:800;"
+class="mb-4">
+
+📜 How It Works
+
+</h4>
+
+<div
+class="border-start border-4 border-primary ps-3 mb-4">
+
+<h6 style="font-weight:700;">
+
+1️⃣ Share Your Referral
+
+</h6>
+
+<small class="text-muted">
+
+Share your referral link or referral code
+with your friends.
+
+</small>
+
+</div>
+
+<div
+class="border-start border-4 border-success ps-3 mb-4">
+
+<h6 style="font-weight:700;">
+
+2️⃣ Friend Registers
+
+</h6>
+
+<small class="text-muted">
+
+Your friend creates a Candidate account
+using your referral code.
+
+</small>
+
+</div>
+
+<div
+class="border-start border-4 border-warning ps-3 mb-4">
+
+<h6 style="font-weight:700;">
+
+3️⃣ Complete Profile
+
+</h6>
+
+<small class="text-muted">
+
+Friend completes profile,
+uploads resume
+and applies for at least one job.
+
+</small>
+
+</div>
+
+<div
+class="border-start border-4 border-info ps-3">
+
+<h6 style="font-weight:700;">
+
+4️⃣ Earn Reward
+
+</h6>
+
+<small class="text-muted">
+
+When HR marks
+<b>Interview Done</b>,
+₹{{ settings.candidate_to_candidate_reward }}
+is instantly credited
+to your wallet.
+
+</small>
+
+</div>
+
+</div>
+
+<!-- POTENTIAL EARNINGS -->
+
+<div class="main-card">
+
+<h4
+style="font-weight:800;"
+class="mb-4">
+
+💰 Potential Earnings
+
+</h4>
+
+<div class="row g-3">
+
+<div class="col-4">
+
+<div
+class="text-center border rounded-4 p-3">
+
+<div style="font-size:28px;">
+
+🥉
+
+</div>
+
+<h5 class="mt-2">
+
+1
+
+</h5>
+
+<small class="text-muted">
+
+Referral
+
+</small>
+
+<hr>
+
+<strong>
+
 ₹{{ settings.candidate_to_candidate_reward }}
 
+</strong>
+
 </div>
 
-<div class="live-item">
+</div>
 
-10 Referrals =
+<div class="col-4">
+
+<div
+class="text-center border rounded-4 p-3">
+
+<div style="font-size:28px;">
+
+🥈
+
+</div>
+
+<h5 class="mt-2">
+
+10
+
+</h5>
+
+<small class="text-muted">
+
+Referrals
+
+</small>
+
+<hr>
+
+<strong>
+
 ₹{{ settings.candidate_to_candidate_reward * 10 }}
 
-</div>
-
-<div class="live-item">
-
-50 Referrals =
-₹{{ settings.candidate_to_candidate_reward * 50 }}
+</strong>
 
 </div>
 
-<div class="live-item">
+</div>
 
-100 Referrals =
+<div class="col-4">
+
+<div
+class="text-center border rounded-4 p-3">
+
+<div style="font-size:28px;">
+
+🥇
+
+</div>
+
+<h5 class="mt-2">
+
+100
+
+</h5>
+
+<small class="text-muted">
+
+Referrals
+
+</small>
+
+<hr>
+
+<strong>
+
 ₹{{ settings.candidate_to_candidate_reward * 100 }}
 
+</strong>
+
 </div>
 
 </div>
+
+</div>
+
+</div>
+
+<!-- COPY SUCCESS -->
+
+<script>
+
+function copyText(text){
+
+navigator.clipboard.writeText(text);
+
+alert("Copied Successfully!");
+
+}
+
+</script>
 
 {% endblock %}
