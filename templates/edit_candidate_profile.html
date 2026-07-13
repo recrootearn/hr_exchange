@@ -2,514 +2,631 @@
 
 {% block content %}
 
+<style>
+
+body{
+    background:#eef3fb;
+}
+
+.post-job-wrapper{
+    max-width:850px;
+    margin:20px auto 100px;
+    padding:12px;
+}
+
+.post-job-card{
+    background:#fff;
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
+}
+
+.post-header{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff;
+    padding:32px 20px;
+    text-align:center;
+}
+
+.post-header h2{
+    font-size:32px;
+    font-weight:800;
+    margin:0;
+}
+
+.post-header p{
+    margin-top:8px;
+    opacity:.9;
+}
+
+.profile-photo{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid rgba(255,255,255,.95);
+    background:#fff;
+    margin-bottom:15px;
+}
+
+.form-section{
+    padding:22px;
+    border-bottom:1px solid #eef2f7;
+}
+
+.section-title{
+    font-size:22px;
+    font-weight:700;
+    color:#111827;
+    margin-bottom:18px;
+}
+
+.form-label{
+    font-weight:700;
+    color:#374151;
+}
+
+.form-control,
+.form-select{
+    min-height:56px;
+    border-radius:16px !important;
+    border:1px solid #d7dce5;
+    font-size:16px;
+    padding:14px 16px !important;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 .2rem rgba(37,99,235,.15);
+}
+
+textarea.form-control{
+    resize:none;
+}
+
+.progress{
+    height:10px;
+    border-radius:20px;
+}
+
+.progress-bar{
+    border-radius:20px;
+}
+
+.submit-btn{
+    width:100%;
+    height:58px;
+    border:none;
+    border-radius:18px;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff;
+    font-size:18px;
+    font-weight:700;
+}
+
+@media(max-width:768px){
+
+.post-job-wrapper{
+margin:0 0 90px;
+padding:0;
+}
+
+.post-job-card{
+border-radius:0;
+box-shadow:none;
+}
+
+.post-header{
+padding:28px 16px;
+}
+
+.form-section{
+padding:18px;
+}
+
+}
+
+</style>
+
 {% with messages = get_flashed_messages(with_categories=true) %}
 
 {% if messages %}
 
-    {% for category, message in messages %}
+{% for category,message in messages %}
 
-    <div class="alert alert-{{ category }} alert-dismissible fade show mb-3">
+<div class="alert alert-{{ category }} alert-dismissible fade show">
 
-        {{ message }}
+{{ message }}
 
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert">
-        </button>
+<button
+type="button"
+class="btn-close"
+data-bs-dismiss="alert"></button>
 
-    </div>
+</div>
 
-    {% endfor %}
+{% endfor %}
 
 {% endif %}
 
 {% endwith %}
 
-<div class="candidate-card shadow-lg rounded-4 p-4 bg-white">
+<div class="post-job-wrapper">
 
-<div class="row align-items-center mb-4">
+<div class="post-job-card">
 
-<div class="col-md-3 text-center">
+<div class="post-header">
 
 {% if candidate.profile_photo %}
 
 <img
-src="{{ url_for('static', filename='uploads/' + candidate.profile_photo) }}"
-class="rounded-circle border border-3 border-primary"
-width="150"
-height="150">
+src="{{ url_for('static',filename='uploads/'+candidate.profile_photo) }}"
+class="profile-photo">
 
 {% else %}
 
 <img
-src="{{ url_for('static', filename='images/default-user.png') }}"
-class="rounded-circle border border-3 border-primary"
-width="150"
-height="150">
+src="{{ url_for('static',filename='images/default-user.png') }}"
+class="profile-photo">
 
 {% endif %}
 
-</div>
+<h2>
 
-<div class="col-md-9">
-
-<h2 class="fw-bold">
-
-{{ candidate.full_name }}
+👤 Edit Candidate Profile
 
 </h2>
 
-<p class="text-muted mb-1">
-
-{{ candidate.designation or "Candidate" }}
-
-</p>
-
-<p class="mb-1">
-
-📍 {{ candidate.city or "City not added" }}
-
-</p>
-
 <p>
 
-📧 {{ candidate.email }}
+Keep your profile updated to get better job opportunities.
 
 </p>
 
 </div>
 
-</div>
+<form
+method="POST"
+enctype="multipart/form-data">
 
-<div class="mb-4">
+<div class="form-section">
 
-    <div class="d-flex justify-content-between">
+<div class="d-flex justify-content-between">
 
-        <strong>
+<strong>
 
-            Profile Completion
+Profile Completion
 
-        </strong>
+</strong>
 
-        <strong>
+<strong>
 
-            {{ profile_completion }}%
+{{ profile_completion }}%
 
-        </strong>
-
-    </div>
-
-    <div class="progress mt-2">
-
-        <div
-            class="progress-bar bg-success"
-            role="progressbar"
-            style="width: {{ profile_completion }}%;">
-
-            {{ profile_completion }}%
-
-        </div>
-
-    </div>
-
-    <small class="text-muted">
-
-        Complete your profile to increase recruiter visibility.
-
-    </small>
+</strong>
 
 </div>
 
-<form method="POST" enctype="multipart/form-data">
+<div class="progress mt-2">
 
-<div class="card shadow-sm border-0 rounded-4 mb-4">
+<div
+class="progress-bar bg-success"
+style="width:{{ profile_completion }}%;">
 
-<div class="card-header bg-primary text-white">
+</div>
 
-<h5 class="mb-0">
+</div>
+
+</div>
+
+<div class="form-section">
+
+<div class="section-title">
 
 👤 Personal Information
 
-</h5>
-
 </div>
 
-<div class="card-body">
+<div class="row g-3">
 
-    <div class="mb-3">
-
-        <label class="form-label">
-            City
-        </label>
-
-        <input
-            type="text"
-            name="city"
-            class="form-control"
-            placeholder="City"
-            value="{{ candidate.city or '' }}">
-
-    </div>
-
-    <div class="mb-3 text-center">
-
-        {% if candidate.profile_photo %}
-
-            <img src="{{ url_for('static', filename='uploads/' + candidate.profile_photo) }}"
-                 class="rounded-circle mb-3"
-                 width="130"
-                 height="130">
-
-        {% endif %}
-
-        <label class="form-label">
-
-            Profile Photo
-
-        </label>
-
-        <input
-            type="file"
-            name="profile_photo"
-            class="form-control">
-
-    </div>
-
-    <div class="mb-3">
-
-        <label>Full Name</label>
-
-        <input
-            type="text"
-            name="full_name"
-            class="form-control"
-            value="{{ candidate.full_name }}">
-
-    </div>
-
-    <div class="mb-3">
-
-        <label>Mobile Number</label>
-
-        <input
-            type="text"
-            class="form-control"
-            value="{{ candidate.mobile }}"
-            readonly>
-
-    </div>
-
-    <div class="mb-3">
-
-        <label>Email</label>
-
-        <input
-            type="email"
-            name="email"
-            class="form-control"
-            value="{{ candidate.email }}">
-
-    </div>
-
-    <div class="mb-3">
-
-        <label>Date of Birth</label>
-
-        <input
-            type="date"
-            name="dob"
-            class="form-control"
-            value="{{ candidate.dob.strftime('%Y-%m-%d') if candidate.dob else '' }}"
-
-    </div>
-
-    <div class="mb-3">
-
-    <label>Qualification</label>
-
-    <select
-        name="qualification"
-        class="form-control">
-
-        <option value="10th Pass"
-        {% if candidate.qualification=="10th Pass" %}selected{% endif %}>
-            10th Pass
-        </option>
-
-        <option value="12th Pass"
-        {% if candidate.qualification=="12th Pass" %}selected{% endif %}>
-            12th Pass
-        </option>
-
-        <option value="Diploma"
-        {% if candidate.qualification=="Diploma" %}selected{% endif %}>
-            Diploma
-        </option>
-
-        <option value="ITI"
-        {% if candidate.qualification=="ITI" %}selected{% endif %}>
-            ITI
-        </option>
-
-        <option value="B.A."
-        {% if candidate.qualification=="B.A." %}selected{% endif %}>
-            B.A.
-        </option>
-
-        <option value="B.Com."
-        {% if candidate.qualification=="B.Com." %}selected{% endif %}>
-            B.Com.
-        </option>
-
-        <option value="B.Sc."
-        {% if candidate.qualification=="B.Sc." %}selected{% endif %}>
-            B.Sc.
-        </option>
-
-        <option value="BCA"
-        {% if candidate.qualification=="BCA" %}selected{% endif %}>
-            BCA
-        </option>
-
-        <option value="BBA"
-        {% if candidate.qualification=="BBA" %}selected{% endif %}>
-            BBA
-        </option>
-
-        <option value="B.Tech"
-        {% if candidate.qualification=="B.Tech" %}selected{% endif %}>
-            B.Tech
-        </option>
-
-        <option value="MBA"
-        {% if candidate.qualification=="MBA" %}selected{% endif %}>
-            MBA
-        </option>
-
-        <option value="M.Tech"
-        {% if candidate.qualification=="M.Tech" %}selected{% endif %}>
-            M.Tech
-        </option>
-
-        <option value="MCA"
-        {% if candidate.qualification=="MCA" %}selected{% endif %}>
-            MCA
-        </option>
-
-        <option value="PhD"
-        {% if candidate.qualification=="PhD" %}selected{% endif %}>
-            PhD
-        </option>
-
-    </select>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="card shadow-sm border-0 rounded-4 mb-4">
-
-<div class="card-header bg-success text-white">
-
-<h5 class="mb-0">
-
-💼 Career Details
-
-</h5>
-
-</div>
-
-<div class="card-body">
-
-    <div class="mb-3">
-
-        <label>Resume</label>
-
-        <input
-            type="file"
-            name="resume_file"
-            class="form-control">
-
-    </div>
-
-    <div class="mb-3">
-
-        <label class="form-label">
-
-            Career Level
-
-        </label>
-
-        <select
-            id="career_level"
-            name="career_level"
-            class="form-control">
-
-            <option value="Fresher"
-            {% if candidate.career_level=="Fresher" %}selected{% endif %}>
-
-                Fresher
-
-            </option>
-
-            <option value="Experienced"
-            {% if candidate.career_level=="Experienced" %}selected{% endif %}>
-
-                Experienced
-
-            </option>
-
-        </select>
-
-    </div>
-
-    <div id="experienceBox">
-
-    <div class="mb-3">
-
-    <label>
-
-    Company Name
-
-    </label>
-
-    <input
-    type="text"
-    name="company_name"
-    class="form-control"
-    value="{{ candidate.company_name or '' }}">
-
-    </div>
-
-    <div class="mb-3">
-
-    <label>
-
-    Designation
-
-    </label>
-
-    <input
-    type="text"
-    name="designation"
-    class="form-control"
-    value="{{ candidate.designation or '' }}">
-
-    </div>
-
-    <div class="row">
-
-    <div class="col-md-6">
-
-    <label>
-
-    From Year
-
-    </label>
-
-    <input
-    type="text"
-    name="experience_from"
-    class="form-control"
-    value="{{ candidate.experience_from or '' }}">
-
-    </div>
-
-    <div class="col-md-6">
-
-    <label>
-
-    To Year
-
-    </label>
-
-    <input
-    type="text"
-    name="experience_to"
-    class="form-control"
-    value="{{ candidate.experience_to or '' }}">
-
-    </div>
-
-    </div>
-
-    </div>
-
-</div>
-
-</div>
-
-<div class="card shadow-sm border-0 rounded-4 mb-4">
-
-<div class="card-header bg-warning">
-
-<h5 class="mb-0">
-
-🧠 Skills & About
-
-</h5>
-
-</div>
-
-<div class="card-body">
-
-    <div class="mb-3">
-
-        <label class="form-label">
-            Skills
-        </label>
-
-        <textarea
-            name="skills"
-            class="form-control"
-            rows="4"
-            placeholder="Python, Excel, Recruitment, Sales, Marketing...">{{ candidate.skills or '' }}</textarea>
-
-    </div>
-
-    <div class="mb-3">
-
-        <label class="form-label">
-            About Me
-        </label>
-
-        <textarea
-            name="about_me"
-            class="form-control"
-            rows="5"
-            placeholder="Write a short introduction about yourself...">{{ candidate.about_me or '' }}</textarea>
-
-    </div>
-
-    <div class="mb-3">
-
-    <label>
-
-    Education
-
-    </label>
-
-    <textarea
-    name="education"
-    class="form-control"
-    rows="4">{{ candidate.education or '' }}</textarea>
-
-    </div>
-
-    <div class="mb-4">
+<div class="col-md-6">
 
 <label class="form-label">
 
-<b>Interested Fields (Choose up to 5)</b>
+Full Name
 
 </label>
 
-<div class="d-flex flex-wrap gap-2">
+<input
+type="text"
+name="full_name"
+class="form-control"
+value="{{ candidate.full_name }}">
 
-{% set selected = (candidate.interested_fields or '').split(',') %}
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Mobile Number
+
+</label>
+
+<input
+type="text"
+class="form-control"
+value="{{ candidate.mobile }}"
+readonly>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Email Address
+
+</label>
+
+<input
+type="email"
+name="email"
+class="form-control"
+value="{{ candidate.email }}">
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Date of Birth
+
+</label>
+
+<input
+type="date"
+name="dob"
+class="form-control"
+value="{{ candidate.dob.strftime('%Y-%m-%d') if candidate.dob else '' }}">
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+City
+
+</label>
+
+<input
+type="text"
+name="city"
+class="form-control"
+value="{{ candidate.city or '' }}">
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Qualification
+
+</label>
+
+<select
+name="qualification"
+class="form-select">
+
+<option value="10th Pass"
+{% if candidate.qualification=="10th Pass" %}selected{% endif %}>
+10th Pass
+</option>
+
+<option value="12th Pass"
+{% if candidate.qualification=="12th Pass" %}selected{% endif %}>
+12th Pass
+</option>
+
+<option value="Diploma"
+{% if candidate.qualification=="Diploma" %}selected{% endif %}>
+Diploma
+</option>
+
+<option value="ITI"
+{% if candidate.qualification=="ITI" %}selected{% endif %}>
+ITI
+</option>
+
+<option value="B.A."
+{% if candidate.qualification=="B.A." %}selected{% endif %}>
+B.A.
+</option>
+
+<option value="B.Com."
+{% if candidate.qualification=="B.Com." %}selected{% endif %}>
+B.Com.
+</option>
+
+<option value="B.Sc."
+{% if candidate.qualification=="B.Sc." %}selected{% endif %}>
+B.Sc.
+</option>
+
+<option value="BCA"
+{% if candidate.qualification=="BCA" %}selected{% endif %}>
+BCA
+</option>
+
+<option value="BBA"
+{% if candidate.qualification=="BBA" %}selected{% endif %}>
+BBA
+</option>
+
+<option value="B.Tech"
+{% if candidate.qualification=="B.Tech" %}selected{% endif %}>
+B.Tech
+</option>
+
+<option value="MBA"
+{% if candidate.qualification=="MBA" %}selected{% endif %}>
+MBA
+</option>
+
+<option value="M.Tech"
+{% if candidate.qualification=="M.Tech" %}selected{% endif %}>
+M.Tech
+</option>
+
+<option value="MCA"
+{% if candidate.qualification=="MCA" %}selected{% endif %}>
+MCA
+</option>
+
+<option value="PhD"
+{% if candidate.qualification=="PhD" %}selected{% endif %}>
+PhD
+</option>
+
+</select>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Profile Photo
+
+</label>
+
+<input
+type="file"
+name="profile_photo"
+class="form-control">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="form-section">
+
+<div class="section-title">
+
+💼 Career Details
+
+</div>
+
+<div class="row g-3">
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Resume
+
+</label>
+
+<input
+type="file"
+name="resume_file"
+class="form-control">
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Career Level
+
+</label>
+
+<select
+id="career_level"
+name="career_level"
+class="form-select">
+
+<option
+value="Fresher"
+{% if candidate.career_level=="Fresher" %}selected{% endif %}>
+
+Fresher
+
+</option>
+
+<option
+value="Experienced"
+{% if candidate.career_level=="Experienced" %}selected{% endif %}>
+
+Experienced
+
+</option>
+
+</select>
+
+</div>
+
+<div id="experienceBox">
+
+<div class="row g-3">
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Company Name
+
+</label>
+
+<input
+type="text"
+name="company_name"
+class="form-control"
+value="{{ candidate.company_name or '' }}">
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Designation
+
+</label>
+
+<input
+type="text"
+name="designation"
+class="form-control"
+value="{{ candidate.designation or '' }}">
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Experience From
+
+</label>
+
+<input
+type="text"
+name="experience_from"
+class="form-control"
+value="{{ candidate.experience_from or '' }}">
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Experience To
+
+</label>
+
+<input
+type="text"
+name="experience_to"
+class="form-control"
+value="{{ candidate.experience_to or '' }}">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="form-section">
+
+<div class="section-title">
+
+🧠 Skills & About
+
+</div>
+
+<div class="row g-3">
+
+<div class="col-12">
+
+<label class="form-label">
+
+Skills
+
+</label>
+
+<textarea
+name="skills"
+class="form-control"
+rows="4"
+placeholder="Python, Excel, Sales, Recruitment...">{{ candidate.skills or '' }}</textarea>
+
+</div>
+
+<div class="col-12">
+
+<label class="form-label">
+
+About Me
+
+</label>
+
+<textarea
+name="about_me"
+class="form-control"
+rows="5"
+placeholder="Write something about yourself...">{{ candidate.about_me or '' }}</textarea>
+
+</div>
+
+<div class="col-12">
+
+<label class="form-label">
+
+Education
+
+</label>
+
+<textarea
+name="education"
+class="form-control"
+rows="4">{{ candidate.education or '' }}</textarea>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="form-section">
+
+<div class="section-title">
+
+🎯 Interested Fields
+
+</div>
+
+<label class="form-label">
+
+Choose up to 5 Fields
+
+</label>
+
+<div class="row g-2">
+
+{% set selected=(candidate.interested_fields or '').split(',') %}
 
 {% for field in [
 
@@ -545,15 +662,19 @@ height="150">
 
 ] %}
 
+<div class="col-md-4 col-6">
+
+<div class="form-check">
+
 <input
+
+class="form-check-input"
 
 type="checkbox"
 
-class="btn-check"
+name="interested_fields"
 
 id="{{ field }}"
-
-name="interested_fields"
 
 value="{{ field }}"
 
@@ -561,13 +682,17 @@ value="{{ field }}"
 
 <label
 
-class="btn btn-outline-primary rounded-pill"
+class="form-check-label"
 
 for="{{ field }}">
 
 {{ field }}
 
 </label>
+
+</div>
+
+</div>
 
 {% endfor %}
 
@@ -581,47 +706,57 @@ Maximum 5 fields can be selected.
 
 </div>
 
+<div class="form-section">
+
+<button
+type="submit"
+class="submit-btn">
+
+💾 Save Profile
+
+</button>
+
+</div>
+
+</form>
+
 </div>
 
 </div>
 
-    <button
-        type="submit"
-        class="btn btn-primary btn-lg">
+<script>
 
-        <i class="fas fa-save"></i>
-        Save Profile
+const career =
+document.getElementById("career_level");
 
-    </button>
+const box =
+document.getElementById("experienceBox");
 
-    <script>
+function toggleExperience(){
 
-    const career=document.getElementById("career_level");
+if(career.value=="Experienced"){
 
-    const box=document.getElementById("experienceBox");
+box.style.display="block";
 
-    function toggleExperience(){
+}else{
 
-        if(career.value=="Experienced"){
+box.style.display="none";
 
-            box.style.display="block";
+}
 
-        }else{
+}
 
-            box.style.display="none";
+toggleExperience();
 
-        }
+career.addEventListener(
 
-    }
+"change",
 
-    toggleExperience();
+toggleExperience
 
-    career.addEventListener(
-    "change",
-    toggleExperience
-    );
+);
 
-    </script>
+</script>
 
 <script>
 
@@ -631,11 +766,15 @@ const checks=document.querySelectorAll(
 
 );
 
-checks.forEach(c=>{
+checks.forEach(check=>{
 
-c.addEventListener('change',()=>{
+check.addEventListener(
 
-let checked=document.querySelectorAll(
+'change',
+
+function(){
+
+const checked=document.querySelectorAll(
 
 'input[name="interested_fields"]:checked'
 
@@ -643,18 +782,144 @@ let checked=document.querySelectorAll(
 
 if(checked.length>5){
 
-c.checked=false;
+this.checked=false;
 
-alert("You can select maximum 5 fields.");
+alert(
+
+"You can select maximum 5 fields."
+
+);
 
 }
 
-});
+}
+
+);
 
 });
 
 </script>
 
-</form>
+<script>
 
-</div>{% endblock %}
+const photoInput=document.querySelector(
+
+'input[name="profile_photo"]'
+
+);
+
+if(photoInput){
+
+photoInput.addEventListener(
+
+'change',
+
+function(e){
+
+let file=e.target.files[0];
+
+if(!file) return;
+
+let reader=new FileReader();
+
+reader.onload=function(event){
+
+let img=new Image();
+
+img.onload=function(){
+
+let canvas=document.createElement("canvas");
+
+let maxSize=800;
+
+let width=img.width;
+
+let height=img.height;
+
+if(width>height){
+
+if(width>maxSize){
+
+height*=maxSize/width;
+
+width=maxSize;
+
+}
+
+}else{
+
+if(height>maxSize){
+
+width*=maxSize/height;
+
+height=maxSize;
+
+}
+
+}
+
+canvas.width=width;
+
+canvas.height=height;
+
+let ctx=canvas.getContext("2d");
+
+ctx.drawImage(
+
+img,
+
+0,
+
+0,
+
+width,
+
+height
+
+);
+
+canvas.toBlob(function(blob){
+
+let compressedFile=new File(
+
+[blob],
+
+file.name,
+
+{
+
+type:"image/jpeg"
+
+}
+
+);
+
+let dt=new DataTransfer();
+
+dt.items.add(compressedFile);
+
+photoInput.files=dt.files;
+
+},
+
+"image/jpeg",
+
+0.80
+
+);
+
+};
+
+img.src=event.target.result;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+}
+
+</script>
+
+{% endblock %}
