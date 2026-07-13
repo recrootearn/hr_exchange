@@ -125,7 +125,7 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
     mobile = db.Column(db.String(20), unique=True)
-    email = db.Column(db.String(120), unique=True)
+    email = db.Column(db.String(120))
     company = db.Column(db.String(200))
     hr_type = db.Column(db.String(100))
     username = db.Column(db.String(100), unique=True)
