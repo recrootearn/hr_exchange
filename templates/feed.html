@@ -682,8 +682,6 @@ function openMedia(src,type){
 
             currentFeedVideo.pause();
 
-            currentFeedVideo=null;
-
         }
 
     }
@@ -701,11 +699,21 @@ function closeMedia(){
 
     viewer.style.display="none";
 
-    setTimeout(function(){
+    requestAnimationFrame(function(){
+
+    requestAnimationFrame(function(){
 
         playVisibleVideo();
 
-    },100);
+        if(currentFeedVideo){
+
+            currentFeedVideo.play().catch(()=>{});
+
+        }
+
+    });
+
+});
 
 }
 
@@ -807,7 +815,9 @@ function playVisibleVideo(){
 
             currentFeedVideo=video;
 
-            video.play().catch(()=>{});
+            video.currentTime = video.currentTime;
+            video.muted = true;
+            video.play().catch(console.log);
 
         }else{
 
