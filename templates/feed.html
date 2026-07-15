@@ -103,7 +103,7 @@ onchange="this.form.submit()">
 
         {% if ext in ['mp4','mov','webm','mkv'] %}
 
-        <div class="video-container">
+        <div class="feed-media video-container">
 
         <video
         class="feed-image feed-video"
@@ -132,10 +132,14 @@ onchange="this.form.submit()">
 
         {% else %}
 
+        <div class="feed-media">
+
         <img
         src="/static/uploads/{{ img }}"
         class="feed-image"
         onclick="openMedia('/static/uploads/{{ img }}','image')">
+
+        </div>
 
         {% endif %}
 
@@ -306,12 +310,40 @@ onchange="this.form.submit()">
     color:#6b7280;
 }
 
-.feed-image{
+.feed-media{
+
     width:100%;
-    height:auto;
+    height:520px;
+    background:#000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    position:relative;
+
+}
+
+.feed-image,
+.feed-video{
+
+    width:100%;
+    height:100%;
     display:block;
+
+}
+
+.feed-image{
+
+    object-fit:cover;
+    background:#000;
+
+}
+
+.feed-video{
+
     object-fit:contain;
-    background:#fff;
+    background:#000;
+
 }
 
 .job-title{
@@ -361,10 +393,8 @@ onchange="this.form.submit()">
 
 @media(max-width:768px){
 
-    .feed-image{
-        width:100%;
-        height:auto;
-        max-height:none;
+    .feed-media{
+        height:500px;
     }
 
     .feed-buttons{
@@ -374,7 +404,6 @@ onchange="this.form.submit()">
     .feed-buttons .btn{
         height:48px;
         font-size:14px;
-
         display:flex;
         align-items:center;
         justify-content:center;
@@ -399,11 +428,8 @@ onchange="this.form.submit()">
         margin-bottom:28px;
     }
 
-    .feed-image{
-        width:100%;
-        max-height:700px;
-        object-fit:contain;
-        background:#fff;
+    .feed-media{
+        height:650px;
     }
 
 }
@@ -563,6 +589,48 @@ function closeMedia(){
     viewer.style.display="none";
 
 }
+
+document.querySelectorAll(".feedSwiper").forEach(function(container){
+
+new Swiper(container,{
+
+slidesPerView:1,
+
+spaceBetween:0,
+
+pagination:{
+el:container.querySelector(".swiper-pagination"),
+clickable:true
+},
+
+on:{
+
+slideChange:function(){
+
+container.querySelectorAll("video").forEach(v=>{
+
+v.pause();
+
+});
+
+let current=
+
+this.slides[this.activeIndex]
+.querySelector("video");
+
+if(current){
+
+current.play().catch(()=>{});
+
+}
+
+}
+
+}
+
+});
+
+});
 
 const observer = new IntersectionObserver((entries)=>{
 
