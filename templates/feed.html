@@ -107,11 +107,12 @@ onchange="this.form.submit()">
 
         <video
         class="feed-image feed-video"
-        loop
+        autoplay
         muted
+        loop
         playsinline
         preload="metadata"
-        controlslist="nodownload noplaybackrate nofullscreen">
+        onclick="openMedia('/static/uploads/{{ img }}','video')">
 
         <source
         src="/static/uploads/{{ img }}"
@@ -134,6 +135,7 @@ onchange="this.form.submit()">
         <img
         src="/static/uploads/{{ img }}"
         class="feed-image"
+        onclick="openMedia('/static/uploads/{{ img }}','image')">
 
         {% endif %}
 
@@ -542,6 +544,7 @@ function openMedia(src,type){
         video.style.display="block";
         video.src=src;
         video.muted=false;
+        video.muted = false;
         video.play();
 
     }
@@ -562,22 +565,26 @@ function closeMedia(){
 }
 
 const observer = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-        const video = entry.target;
 
-        if(entry.isIntersecting){
-            document.querySelectorAll(".feed-video").forEach(v=>{
-                if(v!==video){
-                    v.pause();
-                }
-            });
-            video.play().catch(()=>{});
-        }else{
-            video.pause();
-        }
-    });
+entries.forEach(entry=>{
+
+const video=entry.target;
+
+if(entry.isIntersecting){
+
+video.muted=true;
+video.play().catch(()=>{});
+
+}else{
+
+video.pause();
+
+}
+
+});
+
 },{
-    threshold:0.7
+threshold:0.4
 });
 
 document.querySelectorAll(".feed-video").forEach(video=>{
