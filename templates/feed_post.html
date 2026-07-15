@@ -87,16 +87,26 @@
 
     {% if ext in ['mp4','mov','webm','mkv'] %}
 
-    <video
-        class="feed-video"
-        autoplay
-        muted
-        loop
-        playsinline>
+    <div class="video-wrapper">
 
-        <source src="/static/uploads/{{ img }}" type="video/mp4">
+        <video
+            class="feed-video"
+            autoplay
+            muted
+            loop
+            playsinline>
 
-    </video>
+           <source src="/static/uploads/{{ img }}" type="video/mp4">
+
+        </video>
+
+        <button
+            class="mute-btn"
+            onclick="toggleMute(event,this)">
+            🔇
+        </button>
+
+    </div>
 
     {% else %}
 
@@ -401,20 +411,33 @@
 
 }
 
+.video-wrapper{
+    position:relative;
+}
+
+.mute-btn{
+    position:absolute;
+    right:12px;
+    bottom:12px;
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:50%;
+    background:rgba(0,0,0,.55);
+    color:#fff;
+    font-size:18px;
+    z-index:100;
+}
+
 </style>
 
 <script>
 
 function toggleText(id){
 
-    let more =
-    document.getElementById("more"+id);
-
-    let dots =
-    document.getElementById("dots"+id);
-
-    let btn =
-    document.getElementById("btn"+id);
+    let more=document.getElementById("more"+id);
+    let dots=document.getElementById("dots"+id);
+    let btn=document.getElementById("btn"+id);
 
     if(more.style.display==="none"){
 
@@ -432,28 +455,143 @@ function toggleText(id){
 
 }
 
-</script>
-
-<script>
-
 window.onload=function(){
 
-    let target=
-    document.getElementById(
-        "post{{ selected_id }}"
-    );
+    let target=document.getElementById("post{{ selected_id }}");
 
     if(target){
 
         target.scrollIntoView({
-            behavior:'smooth',
-            block:'center'
+            behavior:"smooth",
+            block:"center"
         });
+
+    }
+
+};
+
+document.querySelectorAll(".feedSwiper").forEach(function(swiper){
+
+    new Swiper(swiper,{
+        slidesPerView:1,
+        spaceBetween:0,
+        pagination:{
+            el:swiper.querySelector(".swiper-pagination"),
+            clickable:true
+        }
+    });
+
+});
+
+const observer=new IntersectionObserver((entries)=>{
+
+    entries.forEach(entry=>{
+
+        const video=entry.target;
+
+        if(entry.isIntersecting){
+
+            document.querySelectorAll(".feed-video").forEach(v=>{
+
+                if(v!==video){
+                    v.pause();
+                }
+
+            });
+
+            video.play().catch(()=>{});
+
+        }else{
+
+            video.pause();
+
+        }
+
+    });
+
+},{
+    threshold:0.7
+});
+
+document.querySelectorAll(".feed-video").forEach(video=>{
+
+    observer.observe(video);
+
+});
+
+function toggleVideo(video){
+
+    if(video.paused){
+        video.play();
+    }else{
+        video.pause();
+    }
+
+}
+
+function toggleMute(e,btn){
+
+    e.stopPropagation();
+
+    let video=btn.parentElement.querySelector("video");
+
+    video.muted=!video.muted;
+
+    btn.innerHTML=video.muted ? "🔇" : "🔊";
+
+}
+
+function openMedia(src,type){
+
+    let viewer=document.getElementById("mediaViewer");
+    let img=document.getElementById("viewerImage");
+    let video=document.getElementById("viewerVideo");
+
+    viewer.style.display="flex";
+
+    if(type=="image"){
+
+        img.style.display="block";
+        video.style.display="none";
+        img.src=src;
+
+    }else{
+
+        img.style.display="none";
+        video.style.display="block";
+        video.src=src;
+        video.play();
 
     }
 
 }
 
+function closeMedia(){
+
+    let viewer=document.getElementById("mediaViewer");
+    let video=document.getElementById("viewerVideo");
+
+    video.pause();
+    video.src="";
+    viewer.style.display="none";
+
+}
+
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<div id="mediaViewer" class="media-viewer" onclick="closeMedia()">
+
+    <img id="viewerImage" style="display:none;max-width:100%;max-height:100%;">
+
+    <video
+        id="viewerVideo"
+        controls
+        playsinline
+        style="display:none;max-width:100%;max-height:100%;">
+    </video>
+
+</div>
 
 {% endblock %}
