@@ -598,9 +598,11 @@ function playCurrentVideo(video){
 
     });
 
-    currentFeedVideo=video;
+    currentFeedVideo = video;
 
-    video.play().catch(()=>{});
+    if(video.paused){
+        video.play().catch(()=>{});
+    }
 
 }
 
@@ -637,7 +639,7 @@ function toggleMute(e,btn){
 
 }
 
-function openMedia(feedvideo,src,type){
+function openMedia(feedVideo,src,type){
 
     openedFeedVideo = feedVideo;
 
@@ -693,33 +695,26 @@ function openMedia(feedvideo,src,type){
 
 }
 
-function closeMedia(){
+function closeMedia() {
+    let viewer = document.getElementById("mediaViewer");
+    let video = document.getElementById("viewerVideo");
 
-    let viewer=document.getElementById("mediaViewer");
-    let video=document.getElementById("viewerVideo");
-
+    // Pause and clear the fullscreen video
     video.pause();
     video.removeAttribute("src");
     video.load();
 
-    viewer.style.display="none";
+    viewer.style.display = "none";
 
-    requestAnimationFrame(function(){
-
-    requestAnimationFrame(function(){
-
-        if(openedFeedVideo){
-
-            currentFeedVideo = openedFeedVideo;
-
-            openedFeedVideo.play().catch(()=>{});
-
-        }
-
-    });
-
-});
-
+    // Resume the feed video that was previously playing
+    if (openedFeedVideo) {
+        currentFeedVideo = openedFeedVideo;
+        // Resume playing without reloading the source
+        openedFeedVideo.play().catch(() => {});
+        
+        // Clear reference after resuming
+        openedFeedVideo = null;
+    }
 }
 
 // Tap video to pause/play
@@ -791,8 +786,6 @@ playCurrentVideo(current);
 
 });
 
-let currentFeedVideo=null;
-
 function playVisibleVideo(){
 
     let bestVideo=null;
@@ -821,8 +814,7 @@ function playVisibleVideo(){
             currentFeedVideo=video;
 
             video.currentTime = video.currentTime;
-            video.muted = true;
-            video.play().catch(console.log);
+            video.play().catch(()=>{});
 
         }else{
 
