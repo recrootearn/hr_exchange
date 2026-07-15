@@ -9416,16 +9416,17 @@ def buy_credits(package_id):
 @login_required
 def delete_job(id):
 
-    job = Job.query.get_or_404(id)
+    job = JobPost.query.get_or_404(id)
 
-    if job.hr_id != current_user.id and not current_user.is_admin:
-        abort(403)
+    if job.hr_id != session["user_id"]:
+        flash("Unauthorized", "danger")
+        return redirect("/feed")
 
     db.session.delete(job)
     db.session.commit()
 
     flash("Job deleted successfully.", "success")
-    return redirect(url_for("feed"))
+    return redirect("/feed")
 
 @app.route('/payment-success')
 @login_required
