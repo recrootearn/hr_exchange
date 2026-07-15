@@ -105,13 +105,20 @@ onchange="this.form.submit()">
 
         {% if ext in ['mp4','mov','webm','mkv'] %}
 
+        <div class="video-container">
+
         <video
-        class="feed-video"
+        class="feed-image feed-video"
         loop
         muted
         playsinline
-        controls="false"
-        onclick="toggleVideo(this)">
+        preload="metadata"
+        controlslist="nodownload noplaybackrate nofullscreen"
+        onclick="openMedia('/static/uploads/{{ img }}','video')">
+
+        <source src="/static/uploads/{{ img }}">
+
+        </video>
 
         <button
         class="mute-btn"
@@ -119,9 +126,7 @@ onchange="this.form.submit()">
         🔇
         </button>
 
-        <source src="/static/uploads/{{ img }}" type="video/mp4">
-
-        </video>
+        </div>
 
         {% else %}
 
@@ -473,140 +478,27 @@ position:relative;
 
 </style>
 
-<script>
+<div id="mediaViewer" class="media-viewer" onclick="closeMedia()">
 
-function toggleText(id){
+    <img id="viewerImage" style="display:none;">
 
-    let more =
-    document.getElementById("more"+id);
+    <video id="viewerVideo" playsinline style="display:none;"></video>
 
-    let dots =
-    document.getElementById("dots"+id);
-
-    let btn =
-    document.getElementById("btn"+id);
-
-    if(more.style.display==="none"){
-
-        more.style.display="inline";
-        dots.style.display="none";
-        btn.innerHTML="See Less";
-
-    }else{
-
-        more.style.display="none";
-        dots.style.display="inline";
-        btn.innerHTML="See More";
-
-    }
-
-}
-
-</script>
+</div>
 
 <script>
 
-window.onload=function(){
+document.querySelectorAll(".feed-video").forEach(video => {
 
-    let target=
-    document.getElementById(
-        "post{{ selected_id }}"
-    );
+    video.addEventListener("click", function () {
 
-    if(target){
-
-        target.scrollIntoView({
-            behavior:'smooth',
-            block:'center'
-        });
-
-    }
-
-}
-
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-<script>
-
-document.querySelectorAll(".feedSwiper").forEach(function(swiper){
-
-new Swiper(swiper,{
-
-slidesPerView:1,
-
-spaceBetween:0,
-
-pagination:{
-
-el:swiper.querySelector(".swiper-pagination"),
-
-clickable:true
-
-}
-
-});
-
-});
-
-const observer = new IntersectionObserver((entries)=>{
-
-    entries.forEach(entry=>{
-
-        const video = entry.target;
-
-        if(entry.isIntersecting){
-
-            document.querySelectorAll(".feed-video").forEach(v=>{
-
-                if(v!==video){
-
-                    v.pause();
-
-                }
-
-            });
-
-            video.play().catch(()=>{});
-
-        }else{
-
+        if (video.paused) {
+            video.play();
+        } else {
             video.pause();
-
         }
 
     });
-
-},{
-    threshold:0.7
-});
-
-document.querySelectorAll(".feed-video").forEach(video=>{
-
-    observer.observe(video);
-
-});
-
-</script>
-
-<script>
-
-document.querySelectorAll(".feed-video").forEach(video=>{
-
-video.addEventListener("click",function(){
-
-if(video.paused){
-
-video.play();
-
-}else{
-
-video.pause();
-
-}
-
-});
 
 });
 
@@ -624,62 +516,75 @@ function toggleMute(e,btn){
 
     e.stopPropagation();
 
-    let video=btn.previousElementSibling;
+    let video = btn.previousElementSibling;
 
-    video.muted=!video.muted;
+    video.muted = !video.muted;
 
-    btn.innerHTML=video.muted ? "🔇" : "🔊";
+    btn.innerHTML = video.muted ? "🔇" : "🔊";
 
 }
-
-<div id="mediaViewer" class="media-viewer" onclick="closeMedia()">
-
-<img id="viewerImage" style="display:none;">
-
-<video id="viewerVideo"
-playsinline
-style="display:none;"></video>
-
-</div>
 
 function openMedia(src,type){
 
-let viewer=document.getElementById("mediaViewer");
+    let viewer = document.getElementById("mediaViewer");
+    let img = document.getElementById("viewerImage");
+    let video = document.getElementById("viewerVideo");
 
-let img=document.getElementById("viewerImage");
+    viewer.style.display = "flex";
 
-let video=document.getElementById("viewerVideo");
+    if(type=="image"){
 
-viewer.style.display="flex";
+        img.style.display="block";
+        video.style.display="none";
+        img.src=src;
 
-if(type=="image"){
+    }else{
 
-img.style.display="block";
-video.style.display="none";
-img.src=src;
+        img.style.display="none";
+        video.style.display="block";
+        video.src=src;
+        video.muted=false;
+        video.play();
 
-}else{
-
-img.style.display="none";
-video.style.display="block";
-video.src=src;
-video.play();
-
-}
+    }
 
 }
 
 function closeMedia(){
 
-let viewer=document.getElementById("mediaViewer");
+    let viewer=document.getElementById("mediaViewer");
+    let video=document.getElementById("viewerVideo");
 
-let video=document.getElementById("viewerVideo");
+    video.pause();
+    video.currentTime=0;
+    video.src="";
 
-video.pause();
-
-viewer.style.display="none";
+    viewer.style.display="none";
 
 }
+
+const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+        const video = entry.target;
+
+        if(entry.isIntersecting){
+            document.querySelectorAll(".feed-video").forEach(v=>{
+                if(v!==video){
+                    v.pause();
+                }
+            });
+            video.play().catch(()=>{});
+        }else{
+            video.pause();
+        }
+    });
+},{
+    threshold:0.7
+});
+
+document.querySelectorAll(".feed-video").forEach(video=>{
+    observer.observe(video);
+});
 
 </script>
 
