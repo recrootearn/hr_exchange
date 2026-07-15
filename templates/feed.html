@@ -101,9 +101,36 @@ onchange="this.form.submit()">
 
         <div class="swiper-slide">
 
+        {% set ext = img.split('.')[-1].lower() %}
+
+        {% if ext in ['mp4','mov','webm','mkv'] %}
+
+        <video
+        class="feed-video"
+        loop
+        muted
+        playsinline
+        controls="false"
+        onclick="toggleVideo(this)">
+
+        <button
+        class="mute-btn"
+        onclick="toggleMute(event,this)">
+        🔇
+        </button>
+
+        <source src="/static/uploads/{{ img }}" type="video/mp4">
+
+        </video>
+
+        {% else %}
+
         <img
         src="/static/uploads/{{ img }}"
-        class="feed-image">
+        class="feed-image"
+        onclick="openMedia('/static/uploads/{{ img }}','image')">
+
+        {% endif %}
 
         </div>
 
@@ -404,6 +431,46 @@ opacity:1;
 
 }
 
+.media-viewer{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:99999;
+}
+
+.media-viewer img,
+.media-viewer video{
+max-width:100%;
+max-height:100%;
+object-fit:contain;
+}
+
+.mute-btn{
+position:absolute;
+right:12px;
+bottom:12px;
+width:42px;
+height:42px;
+border:none;
+border-radius:50%;
+background:rgba(0,0,0,.5);
+color:#fff;
+font-size:18px;
+cursor:pointer;
+}
+
+.video-container{
+
+position:relative;
+
+}
+
 </style>
 
 <script>
@@ -482,6 +549,137 @@ clickable:true
 });
 
 });
+
+const observer = new IntersectionObserver((entries)=>{
+
+    entries.forEach(entry=>{
+
+        const video = entry.target;
+
+        if(entry.isIntersecting){
+
+            document.querySelectorAll(".feed-video").forEach(v=>{
+
+                if(v!==video){
+
+                    v.pause();
+
+                }
+
+            });
+
+            video.play().catch(()=>{});
+
+        }else{
+
+            video.pause();
+
+        }
+
+    });
+
+},{
+    threshold:0.7
+});
+
+document.querySelectorAll(".feed-video").forEach(video=>{
+
+    observer.observe(video);
+
+});
+
+</script>
+
+<script>
+
+document.querySelectorAll(".feed-video").forEach(video=>{
+
+video.addEventListener("click",function(){
+
+if(video.paused){
+
+video.play();
+
+}else{
+
+video.pause();
+
+}
+
+});
+
+});
+
+function toggleVideo(video){
+
+    if(video.paused){
+        video.play();
+    }else{
+        video.pause();
+    }
+
+}
+
+function toggleMute(e,btn){
+
+    e.stopPropagation();
+
+    let video=btn.previousElementSibling;
+
+    video.muted=!video.muted;
+
+    btn.innerHTML=video.muted ? "🔇" : "🔊";
+
+}
+
+<div id="mediaViewer" class="media-viewer" onclick="closeMedia()">
+
+<img id="viewerImage" style="display:none;">
+
+<video id="viewerVideo"
+playsinline
+style="display:none;"></video>
+
+</div>
+
+function openMedia(src,type){
+
+let viewer=document.getElementById("mediaViewer");
+
+let img=document.getElementById("viewerImage");
+
+let video=document.getElementById("viewerVideo");
+
+viewer.style.display="flex";
+
+if(type=="image"){
+
+img.style.display="block";
+video.style.display="none";
+img.src=src;
+
+}else{
+
+img.style.display="none";
+video.style.display="block";
+video.src=src;
+video.play();
+
+}
+
+}
+
+function closeMedia(){
+
+let viewer=document.getElementById("mediaViewer");
+
+let video=document.getElementById("viewerVideo");
+
+video.pause();
+
+viewer.style.display="none";
+
+}
 
 </script>
 

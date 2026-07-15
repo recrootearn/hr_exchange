@@ -110,6 +110,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+VIDEO_EXTENSIONS = {
+    "mp4",
+    "mov",
+    "webm",
+    "mkv"
+}
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -6382,11 +6388,15 @@ def post_job():
 
         saved_images = []
 
+        import uuid
+
         for file in files:
 
             if file and file.filename:
 
-                filename = secure_filename(file.filename)
+                ext = file.filename.rsplit(".", 1)[1].lower()
+
+                filename = f"{uuid.uuid4().hex}.{ext}"
 
                 file.save(
                     os.path.join(
