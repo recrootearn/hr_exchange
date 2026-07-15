@@ -113,10 +113,13 @@ onchange="this.form.submit()">
         muted
         playsinline
         preload="metadata"
-        controlslist="nodownload noplaybackrate nofullscreen"
-        onclick="openMedia('/static/uploads/{{ img }}','video')">
+        controlslist="nodownload noplaybackrate nofullscreen">
 
-        <source src="/static/uploads/{{ img }}">
+        <source
+        src="/static/uploads/{{ img }}"
+        type="video/mp4">
+
+        Your browser does not support HTML5 video.
 
         </video>
 
@@ -133,7 +136,6 @@ onchange="this.form.submit()">
         <img
         src="/static/uploads/{{ img }}"
         class="feed-image"
-        onclick="openMedia('/static/uploads/{{ img }}','image')">
 
         {% endif %}
 
