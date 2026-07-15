@@ -103,7 +103,7 @@ onchange="this.form.submit()">
 
         {% if ext in ['mp4','mov','webm','mkv'] %}
 
-        <div class="feed-media video-container">
+        <div class="feed-media reel-media video-container">
 
         <video
         class="feed-image feed-video"
@@ -132,7 +132,7 @@ onchange="this.form.submit()">
 
         {% else %}
 
-        <div class="feed-media">
+        <div class="feed-media post-media">
 
         <img
         src="/static/uploads/{{ img }}"
@@ -313,13 +313,22 @@ onchange="this.form.submit()">
 .feed-media{
 
     width:100%;
-    height:520px;
-    background:#000;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    overflow:hidden;
     position:relative;
+    overflow:hidden;
+
+}
+
+.post-media{
+
+    aspect-ratio:4/5;
+    background:#fff;
+
+}
+
+.reel-media{
+
+    aspect-ratio:9/16;
+    background:#000;
 
 }
 
@@ -329,20 +338,20 @@ onchange="this.form.submit()">
     width:100%;
     height:100%;
     display:block;
+    position:absolute;
+    inset:0;
 
 }
 
 .feed-image{
 
     object-fit:cover;
-    background:#000;
 
 }
 
 .feed-video{
 
-    object-fit:contain;
-    background:#000;
+    object-fit:cover;
 
 }
 
@@ -394,7 +403,9 @@ onchange="this.form.submit()">
 @media(max-width:768px){
 
     .feed-media{
-        height:500px;
+
+        aspect-ratio:4/5;
+
     }
 
     .feed-buttons{
@@ -429,7 +440,9 @@ onchange="this.form.submit()">
     }
 
     .feed-media{
-        height:650px;
+
+        aspect-ratio:4/5;
+
     }
 
 }
@@ -504,11 +517,26 @@ position:relative;
 
 </style>
 
-<div id="mediaViewer" class="media-viewer" onclick="closeMedia()">
+<div id="mediaViewer" class="media-viewer">
 
-    <img id="viewerImage" style="display:none;">
+<button class="viewer-back"
+onclick="closeMedia()">
 
-    <video id="viewerVideo" playsinline style="display:none;"></video>
+← Back
+
+</button>
+
+<img
+id="viewerImage"
+style="display:none;">
+
+<video
+id="viewerVideo"
+playsinline
+controls
+style="display:none;">
+
+</video>
 
 </div>
 
@@ -658,6 +686,26 @@ threshold:0.4
 document.querySelectorAll(".feed-video").forEach(video=>{
     observer.observe(video);
 });
+
+.viewer-back{
+
+position:absolute;
+top:20px;
+left:20px;
+z-index:100000;
+
+background:rgba(0,0,0,.6);
+color:#fff;
+
+border:none;
+
+padding:10px 16px;
+
+border-radius:30px;
+
+font-size:16px;
+
+}
 
 </script>
 
