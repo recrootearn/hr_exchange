@@ -428,6 +428,13 @@ justify-content:center;
 
 }
 
+@media (max-width:768px){
+    .content{
+        padding:0 !important;
+        padding-bottom:120px !important;
+    }
+}
+
 /* ===================================
    Instagram Desktop Feed
    Mobile Unchanged
@@ -570,6 +577,26 @@ style="display:none;">
 
 <script>
 
+function playCurrentVideo(video){
+
+    document.querySelectorAll(".feed-video").forEach(v=>{
+
+        if(v!==video){
+
+            v.pause();
+            v.muted=true;
+
+            let btn=v.parentElement.querySelector(".mute-btn");
+            if(btn) btn.innerHTML="🔇";
+
+        }
+
+    });
+
+    video.play().catch(()=>{});
+
+}
+
 function toggleVideo(video){
 
     if(video.paused){
@@ -586,7 +613,18 @@ function toggleMute(e,btn){
 
     let video = btn.previousElementSibling;
 
-    video.muted = !video.muted;
+    document.querySelectorAll(".feed-video").forEach(v=>{
+
+        if(v!==video){
+            v.muted=true;
+
+            let b=v.parentElement.querySelector(".mute-btn");
+            if(b) b.innerHTML="🔇";
+        }
+
+    });
+
+    video.muted=!video.muted;
 
     btn.innerHTML = video.muted ? "🔇" : "🔊";
 
@@ -683,7 +721,7 @@ const video=entry.target;
 if(entry.isIntersecting){
 
 video.muted=true;
-video.play().catch(()=>{});
+playCurrentVideo(video);
 
 }else{
 
