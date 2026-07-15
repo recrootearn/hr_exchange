@@ -9418,7 +9418,7 @@ def delete_job(id):
 
     job = JobPost.query.get_or_404(id)
 
-    if job.hr_id != session["user_id"]:
+    if job.hr_id != current_user.id:
         flash("Unauthorized", "danger")
         return redirect("/feed")
 
