@@ -632,26 +632,47 @@ function toggleMute(e,btn){
 
 function openMedia(src,type){
 
-    let viewer = document.getElementById("mediaViewer");
-    let img = document.getElementById("viewerImage");
-    let video = document.getElementById("viewerVideo");
+    let viewer=document.getElementById("mediaViewer");
+    let img=document.getElementById("viewerImage");
+    let video=document.getElementById("viewerVideo");
 
-    viewer.style.display = "flex";
+    // Close all feed videos
+    document.querySelectorAll(".feed-video").forEach(function(v){
+
+        v.pause();
+        v.muted=true;
+
+        let btn=v.parentElement.querySelector(".mute-btn");
+        if(btn) btn.innerHTML="🔇";
+
+    });
+
+    viewer.style.display="flex";
+
+    // Mobile back button support
+    history.pushState({viewer:true},"");
 
     if(type=="image"){
 
         img.style.display="block";
         video.style.display="none";
+
         img.src=src;
 
     }else{
 
         img.style.display="none";
         video.style.display="block";
+
+        video.pause();
         video.src=src;
+        video.load();
+
+        video.controls=false;
         video.muted=false;
-        video.muted = false;
-        video.play();
+        video.currentTime=0;
+
+        video.play().catch(()=>{});
 
     }
 
@@ -663,12 +684,39 @@ function closeMedia(){
     let video=document.getElementById("viewerVideo");
 
     video.pause();
-    video.currentTime=0;
-    video.src="";
+    video.removeAttribute("src");
+    video.load();
 
     viewer.style.display="none";
 
 }
+
+// Tap video to pause/play
+document.getElementById("viewerVideo").onclick=function(e){
+
+    e.stopPropagation();
+
+    if(this.paused){
+        this.play();
+    }else{
+        this.pause();
+    }
+
+};
+
+
+// Android back button closes fullscreen
+window.addEventListener("popstate",function(){
+
+    let viewer=document.getElementById("mediaViewer");
+
+    if(viewer.style.display=="flex"){
+
+        closeMedia();
+
+    }
+
+});
 
 document.querySelectorAll(".feedSwiper").forEach(function(container){
 
