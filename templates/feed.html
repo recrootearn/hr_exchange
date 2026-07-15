@@ -568,9 +568,10 @@ style="display:none;">
 <video
 id="viewerVideo"
 playsinline
-controls
-style="display:none;">
-
+muted
+autoplay
+style="display:none;"
+onclick="toggleVideo(this)">
 </video>
 
 </div>
@@ -674,20 +675,32 @@ function openMedia(src,type){
 
         video.play().catch(()=>{});
 
+        if(currentFeedVideo){
+
+            currentFeedVideo.pause();
+
+        }
+
     }
 
 }
 
 function closeMedia(){
 
-    let viewer=document.getElementById("mediaViewer");
-    let video=document.getElementById("viewerVideo");
+let viewer=document.getElementById("mediaViewer");
+let video=document.getElementById("viewerVideo");
 
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
+video.pause();
+video.removeAttribute("src");
+video.load();
 
-    viewer.style.display="none";
+viewer.style.display="none";
+
+if(currentFeedVideo){
+
+currentFeedVideo.play().catch(()=>{});
+
+}
 
 }
 
@@ -760,7 +773,9 @@ current.play().catch(()=>{});
 
 });
 
-const observer = new IntersectionObserver((entries)=>{
+let currentFeedVideo=null;
+
+const observer=new IntersectionObserver((entries)=>{
 
 entries.forEach(entry=>{
 
@@ -768,8 +783,20 @@ const video=entry.target;
 
 if(entry.isIntersecting){
 
-video.muted=true;
-playCurrentVideo(video);
+if(currentFeedVideo && currentFeedVideo!==video){
+
+currentFeedVideo.pause();
+currentFeedVideo.currentTime=currentFeedVideo.currentTime;
+currentFeedVideo.muted=true;
+
+let b=currentFeedVideo.parentElement.querySelector(".mute-btn");
+if(b) b.innerHTML="🔇";
+
+}
+
+currentFeedVideo=video;
+
+video.play().catch(()=>{});
 
 }else{
 
@@ -780,12 +807,10 @@ video.pause();
 });
 
 },{
-threshold:0.4
+threshold:0.75
 });
 
-document.querySelectorAll(".feed-video").forEach(video=>{
-    observer.observe(video);
-});
+document.querySelectorAll(".feed-video").forEach(v=>observer.observe(v));
 
 </script>
 
