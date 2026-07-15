@@ -81,15 +81,34 @@
 
         {% for img in job.images.split(',') %}
 
-        <div class="carousel-item {% if loop.first %}active{% endif %}">
+<div class="carousel-item {% if loop.first %}active{% endif %}">
 
-            <img
-            src="/static/uploads/{{ img }}"
-            class="feed-image">
+    {% set ext = img.split('.')[-1].lower().strip() %}
 
-        </div>
+    {% if ext in ['mp4','mov','webm','mkv'] %}
 
-        {% endfor %}
+    <video
+        class="feed-video"
+        autoplay
+        muted
+        loop
+        playsinline>
+
+        <source src="/static/uploads/{{ img }}" type="video/mp4">
+
+    </video>
+
+    {% else %}
+
+    <img
+        src="/static/uploads/{{ img }}"
+        class="feed-image">
+
+    {% endif %}
+
+</div>
+
+{% endfor %}
 
     </div>
 
@@ -268,6 +287,14 @@
     display:block;
     object-fit:contain;
     background:#fff;
+}
+
+.feed-video{
+    width:100%;
+    height:auto;
+    display:block;
+    object-fit:contain;
+    background:#000;
 }
 
 .job-title{
