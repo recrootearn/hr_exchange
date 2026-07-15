@@ -402,23 +402,29 @@ onchange="this.form.submit()">
 
 @media(max-width:768px){
 
-    .feed-media{
+.post-media{
 
-        aspect-ratio:4/5;
+aspect-ratio:4/5;
 
-    }
+}
 
-    .feed-buttons{
-        gap:8px;
-    }
+.reel-media{
 
-    .feed-buttons .btn{
-        height:48px;
-        font-size:14px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
+height:85vh;
+
+}
+
+.feed-buttons{
+gap:8px;
+}
+
+.feed-buttons .btn{
+height:48px;
+font-size:14px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
 
 }
 
@@ -439,10 +445,12 @@ onchange="this.form.submit()">
         margin-bottom:28px;
     }
 
-    .feed-media{
-
+    .post-media{
         aspect-ratio:4/5;
+    }
 
+    .reel-media{
+        height:85vh;
     }
 
 }
@@ -515,6 +523,26 @@ position:relative;
 
 }
 
+.viewer-back{
+
+position:absolute;
+top:20px;
+left:20px;
+z-index:100000;
+
+background:rgba(0,0,0,.6);
+color:#fff;
+
+border:none;
+
+padding:10px 16px;
+
+border-radius:30px;
+
+font-size:16px;
+
+}
+
 </style>
 
 <div id="mediaViewer" class="media-viewer">
@@ -541,20 +569,6 @@ style="display:none;">
 </div>
 
 <script>
-
-document.querySelectorAll(".feed-video").forEach(video => {
-
-    video.addEventListener("click", function () {
-
-        if (video.paused) {
-            video.play();
-        } else {
-            video.pause();
-        }
-
-    });
-
-});
 
 function toggleVideo(video){
 
@@ -686,26 +700,6 @@ threshold:0.4
 document.querySelectorAll(".feed-video").forEach(video=>{
     observer.observe(video);
 });
-
-.viewer-back{
-
-position:absolute;
-top:20px;
-left:20px;
-z-index:100000;
-
-background:rgba(0,0,0,.6);
-color:#fff;
-
-border:none;
-
-padding:10px 16px;
-
-border-radius:30px;
-
-font-size:16px;
-
-}
 
 </script>
 
