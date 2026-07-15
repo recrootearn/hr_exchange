@@ -687,20 +687,35 @@ function openMedia(src,type){
 
 function closeMedia(){
 
-let viewer=document.getElementById("mediaViewer");
-let video=document.getElementById("viewerVideo");
+    let viewer=document.getElementById("mediaViewer");
+    let video=document.getElementById("viewerVideo");
 
-video.pause();
-video.removeAttribute("src");
-video.load();
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
 
-viewer.style.display="none";
+    viewer.style.display="none";
 
-if(currentFeedVideo){
+    // Resume the visible feed video
+    setTimeout(function(){
 
-currentFeedVideo.play().catch(()=>{});
+        document.querySelectorAll(".feed-video").forEach(function(v){
 
-}
+            let rect=v.getBoundingClientRect();
+
+            if(
+                rect.top<window.innerHeight*0.5 &&
+                rect.bottom>window.innerHeight*0.5
+            ){
+
+                currentFeedVideo=v;
+                v.play().catch(()=>{});
+
+            }
+
+        });
+
+    },100);
 
 }
 
