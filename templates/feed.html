@@ -112,7 +112,7 @@ onchange="this.form.submit()">
         loop
         playsinline
         preload="metadata"
-        onclick="openMedia('/static/uploads/{{ img }}','video')">
+        onclick="openMedia(this,'/static/uploads/{{ img }}','video')">
 
         <source
         src="/static/uploads/{{ img }}"
@@ -578,6 +578,9 @@ onclick="toggleVideo(this)">
 
 <script>
 
+let openedFeedVideo = null;
+let currentFeedVideo = null;
+
 function playCurrentVideo(video){
 
     document.querySelectorAll(".feed-video").forEach(function(v){
@@ -634,7 +637,9 @@ function toggleMute(e,btn){
 
 }
 
-function openMedia(src,type){
+function openMedia(feedvideo,src,type){
+
+    openedFeedVideo = feedVideo;
 
     let viewer=document.getElementById("mediaViewer");
     let img=document.getElementById("viewerImage");
@@ -703,11 +708,11 @@ function closeMedia(){
 
     requestAnimationFrame(function(){
 
-        playVisibleVideo();
+        if(openedFeedVideo){
 
-        if(currentFeedVideo){
+            currentFeedVideo = openedFeedVideo;
 
-            currentFeedVideo.play().catch(()=>{});
+            openedFeedVideo.play().catch(()=>{});
 
         }
 
