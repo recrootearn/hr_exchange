@@ -580,7 +580,7 @@ onclick="toggleVideo(this)">
 
 function playCurrentVideo(video){
 
-    document.querySelectorAll(".feed-video").forEach(v=>{
+    document.querySelectorAll(".feed-video").forEach(function(v){
 
         if(v!==video){
 
@@ -588,11 +588,14 @@ function playCurrentVideo(video){
             v.muted=true;
 
             let btn=v.parentElement.querySelector(".mute-btn");
+
             if(btn) btn.innerHTML="🔇";
 
         }
 
     });
+
+    currentFeedVideo=video;
 
     video.play().catch(()=>{});
 
@@ -679,6 +682,8 @@ function openMedia(src,type){
 
             currentFeedVideo.pause();
 
+            currentFeedVideo=null;
+
         }
 
     }
@@ -696,24 +701,9 @@ function closeMedia(){
 
     viewer.style.display="none";
 
-    // Resume the visible feed video
     setTimeout(function(){
 
-        document.querySelectorAll(".feed-video").forEach(function(v){
-
-            let rect=v.getBoundingClientRect();
-
-            if(
-                rect.top<window.innerHeight*0.5 &&
-                rect.bottom>window.innerHeight*0.5
-            ){
-
-                currentFeedVideo=v;
-                v.play().catch(()=>{});
-
-            }
-
-        });
+        playVisibleVideo();
 
     },100);
 
@@ -776,7 +766,7 @@ this.slides[this.activeIndex]
 
 if(current){
 
-current.play().catch(()=>{});
+playCurrentVideo(current);
 
 }
 
@@ -790,42 +780,50 @@ current.play().catch(()=>{});
 
 let currentFeedVideo=null;
 
-const observer=new IntersectionObserver((entries)=>{
+function playVisibleVideo(){
 
-entries.forEach(entry=>{
+    let bestVideo=null;
+    let bestArea=0;
 
-const video=entry.target;
+    document.querySelectorAll(".feed-video").forEach(function(video){
 
-if(entry.isIntersecting){
+        let rect=video.getBoundingClientRect();
 
-if(currentFeedVideo && currentFeedVideo!==video){
+        let visible=Math.min(rect.bottom,window.innerHeight)
+                   -Math.max(rect.top,0);
 
-currentFeedVideo.pause();
-currentFeedVideo.currentTime=currentFeedVideo.currentTime;
-currentFeedVideo.muted=true;
+        if(visible>bestArea){
 
-let b=currentFeedVideo.parentElement.querySelector(".mute-btn");
-if(b) b.innerHTML="🔇";
+            bestArea=visible;
+            bestVideo=video;
+
+        }
+
+    });
+
+    document.querySelectorAll(".feed-video").forEach(function(video){
+
+        if(video===bestVideo){
+
+            currentFeedVideo=video;
+
+            video.play().catch(()=>{});
+
+        }else{
+
+            video.pause();
+
+        }
+
+    });
 
 }
 
-currentFeedVideo=video;
+window.addEventListener("scroll",playVisibleVideo);
 
-video.play().catch(()=>{});
+window.addEventListener("resize",playVisibleVideo);
 
-}else{
-
-video.pause();
-
-}
-
-});
-
-},{
-threshold:0.75
-});
-
-document.querySelectorAll(".feed-video").forEach(v=>observer.observe(v));
+window.addEventListener("load",playVisibleVideo);
 
 </script>
 
