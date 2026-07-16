@@ -787,41 +787,56 @@ playCurrentVideo(current);
 });
 
 function playVisibleVideo() {
+
     let bestVideo = null;
-    let bestArea = 0;
+    let bestVisible = 0;
 
-    document.querySelectorAll(".feed-video").forEach(function(video) {
+    document.querySelectorAll(".feed-video").forEach(function(video){
+
         let rect = video.getBoundingClientRect();
-        let visible = Math.min(rect.bottom, window.innerHeight) 
-                   - Math.max(rect.top, 0);
 
-        if (visible > bestArea) {
-            bestArea = visible;
+        let visible = Math.max(
+            0,
+            Math.min(rect.bottom, window.innerHeight) -
+            Math.max(rect.top, 0)
+        );
+
+        if(visible > bestVisible){
+            bestVisible = visible;
             bestVideo = video;
         }
+
     });
 
-    document.querySelectorAll(".feed-video").forEach(function(video) {
-        if (video === bestVideo) {
+    document.querySelectorAll(".feed-video").forEach(function(video){
+
+        let btn = video.parentElement.querySelector(".mute-btn");
+
+        if(video === bestVideo && bestVisible > 150){
+
             currentFeedVideo = video;
-            
-            // Unmute the visible video and play
+
+            if(video.paused){
+                video.play().catch(()=>{});
+            }
+
+            // Auto unmute only the visible video
             video.muted = false;
-            video.play().catch(() => {});
 
-            // Sync the mute button UI if it exists
-            let btn = video.parentElement.querySelector(".mute-btn");
-            if (btn) btn.innerHTML = "🔊";
-        } else {
-            // Mute and pause other videos
-            video.pause();
+            if(btn) btn.innerHTML = "🔊";
+
+        }else{
+
+            // Auto mute every other video
             video.muted = true;
+            video.pause();
 
-            // Sync the mute button UI if it exists
-            let btn = video.parentElement.querySelector(".mute-btn");
-            if (btn) btn.innerHTML = "🔇";
+            if(btn) btn.innerHTML = "🔇";
+
         }
+
     });
+
 }
 
 window.addEventListener("scroll",playVisibleVideo);
