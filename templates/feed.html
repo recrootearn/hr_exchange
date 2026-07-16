@@ -618,28 +618,17 @@ function toggleVideo(video){
 
 }
 
-function toggleMute(e,btn){
-
+function toggleMute(e, btn) {
     e.stopPropagation();
 
+    // Get the video element associated with this specific button
     let video = btn.previousElementSibling;
 
-    document.querySelectorAll(".feed-video").forEach(v=>{
+    // Toggle the current video's muted state
+    video.muted = !video.muted;
 
-        if(v!==video){
-            v.muted=true;
-
-            let b=v.parentElement.querySelector(".mute-btn");
-            if(b) b.innerHTML="🔇";
-        }
-
-    });
-
-    video.muted=!video.muted;
-    window.soundEnabled = !video.muted;
-
+    // Update the button UI icon
     btn.innerHTML = video.muted ? "🔇" : "🔊";
-
 }
 
 function openMedia(feedVideo,src,type){
@@ -790,61 +779,41 @@ playCurrentVideo(current);
 });
 
 function playVisibleVideo() {
-
     let bestVideo = null;
     let bestVisible = 0;
 
-    document.querySelectorAll(".feed-video").forEach(function(video){
-
+    // 1. Identify which video is most visible
+    document.querySelectorAll(".feed-video").forEach(function(video) {
         let rect = video.getBoundingClientRect();
+        let visible = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
 
-        let visible = Math.max(
-            0,
-            Math.min(rect.bottom, window.innerHeight) -
-            Math.max(rect.top, 0)
-        );
-
-        if(visible > bestVisible){
+        if (visible > bestVisible) {
             bestVisible = visible;
             bestVideo = video;
         }
-
     });
 
-    document.querySelectorAll(".feed-video").forEach(function(video){
-
+    // 2. Apply play/mute logic
+    document.querySelectorAll(".feed-video").forEach(function(video) {
         let btn = video.parentElement.querySelector(".mute-btn");
 
-        if(video === bestVideo && bestVisible > 150){
-
-            currentFeedVideo = video;
-
-            if(video.paused){
-                video.play().catch(()=>{});
+        if (video === bestVideo && bestVisible > 150) {
+            // This is the active video
+            if (video.paused) {
+                video.play().catch(() => {});
             }
-
-            // Keep user's mute/unmute choice
-            if(window.soundEnabled){
-                video.muted = false;
-                if(btn) btn.innerHTML = "🔊";
-            }else{
-                video.muted = true;
-                if(btn) btn.innerHTML = "🔇";
-            }
-
-        }else{
-
+            
+            // Auto-unmute ONLY the best visible video
+            video.muted = false;
+            if (btn) btn.innerHTML = "🔊";
+            
+        } else {
+            // These are background/hidden videos
             video.pause();
-            video.muted = true;
-
-            if(btn){
-                btn.innerHTML = window.soundEnabled ? "🔊" : "🔇";
-            }
-
+            video.muted = true; // Force mute
+            if (btn) btn.innerHTML = "🔇";
         }
-
     });
-
 }
 
 window.addEventListener("scroll",playVisibleVideo);
