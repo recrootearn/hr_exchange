@@ -6526,7 +6526,7 @@ def post_job():
         if post_type == "hiring":
             files = request.files.getlist("images")
         else:
-            video = request.files.get("company_video")
+            video = request.files.get("images")
             files = [video] if video and video.filename else []
 
         saved_images = []
@@ -6644,11 +6644,7 @@ def post_job():
 
             interview_instructions=request.form.get("interview_instructions", ""),
 
-            description=(
-                request.form.get("description")
-                if post_type == "hiring"
-                else request.form.get("video_caption")
-            ),
+            description=request.form.get("description", ""),
 
             images=",".join(saved_images),
 
