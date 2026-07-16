@@ -1,0 +1,454 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+
+<style>
+
+body{
+    background:#eef3fb;
+}
+
+.post-job-wrapper{
+    max-width:850px;
+    margin:20px auto 100px;
+    padding:12px;
+}
+
+.post-job-card{
+    background:#fff;
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
+}
+
+.post-header{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff;
+    padding:32px 20px;
+    text-align:center;
+}
+
+.post-header h2{
+    font-size:32px;
+    font-weight:800;
+    margin:0;
+}
+
+.post-header p{
+    margin-top:8px;
+    opacity:.9;
+}
+
+.form-section{
+    padding:22px;
+    border-bottom:1px solid #eef2f7;
+}
+
+.section-title{
+    font-size:22px;
+    font-weight:700;
+    color:#111827;
+    margin-bottom:18px;
+}
+
+.form-label{
+    font-weight:700;
+    color:#374151;
+    margin-bottom:8px;
+}
+
+.form-control,
+.form-select{
+    min-height:56px;
+    border-radius:16px !important;
+    border:1px solid #d7dce5;
+    padding:14px 16px !important;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 .2rem rgba(37,99,235,.15);
+}
+
+textarea.form-control{
+    min-height:180px;
+    resize:none;
+}
+
+.upload-box{
+    border:2px dashed #2563eb;
+    border-radius:18px;
+    padding:35px;
+    text-align:center;
+    cursor:pointer;
+    color:#2563eb;
+    font-weight:700;
+}
+
+.upload-box:hover{
+    background:#f7faff;
+}
+
+#preview-container{
+    margin-top:20px;
+}
+
+#preview-container video{
+    width:100%;
+    border-radius:18px;
+}
+
+.submit-btn{
+    width:100%;
+    height:58px;
+    border:none;
+    border-radius:18px;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff;
+    font-size:18px;
+    font-weight:700;
+}
+
+</style>
+
+<div class="post-job-wrapper">
+
+<div class="post-job-card">
+
+<div class="post-header">
+
+<h2>🎥 Post Company Video</h2>
+
+<p>Show candidates your company culture.</p>
+
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+
+<div class="form-section">
+
+<div class="section-title">
+
+🏢 Company Information
+
+</div>
+
+<!-- Company Name -->
+
+<label class="form-label">
+
+🏢 Company Name
+
+</label>
+
+<input
+type="text"
+class="form-control"
+value="{{ current_user.company }}"
+readonly>
+
+<br>
+
+<!-- Location -->
+
+<label class="form-label">
+
+📍 Location
+
+</label>
+
+<select
+id="location"
+name="location"
+class="form-select"
+required>
+
+<option value="">Select City</option>
+
+<option>Indore</option>
+<option>Bhopal</option>
+<option>Jabalpur</option>
+<option>Gwalior</option>
+<option>Ujjain</option>
+<option>Katni</option>
+<option>Satna</option>
+<option>Rewa</option>
+<option>Sagar</option>
+<option>Dewas</option>
+<option>Ratlam</option>
+<option>Khandwa</option>
+<option>Burhanpur</option>
+<option>Chhindwara</option>
+<option>Delhi</option>
+<option>Mumbai</option>
+<option>Pune</option>
+<option>Ahmedabad</option>
+<option>Surat</option>
+<option>Jaipur</option>
+<option>Lucknow</option>
+<option>Kanpur</option>
+<option>Patna</option>
+<option>Ranchi</option>
+<option>Raipur</option>
+<option>Hyderabad</option>
+<option>Bengaluru</option>
+<option>Chennai</option>
+<option>Kolkata</option>
+
+</select>
+
+<br>
+
+<!-- Description -->
+
+<label class="form-label">
+
+📝 Description
+
+</label>
+
+<textarea
+name="description"
+class="form-control"
+rows="6"
+placeholder="Tell candidates about your company, office, culture, work environment etc."
+required></textarea>
+
+<br>
+
+
+<!-- Company Video -->
+
+<label class="form-label">
+
+🎥 Company Video
+
+</label>
+
+<input
+type="file"
+id="company_video"
+name="company_video"
+accept="video/*"
+hidden
+required>
+
+<label
+for="company_video"
+class="upload-box">
+
+<i class="fas fa-video fa-3x mb-3"></i>
+
+<h5>Upload Company Video</h5>
+
+<p class="mb-0">
+
+Only one video is allowed
+
+</p>
+
+</label>
+
+<div id="preview-container"></div>
+
+</div>
+
+<!-- Upload Progress -->
+
+<div
+id="uploadProgressBox"
+style="display:none;margin-bottom:20px;">
+
+<label class="form-label">
+
+Uploading Video...
+
+<span
+id="uploadPercent">
+
+0%
+
+</span>
+
+</label>
+
+<div
+style="
+width:100%;
+height:12px;
+background:#e5e7eb;
+border-radius:20px;
+overflow:hidden;">
+
+<div
+id="uploadBar"
+style="
+width:0%;
+height:100%;
+background:linear-gradient(90deg,#2563eb,#1d4ed8);
+transition:.2s;">
+</div>
+
+</div>
+
+</div>
+
+<div class="form-section">
+
+<button
+type="submit"
+class="submit-btn">
+
+🚀 Publish Video
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+<script>
+
+// ============================
+// Location Search
+// ============================
+
+new TomSelect("#location",{
+
+    create:function(input){
+
+        return{
+
+            value:input,
+
+            text:input
+
+        };
+
+    },
+
+    persist:false,
+
+    createOnBlur:true,
+
+    sortField:"text",
+
+    maxOptions:1000,
+
+    placeholder:"Search or Add City",
+
+    render:{
+
+        option_create:function(data,escape){
+
+            return '<div class="create">➕ Add "<strong>'+escape(data.input)+'</strong>"</div>';
+
+        }
+
+    }
+
+});
+
+// ============================
+// Video Preview
+// ============================
+
+const videoInput = document.getElementById("company_video");
+
+videoInput.addEventListener("change",function(){
+
+    const preview = document.getElementById("preview-container");
+
+    preview.innerHTML = "";
+
+    if(!this.files.length){
+
+        return;
+
+    }
+
+    const file = this.files[0];
+
+    const url = URL.createObjectURL(file);
+
+    preview.innerHTML = `
+    <video
+    src="${url}"
+    controls
+    playsinline
+    style="width:100%;border-radius:18px;">
+    </video>
+   `;
+
+});
+
+// ============================
+// Fake Upload Progress
+// ============================
+
+const form = document.querySelector("form");
+
+form.addEventListener("submit",function(){
+
+    const box=document.getElementById("uploadProgressBox");
+
+    const bar=document.getElementById("uploadBar");
+
+    const percent=document.getElementById("uploadPercent");
+
+    box.style.display="block";
+
+    let value=0;
+
+    const timer=setInterval(function(){
+
+        value+=5;
+
+        if(value>95){
+
+            clearInterval(timer);
+
+            return;
+
+        }
+
+        bar.style.width=value+"%";
+
+        percent.innerHTML=value+"%";
+
+    },120);
+
+});
+
+// ============================
+// Complete Upload Progress
+// ============================
+
+window.addEventListener("beforeunload",function(){
+
+    const bar=document.getElementById("uploadBar");
+
+    const percent=document.getElementById("uploadPercent");
+
+    if(bar && percent){
+
+        bar.style.width="100%";
+
+        percent.innerHTML="100%";
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

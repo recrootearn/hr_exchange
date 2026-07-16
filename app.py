@@ -6684,6 +6684,60 @@ def post_job():
 
     return render_template("post_job.html")
 
+@app.route("/post-video", methods=["GET", "POST"])
+@login_required
+def post_video():
+
+    if request.method == "POST":
+
+        video = request.files.get("company_video")
+
+        if not video or video.filename == "":
+
+            flash("Please select a video.", "danger")
+            return redirect("/post-video")
+
+        import uuid
+
+        ext = video.filename.rsplit(".",1)[1].lower()
+
+        filename = f"{uuid.uuid4().hex}.{ext}"
+
+        filepath = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            filename
+        )
+
+        video.save(filepath)
+
+        job = JobPost(
+
+            hr_id=current_user.id,
+
+            company_name=current_user.company,
+
+            location=request.form.get("location"),
+
+            description=request.form.get("description"),
+
+            images=filename,
+
+            post_type="video"
+
+        )
+
+        db.session.add(job)
+        db.session.commit()
+
+        flash(
+            "Company video posted successfully.",
+            "success"
+        )
+
+        return redirect("/feed")
+
+    return render_template("post_video.html")
+
 @app.route('/job/<int:id>')
 def view_job(id):
 
