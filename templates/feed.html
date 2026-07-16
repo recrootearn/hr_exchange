@@ -782,35 +782,31 @@ function playVisibleVideo() {
     let bestVideo = null;
     let bestVisible = 0;
 
-    // 1. Identify which video is most visible
+    // 1. Find the most visible video
     document.querySelectorAll(".feed-video").forEach(function(video) {
         let rect = video.getBoundingClientRect();
         let visible = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
-
         if (visible > bestVisible) {
             bestVisible = visible;
             bestVideo = video;
         }
     });
 
-    // 2. Apply play/mute logic
+    // 2. Control Playback and Audio
     document.querySelectorAll(".feed-video").forEach(function(video) {
         let btn = video.parentElement.querySelector(".mute-btn");
 
         if (video === bestVideo && bestVisible > 150) {
-            // This is the active video
+            // Unmute and play the active video
+            video.muted = false; 
             if (video.paused) {
                 video.play().catch(() => {});
             }
-            
-            // Auto-unmute ONLY the best visible video
-            video.muted = false;
             if (btn) btn.innerHTML = "🔊";
-            
         } else {
-            // These are background/hidden videos
+            // Mute and pause non-active videos
+            video.muted = true; // Crucial: explicitly set to true
             video.pause();
-            video.muted = true; // Force mute
             if (btn) btn.innerHTML = "🔇";
         }
     });
