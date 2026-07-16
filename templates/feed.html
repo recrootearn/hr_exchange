@@ -619,15 +619,13 @@ function toggleVideo(video){
 }
 
 function toggleMute(e, btn) {
+
     e.stopPropagation();
 
-    // Get the video element associated with this specific button
     let video = btn.previousElementSibling;
 
-    // Toggle the current video's muted state
     video.muted = !video.muted;
 
-    // Update the button UI icon
     btn.innerHTML = video.muted ? "🔇" : "🔊";
 }
 
@@ -812,13 +810,12 @@ function playVisibleVideo() {
                 video.play().catch(()=>{});
             }
 
-            // DON'T TOUCH muted state here
-
         }else{
 
             // Force mute when video leaves screen
-            video.muted = true;
             video.pause();
+            video.currentTime = video.currentTime;
+            video.muted = true;
 
             if(btn){
                 btn.innerHTML = "🔇";
