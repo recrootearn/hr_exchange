@@ -123,8 +123,9 @@ onchange="this.form.submit()">
         </video>
 
         <button
+        type="button"
         class="mute-btn"
-        onclick="toggleMute(event,this)">
+        onclick="return toggleMute(event,this)">
         🔇
         </button>
 
@@ -618,35 +619,38 @@ function toggleVideo(video){
 
 }
 
-function toggleMute(e, btn){
+function toggleMute(event, btn){
 
-    e.stopPropagation();
+    event.preventDefault();
+    event.stopImmediatePropagation();
 
     const video = btn.previousElementSibling;
 
-    // If already unmuted, mute it
-    if(!video.muted){
+    if(video.muted){
 
+        // Mute all other videos
+        document.querySelectorAll(".feed-video").forEach(function(v){
+
+            v.muted = true;
+
+            const b = v.parentElement.querySelector(".mute-btn");
+            if(b) b.innerHTML = "🔇";
+
+        });
+
+        // Unmute this one
+        video.muted = false;
+        btn.innerHTML = "🔊";
+
+    }else{
+
+        // Mute this one again
         video.muted = true;
         btn.innerHTML = "🔇";
-        return;
 
     }
 
-    // Mute every other video
-    document.querySelectorAll(".feed-video").forEach(function(v){
-
-        v.muted = true;
-
-        const b = v.parentElement.querySelector(".mute-btn");
-        if(b) b.innerHTML = "🔇";
-
-    });
-
-    // Unmute this video
-    video.muted = false;
-    btn.innerHTML = "🔊";
-
+    return false;
 }
 
 function openMedia(feedVideo,src,type){
