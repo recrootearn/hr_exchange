@@ -214,22 +214,24 @@ onchange="this.form.submit()">
             {% if job.id in applied_jobs %}
 
             <button
-                class="btn btn-success"
-                disabled>
+            class="btn btn-success"
+            disabled>
 
-                <i class="fas fa-check-circle"></i>
-                Applied
+            <i class="fas fa-check-circle"></i>
+
+            Applied
 
             </button>
 
             {% else %}
 
             <a
-            href="/apply-job-hr/{{ job.id }}"
+            href="/apply-job/{{ job.id }}"
             class="btn btn-primary">
 
-               <i class="fas fa-paper-plane"></i>
-               Apply
+            <i class="fas fa-paper-plane"></i>
+
+            Apply
 
             </a>
 
