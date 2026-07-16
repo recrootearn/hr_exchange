@@ -968,7 +968,6 @@ class Earnings(db.Model):
     )
 
 class Spark(db.Model):
-
     id = db.Column(db.Integer, primary_key=True)
 
     job_id = db.Column(
@@ -979,17 +978,19 @@ class Spark(db.Model):
 
     hr_id = db.Column(
         db.Integer,
+        db.ForeignKey("user.id"),
         nullable=True
     )
 
     candidate_id = db.Column(
         db.Integer,
+        db.ForeignKey("candidate_user.id"),
         nullable=True
     )
 
     created_at = db.Column(
         db.DateTime,
-        default=india_time
+        default=datetime.utcnow
     )
 
 class CandidateReview(db.Model):
