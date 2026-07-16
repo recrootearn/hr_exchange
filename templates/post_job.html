@@ -1291,11 +1291,11 @@ function togglePostType(){
 
     document
     .querySelector(".hiring-card")
-    .classList.toggle("active",hiring);
+    .classList.toggle("active", hiring);
 
     document
     .querySelector(".video-card")
-    .classList.toggle("active",!hiring);
+    .classList.toggle("active", !hiring);
 
     document.getElementById("jobTitleBox").style.display =
         hiring ? "block" : "none";
@@ -1327,48 +1327,30 @@ function togglePostType(){
     document.getElementById("videoUploadSection").style.display =
         hiring ? "none" : "block";
 
+    // Toggle required fields
+    document.getElementById("images").required = hiring;
+    document.getElementById("company_video").required = !hiring;
+
 }
 
-postTypes.forEach(item=>{
+postTypes.forEach(item => {
 
-    item.addEventListener("change",togglePostType);
+    item.addEventListener("change", togglePostType);
 
 });
 
 togglePostType();
 
-const form = document.querySelector("form");
+videoInput.addEventListener("change", function(){
 
-form.addEventListener("submit", function () {
+    if(this.files.length > 1){
 
-    const type = document.querySelector("input[name='post_type']:checked").value;
+        alert("Only one company video is allowed.");
 
-    if (type === "video") {
-
-        document.getElementById("company_video").required = true;
-        document.getElementById("images").required = false;
-
-    } else {
-
-        document.getElementById("company_video").required = false;
-        document.getElementById("images").required = true;
+        this.value = "";
 
     }
 
 });
-
-videoInput.addEventListener("change",function(){
-
-if(this.files.length>1){
-
-alert("Only one company video is allowed.");
-
-this.value="";
-
-}
-
-});
-
-</script>
 
 {% endblock %}
