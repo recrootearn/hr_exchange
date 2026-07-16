@@ -6519,6 +6519,10 @@ def post_job():
 
         post_type = request.form.get("post_type", "hiring")
 
+        # ===========================
+        # Upload Images / Video
+        # ===========================
+
         if post_type == "hiring":
             files = request.files.getlist("images")
         else:
@@ -6544,7 +6548,6 @@ def post_job():
 
                 file.save(filepath)
 
-                # Generate thumbnail for videos
                 if ext in VIDEO_EXTENSIONS:
 
                     thumbnail = f"{os.path.splitext(filename)[0]}.jpg"
@@ -6556,7 +6559,7 @@ def post_job():
 
                     try:
 
-                        result = subprocess.run(
+                        subprocess.run(
                             [
                                 "ffmpeg",
                                 "-y",
@@ -6569,22 +6572,35 @@ def post_job():
                             text=True
                         )
 
-                        print(result.stderr)
-
                     except Exception as e:
                         print("Thumbnail Error:", e)
 
                 saved_images.append(filename)
 
-        job_timing = (
-            f"{request.form.get('working_from')} - "
-            f"{request.form.get('working_to')}"
-        )
+        # ===========================
+        # Hiring fields only
+        # ===========================
 
-        interview_time = (
-            f"{request.form.get('interview_time_from')} - "
-            f"{request.form.get('interview_time_to')}"
-        )
+        if post_type == "hiring":
+
+            job_timing = (
+                f"{request.form.get('working_from')} - "
+                f"{request.form.get('working_to')}"
+            )
+
+            interview_time = (
+                f"{request.form.get('interview_time_from')} - "
+                f"{request.form.get('interview_time_to')}"
+            )
+
+        else:
+
+            job_timing = ""
+            interview_time = ""
+
+        # ===========================
+        # Save Job
+        # ===========================
 
         job = JobPost(
 
@@ -6594,33 +6610,31 @@ def post_job():
 
             company_name=request.form.get("company_name") or current_user.company,
 
-            job_title=request.form["job_title"],
+            job_title=request.form.get("job_title", ""),
 
-            # City selected from dropdown
-            location=request.form["location"].strip().title(),
+            location=request.form.get("location", "").strip().title(),
 
-            # Office address
-            office_address=request.form.get("office_address"),
+            office_address=request.form.get("office_address", ""),
 
-            salary=request.form["salary"],
+            salary=request.form.get("salary", ""),
 
-            incentive=request.form.get("incentive"),
+            incentive=request.form.get("incentive", ""),
 
             job_timing=job_timing,
 
-            working_days=request.form.get("working_days"),
+            working_days=request.form.get("working_days", ""),
 
-            job_type=request.form.get("job_type"),
+            job_type=request.form.get("job_type", ""),
 
-            employment_type=request.form.get("employment_type"),
+            employment_type=request.form.get("employment_type", ""),
 
-            eligibility=request.form.get("eligibility"),
+            eligibility=request.form.get("eligibility", ""),
 
-            experience_required=request.form.get("experience_required"),
+            experience_required=request.form.get("experience_required", ""),
 
-            education=request.form.get("education"),
+            education=request.form.get("education", ""),
 
-            gender=request.form.get("gender"),
+            gender=request.form.get("gender", ""),
 
             interview_from=request.form.get("interview_from"),
 
@@ -6628,17 +6642,17 @@ def post_job():
 
             interview_time=interview_time,
 
-            interview_instructions=request.form.get("interview_instructions"),
+            interview_instructions=request.form.get("interview_instructions", ""),
 
             description=(
                 request.form.get("description")
-                if post_type=="hiring"
+                if post_type == "hiring"
                 else request.form.get("video_caption")
             ),
 
             images=",".join(saved_images),
 
-            hashtags=request.form.get("hashtags"),
+            hashtags=request.form.get("hashtags", "")
 
         )
 
@@ -6646,18 +6660,14 @@ def post_job():
         db.session.commit()
 
         # ===========================
-        # NOTIFY FOLLOWERS
+        # Notify Followers
         # ===========================
 
         followers = Follow.query.filter_by(
             followed_hr_id=current_user.id
         ).all()
 
-        first_image = (
-            saved_images[0]
-            if saved_images
-            else ""
-        )
+        first_image = saved_images[0] if saved_images else ""
 
         for f in followers:
 
@@ -6679,7 +6689,7 @@ def post_job():
 
                 message=(
                     f"{current_user.company} posted a new job: {job.job_title}"
-                    if post_type=="hiring"
+                    if post_type == "hiring"
                     else f"{current_user.company} posted a new company video"
                 ),
 
@@ -6694,7 +6704,7 @@ def post_job():
         db.session.commit()
 
         flash(
-            "Job posted successfully.",
+            "Post published successfully.",
             "success"
         )
 
