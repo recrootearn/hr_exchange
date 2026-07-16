@@ -264,96 +264,6 @@ textarea.form-control{
 
 }
 
-.post-type-card{
-
-display:block;
-
-padding:25px;
-
-border:2px solid #dbe3ef;
-
-border-radius:20px;
-
-cursor:pointer;
-
-text-align:center;
-
-transition:.25s;
-
-height:100%;
-
-}
-
-.post-type-card:hover{
-
-border-color:#2563eb;
-
-background:#f7fbff;
-
-}
-
-.post-type-card input{
-
-display:none;
-
-}
-
-.post-type-card input:checked + .post-icon{
-
-transform:scale(1.08);
-
-}
-
-.post-icon{
-
-font-size:48px;
-
-margin-bottom:10px;
-
-transition:.25s;
-
-}
-
-.post-type-card h5{
-
-font-weight:700;
-
-margin-bottom:6px;
-
-}
-
-.post-type-card p{
-
-color:#6b7280;
-
-font-size:14px;
-
-margin:0;
-
-}
-
-.post-type-card.active{
-
-    border:2px solid #2563eb;
-
-    background:#eff6ff;
-
-    box-shadow:0 10px 25px rgba(37,99,235,.15);
-
-}
-
-.post-type-card.active h5{
-
-    color:#2563eb;
-
-}
-
-.post-type-card.active .post-icon{
-
-    transform:scale(1.12);
-
-}
-
 @media(max-width:768px){
 
 .post-job-wrapper{
@@ -406,63 +316,6 @@ padding:18px;
 
 <div class="section-title">
 
-✨ What do you want to create?
-
-</div>
-
-<div class="row g-3">
-
-<div class="col-md-6">
-
-<label class="post-type-card hiring-card">
-
-<input
-type="radio"
-name="post_type"
-value="hiring"
-checked>
-
-<div class="post-icon">🖼</div>
-
-<h5>Hiring Post</h5>
-
-<p>
-Upload up to 6 images for recruitment.
-</p>
-
-</label>
-
-</div>
-
-<div class="col-md-6">
-
-<label class="post-type-card video-card">
-
-<input
-type="radio"
-name="post_type"
-value="video">
-
-<div class="post-icon">🎥</div>
-
-<h5>Company Video</h5>
-
-<p>
-Upload one company video.
-</p>
-
-</label>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="form-section" id="basicSection">
-
-<div class="section-title">
-
 📋 Basic Information
 
 </div>
@@ -473,7 +326,7 @@ Basic Information
 
 <div class="row g-3">
 
-    <div class="col-12" id="jobTitleBox">
+    <div class="col-12">
 
         <label class="form-label">
 
@@ -490,7 +343,7 @@ Basic Information
 
     </div>
 
-    <div class="col-md-6" id="locationBox">
+    <div class="col-md-6">
 
         <label class="form-label">
 
@@ -540,7 +393,7 @@ Basic Information
 
     </div>
 
-    <div class="col-md-6" id="officeBox">
+    <div class="col-md-6">
 
         <label class="form-label">
 
@@ -564,7 +417,7 @@ Basic Information
 Salary & Benefits
 =========================== -->
 
-<div class="form-section" id="salarySection">
+<div class="form-section">
 
 <div class="section-title">
 
@@ -615,7 +468,7 @@ Salary & Benefits
 Working Details
 =========================== -->
 
-<div class="form-section" id="workingSection">
+<div class="form-section">
 
 <div class="section-title">
 
@@ -717,7 +570,7 @@ Working Details
 Candidate Requirements
 =========================== -->
 
-<div class="form-section" id="candidateSection">
+<div class="form-section">
 
 <div class="section-title">
 
@@ -873,7 +726,7 @@ class="form-select">
 Interview Details
 =========================== -->
 
-<div class="form-section" id="interviewSection">
+<div class="form-section">
 
 <div class="section-title">
 
@@ -967,7 +820,7 @@ placeholder="Example: Carry Resume, Aadhaar Card, Formal Dress, Passport Size Ph
 Job Description
 =========================== -->
 
-<div class="form-section" id="descriptionSection">
+<div class="form-section">
 
 <div class="section-title">
 
@@ -988,7 +841,7 @@ required></textarea>
 Company Images
 =========================== -->
 
-<div class="form-section" id="imageUploadSection">
+<div class="form-section">
 
 <div class="section-title">
 
@@ -1001,7 +854,7 @@ type="file"
 id="images"
 name="images"
 multiple
-accept="image/*"
+accept="image/*,video/*"
 hidden>
 
 <label
@@ -1025,67 +878,6 @@ Click to select multiple images
 </label>
 
 <div id="preview-container"></div>
-
-</div>
-
-<div
-id="videoUploadSection"
-class="form-section"
-style="display:none;">
-
-<div class="section-title">
-🎥 Company Video
-</div>
-
-<label class="form-label">
-🏢 Company Name
-</label>
-
-<input
-type="text"
-name="company_name"
-class="form-control"
-placeholder="Enter Company Name">
-
-<label class="form-label">
-Upload Company Video
-</label>
-
-<input
-type="file"
-id="company_video"
-name="company_video"
-accept="video/*"
-class="form-control"
-required>
-
-<small class="text-muted">
-Only one video is allowed.
-</small>
-
-<br><br>
-
-<label class="form-label">
-Caption
-</label>
-
-<textarea
-name="video_caption"
-class="form-control"
-rows="5"
-placeholder="Tell candidates about your company..."></textarea>
-
-<br>
-
-<label class="form-label">
-Hashtags (Optional)
-</label>
-
-<input
-type="text"
-name="hashtags"
-class="form-control"
-placeholder="#Hiring #OfficeLife #Culture">
 
 </div>
 
@@ -1157,21 +949,9 @@ new TomSelect("#location",{
 
 const imageInput=document.getElementById("images");
 
-const videoInput = document.getElementById("company_video");
-
 let selectedFiles=[];
 
 imageInput.addEventListener("change",function(){
-
-if(this.files.length > 6){
-
-alert("You can upload maximum 6 images.");
-
-this.value="";
-
-return;
-
-}
 
 Array.from(this.files).forEach(file=>{
 
@@ -1274,109 +1054,6 @@ this.value==="Experience"
 ? "block"
 
 : "none";
-
-});
-
-// ============================
-// Post Type Switch
-// ============================
-
-const postTypes = document.querySelectorAll("input[name='post_type']");
-
-function togglePostType(){
-
-    const type = document.querySelector("input[name='post_type']:checked").value;
-
-    const hiring = type === "hiring";
-
-    document.querySelector(".hiring-card").classList.toggle("active", hiring);
-    document.querySelector(".video-card").classList.toggle("active", !hiring);
-
-    document.getElementById("jobTitleBox").style.display =
-        hiring ? "block" : "none";
-
-    document.getElementById("locationBox").style.display =
-        hiring ? "block" : "none";
-
-    document.getElementById("officeBox").style.display =
-        hiring ? "block" : "none";
-
-    document.getElementById("salarySection").style.display =
-        hiring ? "block" : "none";
-
-    document.getElementById("workingSection").style.display =
-        hiring ? "block" : "none";
-
-    document.getElementById("candidateSection").style.display =
-        hiring ? "block" : "none";
-
-    document.getElementById("interviewSection").style.display =
-        hiring ? "block" : "none";
-
-    document.getElementById("descriptionSection").style.display =
-        hiring ? "block" : "none";
-
-    document.getElementById("imageUploadSection").style.display =
-        hiring ? "block" : "none";
-
-    document.getElementById("videoUploadSection").style.display =
-        hiring ? "none" : "block";
-
-    // Required fields
-    document.getElementById("images").required = hiring;
-    document.getElementById("company_video").required = !hiring;
-
-    // Auto-fill hidden fields for video post
-    if (!hiring) {
-
-        document.querySelector("input[name='job_title']").value = "Company Video";
-
-        document.querySelector("input[name='salary']").value = "NA";
-
-        document.querySelector("input[name='incentive']").value = "NA";
-
-        document.querySelector("input[name='office_address']").value = "NA";
-
-        document.querySelector("input[name='working_from']").value = "09:00";
-
-        document.querySelector("input[name='working_to']").value = "18:00";
-
-        document.querySelector("select[name='working_days']").value = "Monday - Friday";
-
-        document.querySelector("select[name='job_type']").value = "Work From Office";
-
-        document.querySelector("select[name='employment_type']").value = "Full Time";
-
-        document.querySelector("select[name='eligibility']").value = "Fresher";
-
-        document.querySelector("select[name='education']").value = "Any Graduate";
-
-        document.querySelector("select[name='gender']").value = "Both";
-
-        document.querySelector("select[name='experience_required']").value = "";
-
-        document.querySelector("textarea[name='description']").value = "Company Video";
-
-        document.querySelector("#location").tomselect.setValue("Indore");
-    }
-
-}
-
-postTypes.forEach(item => {
-    item.addEventListener("change", togglePostType);
-});
-
-togglePostType();
-
-videoInput.addEventListener("change", function(){
-
-    if(this.files.length > 1){
-
-        alert("Only one company video is allowed.");
-
-        this.value = "";
-
-    }
 
 });
 
