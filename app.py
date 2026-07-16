@@ -992,7 +992,7 @@ class Spark(db.Model):
         db.DateTime,
         default=datetime.utcnow
     )
-f
+
 class CandidateReview(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
