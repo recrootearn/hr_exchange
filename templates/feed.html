@@ -786,44 +786,42 @@ playCurrentVideo(current);
 
 });
 
-function playVisibleVideo(){
+function playVisibleVideo() {
+    let bestVideo = null;
+    let bestArea = 0;
 
-    let bestVideo=null;
-    let bestArea=0;
+    document.querySelectorAll(".feed-video").forEach(function(video) {
+        let rect = video.getBoundingClientRect();
+        let visible = Math.min(rect.bottom, window.innerHeight) 
+                   - Math.max(rect.top, 0);
 
-    document.querySelectorAll(".feed-video").forEach(function(video){
-
-        let rect=video.getBoundingClientRect();
-
-        let visible=Math.min(rect.bottom,window.innerHeight)
-                   -Math.max(rect.top,0);
-
-        if(visible>bestArea){
-
-            bestArea=visible;
-            bestVideo=video;
-
+        if (visible > bestArea) {
+            bestArea = visible;
+            bestVideo = video;
         }
-
     });
 
-    document.querySelectorAll(".feed-video").forEach(function(video){
+    document.querySelectorAll(".feed-video").forEach(function(video) {
+        if (video === bestVideo) {
+            currentFeedVideo = video;
+            
+            // Unmute the visible video and play
+            video.muted = false;
+            video.play().catch(() => {});
 
-        if(video===bestVideo){
-
-            currentFeedVideo=video;
-
-            video.currentTime = video.currentTime;
-            video.play().catch(()=>{});
-
-        }else{
-
+            // Sync the mute button UI if it exists
+            let btn = video.parentElement.querySelector(".mute-btn");
+            if (btn) btn.innerHTML = "🔊";
+        } else {
+            // Mute and pause other videos
             video.pause();
+            video.muted = true;
 
+            // Sync the mute button UI if it exists
+            let btn = video.parentElement.querySelector(".mute-btn");
+            if (btn) btn.innerHTML = "🔇";
         }
-
     });
-
 }
 
 window.addEventListener("scroll",playVisibleVideo);
