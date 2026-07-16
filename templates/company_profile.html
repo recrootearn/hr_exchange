@@ -18,273 +18,170 @@
 }
 
 .profile-header{
-
     background:linear-gradient(
         135deg,
         #2563eb,
         #1d4ed8,
         #3b82f6
     );
-
     color:white;
-
     padding:20px 20px 18px;
-
     border-bottom-left-radius:22px;
     border-bottom-right-radius:22px;
-
     box-shadow:0 10px 25px rgba(0,0,0,.12);
-
 }
 
 .profile-row{
-
     display:flex;
     align-items:center;
     gap:18px;
-
 }
 
 .profile-pic{
-
     width:82px;
     height:82px;
-
     border-radius:50%;
-
     object-fit:cover;
-
     border:4px solid white;
-
     box-shadow:0 6px 18px rgba(0,0,0,.25);
-
 }
 
 .profile-stats{
-
     flex:1;
-
     display:flex;
-
     justify-content:space-around;
-
 }
 
 .profile-stats div{
-
     text-align:center;
-
 }
 
 .profile-stats strong{
-
     display:block;
-
     font-size:22px;
-
     font-weight:700;
-
 }
 
 .profile-stats small{
-
     display:block;
-
     margin-top:3px;
-
     font-size:13px;
-
     opacity:.9;
-
 }
 
 .profile-name{
-
     margin-top:12px;
-
     font-size:24px;
-
     font-weight:700;
-
     text-align:center;
-
 }
 
 .company-name{
-
     text-align:center;
-
     font-size:17px;
-
     margin-top:5px;
-
     line-height:1.6;
-
 }
 
 .company-name small{
-
     color:#ececec;
-
     font-size:14px;
-
 }
 
 .verify-row{
-
     display:flex;
-
     justify-content:center;
-
     gap:24px;
-
     flex-wrap:wrap;
-
     margin-top:14px;
-
     font-size:14px;
-
     font-weight:600;
-
 }
 
 .verify-ok{
-
     color:#8CFF9A;
-
 }
 
 .verify-no{
-
     color:#FFD6D6;
-
 }
 
 .follow-btn{
-
     margin-top:18px;
-
 }
 
 .follow-btn .btn{
-
     width:100%;
-
     height:48px;
-
     border-radius:14px;
-
     font-weight:700;
-
     font-size:16px;
-
 }
 
 @media(max-width:768px){
 
     .profile-row{
-
         flex-direction:column;
-
         text-align:center;
-
     }
 
     .profile-stats{
-
         width:100%;
-
         margin-top:10px;
-
     }
 
     .profile-pic{
-
         width:82px;
         height:82px;
-
     }
 
 }
 
 .posts-tab{
-
     margin-top:15px;
-
     background:white;
-
     text-align:center;
-
     padding:14px;
-
     font-weight:700;
-
     letter-spacing:1px;
-
     border-radius:16px 16px 0 0;
-
 }
 
 .post-grid{
-
     display:grid;
-
     grid-template-columns:repeat(3,1fr);
-
     gap:2px;
-
     background:white;
-
 }
 
 .post-item{
-
     aspect-ratio:1/1;
-
     overflow:hidden;
-
     background:#eee;
-
     display:block;
-
+    position:relative;
 }
 
 .post-item img{
-
     width:100%;
-
     height:100%;
-
     object-fit:cover;
-
     transition:.3s;
-
 }
 
 .post-item img:hover{
-
     transform:scale(1.05);
-
 }
 
 .no-image-post{
-
     width:100%;
-
     height:100%;
-
     background:#f3f4f6;
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
     font-weight:600;
-
     color:#111827;
-
 }
 
 </style>
@@ -326,19 +223,13 @@ font-weight:700;
 <div class="profile-stats">
 
 <div>
-
 <strong>{{ jobs|length }}</strong>
-
 <small>Posts</small>
-
 </div>
 
 <div>
-
 <strong>{{ followers_count }}</strong>
-
 <small>Followers</small>
-
 </div>
 
 </div>
@@ -346,10 +237,7 @@ font-weight:700;
 </div>
 
 <div class="profile-name">
-
-{{ hr.first_name }}
-{{ hr.last_name }}
-
+{{ hr.first_name }} {{ hr.last_name }}
 </div>
 
 <div class="company-name">
@@ -357,17 +245,11 @@ font-weight:700;
 {{ hr.company }}
 
 {% if hr.company_city %}
-
 <br>
-
 <small>
-
 <i class="fas fa-map-marker-alt"></i>
-
 {{ hr.company_city }}
-
 </small>
-
 {% endif %}
 
 </div>
@@ -377,25 +259,15 @@ font-weight:700;
 <div>
 
 {% if hr.msme_certificate %}
-
 <span class="verify-ok">
-
 <i class="fas fa-check-circle"></i>
-
 MSME
-
 </span>
-
 {% else %}
-
 <span class="verify-no">
-
 <i class="fas fa-times-circle"></i>
-
 MSME
-
 </span>
-
 {% endif %}
 
 </div>
@@ -403,25 +275,15 @@ MSME
 <div>
 
 {% if hr.gumasta_certificate %}
-
 <span class="verify-ok">
-
 <i class="fas fa-check-circle"></i>
-
 Gumasta
-
 </span>
-
 {% else %}
-
 <span class="verify-no">
-
 <i class="fas fa-times-circle"></i>
-
 Gumasta
-
 </span>
-
 {% endif %}
 
 </div>
@@ -432,28 +294,21 @@ Gumasta
 
 {% if session.get('candidate_id') %}
 
-<a
-href="/follow-hr/{{ hr.id }}?next={{ request.path }}"
+<a href="/follow-hr/{{ hr.id }}?next={{ request.path }}"
 class="btn {% if is_following %}btn-success{% else %}btn-light{% endif %}">
 
 {% elif current_user.is_authenticated %}
 
-<a
-href="/follow-hr-user/{{ hr.id }}?next={{ request.path }}"
+<a href="/follow-hr-user/{{ hr.id }}?next={{ request.path }}"
 class="btn {% if is_following %}btn-success{% else %}btn-light{% endif %}">
 
 {% endif %}
 
 {% if is_following %}
-
 ✓ Following
-
 {% else %}
-
 <i class="fas fa-user-plus"></i>
-
 Follow
-
 {% endif %}
 
 </a>
@@ -464,9 +319,9 @@ Follow
 
 <div class="posts-tab">
 
-<i class="fas fa-th"></i>
+    <i class="fas fa-th"></i>
 
-POSTS
+    POSTS
 
 </div>
 
@@ -478,18 +333,16 @@ POSTS
 href="/candidate-feed?selected={{ job.id }}"
 class="post-item">
 
-    {% if job.images and job.images != "" %}
+{% if job.images and job.images != "" %}
 
     {% set first_file = job.images.split(',')[0] %}
 
     {% if first_file.lower().endswith(('.mp4','.mov','.avi','.mkv','.webm')) %}
 
-        {% set thumb = first_file.rsplit('.',1)[0] + '.jpg' %}
-
         <div style="position:relative;width:100%;height:100%;">
 
             <img
-                src="/static/uploads/{{ thumb }}"
+                src="/static/uploads/video-placeholder.jpg"
                 loading="lazy"
                 style="width:100%;height:100%;object-fit:cover;">
 
@@ -498,8 +351,8 @@ class="post-item">
                 top:50%;
                 left:50%;
                 transform:translate(-50%,-50%);
-                width:42px;
-                height:42px;
+                width:44px;
+                height:44px;
                 border-radius:50%;
                 background:rgba(0,0,0,.45);
                 display:flex;
@@ -516,7 +369,7 @@ class="post-item">
     {% else %}
 
         <img
-            src="/static/uploads/video-placeholder.jpg"
+            src="/static/uploads/{{ first_file }}"
             loading="lazy">
 
     {% endif %}
@@ -550,7 +403,7 @@ class="post-item">
 
         </div>
 
-    {% endif %}
+{% endif %}
 
 </a>
 
