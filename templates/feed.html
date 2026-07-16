@@ -581,6 +581,8 @@ onclick="toggleVideo(this)">
 let openedFeedVideo = null;
 let currentFeedVideo = null;
 
+window.soundEnabled = false;
+
 function playCurrentVideo(video){
 
     document.querySelectorAll(".feed-video").forEach(function(v){
@@ -634,6 +636,7 @@ function toggleMute(e,btn){
     });
 
     video.muted=!video.muted;
+    window.soundEnabled = !video.muted;
 
     btn.innerHTML = video.muted ? "🔇" : "🔊";
 
@@ -820,18 +823,23 @@ function playVisibleVideo() {
                 video.play().catch(()=>{});
             }
 
-            // Auto unmute only the visible video
-            video.muted = false;
-
-            if(btn) btn.innerHTML = "🔊";
+            // Keep user's mute/unmute choice
+            if(window.soundEnabled){
+                video.muted = false;
+                if(btn) btn.innerHTML = "🔊";
+            }else{
+                video.muted = true;
+                if(btn) btn.innerHTML = "🔇";
+            }
 
         }else{
 
-            // Auto mute every other video
-            video.muted = true;
             video.pause();
+            video.muted = true;
 
-            if(btn) btn.innerHTML = "🔇";
+            if(btn){
+                btn.innerHTML = window.soundEnabled ? "🔊" : "🔇";
+            }
 
         }
 
