@@ -776,23 +776,20 @@ playCurrentVideo(current);
 
 });
 
-function playVisibleVideo() {
+function playVisibleVideo(){
 
     let bestVideo = null;
-    let bestVisible = 0;
+    let bestArea = 0;
 
     document.querySelectorAll(".feed-video").forEach(function(video){
 
         let rect = video.getBoundingClientRect();
 
-        let visible = Math.max(
-            0,
-            Math.min(rect.bottom, window.innerHeight) -
-            Math.max(rect.top, 0)
-        );
+        let visible = Math.min(rect.bottom, window.innerHeight)
+                    - Math.max(rect.top, 0);
 
-        if(visible > bestVisible){
-            bestVisible = visible;
+        if(visible > bestArea){
+            bestArea = visible;
             bestVideo = video;
         }
 
@@ -802,9 +799,7 @@ function playVisibleVideo() {
 
         let btn = video.parentElement.querySelector(".mute-btn");
 
-        if(video === bestVideo && bestVisible > 150){
-
-            currentFeedVideo = video;
+        if(video === bestVideo && bestArea > 150){
 
             if(video.paused){
                 video.play().catch(()=>{});
@@ -812,10 +807,8 @@ function playVisibleVideo() {
 
         }else{
 
-            // Force mute when video leaves screen
-            video.pause();
-            video.currentTime = video.currentTime;
             video.muted = true;
+            video.pause();
 
             if(btn){
                 btn.innerHTML = "🔇";
@@ -832,6 +825,9 @@ window.addEventListener("scroll",playVisibleVideo);
 window.addEventListener("resize",playVisibleVideo);
 
 window.addEventListener("load",playVisibleVideo);
+
+document.addEventListener("touchmove", playVisibleVideo, { passive: true });
+document.addEventListener("touchend", playVisibleVideo);
 
 </script>
 
