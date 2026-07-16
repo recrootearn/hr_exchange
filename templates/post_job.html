@@ -1337,6 +1337,26 @@ postTypes.forEach(item=>{
 
 togglePostType();
 
+const form = document.querySelector("form");
+
+form.addEventListener("submit", function () {
+
+    const type = document.querySelector("input[name='post_type']:checked").value;
+
+    if (type === "video") {
+
+        document.getElementById("company_video").required = true;
+        document.getElementById("images").required = false;
+
+    } else {
+
+        document.getElementById("company_video").required = false;
+        document.getElementById("images").required = true;
+
+    }
+
+});
+
 videoInput.addEventListener("change",function(){
 
 if(this.files.length>1){
