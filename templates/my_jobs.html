@@ -189,7 +189,7 @@
     </div>
 
     <div class="job-description">
-        {{ job.description[:250] }}
+        {{ (job.description or "")[:250] }}
         {% if job.description|length > 250 %}...{% endif %}
     </div>
 
