@@ -8,6 +8,7 @@ from flask_login import logout_user, current_user
 import razorpay
 from flask import send_file
 import random
+import subprocess
 import smtplib
 import secrets
 import resend
@@ -6398,12 +6399,40 @@ def post_job():
 
                 filename = f"{uuid.uuid4().hex}.{ext}"
 
-                file.save(
-                    os.path.join(
-                        app.config["UPLOAD_FOLDER"],
-                        filename
-                    )
+                filepath = os.path.join(
+                    app.config["UPLOAD_FOLDER"],
+                    filename
                 )
+
+                file.save(filepath)
+
+                # Generate thumbnail for videos
+                if ext in VIDEO_EXTENSIONS:
+
+                    thumbnail = f"{os.path.splitext(filename)[0]}.jpg"
+
+                    thumbnail_path = os.path.join(
+                        app.config["UPLOAD_FOLDER"],
+                        thumbnail
+                    )
+
+                    try:
+
+                        subprocess.run(
+                            [
+                                "ffmpeg",
+                                "-y",
+                                "-i", filepath,
+                                "-ss", "00:00:01",
+                                "-vframes", "1",
+                                thumbnail_path
+                            ],
+                            stdout=subprocess.DEVNULL,
+                            stderr=subprocess.DEVNULL
+                        )
+
+                    except Exception as e:
+                        print("Thumbnail Error:", e)
 
                 saved_images.append(filename)
 
