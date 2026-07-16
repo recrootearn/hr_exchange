@@ -618,15 +618,25 @@ function toggleVideo(video){
 
 }
 
-function toggleMute(e, btn) {
+function toggleMute(e, btn){
 
     e.stopPropagation();
 
-    let video = btn.previousElementSibling;
+    const video = btn.previousElementSibling;
 
-    video.muted = !video.muted;
+    // Mute every video first
+    document.querySelectorAll(".feed-video").forEach(v => {
 
-    btn.innerHTML = video.muted ? "🔇" : "🔊";
+        v.muted = true;
+
+        const b = v.parentElement.querySelector(".mute-btn");
+        if(b) b.innerHTML = "🔇";
+
+    });
+
+    // Toggle only this video
+    video.muted = false;
+    btn.innerHTML = "🔊";
 }
 
 function openMedia(feedVideo,src,type){
