@@ -624,8 +624,17 @@ function toggleMute(e, btn){
 
     const video = btn.previousElementSibling;
 
-    // Mute every video first
-    document.querySelectorAll(".feed-video").forEach(v => {
+    // If already unmuted, mute it
+    if(!video.muted){
+
+        video.muted = true;
+        btn.innerHTML = "🔇";
+        return;
+
+    }
+
+    // Mute every other video
+    document.querySelectorAll(".feed-video").forEach(function(v){
 
         v.muted = true;
 
@@ -634,9 +643,10 @@ function toggleMute(e, btn){
 
     });
 
-    // Toggle only this video
+    // Unmute this video
     video.muted = false;
     btn.innerHTML = "🔊";
+
 }
 
 function openMedia(feedVideo,src,type){
