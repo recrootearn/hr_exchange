@@ -6161,59 +6161,97 @@ def admin_revenue_dashboard():
 @login_required
 def spark(job_id):
 
-    if current_user.role != "candidate":
-        return redirect(request.referrer or "/")
-
     job = JobPost.query.get_or_404(job_id)
 
-    if job.post_type != "video":
-        flash("Spark is available only for Company Videos.", "warning")
-        return redirect(request.referrer or "/")
+    # -----------------------------
+    # HR
+    # -----------------------------
+    if current_user.is_authenticated:
 
-    candidate = CandidateUser.query.filter_by(
-        user_id=current_user.id
-    ).first()
+        existing = Spark.query.filter_by(
+            job_id=job.id,
+            hr_id=current_user.id
+        ).first()
 
-    if not candidate:
-        return redirect(request.referrer or "/")
+        if existing:
 
-    spark = Spark.query.filter_by(
-        job_id=job.id,
-        candidate_id=candidate.id
-    ).first()
+            db.session.delete(existing)
 
-    if existing:
+        else:
 
-        db.session.delete(existing)
+            db.session.add(
+
+                Spark(
+                    job_id=job.id,
+                    hr_id=current_user.id
+                )
+
+            )
+
+            send_notification(
+
+                user_id=job.hr_id,
+                user_type="hr",
+
+                message=f"{current_user.company} sparked your company video.",
+
+                link=f"/job-view/{job.id}",
+
+                type="spark"
+
+            )
+
         db.session.commit()
 
         return redirect(request.referrer or "/")
 
-    db.session.add(
-        Spark(
+    # -----------------------------
+    # Candidate
+    # -----------------------------
+    if "candidate_id" in session:
+
+        existing = Spark.query.filter_by(
             job_id=job.id,
-            candidate_id=candidate.id
-        )
-    )
+            candidate_id=session["candidate_id"]
+        ).first()
 
-    send_notification(
+        if existing:
 
-        user_id=job.hr_id,
-        user_type="hr",
+            db.session.delete(existing)
 
-        message=f"{candidate.name} sparked your company video.",
+        else:
 
-        link=f"/job-view/{job.id}",
+            candidate = CandidateUser.query.get(
+                session["candidate_id"]
+            )
 
-        image="",
+            db.session.add(
 
-        type="spark"
+                Spark(
+                    job_id=job.id,
+                    candidate_id=candidate.id
+                )
 
-    )
+            )
 
-    db.session.commit()
+            send_notification(
 
-    return redirect(request.referrer or "/")
+                user_id=job.hr_id,
+                user_type="hr",
+
+                message=f"{candidate.name} sparked your company video.",
+
+                link=f"/job-view/{job.id}",
+
+                type="spark"
+
+            )
+
+        db.session.commit()
+
+        return redirect(request.referrer or "/")
+
+    return redirect("/")
 
 @app.route('/follow-hr-user/<int:id>')
 @login_required
@@ -6731,6 +6769,9 @@ def candidate_feed():
 
     applied_jobs = []
 
+    # Default
+    sparked_jobs = []
+
     if 'candidate_id' in session:
 
         applications = JobApplication.query.filter_by(
@@ -6742,28 +6783,32 @@ def candidate_feed():
             for app in applications
         ]
 
-        sparked_jobs = []
+        sparked_jobs = [
 
-        if "candidate_id" in session:
+            s.job_id
 
-            sparked_jobs = [
+            for s in Spark.query.filter_by(
+                candidate_id=session["candidate_id"]
+            ).all()
 
-                s.job_id
-
-                for s in Spark.query.filter_by(
-                    candidate_id=session["candidate_id"]
-                ).all()
-
-            ]
+        ]
 
     return render_template(
+
         'candidate_feed.html',
+
         jobs=jobs,
+
         applied_jobs=applied_jobs,
+
         sparked_jobs=sparked_jobs,
+
         selected_id=selected_id,
+
         locations=locations,
+
         selected_location=selected_location
+
     )
 
 from sqlalchemy import func
@@ -7032,6 +7077,7 @@ def feed():
     )
 
     if selected_location:
+
         query = query.filter(
             func.lower(JobPost.location) == selected_location.lower()
         )
@@ -7050,22 +7096,20 @@ def feed():
         for app in applications
     ]
 
-    sparked_jobs = []
+    # -----------------------------
+    # Sparked Jobs (HR)
+    # -----------------------------
+    sparked_jobs = [
 
-    candidate = CandidateUser.query.filter_by(
-        user_id=current_user.id
-    ).first()
+        s.job_id
 
-    if candidate:
+        for s in Spark.query.filter_by(
+            hr_id=current_user.id
+        ).all()
 
-        sparked_jobs = [
-            s.job_id
-            for s in Spark.query.filter_by(
-                candidate_id=candidate.id
-            ).all()
-        ]
+    ]
 
-    # Available locations (case-insensitive)
+    # Available locations
     locations = (
         db.session.query(func.lower(JobPost.location))
         .filter(
@@ -7080,12 +7124,19 @@ def feed():
     locations = [loc[0].title() for loc in locations]
 
     return render_template(
+
         "feed.html",
+
         jobs=jobs,
+
         applied_jobs=applied_jobs,
+
         sparked_jobs=sparked_jobs,
+
         locations=locations,
+
         selected_location=selected_location
+
     )
 
 @app.route('/applied-jobs-hr')
