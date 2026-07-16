@@ -971,17 +971,25 @@ class Spark(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    job_id = db.Column(db.Integer,
+    job_id = db.Column(
+        db.Integer,
         db.ForeignKey("job_post.id"),
-        nullable=False)
+        nullable=False
+    )
 
-    candidate_id = db.Column(db.Integer,
-        db.ForeignKey("candidate_user.id"),
-        nullable=False)
+    hr_id = db.Column(
+        db.Integer,
+        nullable=True
+    )
+
+    candidate_id = db.Column(
+        db.Integer,
+        nullable=True
+    )
 
     created_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow
+        default=india_time
     )
 
 class CandidateReview(db.Model):
