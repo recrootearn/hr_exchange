@@ -779,40 +779,55 @@ playCurrentVideo(current);
 });
 
 function playVisibleVideo() {
+
     let bestVideo = null;
     let bestVisible = 0;
-    const videos = document.querySelectorAll(".feed-video");
 
-    // 1. Find the most visible video
-    videos.forEach(function(video) {
+    document.querySelectorAll(".feed-video").forEach(function(video){
+
         let rect = video.getBoundingClientRect();
-        let visible = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
-        if (visible > bestVisible) {
+
+        let visible = Math.max(
+            0,
+            Math.min(rect.bottom, window.innerHeight) -
+            Math.max(rect.top, 0)
+        );
+
+        if(visible > bestVisible){
             bestVisible = visible;
             bestVideo = video;
         }
+
     });
 
-    // 2. Force Mute and Pause logic
-    videos.forEach(function(video) {
+    document.querySelectorAll(".feed-video").forEach(function(video){
+
         let btn = video.parentElement.querySelector(".mute-btn");
 
-        if (video === bestVideo && bestVisible > 150) {
-            // This is the active video
-            video.muted = false; // Unmute
-            if (video.paused) {
-                video.play().catch(() => {});
+        if(video === bestVideo && bestVisible > 150){
+
+            currentFeedVideo = video;
+
+            if(video.paused){
+                video.play().catch(()=>{});
             }
-            if (btn) btn.innerHTML = "🔊";
-        } else {
-            // FORCE MUTE AND KILL SOUND
-            video.muted = true;      // 1. Force mute
-            video.pause();           // 2. Pause
-            video.volume = 0;        // 3. Absolute volume zero (Safety measure)
-            
-            if (btn) btn.innerHTML = "🔇";
+
+            // DON'T TOUCH muted state here
+
+        }else{
+
+            // Force mute when video leaves screen
+            video.muted = true;
+            video.pause();
+
+            if(btn){
+                btn.innerHTML = "🔇";
+            }
+
         }
+
     });
+
 }
 
 window.addEventListener("scroll",playVisibleVideo);
