@@ -516,7 +516,7 @@ class="post-item">
     {% else %}
 
         <img
-            src="/static/uploads/{{ first_file }}"
+            src="/static/uploads/video-placeholder.jpg"
             loading="lazy">
 
     {% endif %}
@@ -524,7 +524,7 @@ class="post-item">
 {% elif job.image and job.image != "" %}
 
     <img
-        src="/static/uploads/video-placeholder.jpg"
+        src="/static/uploads/{{ job.image }}"
         loading="lazy">
 
 {% else %}
