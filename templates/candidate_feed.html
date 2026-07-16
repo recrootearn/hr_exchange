@@ -6,11 +6,11 @@
 rel="stylesheet"
 href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
-<div class="desktop-feed">
-
-<div class="feed-filter">
+<div class="mb-2">
 
 <form method="GET">
+
+<div class="input-group">
 
 <select
 name="location"
@@ -18,18 +18,20 @@ class="form-select"
 onchange="this.form.submit()">
 
 <option
-value=""
-{% if not selected_location %}selected{% endif %}>
-🌍 All Locations
+    value=""
+    {% if not selected_location %}selected{% endif %}>
+    🌎 All Locations
 </option>
 
 {% for city in locations %}
 
 <option
-value="{{ city }}"
-{% if selected_location and selected_location.lower()==city.lower() %}selected{% endif %}>
+    value="{{ city }}"
+    {% if selected_location and selected_location.lower() == city.lower() %}
+        selected
+    {% endif %}>
 
-{{ city }}
+    {{ city }}
 
 </option>
 
@@ -37,190 +39,225 @@ value="{{ city }}"
 
 </select>
 
+</div>
+
 </form>
 
 </div>
 
+<div class="desktop-feed">
+
 {% for job in jobs %}
 
-<div
-id="post{{ job.id }}"
-class="feed-card">
+<div id="post{{ job.id }}"
+     class="candidate-card feed-card">
 
-<div class="feed-header">
+    <!-- HEADER -->
 
-<div class="feed-left">
+    <div class="feed-header">
 
-<div class="feed-avatar">
+        <div class="feed-avatar">
 
-{% if job.company_name %}
-{{ job.company_name[:1].upper() }}
+            {% if job.company_name %}
+                {{ job.company_name[:1].upper() }}
+            {% else %}
+                R
+            {% endif %}
+
+        </div>
+
+        <div>
+
+            <div class="feed-company">
+
+                <a href="/company/{{ job.hr_id }}"
+                   style="text-decoration:none;color:inherit;">
+
+                    {{ job.company_name }}
+
+                </a>
+
+            </div>
+
+            <div class="feed-meta">
+                📍 {{ job.location }}
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- IMAGE -->
+
+    {% if job.images %}
+
+        <div class="swiper feedSwiper">
+
+        <div class="swiper-wrapper">
+
+        {% for img in job.images.split(',') %}
+
+        <div class="swiper-slide">
+
+        {% set ext = img.split('.')[-1].lower() %}
+
+        {% if ext in ['mp4','mov','webm','mkv'] %}
+
+        <div class="feed-media reel-media video-container">
+
+        <video
+        class="feed-image feed-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        onclick="openMedia(this,'/static/uploads/{{ img }}','video')">
+
+        <source
+        src="/static/uploads/{{ img }}"
+        type="video/mp4">
+
+        Your browser does not support HTML5 video.
+
+        </video>
+
+        <button
+        class="mute-btn"
+        onclick="toggleMute(event,this)">
+        🔇
+        </button>
+
+        </div>
+
+        {% else %}
+
+        <div class="feed-media post-media">
+
+        <img
+        src="/static/uploads/{{ img }}"
+        class="feed-image"
+        onclick="openMedia('/static/uploads/{{ img }}','image')">
+
+        </div>
+
+        {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+        </div>
+
+        <div class="swiper-pagination"></div>
+
+        </div>
+
+    {% endif %}
+
+    <!-- CONTENT -->
+
+    <div class="p-3">
+
+        <h4 class="job-title">
+            {{ job.job_title }}
+        </h4>
+
+        <div class="salary-tag">
+            ₹ {{ job.salary }}
+        </div>
+
+        <p class="mt-3">
+
+            {{ job.description[:140] }}
+
+            {% if job.description|length > 140 %}
+
+            <span id="dots{{ job.id }}">
+                ...
+            </span>
+
+            <span
+            id="more{{ job.id }}"
+            style="display:none;">
+
+                {{ job.description[140:] }}
+
+            </span>
+
+            <a href="#"
+               id="btn{{ job.id }}"
+               onclick="toggleText({{ job.id }});return false;">
+
+                See More
+
+            </a>
+
+            {% endif %}
+
+        </p>
+
+        <div class="feed-buttons">
+
+            <!-- View Job -->
+
+            <a href="/job-view/{{ job.id }}"
+               class="btn btn-info">
+
+                <i class="fas fa-eye"></i>
+                View
+
+            </a>
+
+            <!-- Apply -->
+
+            {% if job.id in applied_jobs %}
+
+            <button
+                class="btn btn-success"
+                disabled>
+
+                <i class="fas fa-check-circle"></i>
+                Applied
+
+            </button>
+
+            {% else %}
+
+            <a
+            href="/apply-job-hr/{{ job.id }}"
+            class="btn btn-primary">
+
+               <i class="fas fa-paper-plane"></i>
+               Apply
+
+            </a>
+
+            {% endif %}
+
+            <!-- Share -->
+
+            <a href="/share-job/{{ job.id }}"
+               class="btn btn-success">
+
+                <i class="fab fa-whatsapp"></i>
+                Share
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% else %}
-R
-{% endif %}
 
-</div>
+<div class="stats-card text-center">
 
-<div>
+    <h4>No Jobs Available</h4>
 
-<div class="feed-company">
-
-<a
-href="/company/{{ job.hr_id }}"
-style="text-decoration:none;color:inherit;">
-
-{{ job.company_name }}
-
-</a>
-
-</div>
-
-<div class="feed-location">
-
-📍 {{ job.location }}
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-{% if job.images %}
-
-<div class="swiper feedSwiper">
-
-<div class="swiper-wrapper">
-
-{% for img in job.images.split(',') %}
-
-<div class="swiper-slide">
-
-<a href="/company/{{ job.hr_id }}">
-
-<img
-src="/static/uploads/{{ img }}"
-class="feed-image">
-
-</a>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-<div class="swiper-pagination"></div>
-
-</div>
-
-{% endif %}
-
-<div class="feed-content">
-
-<h4 class="job-title">
-
-{{ job.job_title }}
-
-</h4>
-
-<div class="salary-tag">
-
-₹ {{ job.salary }}
-
-</div>
-
-<p class="job-description">
-
-{{ job.description[:140] }}
-
-{% if job.description|length > 140 %}
-
-<span id="dots{{ job.id }}">...</span>
-
-<span
-id="more{{ job.id }}"
-style="display:none;">
-
-{{ job.description[140:] }}
-
-</span>
-
-<a
-href="#"
-id="btn{{ job.id }}"
-onclick="toggleText({{ job.id }});return false;">
-
-See More
-
-</a>
-
-{% endif %}
-
-</p>
-
-<div class="feed-buttons">
-
-<a
-href="/job-view/{{ job.id }}"
-class="btn btn-info">
-
-<i class="fas fa-eye"></i>
-
-View
-
-</a>
-
-{% if job.id in applied_jobs %}
-
-<button
-class="btn btn-success"
-disabled>
-
-<i class="fas fa-check-circle"></i>
-
-Applied
-
-</button>
-
-{% else %}
-
-<a
-href="/apply-job/{{ job.id }}"
-class="btn btn-primary">
-
-<i class="fas fa-paper-plane"></i>
-
-Apply
-
-</a>
-
-{% endif %}
-
-<a
-href="/share-job/{{ job.id }}"
-class="btn btn-success">
-
-<i class="fab fa-whatsapp"></i>
-
-Share
-
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-{% else %}
-
-<div class="empty-feed">
-
-<h3>No Jobs Available</h3>
-
-<p>Please check again later.</p>
+    <p>Please check again later.</p>
 
 </div>
 
@@ -230,452 +267,555 @@ Share
 
 <style>
 
-.content{
-    padding:0!important;
-    background:#eef2f7;
-}
-
-.desktop-feed{
-
-    width:100%;
-
-}
-
-.feed-filter{
-
-    padding:12px;
-
-}
-
-.feed-filter .form-select{
-
-    height:52px;
-
-    border-radius:16px;
-
-    font-size:16px;
-
-    font-weight:600;
-
-}
-
 .feed-card{
-
     background:#fff;
-
-    width:100%;
-
-    margin-bottom:14px;
-
+    border-radius:20px;
     overflow:hidden;
-
-    border:none;
-
-    box-shadow:none;
-
+    margin-bottom:25px;
+    padding:0 !important;
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
+    border:1px solid #eee;
 }
 
 .feed-header{
-
     display:flex;
-
-    justify-content:space-between;
-
     align-items:center;
-
-    padding:12px;
-
-}
-
-.feed-left{
-
-    display:flex;
-
-    align-items:center;
-
     gap:12px;
-
+    padding:14px 16px;
 }
 
 .feed-avatar{
-
-    width:52px;
-
-    height:52px;
-
+    width:48px;
+    height:48px;
     border-radius:50%;
-
     background:linear-gradient(
         135deg,
         #2563eb,
         #7c3aed
     );
-
-    color:#fff;
-
+    color:white;
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
-    font-size:20px;
-
+    font-size:18px;
     font-weight:700;
-
 }
 
 .feed-company{
-
-    font-size:17px;
-
+    font-size:16px;
     font-weight:700;
+}
+
+.feed-meta{
+    font-size:13px;
+    color:#6b7280;
+}
+
+.feed-media{
+
+    width:100%;
+    position:relative;
+    overflow:hidden;
 
 }
 
-.feed-location{
+.post-media{
 
-    color:#6b7280;
+    aspect-ratio:4/5;
+    background:#fff;
 
-    font-size:13px;
+}
+
+.reel-media{
+
+    aspect-ratio:9/16;
+    background:#000;
+
+}
+
+.feed-image,
+.feed-video{
+
+    width:100%;
+    height:100%;
+    display:block;
+    position:absolute;
+    inset:0;
 
 }
 
 .feed-image{
 
-    width:100%;
-
-    aspect-ratio:1/1;
-
     object-fit:cover;
-
-    display:block;
 
 }
 
-.feed-content{
+.feed-video{
 
-    padding:14px;
+    object-fit:cover;
 
 }
 
 .job-title{
-
-    font-size:24px;
-
     font-weight:700;
-
-    color:#111827;
-
-    margin-bottom:12px;
-
+    margin-bottom:10px;
 }
 
 .salary-tag{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    justify-content:center;
-
+    display:inline-block;
     background:#dcfce7;
-
     color:#15803d;
-
+    padding:8px 14px;
+    border-radius:20px;
     font-weight:700;
-
-    font-size:16px;
-
-    padding:10px 18px;
-
-    border-radius:30px;
-
-}
-
-.job-description{
-
-    margin-top:16px;
-
-    color:#374151;
-
-    line-height:1.7;
-
-    font-size:15px;
-
-}
-
-.job-description a{
-
-    text-decoration:none;
-
-    font-weight:700;
-
 }
 
 .feed-buttons{
-
-    display:grid;
-
-    grid-template-columns:repeat(3,1fr);
-
+    display:flex;
     gap:10px;
-
-    margin-top:18px;
-
+    margin-top:20px;
 }
 
 .feed-buttons .btn{
-
-    height:48px;
-
-    border-radius:14px;
+    flex:1;
+    height:50px;
 
     display:flex;
-
     align-items:center;
-
     justify-content:center;
 
     gap:6px;
 
-    font-weight:700;
+    border-radius:14px;
+    font-weight:600;
 
     padding:0;
+}
+
+.feed-buttons .btn i{
+    font-size:16px;
+}
+
+.btn-success{
+    background:#16a34a !important;
+    border-color:#16a34a !important;
+}
+
+@media(max-width:768px){
+
+.post-media{
+
+aspect-ratio:4/5;
 
 }
 
-.feed-buttons i{
+.reel-media{
 
-    font-size:16px;
+height:85vh;
+
+}
+
+.feed-buttons{
+gap:8px;
+}
+
+.feed-buttons .btn{
+height:48px;
+font-size:14px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+}
+
+@media (max-width:768px){
+    .content{
+        padding:0 !important;
+        padding-bottom:120px !important;
+    }
+}
+
+/* ===================================
+   Instagram Desktop Feed
+   Mobile Unchanged
+=================================== */
+
+@media (min-width:992px){
+
+    .desktop-feed{
+        max-width:650px;
+        margin:0 auto;
+    }
+
+    .feed-card{
+        width:100%;
+        margin-bottom:28px;
+    }
+
+    .post-media{
+        aspect-ratio:4/5;
+    }
+
+    .reel-media{
+        height:85vh;
+    }
 
 }
 
 .swiper{
 
-    width:100%;
+width:100%;
+
+}
+
+.swiper-slide{
+
+width:100%;
 
 }
 
 .swiper-pagination-bullet{
 
-    background:#fff;
+background:white;
 
-    opacity:.6;
+opacity:.6;
 
 }
 
 .swiper-pagination-bullet-active{
 
-    background:#2563eb;
+background:#2563eb;
 
-    opacity:1;
-
-}
-
-.empty-feed{
-
-    text-align:center;
-
-    background:#fff;
-
-    padding:60px 20px;
-
-    margin:15px;
-
-    border-radius:18px;
+opacity:1;
 
 }
 
-.empty-feed h3{
-
-    margin-bottom:8px;
-
-    font-weight:700;
-
-}
-
-@media(max-width:768px){
-
-.content{
-
-padding:0!important;
-
-}
-
-.container,
-
-.container-fluid{
-
-padding:0!important;
-
-}
-
-.desktop-feed{
-
+.media-viewer{
+position:fixed;
+top:0;
+left:0;
 width:100%;
+height:100%;
+background:#000;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:99999;
+}
+
+.media-viewer img,
+.media-viewer video{
+max-width:100%;
+max-height:100%;
+object-fit:contain;
+}
+
+.mute-btn{
+position:absolute;
+right:12px;
+bottom:12px;
+width:42px;
+height:42px;
+border:none;
+border-radius:50%;
+background:rgba(0,0,0,.5);
+color:#fff;
+font-size:18px;
+cursor:pointer;
+}
+
+.video-container{
+
+position:relative;
 
 }
 
-.feed-filter{
+.viewer-back{
 
-padding:10px;
+position:absolute;
+top:20px;
+left:20px;
+z-index:100000;
 
-}
+background:rgba(0,0,0,.6);
+color:#fff;
 
-.feed-filter .form-select{
+border:none;
 
-height:54px;
+padding:10px 16px;
 
-border-radius:16px;
+border-radius:30px;
 
 font-size:16px;
 
 }
 
-.feed-card{
-
-border-radius:0;
-
-margin-bottom:12px;
-
-}
-
-.feed-header{
-
-padding:12px;
-
-}
-
-.feed-avatar{
-
-width:48px;
-
-height:48px;
-
-font-size:18px;
-
-}
-
-.feed-company{
-
-font-size:17px;
-
-}
-
-.feed-image{
-
-width:100%;
-
-aspect-ratio:1/1;
-
-object-fit:cover;
-
-}
-
-.feed-content{
-
-padding:14px;
-
-}
-
-.feed-buttons{
-
-gap:8px;
-
-}
-
-.feed-buttons .btn{
-
-height:46px;
-
-font-size:13px;
-
-}
-
-}
-
-@media(min-width:992px){
-
-.desktop-feed{
-
-max-width:650px;
-
-margin:auto;
-
-}
-
-}
-
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<div id="mediaViewer" class="media-viewer">
+
+<button class="viewer-back"
+onclick="closeMedia()">
+
+← Back
+
+</button>
+
+<img
+id="viewerImage"
+style="display:none;">
+
+<video
+id="viewerVideo"
+playsinline
+muted
+autoplay
+style="display:none;"
+onclick="toggleVideo(this)">
+</video>
+
+</div>
 
 <script>
 
-document.querySelectorAll(".feedSwiper").forEach(function(swiper){
+let openedFeedVideo = null;
+let currentFeedVideo = null;
 
-    new Swiper(swiper,{
+window.soundEnabled = false;
 
-        slidesPerView:1,
+function playCurrentVideo(video){
 
-        spaceBetween:0,
+    document.querySelectorAll(".feed-video").forEach(function(v){
 
-        speed:350,
+        if(v!==video){
 
-        pagination:{
-            el:swiper.querySelector(".swiper-pagination"),
-            clickable:true
+            v.pause();
+            v.muted=true;
+
+            let btn=v.parentElement.querySelector(".mute-btn");
+
+            if(btn) btn.innerHTML="🔇";
+
         }
 
     });
 
-});
+    currentFeedVideo = video;
 
-function toggleText(id){
+    if(video.paused){
+        video.play().catch(()=>{});
+    }
 
-    let more=document.getElementById("more"+id);
+}
 
-    let dots=document.getElementById("dots"+id);
+function toggleVideo(video){
 
-    let btn=document.getElementById("btn"+id);
+    if(video.paused){
+        video.play();
+    }else{
+        video.pause();
+    }
 
-    if(more.style.display==="none"){
+}
 
-        more.style.display="inline";
+function toggleMute(e, btn){
 
-        dots.style.display="none";
+    e.stopPropagation();
 
-        btn.innerHTML="See Less";
+    const video = btn.previousElementSibling;
+
+    // Mute every video first
+    document.querySelectorAll(".feed-video").forEach(v => {
+
+        v.muted = true;
+
+        const b = v.parentElement.querySelector(".mute-btn");
+        if(b) b.innerHTML = "🔇";
+
+    });
+
+    // Toggle only this video
+    video.muted = false;
+    btn.innerHTML = "🔊";
+}
+
+function openMedia(feedVideo,src,type){
+
+    openedFeedVideo = feedVideo;
+
+    let viewer=document.getElementById("mediaViewer");
+    let img=document.getElementById("viewerImage");
+    let video=document.getElementById("viewerVideo");
+
+    // Close all feed videos
+    document.querySelectorAll(".feed-video").forEach(function(v){
+
+        v.pause();
+        v.muted=true;
+
+        let btn=v.parentElement.querySelector(".mute-btn");
+        if(btn) btn.innerHTML="🔇";
+
+    });
+
+    viewer.style.display="flex";
+
+    // Mobile back button support
+    history.pushState({viewer:true},"");
+
+    if(type=="image"){
+
+        img.style.display="block";
+        video.style.display="none";
+
+        img.src=src;
 
     }else{
 
-        more.style.display="none";
+        img.style.display="none";
+        video.style.display="block";
 
-        dots.style.display="inline";
+        video.pause();
+        video.src=src;
+        video.load();
 
-        btn.innerHTML="See More";
+        video.controls=false;
+        video.muted=false;
+        video.currentTime=0;
+
+        video.play().catch(()=>{});
+
+        if(currentFeedVideo){
+
+            currentFeedVideo.pause();
+
+        }
 
     }
 
 }
 
-window.addEventListener("load",function(){
+function closeMedia() {
+    let viewer = document.getElementById("mediaViewer");
+    let video = document.getElementById("viewerVideo");
 
-    let target=document.getElementById("post{{ selected_id }}");
+    // Pause and clear the fullscreen video
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
 
-    if(target){
+    viewer.style.display = "none";
 
-        target.scrollIntoView({
+    // Resume the feed video that was previously playing
+    if (openedFeedVideo) {
+        currentFeedVideo = openedFeedVideo;
+        // Resume playing without reloading the source
+        openedFeedVideo.play().catch(() => {});
+        
+        // Clear reference after resuming
+        openedFeedVideo = null;
+    }
+}
 
-            behavior:"smooth",
+// Tap video to pause/play
+document.getElementById("viewerVideo").onclick=function(e){
 
-            block:"center"
+    e.stopPropagation();
 
-        });
+    if(this.paused){
+        this.play();
+    }else{
+        this.pause();
+    }
+
+};
+
+
+// Android back button closes fullscreen
+window.addEventListener("popstate",function(){
+
+    let viewer=document.getElementById("mediaViewer");
+
+    if(viewer.style.display=="flex"){
+
+        closeMedia();
 
     }
 
+});
+
+document.querySelectorAll(".feedSwiper").forEach(function(container){
+
+new Swiper(container,{
+
+slidesPerView:1,
+
+spaceBetween:0,
+
+pagination:{
+el:container.querySelector(".swiper-pagination"),
+clickable:true
+},
+
+on:{
+
+slideChange:function(){
+
+container.querySelectorAll("video").forEach(v=>{
+
+v.pause();
+
+});
+
+let current=
+
+this.slides[this.activeIndex]
+.querySelector("video");
+
+if(current){
+
+playCurrentVideo(current);
+
+}
+
+}
+
+}
+
+});
+
+});
+
+const observer = new IntersectionObserver((entries) => {
+
+    entries.forEach(entry => {
+
+        const video = entry.target;
+        const btn = video.parentElement.querySelector(".mute-btn");
+
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+
+            video.play().catch(()=>{});
+
+        } else {
+
+            video.muted = true;
+            video.pause();
+
+            if(btn){
+                btn.innerHTML = "🔇";
+            }
+        }
+
+    });
+
+}, {
+    threshold: [0.6]
+});
+
+document.querySelectorAll(".feed-video").forEach(video => {
+    observer.observe(video);
 });
 
 </script>
