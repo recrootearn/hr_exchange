@@ -191,17 +191,19 @@ onchange="this.form.submit()">
 
 {% if job.post_type == "video" %}
 
-<a
-href="/spark/{{ job.id }}"
-class="btn btn-warning">
+<button
+type="button"
+class="btn btn-warning"
+onclick="toggleSpark({{ job.id }})">
 
 ⚡ Spark
+(
+<span id="spark-count-{{ job.id }}">
+{{ job.sparks|length }}
+</span>
+)
 
-{% if job.sparks|length %}
-({{ job.sparks|length }})
-{% endif %}
-
-</a>
+</button>
 
 <a
 href="/share-job/{{ job.id }}"
@@ -737,6 +739,34 @@ const observer = new IntersectionObserver((entries) => {
 document.querySelectorAll(".feed-video").forEach(video => {
     observer.observe(video);
 });
+
+</script>
+
+<script>
+
+function toggleSpark(jobId){
+
+    fetch("/spark/" + jobId, {
+        method: "POST"
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if(data.success){
+
+            document.getElementById(
+                "spark-count-" + jobId
+            ).innerHTML = data.count;
+
+        }
+
+    })
+
+    .catch(error => console.log(error));
+
+}
 
 </script>
 

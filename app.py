@@ -992,7 +992,7 @@ class Spark(db.Model):
         db.DateTime,
         default=datetime.utcnow
     )
-
+f
 class CandidateReview(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -6158,14 +6158,16 @@ def admin_revenue_dashboard():
 
     )
 
-@app.route("/spark/<int:job_id>")
+from flask import jsonify
+
+@app.route("/spark/<int:job_id>", methods=["POST"])
 @login_required
 def spark(job_id):
 
     job = JobPost.query.get_or_404(job_id)
 
     # -----------------------------
-    # HR
+    # HR Spark
     # -----------------------------
     if current_user.is_authenticated:
 
@@ -6181,33 +6183,31 @@ def spark(job_id):
         else:
 
             db.session.add(
-
                 Spark(
                     job_id=job.id,
                     hr_id=current_user.id
                 )
-
             )
 
-            send_notification(
+            if job.hr_id != current_user.id:
 
-                user_id=job.hr_id,
-                user_type="hr",
-
-                message=f"{current_user.company} sparked your company video.",
-
-                link=f"/job-view/{job.id}",
-
-                type="spark"
-
-            )
+                send_notification(
+                    user_id=job.hr_id,
+                    user_type="hr",
+                    message=f"{current_user.company} sparked your company video.",
+                    link=f"/job-view/{job.id}",
+                    type="spark"
+                )
 
         db.session.commit()
 
-        return redirect(request.referrer or "/")
+        return jsonify({
+            "success": True,
+            "count": len(job.sparks)
+        })
 
     # -----------------------------
-    # Candidate
+    # Candidate Spark
     # -----------------------------
     if "candidate_id" in session:
 
@@ -6227,32 +6227,30 @@ def spark(job_id):
             )
 
             db.session.add(
-
                 Spark(
                     job_id=job.id,
                     candidate_id=candidate.id
                 )
-
             )
 
             send_notification(
-
                 user_id=job.hr_id,
                 user_type="hr",
-
                 message=f"{candidate.name} sparked your company video.",
-
                 link=f"/job-view/{job.id}",
-
                 type="spark"
-
             )
 
         db.session.commit()
 
-        return redirect(request.referrer or "/")
+        return jsonify({
+            "success": True,
+            "count": len(job.sparks)
+        })
 
-    return redirect("/")
+    return jsonify({
+        "success": False
+    })
 
 @app.route('/follow-hr-user/<int:id>')
 @login_required
