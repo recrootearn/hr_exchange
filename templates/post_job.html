@@ -1289,13 +1289,8 @@ function togglePostType(){
 
     const hiring = type === "hiring";
 
-    document
-    .querySelector(".hiring-card")
-    .classList.toggle("active", hiring);
-
-    document
-    .querySelector(".video-card")
-    .classList.toggle("active", !hiring);
+    document.querySelector(".hiring-card").classList.toggle("active", hiring);
+    document.querySelector(".video-card").classList.toggle("active", !hiring);
 
     document.getElementById("jobTitleBox").style.display =
         hiring ? "block" : "none";
@@ -1327,16 +1322,48 @@ function togglePostType(){
     document.getElementById("videoUploadSection").style.display =
         hiring ? "none" : "block";
 
-    // Toggle required fields
+    // Required fields
     document.getElementById("images").required = hiring;
     document.getElementById("company_video").required = !hiring;
+
+    // Auto-fill hidden fields for video post
+    if (!hiring) {
+
+        document.querySelector("input[name='job_title']").value = "Company Video";
+
+        document.querySelector("input[name='salary']").value = "NA";
+
+        document.querySelector("input[name='incentive']").value = "NA";
+
+        document.querySelector("input[name='office_address']").value = "NA";
+
+        document.querySelector("input[name='working_from']").value = "09:00";
+
+        document.querySelector("input[name='working_to']").value = "18:00";
+
+        document.querySelector("select[name='working_days']").value = "Monday - Friday";
+
+        document.querySelector("select[name='job_type']").value = "Work From Office";
+
+        document.querySelector("select[name='employment_type']").value = "Full Time";
+
+        document.querySelector("select[name='eligibility']").value = "Fresher";
+
+        document.querySelector("select[name='education']").value = "Any Graduate";
+
+        document.querySelector("select[name='gender']").value = "Both";
+
+        document.querySelector("select[name='experience_required']").value = "";
+
+        document.querySelector("textarea[name='description']").value = "Company Video";
+
+        document.querySelector("#location").tomselect.setValue("Indore");
+    }
 
 }
 
 postTypes.forEach(item => {
-
     item.addEventListener("change", togglePostType);
-
 });
 
 togglePostType();
