@@ -312,6 +312,16 @@ padding:18px;
 
 <form method="POST" enctype="multipart/form-data">
 
+<input type="hidden" name="post_type" id="post_type" value="hiring">
+
+<div class="form-section">
+
+    <button type="button" onclick="showHiring()">🧑‍💼 Post Job</button>
+
+    <button type="button" onclick="showVideo()">🎥 Post Video</button>
+
+</div>
+
 <div class="form-section">
 
 <div class="section-title">
@@ -319,6 +329,8 @@ padding:18px;
 📋 Basic Information
 
 </div>
+
+<div id="hiring-fields">
 
 <!-- ===========================
 Basic Information
@@ -816,6 +828,8 @@ placeholder="Example: Carry Resume, Aadhaar Card, Formal Dress, Passport Size Ph
 
 </div>
 
+</div>
+
 <!-- ===========================
 Job Description
 =========================== -->
@@ -1056,6 +1070,31 @@ this.value==="Experience"
 : "none";
 
 });
+
+function showVideo(){
+
+    document.getElementById("post_type").value="video";
+
+    document.getElementById("hiring-fields").style.display="none";
+
+    document.querySelector("[name='job_title']").value="NA";
+    document.querySelector("[name='office_address']").value="NA";
+    document.querySelector("[name='salary']").value="NA";
+    document.querySelector("[name='incentive']").value="NA";
+    document.querySelector("[name='location']").tomselect.setValue("Indore");
+}
+
+function showHiring(){
+
+    document.getElementById("post_type").value="hiring";
+
+    document.getElementById("hiring-fields").style.display="block";
+
+    document.querySelector("[name='job_title']").value="";
+    document.querySelector("[name='office_address']").value="";
+    document.querySelector("[name='salary']").value="";
+    document.querySelector("[name='incentive']").value="";
+}
 
 </script>
 
