@@ -6590,7 +6590,7 @@ def post_job():
                 else request.form.get("video_caption")
             ),
 
-            images=",".join(saved_images)
+            images=",".join(saved_images),
 
             hashtags=request.form.get("hashtags"),
 
