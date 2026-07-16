@@ -6418,7 +6418,7 @@ def post_job():
 
                     try:
 
-                        subprocess.run(
+                        result = subprocess.run(
                             [
                                 "ffmpeg",
                                 "-y",
@@ -6427,9 +6427,11 @@ def post_job():
                                 "-vframes", "1",
                                 thumbnail_path
                             ],
-                            stdout=subprocess.DEVNULL,
-                            stderr=subprocess.DEVNULL
+                            capture_output=True,
+                            text=True
                         )
+
+                        print(result.stderr)
 
                     except Exception as e:
                         print("Thumbnail Error:", e)
