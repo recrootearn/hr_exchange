@@ -6,6 +6,10 @@
 rel="stylesheet"
 href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
+<div class="mb-2">
+
+<form method="GET">
+
 <div class="desktop-feed">
 
 {% for job in jobs %}
@@ -17,75 +21,66 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
     <div class="feed-header">
 
-        <div class="feed-avatar">
+    <div class="d-flex align-items-center gap-2">
 
+        <div class="feed-avatar">
             {% if job.company_name %}
                 {{ job.company_name[:1].upper() }}
             {% else %}
                 R
             {% endif %}
-
         </div>
 
-        <div style="flex:1;">
-
+        <div>
             <div class="feed-company">
-
                 <a href="/company/{{ job.hr_id }}"
                    style="text-decoration:none;color:inherit;">
-
                     {{ job.company_name }}
-
                 </a>
-
             </div>
 
             <div class="feed-meta">
-
                 📍 {{ job.location }}
-
             </div>
-
-        </div>
-
-        <div class="dropdown">
-
-            <button
-            class="btn btn-sm border-0"
-            data-bs-toggle="dropdown">
-
-                <i class="fas fa-ellipsis-v"></i>
-
-            </button>
-
-            <ul class="dropdown-menu dropdown-menu-end">
-
-                <li>
-
-                    <a
-                    class="dropdown-item text-danger"
-                    href="/delete-job/{{ job.id }}"
-                    onclick="return confirm('Delete this post?')">
-
-                        <i class="fas fa-trash me-2"></i>
-
-                        Delete Post
-
-                    </a>
-
-                </li>
-
-            </ul>
-
         </div>
 
     </div>
 
-    <!-- MEDIA -->
+    <div class="dropdown ms-auto">
+
+        <button class="btn btn-sm border-0"
+                data-bs-toggle="dropdown">
+
+            <i class="fas fa-ellipsis-v"></i>
+
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end">
+
+            <li>
+
+                <a class="dropdown-item text-danger"
+                   href="/delete-job/{{ job.id }}"
+                   onclick="return confirm('Delete this post?')">
+
+                    <i class="fas fa-trash me-2"></i>
+                    Delete Post
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </div>
+
+</div>
+
+    <!-- IMAGE -->
 
     {% if job.images %}
 
-    <div class="swiper feedSwiper">
+        <div class="swiper feedSwiper">
 
         <div class="swiper-wrapper">
 
@@ -99,28 +94,28 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
         <div class="feed-media reel-media video-container">
 
-            <video
-            class="feed-image feed-video"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="metadata"
-            onclick="openMedia(this,'/static/uploads/{{ img }}','video')">
+        <video
+        class="feed-image feed-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        onclick="openMedia(this,'/static/uploads/{{ img }}','video')">
 
-                <source
-                src="/static/uploads/{{ img }}"
-                type="video/mp4">
+        <source
+        src="/static/uploads/{{ img }}"
+        type="video/mp4">
 
-            </video>
+        Your browser does not support HTML5 video.
 
-            <button
-            class="mute-btn"
-            onclick="toggleMute(event,this)">
+        </video>
 
-                🔇
-
-            </button>
+        <button
+        class="mute-btn"
+        onclick="toggleMute(event,this)">
+        🔇
+        </button>
 
         </div>
 
@@ -128,10 +123,10 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
         <div class="feed-media post-media">
 
-            <img
-            src="/static/uploads/{{ img }}"
-            class="feed-image"
-            onclick="openMedia('/static/uploads/{{ img }}','image')">
+        <img
+        src="/static/uploads/{{ img }}"
+        class="feed-image"
+        onclick="openMedia('/static/uploads/{{ img }}','image')">
 
         </div>
 
@@ -145,106 +140,39 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
         <div class="swiper-pagination"></div>
 
-    </div>
+        </div>
 
     {% endif %}
 
-    <!-- CONTENT -->
+    <div class="feed-buttons">
 
-    <div class="p-3">
+    <a href="/job-applicants/{{ job.id }}"
+       class="btn btn-primary">
 
-        <h4 class="job-title">
-            {{ job.job_title }}
-        </h4>
+        <i class="fas fa-users"></i>
+        Applicants
 
-        <div class="salary-tag">
-            ₹ {{ job.salary }}
-        </div>
+    </a>
 
-        <p class="mt-3">
+    <a href="/edit-job/{{ job.id }}"
+       class="btn btn-outline-dark">
 
-            {{ job.description[:140] }}
+        <i class="fas fa-pen"></i>
+        Edit
 
-            {% if job.description|length > 140 %}
+    </a>
 
-            <span id="dots{{ job.id }}">
-                ...
-            </span>
+    <a href="/share-job/{{ job.id }}"
+       class="btn btn-success">
 
-            <span
-            id="more{{ job.id }}"
-            style="display:none;">
+        <i class="fab fa-whatsapp"></i>
+        Share
 
-                {{ job.description[140:] }}
-
-            </span>
-
-            <a href="#"
-               id="btn{{ job.id }}"
-               onclick="toggleText({{ job.id }});return false;">
-
-                See More
-
-            </a>
-
-            {% endif %}
-
-        </p>
-
-        <div class="feed-buttons">
-
-            <!-- Applicants -->
-
-            <a href="/job-applicants/{{ job.id }}"
-               class="btn btn-primary">
-
-                <i class="fas fa-users"></i>
-
-                Applicants
-
-            </a>
-
-            <!-- Edit -->
-
-            <a href="/edit-job/{{ job.id }}"
-               class="btn btn-outline-dark">
-
-                <i class="fas fa-pen"></i>
-
-                Edit
-
-            </a>
-
-            <!-- Share -->
-
-            <a href="/share-job/{{ job.id }}"
-               class="btn btn-success">
-
-                <i class="fab fa-whatsapp"></i>
-
-                Share
-
-            </a>
-
-        </div>
-
-    </div>
+    </a>
 
 </div>
 
-{% else %}
-
-<div class="stats-card text-center">
-
-    <h4>No Jobs Available</h4>
-
-    <p>Please check again later.</p>
-
-</div>
-
-{% endfor %}
-
-</div>
+<style>
 
 .feed-card{
     background:#fff;
@@ -291,36 +219,48 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 }
 
 .feed-media{
+
     width:100%;
     position:relative;
     overflow:hidden;
+
 }
 
 .post-media{
+
     aspect-ratio:4/5;
     background:#fff;
+
 }
 
 .reel-media{
+
     aspect-ratio:9/16;
     background:#000;
+
 }
 
 .feed-image,
 .feed-video{
+
     width:100%;
     height:100%;
     display:block;
     position:absolute;
     inset:0;
+
 }
 
 .feed-image{
+
     object-fit:cover;
+
 }
 
 .feed-video{
+
     object-fit:cover;
+
 }
 
 .job-title{
@@ -346,12 +286,16 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 .feed-buttons .btn{
     flex:1;
     height:50px;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     gap:6px;
+
     border-radius:14px;
     font-weight:600;
+
     padding:0;
 }
 
@@ -366,35 +310,37 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
 @media(max-width:768px){
 
-    .post-media{
-        aspect-ratio:4/5;
-    }
+.post-media{
 
-    .reel-media{
-        height:85vh;
-    }
+aspect-ratio:4/5;
 
-    .feed-buttons{
-        gap:8px;
-    }
+}
 
-    .feed-buttons .btn{
-        height:48px;
-        font-size:14px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
+.reel-media{
+
+height:85vh;
+
+}
+
+.feed-buttons{
+gap:8px;
+}
+
+.feed-buttons .btn{
+height:48px;
+font-size:14px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
 
 }
 
 @media (max-width:768px){
-
     .content{
         padding:0 !important;
         padding-bottom:120px !important;
     }
-
 }
 
 /* ===================================
@@ -425,89 +371,98 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 }
 
 .swiper{
-    width:100%;
+
+width:100%;
+
 }
 
 .swiper-slide{
-    width:100%;
+
+width:100%;
+
 }
 
 .swiper-pagination-bullet{
-    background:white;
-    opacity:.6;
+
+background:white;
+
+opacity:.6;
+
 }
 
 .swiper-pagination-bullet-active{
-    background:#2563eb;
-    opacity:1;
+
+background:#2563eb;
+
+opacity:1;
+
 }
 
 .media-viewer{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:#000;
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index:99999;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:99999;
 }
 
 .media-viewer img,
 .media-viewer video{
-    max-width:100%;
-    max-height:100%;
-    object-fit:contain;
+max-width:100%;
+max-height:100%;
+object-fit:contain;
 }
 
 .mute-btn{
-    position:absolute;
-    right:12px;
-    bottom:12px;
-    width:42px;
-    height:42px;
-    border:none;
-    border-radius:50%;
-    background:rgba(0,0,0,.5);
-    color:#fff;
-    font-size:18px;
-    cursor:pointer;
+position:absolute;
+right:12px;
+bottom:12px;
+width:42px;
+height:42px;
+border:none;
+border-radius:50%;
+background:rgba(0,0,0,.5);
+color:#fff;
+font-size:18px;
+cursor:pointer;
 }
 
 .video-container{
-    position:relative;
+
+position:relative;
+
 }
 
 .viewer-back{
-    position:absolute;
-    top:20px;
-    left:20px;
-    z-index:100000;
-    background:rgba(0,0,0,.6);
-    color:#fff;
-    border:none;
-    padding:10px 16px;
-    border-radius:30px;
-    font-size:16px;
+
+position:absolute;
+top:20px;
+left:20px;
+z-index:100000;
+
+background:rgba(0,0,0,.6);
+color:#fff;
+
+border:none;
+
+padding:10px 16px;
+
+border-radius:30px;
+
+font-size:16px;
+
 }
 
-.dropdown .btn{
-    font-size:18px;
-    color:#555;
-}
-
-.dropdown .btn:hover{
-    background:#f5f5f5;
-    border-radius:50%;
-}
 </style>
 
 <div id="mediaViewer" class="media-viewer">
 
-<button
-class="viewer-back"
+<button class="viewer-back"
 onclick="closeMedia()">
 
 ← Back
@@ -534,6 +489,8 @@ onclick="toggleVideo(this)">
 let openedFeedVideo = null;
 let currentFeedVideo = null;
 
+window.soundEnabled = false;
+
 function playCurrentVideo(video){
 
     document.querySelectorAll(".feed-video").forEach(function(v){
@@ -545,15 +502,13 @@ function playCurrentVideo(video){
 
             let btn=v.parentElement.querySelector(".mute-btn");
 
-            if(btn){
-                btn.innerHTML="🔇";
-            }
+            if(btn) btn.innerHTML="🔇";
 
         }
 
     });
 
-    currentFeedVideo=video;
+    currentFeedVideo = video;
 
     if(video.paused){
         video.play().catch(()=>{});
@@ -571,41 +526,49 @@ function toggleVideo(video){
 
 }
 
-function toggleMute(e,btn){
+function toggleMute(e, btn){
 
     e.stopPropagation();
 
-    let video=btn.previousElementSibling;
+    const video = btn.previousElementSibling;
 
-    video.muted=!video.muted;
+    // Mute every video first
+    document.querySelectorAll(".feed-video").forEach(v => {
 
-    btn.innerHTML=video.muted ? "🔇" : "🔊";
+        v.muted = true;
 
+        const b = v.parentElement.querySelector(".mute-btn");
+        if(b) b.innerHTML = "🔇";
+
+    });
+
+    // Toggle only this video
+    video.muted = false;
+    btn.innerHTML = "🔊";
 }
 
 function openMedia(feedVideo,src,type){
 
-    openedFeedVideo=feedVideo;
+    openedFeedVideo = feedVideo;
 
     let viewer=document.getElementById("mediaViewer");
     let img=document.getElementById("viewerImage");
     let video=document.getElementById("viewerVideo");
 
+    // Close all feed videos
     document.querySelectorAll(".feed-video").forEach(function(v){
 
         v.pause();
         v.muted=true;
 
         let btn=v.parentElement.querySelector(".mute-btn");
-
-        if(btn){
-            btn.innerHTML="🔇";
-        }
+        if(btn) btn.innerHTML="🔇";
 
     });
 
     viewer.style.display="flex";
 
+    // Mobile back button support
     history.pushState({viewer:true},"");
 
     if(type=="image"){
@@ -631,56 +594,52 @@ function openMedia(feedVideo,src,type){
         video.play().catch(()=>{});
 
         if(currentFeedVideo){
+
             currentFeedVideo.pause();
+
         }
 
     }
 
 }
 
-function closeMedia(){
+function closeMedia() {
+    let viewer = document.getElementById("mediaViewer");
+    let video = document.getElementById("viewerVideo");
 
-    let viewer=document.getElementById("mediaViewer");
-    let video=document.getElementById("viewerVideo");
-
+    // Pause and clear the fullscreen video
     video.pause();
     video.removeAttribute("src");
     video.load();
 
-    viewer.style.display="none";
+    viewer.style.display = "none";
 
-    if(openedFeedVideo){
-
-        currentFeedVideo=openedFeedVideo;
-
-        openedFeedVideo.play().catch(()=>{});
-
-        openedFeedVideo=null;
-
+    // Resume the feed video that was previously playing
+    if (openedFeedVideo) {
+        currentFeedVideo = openedFeedVideo;
+        // Resume playing without reloading the source
+        openedFeedVideo.play().catch(() => {});
+        
+        // Clear reference after resuming
+        openedFeedVideo = null;
     }
-
 }
 
-// Tap fullscreen video to play/pause
-
+// Tap video to pause/play
 document.getElementById("viewerVideo").onclick=function(e){
 
     e.stopPropagation();
 
     if(this.paused){
-
         this.play();
-
     }else{
-
         this.pause();
-
     }
 
 };
 
-// Android Back Button
 
+// Android back button closes fullscreen
 window.addEventListener("popstate",function(){
 
     let viewer=document.getElementById("mediaViewer");
@@ -693,45 +652,45 @@ window.addEventListener("popstate",function(){
 
 });
 
-// Swiper
-
 document.querySelectorAll(".feedSwiper").forEach(function(container){
 
-    new Swiper(container,{
+new Swiper(container,{
 
-        slidesPerView:1,
+slidesPerView:1,
 
-        spaceBetween:0,
+spaceBetween:0,
 
-        pagination:{
-            el:container.querySelector(".swiper-pagination"),
-            clickable:true
-        },
+pagination:{
+el:container.querySelector(".swiper-pagination"),
+clickable:true
+},
 
-        on:{
+on:{
 
-            slideChange:function(){
+slideChange:function(){
 
-                container.querySelectorAll("video").forEach(v=>{
+container.querySelectorAll("video").forEach(v=>{
 
-                    v.pause();
+v.pause();
 
-                });
+});
 
-                let current=this.slides[this.activeIndex]
-                    .querySelector("video");
+let current=
 
-                if(current){
+this.slides[this.activeIndex]
+.querySelector("video");
 
-                    playCurrentVideo(current);
+if(current){
 
-                }
+playCurrentVideo(current);
 
-            }
+}
 
-        }
+}
 
-    });
+}
+
+});
 
 });
 
@@ -742,75 +701,30 @@ const observer = new IntersectionObserver((entries) => {
         const video = entry.target;
         const btn = video.parentElement.querySelector(".mute-btn");
 
-        if(entry.isIntersecting && entry.intersectionRatio >= 0.6){
-
-            currentFeedVideo = video;
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
 
             video.play().catch(()=>{});
 
-        }else{
-
-            video.pause();
+        } else {
 
             video.muted = true;
+            video.pause();
 
             if(btn){
                 btn.innerHTML = "🔇";
             }
-
         }
 
     });
 
-},{
-    threshold:[0.6]
+}, {
+    threshold: [0.6]
 });
 
-document.querySelectorAll(".feed-video").forEach(video=>{
-
+document.querySelectorAll(".feed-video").forEach(video => {
     observer.observe(video);
-
 });
-
-function toggleText(id){
-
-    let more=document.getElementById("more"+id);
-    let dots=document.getElementById("dots"+id);
-    let btn=document.getElementById("btn"+id);
-
-    if(more.style.display==="none"){
-
-        more.style.display="inline";
-        dots.style.display="none";
-        btn.innerHTML="See Less";
-
-    }else{
-
-        more.style.display="none";
-        dots.style.display="inline";
-        btn.innerHTML="See More";
-
-    }
-
-}
-
-window.onload=function(){
-
-    let target=document.getElementById("post{{ selected_id }}");
-
-    if(target){
-
-        target.scrollIntoView({
-            behavior:"smooth",
-            block:"center"
-        });
-
-    }
-
-};
 
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 {% endblock %}
