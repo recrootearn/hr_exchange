@@ -508,6 +508,17 @@ class JobPost(db.Model):
 
     images = db.Column(db.Text)
 
+    post_type = db.Column(db.String(20), default="hiring")
+    video_caption = db.Column(db.Text)
+    hashtags = db.Column(db.String(300))
+
+    sparks = db.relationship(
+        "Spark",
+        backref="job",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=india_time
@@ -954,6 +965,23 @@ class Earnings(db.Model):
     created_at = db.Column(
         db.DateTime,
         default=india_time
+    )
+
+class Spark(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    job_id = db.Column(db.Integer,
+        db.ForeignKey("job_post.id"),
+        nullable=False)
+
+    candidate_id = db.Column(db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=False)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
     )
 
 class CandidateReview(db.Model):
@@ -6121,6 +6149,64 @@ def admin_revenue_dashboard():
 
     )
 
+@app.route("/spark/<int:job_id>")
+@login_required
+def spark(job_id):
+
+    if current_user.role != "candidate":
+        return redirect(request.referrer or "/")
+
+    job = JobPost.query.get_or_404(job_id)
+
+    if job.post_type != "video":
+        flash("Spark is available only for Company Videos.", "warning")
+        return redirect(request.referrer or "/")
+
+    candidate = CandidateUser.query.filter_by(
+        user_id=current_user.id
+    ).first()
+
+    if not candidate:
+        return redirect(request.referrer or "/")
+
+    spark = Spark.query.filter_by(
+        job_id=job.id,
+        candidate_id=candidate.id
+    ).first()
+
+    if existing:
+
+        db.session.delete(existing)
+        db.session.commit()
+
+        return redirect(request.referrer or "/")
+
+    db.session.add(
+        Spark(
+            job_id=job.id,
+            candidate_id=candidate.id
+        )
+    )
+
+    send_notification(
+
+        user_id=job.hr_id,
+        user_type="hr",
+
+        message=f"{candidate.name} sparked your company video.",
+
+        link=f"/job-view/{job.id}",
+
+        image="",
+
+        type="spark"
+
+    )
+
+    db.session.commit()
+
+    return redirect(request.referrer or "/")
+
 @app.route('/follow-hr-user/<int:id>')
 @login_required
 def follow_hr_user(id):
@@ -6385,7 +6471,13 @@ def post_job():
 
     if request.method == 'POST':
 
-        files = request.files.getlist("images")
+        post_type = request.form.get("post_type", "hiring")
+
+        if post_type == "hiring":
+            files = request.files.getlist("images")
+        else:
+            video = request.files.get("company_video")
+            files = [video] if video and video.filename else []
 
         saved_images = []
 
@@ -6450,9 +6542,11 @@ def post_job():
 
         job = JobPost(
 
+            post_type=post_type,
+
             hr_id=current_user.id,
 
-            company_name=current_user.company,
+            company_name=request.form.get("company_name") or current_user.company,
 
             job_title=request.form["job_title"],
 
@@ -6490,9 +6584,15 @@ def post_job():
 
             interview_instructions=request.form.get("interview_instructions"),
 
-            description=request.form["description"],
+            description=(
+                request.form.get("description")
+                if post_type=="hiring"
+                else request.form.get("video_caption")
+            ),
 
             images=",".join(saved_images)
+
+            hashtags=request.form.get("hashtags"),
 
         )
 
@@ -6531,7 +6631,11 @@ def post_job():
 
                 user_type="candidate",
 
-                message=f"{current_user.company} posted a new job: {job.job_title}",
+                message=(
+                    f"{current_user.company} posted a new job: {job.job_title}"
+                    if post_type=="hiring"
+                    else f"{current_user.company} posted a new company video"
+                ),
 
                 link=f"/job/{job.id}",
 
@@ -6630,10 +6734,25 @@ def candidate_feed():
             for app in applications
         ]
 
+        sparked_jobs = []
+
+        if "candidate_id" in session:
+
+            sparked_jobs = [
+
+                s.job_id
+
+                for s in Spark.query.filter_by(
+                    candidate_id=session["candidate_id"]
+                ).all()
+
+            ]
+
     return render_template(
         'candidate_feed.html',
         jobs=jobs,
         applied_jobs=applied_jobs,
+        sparked_jobs=sparked_jobs,
         selected_id=selected_id,
         locations=locations,
         selected_location=selected_location
@@ -6923,6 +7042,21 @@ def feed():
         for app in applications
     ]
 
+    sparked_jobs = []
+
+    candidate = CandidateUser.query.filter_by(
+        user_id=current_user.id
+    ).first()
+
+    if candidate:
+
+        sparked_jobs = [
+            s.job_id
+            for s in Spark.query.filter_by(
+                candidate_id=candidate.id
+            ).all()
+        ]
+
     # Available locations (case-insensitive)
     locations = (
         db.session.query(func.lower(JobPost.location))
@@ -6941,6 +7075,7 @@ def feed():
         "feed.html",
         jobs=jobs,
         applied_jobs=applied_jobs,
+        sparked_jobs=sparked_jobs,
         locations=locations,
         selected_location=selected_location
     )

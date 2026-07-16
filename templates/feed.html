@@ -199,52 +199,105 @@ onchange="this.form.submit()">
 
         <div class="feed-buttons">
 
-            <!-- View Job -->
+{% if job.post_type == "video" %}
 
-            <a href="/job-view/{{ job.id }}"
-               class="btn btn-info">
+    <!-- Spark -->
 
-                <i class="fas fa-eye"></i>
-                View
+{% if job.id in sparked_jobs %}
 
-            </a>
+<a
+href="/spark/{{ job.id }}"
+class="btn btn-warning">
 
-            <!-- Apply -->
+    <i class="fas fa-bolt"></i>
 
-            {% if job.id in applied_jobs %}
+    Sparked
 
-            <button
-                class="btn btn-success"
-                disabled>
+</a>
 
-                <i class="fas fa-check-circle"></i>
-                Applied
+{% else %}
 
-            </button>
+<a
+href="/spark/{{ job.id }}"
+class="btn btn-outline-warning">
 
-            {% else %}
+    <i class="fas fa-bolt"></i>
 
-            <a href="/apply-job-hr/{{ job.id }}"
-               class="btn btn-primary">
+    Spark
 
-               <i class="fas fa-paper-plane"></i>
-               Apply
+</a>
 
-            </a>
+{% endif %}
 
-            {% endif %}
+    <!-- Share -->
 
-            <!-- Share -->
+    <a
+    href="/share-job/{{ job.id }}"
+    class="btn btn-success">
 
-            <a href="/share-job/{{ job.id }}"
-               class="btn btn-success">
+        <i class="fab fa-whatsapp"></i>
 
-                <i class="fab fa-whatsapp"></i>
-                Share
+        Share
 
-            </a>
+    </a>
 
-        </div>
+{% else %}
+
+    <!-- View -->
+
+    <a
+    href="/job-view/{{ job.id }}"
+    class="btn btn-info">
+
+        <i class="fas fa-eye"></i>
+
+        View
+
+    </a>
+
+    <!-- Apply -->
+
+    {% if job.id in applied_jobs %}
+
+    <button
+    class="btn btn-success"
+    disabled>
+
+        <i class="fas fa-check-circle"></i>
+
+        Applied
+
+    </button>
+
+    {% else %}
+
+    <a
+    href="/apply-job-hr/{{ job.id }}"
+    class="btn btn-primary">
+
+        <i class="fas fa-paper-plane"></i>
+
+        Apply
+
+    </a>
+
+    {% endif %}
+
+    <!-- Share -->
+
+    <a
+    href="/share-job/{{ job.id }}"
+    class="btn btn-success">
+
+        <i class="fab fa-whatsapp"></i>
+
+        Share
+
+    </a>
+
+{% endif %}
+
+</div>
 
     </div>
 
