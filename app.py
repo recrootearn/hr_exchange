@@ -6254,32 +6254,52 @@ def spark(job_id):
 
 @app.route("/candidate-spark/<int:job_id>", methods=["POST"])
 def candidate_spark(job_id):
+
     if "candidate_id" not in session:
-        return jsonify({"success": False, "message": "Unauthorized"}), 401
+        return jsonify({
+            "success": False,
+            "message": "Unauthorized"
+        }), 401
 
     job = JobPost.query.get_or_404(job_id)
-    candidate = CandidateUser.query.get(session["candidate_id"])
 
-    existing = Spark.query.filter_by(job_id=job.id, candidate_id=candidate.id).first()
+    candidate = CandidateUser.query.get_or_404(
+        session["candidate_id"]
+    )
+
+    existing = Spark.query.filter_by(
+        job_id=job.id,
+        candidate_id=candidate.id
+    ).first()
 
     if existing:
+
         db.session.delete(existing)
         db.session.commit()
+
     else:
-        db.session.add(Spark(job_id=job.id, candidate_id=candidate.id))
-        db.session.commit()
-        
-        # This will now correctly use the candidate name because we are inside the candidate context
+
+        db.session.add(
+            Spark(
+                job_id=job.id,
+                candidate_id=candidate.id
+            )
+        )
+
         send_notification(
             user_id=job.hr_id,
             user_type="hr",
-            message=f"{candidate.name} sparked your company video.",
+            message=f"{candidate.full_name} sparked your company video.",
             link=f"/job-view/{job.id}",
             type="spark"
         )
+
         db.session.commit()
 
-    return jsonify({"success": True, "count": len(job.sparks)})
+    return jsonify({
+        "success": True,
+        "count": Spark.query.filter_by(job_id=job.id).count()
+    })
 
 @app.route('/follow-hr-user/<int:id>')
 @login_required
