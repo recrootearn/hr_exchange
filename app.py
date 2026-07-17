@@ -6691,7 +6691,7 @@ from flask_login import login_required, current_user
 
 # Helper function for compression
 def compress_video(input_path, output_path):
-    # This resizes to 1080p, uses H.264, and optimizes for web[span_1](start_span)[span_1](end_span)
+    # 1. Compress the video
     command = [
         '/usr/bin/ffmpeg', '-i', input_path,
         '-vf', 'scale=-2:1080',
@@ -6702,6 +6702,17 @@ def compress_video(input_path, output_path):
         '-y', output_path
     ]
     subprocess.run(command, check=True)
+    
+    # 2. Extract a thumbnail (the poster frame)
+    # This creates a .jpg file in the same folder with the same name
+    thumb_path = output_path.rsplit('.', 1)[0] + '.jpg'
+    thumb_command = [
+        '/usr/bin/ffmpeg', '-i', output_path,
+        '-ss', '00:00:01',  # Takes a snapshot at 1 second
+        '-vframes', '1',
+        '-y', thumb_path
+    ]
+    subprocess.run(thumb_command, check=True)
 
 @app.route("/post-video", methods=["GET", "POST"])
 @login_required
