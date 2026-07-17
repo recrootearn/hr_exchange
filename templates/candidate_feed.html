@@ -93,17 +93,7 @@
         {% endif %}
         <a href="/share-job/{{ job.id }}" class="btn btn-success"><i class="fab fa-whatsapp"></i> Share</a>
     {% endif %}
-</div>    {% else %}
-        <!-- Existing job post buttons -->
-        <a href="/job-view/{{ job.id }}" class="btn btn-info"><i class="fas fa-eye"></i> View</a>
-        {% if job.id in applied_jobs %}
-            <button class="btn btn-success" disabled><i class="fas fa-check-circle"></i> Applied</button>
-        {% else %}
-            <a href="/apply-job/{{ job.id }}" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Apply</a>
-        {% endif %}
-        <a href="/share-job/{{ job.id }}" class="btn btn-success"><i class="fab fa-whatsapp"></i> Share</a>
-    {% endif %}
-</div>
+</div>  
     {% endfor %}
 </div>
 
