@@ -169,43 +169,43 @@
 }
 
 .action-buttons{
-
     display:flex;
-
-    gap:12px;
-
-    margin-top:18px;
+    gap:16px;
+    margin-top:22px;
 }
 
-.action-buttons .btn{
-
+.action-buttons a{
     flex:1;
-
-    height:48px;
-
-    border-radius:14px;
-
+    height:72px;
+    border-radius:22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    font-size:30px;
     font-weight:700;
-
-    font-size:18px;
+    transition:.25s;
+    border:2px solid rgba(255,255,255,.18);
 }
 
 .btn-edit{
-
-    background:white;
-
+    background:#ffffff;
     color:#2563eb;
-
-    border:none;
+    box-shadow:0 8px 25px rgba(0,0,0,.15);
 }
 
 .btn-job{
+    background:rgba(255,255,255,.12);
+    color:#fff;
+    backdrop-filter:blur(12px);
+}
 
-    background:#111827;
+.action-buttons a:hover{
+    transform:translateY(-3px);
+}
 
-    color:white;
-
-    border:none;
+.action-buttons a:active{
+    transform:scale(.96);
 }
 
 @media(max-width:768px){
@@ -468,29 +468,17 @@ Gumasta
 
 <div class="action-buttons">
 
-<a
-href="/edit-profile"
-class="btn btn-edit">
+    <a href="/edit-profile" class="btn-edit">
+        <i class="fas fa-pen"></i>
+    </a>
 
-✏ 
+    <a href="/post-job" class="btn-job">
+        <i class="fas fa-plus"></i>
+    </a>
 
-</a>
-
-<a
-href="/post-job"
-class="btn btn-job">
-
-＋ 
-
-</a>
-
-<a
-href="/post-video"
-class="btn btn-job">
-
-🎥 
-
-</a>
+    <a href="/post-video" class="btn-job">
+        <i class="fas fa-video"></i>
+    </a>
 
 </div>
 
