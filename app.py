@@ -6161,7 +6161,6 @@ def admin_revenue_dashboard():
 from flask import jsonify
 
 @app.route("/spark/<int:job_id>", methods=["POST"])
-@login_required
 def spark(job_id):
 
     job = JobPost.query.get_or_404(job_id)
@@ -6169,7 +6168,7 @@ def spark(job_id):
     # -----------------------------
     # HR Spark
     # -----------------------------
-    if current_user.is_authenticated and "candidate_id" not in session:
+    if current_user.is_authenticated:
 
         existing = Spark.query.filter_by(
             job_id=job.id,
@@ -6222,7 +6221,9 @@ def spark(job_id):
 
         else:
 
-            candidate = CandidateUser.query.get(session["candidate_id"])
+            candidate = CandidateUser.query.get(
+                session["candidate_id"]
+            )
 
             db.session.add(
                 Spark(
@@ -6231,15 +6232,13 @@ def spark(job_id):
                 )
             )
 
-            # Notify post owner
-            if job.hr_id != current_user.id:
-                send_notification(
-                    user_id=job.hr_id,
-                    user_type="hr",
-                    message=f"{candidate.name} sparked your company video.",
-                    link=f"/job-view/{job.id}",
-                    type="spark"
-                )
+            send_notification(
+                user_id=job.hr_id,
+                user_type="hr",
+                message=f"{candidate.name} sparked your company video.",
+                link=f"/job-view/{job.id}",
+                type="spark"
+            )
 
         db.session.commit()
 
