@@ -64,14 +64,24 @@
             {% endif %}
         </div>
 
-        <!-- BUTTONS (Kept your HR buttons) -->
-        <div class="feed-buttons">
-            <a href="/job-applicants/{{ job.id }}" class="btn btn-primary"><i class="fas fa-users"></i> Applicants</a>
-            <a href="/edit-job/{{ job.id }}" class="btn btn-outline-dark"><i class="fas fa-pen"></i> Edit</a>
-            <a href="/share-job/{{ job.id }}" class="btn btn-success"><i class="fab fa-whatsapp"></i> Share</a>
+        <!-- UPDATED BUTTONS -->
+<div class="feed-buttons">
+    {% if job.post_type == "video" %}
+        <!-- Video post styling -->
+        <div class="video-actions" style="display: flex; align-items: center; gap: 16px; width: 100%;">
+            <button class="action-btn" type="button" onclick="toggleSpark({{ job.id }})" 
+                    style="background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 8px; font-size: 24px;">⚡</button>
+            <span id="spark-count-{{ job.id }}" class="action-count" style="font-weight: 600; font-size: 14px; margin-left: -10px;">{{ job.sparks|length }}</span>
+            <a href="/share-job/{{ job.id }}" class="action-btn" style="color: #2563eb; text-decoration: none; display: flex; align-items: center; padding: 8px; font-size: 24px;">
+                <i class="fas fa-paper-plane"></i>
+            </a>
         </div>
-    </div>
-    {% endfor %}
+    {% else %}
+        <!-- Original HR buttons for job posts -->
+        <a href="/job-applicants/{{ job.id }}" class="btn btn-primary"><i class="fas fa-users"></i> Applicants</a>
+        <a href="/edit-job/{{ job.id }}" class="btn btn-outline-dark"><i class="fas fa-pen"></i> Edit</a>
+        <a href="/share-job/{{ job.id }}" class="btn btn-success"><i class="fab fa-whatsapp"></i> Share</a>
+    {% endif %}
 </div>
 
 <style>
