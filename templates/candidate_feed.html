@@ -57,24 +57,42 @@
         {% endif %}
 
         <!-- CONTENT -->
-        <div class="job-details-wrapper" style="padding: 16px 16px 8px 16px;">
-            <h4 class="job-title" style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 8px;">{{ job.job_title }}</h4>
-            <div class="salary-tag">₹ {{ job.salary }}</div>
-            <div id="desc-{{ job.id }}" class="description-text" style="margin: 8px 0;">{{ job.description }}</div>
-            <span id="toggle-{{ job.id }}" class="toggle-btn" onclick="toggleDescription('{{ job.id }}')">See more</span>
-        </div>
+<div class="job-details-wrapper" style="padding: 16px 16px 8px 16px;">
+    {% if job.post_type == "video" %}
+        <!-- Video description only -->
+        <div id="desc-{{ job.id }}" class="description-text">{{ job.description }}</div>
+        <span id="toggle-{{ job.id }}" class="toggle-btn" onclick="toggleDescription('{{ job.id }}')">See more</span>
+    {% else %}
+        <!-- Standard job details -->
+        <h4 class="job-title" style="margin-bottom: 8px;">{{ job.job_title }}</h4>
+        <div class="salary-tag">₹ {{ job.salary }}</div>
+        <div id="desc-{{ job.id }}" class="description-text" style="margin: 8px 0;">{{ job.description }}</div>
+        <span id="toggle-{{ job.id }}" class="toggle-btn" onclick="toggleDescription('{{ job.id }}')">See more</span>
+    {% endif %}
+</div>
 
-        <!-- BUTTONS (Candidate Backend) -->
-        <div class="feed-buttons">
-            <a href="/job-view/{{ job.id }}" class="btn btn-info"><i class="fas fa-eye"></i> View</a>
-            {% if job.id in applied_jobs %}
-                <button class="btn btn-success" disabled><i class="fas fa-check-circle"></i> Applied</button>
-            {% else %}
-                <a href="/apply-job/{{ job.id }}" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Apply</a>
-            {% endif %}
-            <a href="/share-job/{{ job.id }}" class="btn btn-success"><i class="fab fa-whatsapp"></i> Share</a>
+<!-- BUTTONS -->
+<div class="feed-buttons">
+    {% if job.post_type == "video" %}
+        <!-- Video Spark and Share buttons -->
+        <div class="video-actions" style="display: flex; align-items: center; gap: 16px; width: 100%;">
+            <button class="action-btn" type="button" onclick="toggleSpark({{ job.id }})" style="background: none; border: none; cursor: pointer; padding: 8px; font-size: 24px;">⚡</button>
+            <span id="spark-count-{{ job.id }}" class="action-count" style="font-weight: 600; font-size: 14px; margin-left: -10px;">{{ job.sparks|length }}</span>
+            <a href="/share-job/{{ job.id }}" class="action-btn" style="color: #2563eb; text-decoration: none; display: flex; align-items: center; padding: 8px; font-size: 24px;">
+                <i class="fas fa-paper-plane"></i>
+            </a>
         </div>
-    </div>
+    {% else %}
+        <!-- Existing job post buttons -->
+        <a href="/job-view/{{ job.id }}" class="btn btn-info"><i class="fas fa-eye"></i> View</a>
+        {% if job.id in applied_jobs %}
+            <button class="btn btn-success" disabled><i class="fas fa-check-circle"></i> Applied</button>
+        {% else %}
+            <a href="/apply-job/{{ job.id }}" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Apply</a>
+        {% endif %}
+        <a href="/share-job/{{ job.id }}" class="btn btn-success"><i class="fab fa-whatsapp"></i> Share</a>
+    {% endif %}
+</div>
     {% endfor %}
 </div>
 
