@@ -6693,7 +6693,7 @@ from flask_login import login_required, current_user
 def compress_video(input_path, output_path):
     # This resizes to 1080p, uses H.264, and optimizes for web[span_1](start_span)[span_1](end_span)
     command = [
-        'ffmpeg', '-i', input_path,
+        '/usr/bin/ffmpeg', '-i', input_path,
         '-vf', 'scale=-2:1080',
         '-c:v', 'libx264',
         '-crf', '28',
