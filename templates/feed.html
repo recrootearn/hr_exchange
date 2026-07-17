@@ -20,17 +20,46 @@
     {% for job in jobs %}
     <div id="post{{ job.id }}" class="feed-card">
         <!-- HEADER -->
-        <div class="feed-header">
-            <div class="feed-avatar">
-                {{ job.company_name[:1].upper() if job.company_name else 'R' }}
+        <div class="feed-header d-flex justify-content-between align-items-center">
+
+    <div class="d-flex align-items-center">
+        <div class="feed-avatar">
+            {{ job.company_name[:1].upper() if job.company_name else 'R' }}
+        </div>
+
+        <div class="ms-2">
+            <div class="feed-company">
+                <a href="/company/{{ job.hr_id }}" style="text-decoration:none;color:inherit;">
+                    {{ job.company_name }}
+                </a>
             </div>
-            <div>
-                <div class="feed-company">
-                    <a href="/company/{{ job.hr_id }}" style="text-decoration:none;color:inherit;">{{ job.company_name }}</a>
-                </div>
-                <div class="feed-meta">📍 {{ job.location }}</div>
+
+            <div class="feed-meta">
+                📍 {{ job.location }}
             </div>
         </div>
+    </div>
+
+    <!-- Three Dots -->
+    <div class="dropdown">
+        <button class="btn btn-sm border-0 bg-transparent"
+                data-bs-toggle="dropdown">
+            <i class="fas fa-ellipsis-v"></i>
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end">
+
+            <li>
+                <button class="dropdown-item"
+                        onclick="openReportModal({{ job.id }})">
+                    🚩 Report
+                </button>
+            </li>
+
+        </ul>
+    </div>
+
+</div>
 
         <!-- MEDIA -->
         {% if job.images %}
@@ -128,6 +157,87 @@
     <button class="viewer-back" onclick="closeMedia()">← Back</button>
     <img id="viewerImage" style="display:none; max-width:100%; max-height:100%;">
     <video id="viewerVideo" playsinline muted autoplay style="display:none; max-width:100%; max-height:100%;"></video>
+</div>
+
+<div class="modal fade" id="reportModal" tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    Report Post
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden"
+                       id="reportPostId">
+
+                <label class="form-label">
+                    Reason
+                </label>
+
+                <select class="form-select"
+                        id="reportReason">
+
+                    <option>Spam</option>
+
+                    <option>Fake Job</option>
+
+                    <option>Violence</option>
+
+                    <option>Nudity</option>
+
+                    <option>Hate Speech</option>
+
+                    <option>Scam / Fraud</option>
+
+                    <option>Other</option>
+
+                </select>
+
+                <label class="form-label mt-3">
+                    Comment
+                </label>
+
+                <textarea
+                    id="reportComment"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Tell us more..."></textarea>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button
+                    class="btn btn-danger"
+                    onclick="submitReport()">
+                    Submit Report
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
 <script>
@@ -295,6 +405,76 @@ document.querySelectorAll(".feed-video").forEach(video => {
 </script>
 
 <script>
+
+let reportModal;
+
+document.addEventListener("DOMContentLoaded", function () {
+    reportModal = new bootstrap.Modal(
+        document.getElementById("reportModal")
+    );
+});
+
+function openReportModal(postId){
+
+    document.getElementById("reportPostId").value = postId;
+
+    document.getElementById("reportComment").value = "";
+
+    document.getElementById("reportReason").selectedIndex = 0;
+
+    reportModal.show();
+
+}
+
+function submitReport(){
+
+    let postId = document.getElementById("reportPostId").value;
+
+    let reason = document.getElementById("reportReason").value;
+
+    let comment = document.getElementById("reportComment").value;
+
+    fetch("/report-post/" + postId, {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+
+        body:
+            "reason=" + encodeURIComponent(reason)
+            + "&comment=" + encodeURIComponent(comment)
+
+    })
+
+    .then(r => r.json())
+
+    .then(data => {
+
+        if(data.success){
+
+            reportModal.hide();
+
+            document.getElementById(
+                "post" + postId
+            ).remove();
+
+            alert(
+                "Report submitted successfully."
+            );
+
+        }else{
+
+            alert(
+                data.message || "Unable to submit report."
+            );
+
+        }
+
+    });
+
+}
 
 function toggleSpark(jobId){
 

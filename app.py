@@ -1023,6 +1023,62 @@ class LeadView(db.Model):
         default=india_time
     )
 
+class HiddenFeed(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    post_id = db.Column(
+        db.Integer,
+        db.ForeignKey("job_post.id", ondelete="CASCADE")
+    )
+
+    hr_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True
+    )
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+class FeedReport(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    post_id = db.Column(
+        db.Integer,
+        db.ForeignKey("job_post.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    hr_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True
+    )
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=True
+    )
+
+    reason = db.Column(db.String(100))
+
+    comment = db.Column(db.Text)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
 class HRFollower(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -3278,6 +3334,174 @@ def add_notification_template():
         return redirect("/admin/notification-templates")
 
     return render_template("add_notification_template.html")
+
+@app.route("/report-post/<int:post_id>", methods=["POST"])
+def report_post(post_id):
+
+    reason = request.form.get("reason")
+    comment = request.form.get("comment")
+
+    # Must be logged in
+    if not current_user.is_authenticated and "candidate_id" not in session:
+        return jsonify(success=False)
+
+    # Prevent duplicate reports
+    existing = None
+
+    if current_user.is_authenticated:
+
+        existing = FeedReport.query.filter_by(
+            post_id=post_id,
+            hr_id=current_user.id
+        ).first()
+
+    else:
+
+        existing = FeedReport.query.filter_by(
+            post_id=post_id,
+            candidate_id=session["candidate_id"]
+        ).first()
+
+    if existing:
+        return jsonify(
+            success=False,
+            message="Already reported."
+        )
+
+    report = FeedReport(
+        post_id=post_id,
+        reason=reason,
+        comment=comment
+    )
+
+    hidden = HiddenFeed(
+        post_id=post_id
+    )
+
+    if current_user.is_authenticated:
+
+        report.hr_id = current_user.id
+        hidden.hr_id = current_user.id
+
+    else:
+
+        report.candidate_id = session["candidate_id"]
+        hidden.candidate_id = session["candidate_id"]
+
+    db.session.add(report)
+    db.session.add(hidden)
+
+    db.session.commit()
+
+    return jsonify(success=True)
+
+from sqlalchemy import func
+
+@app.route("/admin/reported-posts")
+@login_required
+def admin_reported_posts():
+
+    if not admin_only():
+        return "Access Denied"
+
+    reports = db.session.query(
+
+        JobPost,
+
+        func.count(FeedReport.id).label("total_reports")
+
+    ).join(
+
+        FeedReport,
+        FeedReport.post_id == JobPost.id
+
+    ).group_by(
+
+        JobPost.id
+
+    ).order_by(
+
+        func.count(FeedReport.id).desc()
+
+    ).all()
+
+    return render_template(
+
+        "admin_reported_posts.html",
+
+        reports=reports
+
+    )
+
+@app.route("/admin/view-report/<int:post_id>")
+@login_required
+def admin_view_report(post_id):
+
+    if not admin_only():
+        return "Access Denied"
+
+    post = JobPost.query.get_or_404(post_id)
+
+    reports = FeedReport.query.filter_by(
+        post_id=post_id
+    ).order_by(
+        FeedReport.created_at.desc()
+    ).all()
+
+    return render_template(
+
+        "admin_view_report.html",
+
+        post=post,
+
+        reports=reports
+
+    )
+
+@app.route("/admin/delete-reported-post/<int:post_id>")
+@login_required
+def delete_reported_post(post_id):
+
+    if not admin_only():
+        return "Access Denied"
+
+    post = JobPost.query.get_or_404(post_id)
+
+    FeedReport.query.filter_by(
+        post_id=post.id
+    ).delete()
+
+    HiddenFeed.query.filter_by(
+        post_id=post.id
+    ).delete()
+
+    Spark.query.filter_by(
+        job_id=post.id
+    ).delete()
+
+    # Delete uploaded files
+    if post.images:
+
+        for file in post.images.split(","):
+
+            path = os.path.join(
+                app.config["UPLOAD_FOLDER"],
+                file
+            )
+
+            if os.path.exists(path):
+                os.remove(path)
+
+    db.session.delete(post)
+
+    db.session.commit()
+
+    flash(
+        "Reported post deleted successfully.",
+        "success"
+    )
+
+    return redirect("/admin/reported-posts")
 
 @app.route("/add-credit-package", methods=["GET","POST"])
 @login_required
@@ -7175,10 +7399,34 @@ def feed():
 
     selected_location = request.args.get("location", "").strip()
 
+    # -----------------------------
+    # Hidden Posts
+    # -----------------------------
+    hidden_post_ids = [
+
+        h.post_id
+
+        for h in HiddenFeed.query.filter_by(
+            hr_id=current_user.id
+        ).all()
+
+    ]
+
+    # -----------------------------
+    # Feed Query
+    # -----------------------------
     query = JobPost.query.filter(
         JobPost.hr_id != current_user.id
     )
 
+    # Hide reported posts
+    if hidden_post_ids:
+
+        query = query.filter(
+            ~JobPost.id.in_(hidden_post_ids)
+        )
+
+    # Location filter
     if selected_location:
 
         query = query.filter(

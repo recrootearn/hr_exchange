@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3>🛡 Report Details</h3>
+
+    <div class="card mb-3">
+
+        <div class="card-body">
+
+            <h5>{{ post.company_name }}</h5>
+
+            <p>{{ post.description }}</p>
+
+            {% if post.images %}
+                {% for img in post.images.split(",") %}
+
+                    {% set ext = img.split(".")[-1].lower() %}
+
+                    {% if ext in ["mp4","mov","webm","mkv"] %}
+
+                        <video controls width="250" class="mb-2">
+
+                            <source src="/static/uploads/{{ img }}">
+
+                        </video>
+
+                    {% else %}
+
+                        <img src="/static/uploads/{{ img }}"
+                             width="250"
+                             class="img-thumbnail mb-2">
+
+                    {% endif %}
+
+                {% endfor %}
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <h4>Reports</h4>
+
+    <table class="table table-bordered">
+
+        <thead>
+
+        <tr>
+
+            <th>Reason</th>
+
+            <th>Comment</th>
+
+            <th>Reported By</th>
+
+            <th>Date</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for r in reports %}
+
+        <tr>
+
+            <td>{{ r.reason }}</td>
+
+            <td>{{ r.comment }}</td>
+
+            <td>
+
+                {% if r.hr_id %}
+                    HR #{{ r.hr_id }}
+                {% else %}
+                    Candidate #{{ r.candidate_id }}
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                {{ r.created_at.strftime("%d %b %Y %I:%M %p") }}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <a href="/admin/delete-reported-post/{{ post.id }}"
+       class="btn btn-danger"
+       onclick="return confirm('Delete this post permanently?')">
+
+        🗑 Delete Post
+
+    </a>
+
+    <a href="/admin/reported-posts"
+       class="btn btn-secondary">
+
+        Back
+
+    </a>
+
+</div>
+
+{% endblock %}
