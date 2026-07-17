@@ -112,6 +112,29 @@ textarea.form-control{
     font-weight:700;
 }
 
+.form-check{
+    background:#f8fafc;
+    border:1px solid #dbe4f0;
+    border-radius:16px;
+    padding:15px;
+}
+
+.form-check-input{
+    width:20px;
+    height:20px;
+    margin-top:3px;
+}
+
+.form-check-label{
+    color:#374151;
+    font-weight:500;
+}
+
+.submit-btn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
 @media (max-width: 768px) {
     .content {
         padding: 0 !important;
@@ -313,11 +336,36 @@ transition:.2s;">
 
 <div class="form-section">
 
-<button
-type="submit"
-class="submit-btn">
+<div class="form-check mb-3">
 
-🚀 Publish Video
+    <input
+        class="form-check-input"
+        type="checkbox"
+        id="agreePolicy">
+
+    <label
+        class="form-check-label"
+        for="agreePolicy"
+        style="font-size:14px;line-height:1.6;">
+
+        I confirm that this video does not contain nudity, sexual content,
+        violence, hate speech, illegal activities, copyrighted material,
+        misleading information, or any content that violates RecrootEarn's
+        Community Guidelines. I understand that violating these rules may
+        result in the removal of my content or permanent suspension of my
+        account.
+
+    </label>
+
+</div>
+
+<button
+    type="submit"
+    class="submit-btn"
+    id="publishBtn"
+    disabled>
+
+    🚀 Publish Video
 
 </button>
 
@@ -384,6 +432,15 @@ new TomSelect("#location",{
         }
 
     }
+
+});
+
+const agreePolicy = document.getElementById("agreePolicy");
+const publishBtn = document.getElementById("publishBtn");
+
+agreePolicy.addEventListener("change", function () {
+
+    publishBtn.disabled = !this.checked;
 
 });
 
