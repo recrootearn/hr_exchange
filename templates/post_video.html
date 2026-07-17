@@ -113,19 +113,27 @@ textarea.form-control{
 }
 
 .form-check{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
     background:#f8fafc;
     border:1px solid #dbe4f0;
-    border-radius:16px;
-    padding:15px;
+    border-radius:18px;
+    padding:16px;
 }
 
 .form-check-input{
-    width:20px;
-    height:20px;
-    margin-top:3px;
+    width:22px;
+    height:22px;
+    margin:2px 0 0 0 !important;
+    flex-shrink:0;
+    position:static !important;
 }
 
 .form-check-label{
+    margin:0 !important;
+    font-size:15px;
+    line-height:1.7;
     color:#374151;
     font-weight:500;
 }
@@ -336,17 +344,16 @@ transition:.2s;">
 
 <div class="form-section">
 
-<div class="form-check mb-3">
+<div class="form-check">
 
     <input
-        class="form-check-input"
         type="checkbox"
+        class="form-check-input"
         id="agreePolicy">
 
     <label
-        class="form-check-label"
         for="agreePolicy"
-        style="font-size:14px;line-height:1.6;">
+        class="form-check-label">
 
         I confirm that this video does not contain nudity, sexual content,
         violence, hate speech, illegal activities, copyrighted material,
