@@ -92,14 +92,15 @@
 .mute-btn { position: absolute; right: 12px; bottom: 12px; width: 42px; height: 42px; border: none; border-radius: 50%; background: rgba(0,0,0,.5); color: #fff; font-size: 18px; cursor: pointer; }
 .description-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .toggle-btn { color: #666; cursor: pointer; font-size: 0.9em; font-weight: 600; display: block; margin-top: 4px; }
+@media (max-width: 768px) {
+    .content {
+        padding: 0 !important;
+        padding-bottom: 120px !important;
+    }
+}
+
 @media (min-width: 992px) { .desktop-feed { max-width: 650px; margin: 0 auto; } }
 </style>
-
-<div id="mediaViewer" class="media-viewer">
-    <button class="viewer-back" onclick="closeMedia()">← Back</button>
-    <img id="viewerImage" style="display:none; max-width:100%; max-height:100%;">
-    <video id="viewerVideo" playsinline muted autoplay style="display:none; max-width:100%; max-height:100%;"></video>
-</div>
 
 <script>
 
