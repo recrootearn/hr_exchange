@@ -3338,8 +3338,10 @@ def add_notification_template():
 @app.route("/report-post/<int:post_id>", methods=["POST"])
 def report_post(post_id):
 
-    reason = request.form.get("reason")
-    comment = request.form.get("comment")
+    data = request.get_json()
+
+    reason = data.get("reason")
+    comment = data.get("comment")
 
     # Must be logged in
     if not current_user.is_authenticated and "candidate_id" not in session:
@@ -7064,7 +7066,34 @@ def candidate_feed():
 
     selected_location = request.args.get('location', '').strip()
 
+    # -----------------------------
+    # Hidden Posts
+    # -----------------------------
+    hidden_post_ids = []
+
+    if "candidate_id" in session:
+
+        hidden_post_ids = [
+
+            h.post_id
+
+            for h in HiddenFeed.query.filter_by(
+                candidate_id=session["candidate_id"]
+            ).all()
+
+        ]
+
+    # -----------------------------
+    # Feed Query
+    # -----------------------------
     jobs_query = JobPost.query
+
+    # Hide reported posts
+    if hidden_post_ids:
+
+        jobs_query = jobs_query.filter(
+            ~JobPost.id.in_(hidden_post_ids)
+        )
 
     if selected_location:
         jobs_query = jobs_query.filter(

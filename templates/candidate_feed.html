@@ -20,15 +20,59 @@
     {% for job in jobs %}
     <div id="post{{ job.id }}" class="feed-card">
         <!-- HEADER -->
-        <div class="feed-header">
-            <div class="feed-avatar">{{ job.company_name[:1].upper() if job.company_name else 'R' }}</div>
-            <div>
-                <div class="feed-company">
-                    <a href="/company/{{ job.hr_id }}" style="text-decoration:none;color:inherit;">{{ job.company_name }}</a>
-                </div>
-                <div class="feed-meta">📍 {{ job.location }}</div>
-            </div>
+        <div class="feed-header d-flex justify-content-between align-items-center">
+
+    <div class="d-flex align-items-center">
+
+        <div class="feed-avatar">
+            {{ job.company_name[:1].upper() if job.company_name else 'R' }}
         </div>
+
+        <div class="ms-2">
+
+            <div class="feed-company">
+                <a href="/company/{{ job.hr_id }}"
+                   style="text-decoration:none;color:inherit;">
+                    {{ job.company_name }}
+                </a>
+            </div>
+
+            <div class="feed-meta">
+                📍 {{ job.location }}
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="dropdown">
+
+        <button class="btn btn-sm border-0 bg-transparent"
+                data-bs-toggle="dropdown">
+
+            <i class="fas fa-ellipsis-v"></i>
+
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end">
+
+            <li>
+
+                <button
+                    class="dropdown-item"
+                    onclick="openReportModal({{ job.id }})">
+
+                    🚩 Report
+
+                </button>
+
+            </li>
+
+        </ul>
+
+    </div>
+
+</div>
 
         <!-- MEDIA -->
         {% if job.images %}
@@ -124,6 +168,88 @@
 
 @media (min-width: 992px) { .desktop-feed { max-width: 600px; margin: 0 auto; } }
 </style>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    🚩 Report Post
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <input
+                    type="hidden"
+                    id="reportPostId">
+
+                <label class="form-label">
+                    Reason
+                </label>
+
+                <select
+                    id="reportReason"
+                    class="form-select">
+
+                    <option value="Spam">Spam</option>
+                    <option value="Fake Job">Fake Job</option>
+                    <option value="Violence">Violence</option>
+                    <option value="Nudity">Nudity</option>
+                    <option value="Hate Speech">Hate Speech</option>
+                    <option value="Scam/Fraud">Scam / Fraud</option>
+                    <option value="Other">Other</option>
+
+                </select>
+
+                <label class="form-label mt-3">
+                    Comment (Optional)
+                </label>
+
+                <textarea
+                    id="reportComment"
+                    class="form-control"
+                    rows="3"></textarea>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    class="btn btn-danger"
+                    onclick="submitReport()">
+
+                    Submit Report
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
@@ -336,6 +462,90 @@ function toggleSpark(jobId){
     })
 
     .catch(error => console.log(error));
+
+}
+
+let reportModal;
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    reportModal = new bootstrap.Modal(
+        document.getElementById("reportModal")
+    );
+
+});
+
+function openReportModal(postId) {
+
+    document.getElementById("reportPostId").value = postId;
+
+    document.getElementById("reportReason").selectedIndex = 0;
+
+    document.getElementById("reportComment").value = "";
+
+    reportModal.show();
+
+}
+
+function submitReport() {
+
+    const postId = document.getElementById("reportPostId").value;
+
+    const reason = document.getElementById("reportReason").value;
+
+    const comment = document.getElementById("reportComment").value;
+
+    fetch("/report-post/" + postId, {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+            reason: reason,
+
+            comment: comment
+
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.success) {
+
+            reportModal.hide();
+
+            const post = document.getElementById("post" + postId);
+
+            if (post) {
+
+                post.remove();
+
+            }
+
+            alert("✅ Report submitted successfully.");
+
+        } else {
+
+            alert(data.message);
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.log(error);
+
+        alert("Something went wrong.");
+
+    });
 
 }
 
