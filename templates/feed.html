@@ -191,29 +191,30 @@ onchange="this.form.submit()">
 
 {% if job.post_type == "video" %}
 
-<<button
-type="button"
-style="height:25px;background:red;color:white;font-size:10px;padding:0;"
-onclick="toggleSpark({{ job.id }})">
+<div class="feed-actions">
 
-⚡ Spark
-(
-<span id="spark-count-{{ job.id }}">
-{{ job.sparks|length }}
-</span>
-)
+    <button
+        class="action-btn"
+        type="button"
+        onclick="toggleSpark({{ job.id }})">
 
-</button>
+        ⚡
 
-<a
-href="/share-job/{{ job.id }}"
-class="btn btn-success">
+    </button>
 
-<i class="fab fa-whatsapp"></i>
+    <span id="spark-count-{{ job.id }}" class="action-count">
+        {{ job.sparks|length }}
+    </span>
 
-Share
+    <a
+        href="/share-job/{{ job.id }}"
+        class="action-btn">
 
-</a>
+        <i class="fab fa-whatsapp"></i>
+
+    </a>
+
+</div>
 
 {% else %}
 
@@ -427,6 +428,50 @@ Share
 .btn-success{
     background:#16a34a !important;
     border-color:#16a34a !important;
+}
+
+.feed-actions{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding:10px 15px 15px;
+}
+
+.action-btn{
+
+    background:none;
+    border:none;
+
+    font-size:28px;
+
+    color:#222;
+
+    padding:0;
+
+    cursor:pointer;
+
+    text-decoration:none;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+}
+
+.action-count{
+
+    margin-left:-12px;
+    font-size:15px;
+    font-weight:600;
+    color:#333;
+
+}
+
+.action-btn .fa-whatsapp{
+
+    color:#25D366;
+    font-size:28px;
+
 }
 
 @media(max-width:768px){
