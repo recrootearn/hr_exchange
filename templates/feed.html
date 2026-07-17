@@ -75,7 +75,9 @@
                 <div class="video-actions">
                     <button class="action-btn" type="button" onclick="toggleSpark({{ job.id }})">⚡</button>
                     <span id="spark-count-{{ job.id }}" class="action-count">{{ job.sparks|length }}</span>
-                    <a href="/share-job/{{ job.id }}" class="action-btn" style="color: inherit;"><i class="fas fa-paper-plane"></i></a>
+                    <a href="/share-job/{{ job.id }}" class="action-btn" style="color: #2563eb; text-decoration: none;">
+                        <i class="fas fa-paper-plane"></i>
+                    </a>
                 </div>
             {% else %}
                 <a href="/job-view/{{ job.id }}" class="btn btn-info">View</a>
