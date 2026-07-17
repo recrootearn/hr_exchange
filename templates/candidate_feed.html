@@ -71,18 +71,29 @@
     {% endif %}
 </div>
 
-<!-- BUTTONS -->
+<!-- UPDATED BUTTONS -->
 <div class="feed-buttons">
     {% if job.post_type == "video" %}
         <!-- Video Spark and Share buttons -->
         <div class="video-actions" style="display: flex; align-items: center; gap: 16px; width: 100%;">
-            <button class="action-btn" type="button" onclick="toggleSpark({{ job.id }})" style="background: none; border: none; cursor: pointer; padding: 8px; font-size: 24px;">⚡</button>
+            <!-- Updated onclick to toggleCandidateSpark -->
+            <button class="action-btn" type="button" onclick="toggleCandidateSpark({{ job.id }})" style="background: none; border: none; cursor: pointer; padding: 8px; font-size: 24px;">⚡</button>
             <span id="spark-count-{{ job.id }}" class="action-count" style="font-weight: 600; font-size: 14px; margin-left: -10px;">{{ job.sparks|length }}</span>
             <a href="/share-job/{{ job.id }}" class="action-btn" style="color: #2563eb; text-decoration: none; display: flex; align-items: center; padding: 8px; font-size: 24px;">
                 <i class="fas fa-paper-plane"></i>
             </a>
         </div>
     {% else %}
+        <!-- Existing job post buttons -->
+        <a href="/job-view/{{ job.id }}" class="btn btn-info"><i class="fas fa-eye"></i> View</a>
+        {% if job.id in applied_jobs %}
+            <button class="btn btn-success" disabled><i class="fas fa-check-circle"></i> Applied</button>
+        {% else %}
+            <a href="/apply-job/{{ job.id }}" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Apply</a>
+        {% endif %}
+        <a href="/share-job/{{ job.id }}" class="btn btn-success"><i class="fab fa-whatsapp"></i> Share</a>
+    {% endif %}
+</div>    {% else %}
         <!-- Existing job post buttons -->
         <a href="/job-view/{{ job.id }}" class="btn btn-info"><i class="fas fa-eye"></i> View</a>
         {% if job.id in applied_jobs %}
@@ -125,6 +136,21 @@
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+function toggleCandidateSpark(jobId){
+    fetch("/candidate-spark/" + jobId, {
+        method: "POST"
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            document.getElementById("spark-count-" + jobId).innerHTML = data.count;
+        }
+    })
+    .catch(error => console.log(error));
+}
+</script>
 
 <script>
 
