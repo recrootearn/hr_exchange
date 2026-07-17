@@ -239,7 +239,7 @@ required></textarea>
 
 <label class="form-label">
 
-🎥 Company Video
+🎥 Company Video (Max 60 sec)
 
 </label>
 
@@ -374,35 +374,56 @@ new TomSelect("#location",{
 });
 
 // ============================
-// Video Preview
+// Video Preview + Max 60 Seconds
 // ============================
 
 const videoInput = document.getElementById("company_video");
 
-videoInput.addEventListener("change",function(){
+videoInput.addEventListener("change", function () {
 
     const preview = document.getElementById("preview-container");
 
     preview.innerHTML = "";
 
-    if(!this.files.length){
-
+    if (!this.files.length) {
         return;
-
     }
 
     const file = this.files[0];
 
     const url = URL.createObjectURL(file);
 
-    preview.innerHTML = `
-    <video
-    src="${url}"
-    controls
-    playsinline
-    style="width:100%;border-radius:18px;">
-    </video>
-   `;
+    const video = document.createElement("video");
+
+    video.preload = "metadata";
+
+    video.onloadedmetadata = () => {
+
+        // Maximum 60 seconds
+        if (video.duration > 60) {
+
+            alert("❌ Maximum 60 seconds video is allowed.");
+
+            videoInput.value = "";
+
+            preview.innerHTML = "";
+
+            URL.revokeObjectURL(url);
+
+            return;
+        }
+
+        preview.innerHTML = `
+            <video
+                src="${url}"
+                controls
+                playsinline
+                style="width:100%;border-radius:18px;">
+            </video>
+        `;
+    };
+
+    video.src = url;
 
 });
 
