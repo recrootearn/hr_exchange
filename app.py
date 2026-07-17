@@ -7061,48 +7061,37 @@ from sqlalchemy import func
 
 @app.route('/candidate-feed')
 def candidate_feed():
-
     selected_location = request.args.get('location', '').strip()
 
-    # -----------------------------
-    # Hidden Posts
-    # -----------------------------
+    # 1. Fetch IDs of posts hidden or reported by the candidate
     hidden_post_ids = []
-
     if "candidate_id" in session:
-
         hidden_post_ids = [
-
             h.post_id
-
             for h in HiddenFeed.query.filter_by(
                 candidate_id=session["candidate_id"]
             ).all()
-
         ]
 
-    # -----------------------------
-    # Feed Query
-    # -----------------------------
+    # 2. Base Query
     jobs_query = JobPost.query
 
-    # Hide reported posts
+    # 3. Filter: Hide reported/hidden posts[span_2](start_span)[span_2](end_span)
     if hidden_post_ids:
+        jobs_query = jobs_query.filter(~JobPost.id.in_(hidden_post_ids))
 
-        jobs_query = jobs_query.filter(
-            ~JobPost.id.in_(hidden_post_ids)
-        )
-
+    # 4. Filter: Location
     if selected_location:
         jobs_query = jobs_query.filter(
             func.lower(JobPost.location) == selected_location.lower()
         )
 
+    # 5. Fetch Final Job List
     jobs = jobs_query.order_by(
         JobPost.created_at.desc()
     ).all()
 
-    # Available Locations (case-insensitive)
+    # 6. Available Locations (case-insensitive)
     locations = (
         db.session.query(func.lower(JobPost.location))
         .filter(
@@ -7113,56 +7102,35 @@ def candidate_feed():
         .order_by(func.lower(JobPost.location))
         .all()
     )
-
     locations = [loc[0].title() for loc in locations]
 
-    selected_id = request.args.get(
-        'selected',
-        type=int
-    )
+    selected_id = request.args.get('selected', type=int)
 
+    # 7. Check status for Applied and Sparked jobs
     applied_jobs = []
-
-    # Default
     sparked_jobs = []
 
     if 'candidate_id' in session:
-
         applications = JobApplication.query.filter_by(
             candidate_id=session['candidate_id']
         ).all()
-
-        applied_jobs = [
-            app.job_id
-            for app in applications
-        ]
+        applied_jobs = [app.job_id for app in applications]
 
         sparked_jobs = [
-
             s.job_id
-
             for s in Spark.query.filter_by(
                 candidate_id=session["candidate_id"]
             ).all()
-
         ]
 
     return render_template(
-
         'candidate_feed.html',
-
         jobs=jobs,
-
         applied_jobs=applied_jobs,
-
         sparked_jobs=sparked_jobs,
-
         selected_id=selected_id,
-
         locations=locations,
-
         selected_location=selected_location
-
     )
 
 from sqlalchemy import func
