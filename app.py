@@ -7468,7 +7468,15 @@ def applied_jobs():
 @login_required
 def feed():
 
-    selected_location = request.args.get("location", "").strip()
+    selected_location = request.args.get(
+        "location",
+        ""
+    ).strip()
+
+    selected_content = request.args.get(
+        "content",
+        "all"
+    )
 
     # -----------------------------
     # Hidden Posts
@@ -7497,18 +7505,41 @@ def feed():
             ~JobPost.id.in_(hidden_post_ids)
         )
 
-    # Location filter
+    # -----------------------------
+    # Location Filter
+    # -----------------------------
     if selected_location:
 
         query = query.filter(
-            func.lower(JobPost.location) == selected_location.lower()
+            func.lower(JobPost.location)
+            == selected_location.lower()
         )
 
+    # -----------------------------
+    # Content Filter
+    # -----------------------------
+    if selected_content == "videos":
+
+        query = query.filter(
+            JobPost.post_type == "video"
+        )
+
+    elif selected_content == "jobs":
+
+        query = query.filter(
+            JobPost.post_type != "video"
+        )
+
+    # -----------------------------
+    # Fetch Feed
+    # -----------------------------
     jobs = query.order_by(
         JobPost.created_at.desc()
     ).all()
 
-    # Applied jobs
+    # -----------------------------
+    # Applied Jobs
+    # -----------------------------
     applications = JobApplication.query.filter_by(
         applicant_hr_id=current_user.id
     ).all()
@@ -7519,7 +7550,7 @@ def feed():
     ]
 
     # -----------------------------
-    # Sparked Jobs (HR)
+    # Sparked Jobs
     # -----------------------------
     sparked_jobs = [
 
@@ -7531,19 +7562,34 @@ def feed():
 
     ]
 
-    # Available locations
+    # -----------------------------
+    # Available Locations
+    # -----------------------------
     locations = (
-        db.session.query(func.lower(JobPost.location))
+
+        db.session.query(
+            func.lower(JobPost.location)
+        )
+
         .filter(
             JobPost.location.isnot(None),
             JobPost.location != ""
         )
+
         .distinct()
-        .order_by(func.lower(JobPost.location))
+
+        .order_by(
+            func.lower(JobPost.location)
+        )
+
         .all()
+
     )
 
-    locations = [loc[0].title() for loc in locations]
+    locations = [
+        loc[0].title()
+        for loc in locations
+    ]
 
     return render_template(
 
@@ -7557,7 +7603,9 @@ def feed():
 
         locations=locations,
 
-        selected_location=selected_location
+        selected_location=selected_location,
+
+        selected_content=selected_content
 
     )
 

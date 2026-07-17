@@ -3,17 +3,53 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
-<div class="mb-2">
-    <form method="GET">
-        <div class="input-group">
-            <select name="location" class="form-select" onchange="this.form.submit()">
-                <option value="" {% if not selected_location %}selected{% endif %}>🌎 All Locations</option>
-                {% for city in locations %}
-                <option value="{{ city }}" {% if selected_location and selected_location.lower() == city.lower() %}selected{% endif %}>{{ city }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </form>
+<div class="row g-2">
+
+    <!-- Location -->
+    <div class="col-6">
+        <select name="location"
+                class="form-select"
+                onchange="this.form.submit()">
+
+            <option value=""
+                {% if not selected_location %}selected{% endif %}>
+                🌍 All Locations
+            </option>
+
+            {% for city in locations %}
+            <option value="{{ city }}"
+                {% if selected_location and selected_location.lower()==city.lower() %}selected{% endif %}>
+                {{ city }}
+            </option>
+            {% endfor %}
+
+        </select>
+    </div>
+
+    <!-- Content -->
+    <div class="col-6">
+        <select name="content"
+                class="form-select"
+                onchange="this.form.submit()">
+
+            <option value="all"
+                {% if selected_content=="all" %}selected{% endif %}>
+                📋 All
+            </option>
+
+            <option value="jobs"
+                {% if selected_content=="jobs" %}selected{% endif %}>
+                💼 Job Posts
+            </option>
+
+            <option value="videos"
+                {% if selected_content=="videos" %}selected{% endif %}>
+                🎬 Videos
+            </option>
+
+        </select>
+    </div>
+
 </div>
 
 <div class="desktop-feed">
