@@ -495,22 +495,14 @@ function submitReport() {
 
     const comment = document.getElementById("reportComment").value;
 
+    const formData = new FormData();
+
+    formData.append("reason", reason);
+    formData.append("comment", comment);
+
     fetch("/report-post/" + postId, {
-
         method: "POST",
-
-        headers: {
-            "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-
-            reason: reason,
-
-            comment: comment
-
-        })
-
+        body: formData
     })
 
     .then(response => response.json())

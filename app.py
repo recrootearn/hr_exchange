@@ -3338,10 +3338,8 @@ def add_notification_template():
 @app.route("/report-post/<int:post_id>", methods=["POST"])
 def report_post(post_id):
 
-    data = request.get_json()
-
-    reason = data.get("reason")
-    comment = data.get("comment")
+    reason = request.form.get("reason")
+    comment = request.form.get("comment")
 
     # Must be logged in
     if not current_user.is_authenticated and "candidate_id" not in session:
