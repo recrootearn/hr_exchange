@@ -170,42 +170,58 @@
 
 .action-buttons{
     display:flex;
-    gap:16px;
-    margin-top:22px;
+    gap:12px;
+    margin-top:18px;
 }
 
 .action-buttons a{
     flex:1;
-    height:72px;
-    border-radius:22px;
+    height:56px;
+    border-radius:16px;
     display:flex;
     align-items:center;
     justify-content:center;
     text-decoration:none;
-    font-size:30px;
-    font-weight:700;
+    font-size:24px;
+    font-weight:600;
     transition:.25s;
-    border:2px solid rgba(255,255,255,.18);
+    border:1.5px solid rgba(255,255,255,.18);
 }
 
 .btn-edit{
-    background:#ffffff;
+    background:#fff;
     color:#2563eb;
-    box-shadow:0 8px 25px rgba(0,0,0,.15);
+    box-shadow:0 4px 12px rgba(0,0,0,.12);
 }
 
 .btn-job{
-    background:rgba(255,255,255,.12);
+    background:rgba(255,255,255,.10);
     color:#fff;
-    backdrop-filter:blur(12px);
+    backdrop-filter:blur(10px);
 }
 
 .action-buttons a:hover{
-    transform:translateY(-3px);
+    transform:translateY(-2px);
 }
 
 .action-buttons a:active{
     transform:scale(.96);
+}
+
+/* Mobile */
+@media (max-width:768px){
+
+    .action-buttons{
+        gap:10px;
+        margin-top:16px;
+    }
+
+    .action-buttons a{
+        height:52px;
+        border-radius:15px;
+        font-size:22px;
+    }
+
 }
 
 @media(max-width:768px){
