@@ -1,559 +1,104 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<link
-rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
 <div class="desktop-feed">
-
-{% for job in jobs %}
-
-<div id="post{{ job.id }}"
-     class="candidate-card feed-card">
-
-    <!-- HEADER -->
-
-    <div class="feed-header">
-
-        <div class="feed-avatar">
-
-            {% if job.company_name %}
-                {{ job.company_name[:1].upper() }}
-            {% else %}
-                R
-            {% endif %}
-
+    {% for job in jobs %}
+    <div id="post{{ job.id }}" class="feed-card">
+        <!-- HEADER (Kept your existing Delete Dropdown) -->
+        <div class="feed-header">
+            <div class="feed-avatar">
+                {{ job.company_name[:1].upper() if job.company_name else 'R' }}
+            </div>
+            <div>
+                <div class="feed-company">
+                    <a href="/company/{{ job.hr_id }}" style="text-decoration:none;color:inherit;">{{ job.company_name }}</a>
+                </div>
+                <div class="feed-meta">📍 {{ job.location }}</div>
+            </div>
+            <div class="dropdown ms-auto">
+                <button class="btn btn-sm border-0" data-bs-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item text-danger" href="/delete-job/{{ job.id }}" onclick="return confirm('Delete this post?')"><i class="fas fa-trash me-2"></i>Delete Post</a></li>
+                </ul>
+            </div>
         </div>
 
-        <div>
-
-            <div class="feed-company">
-
-                <a href="/company/{{ job.hr_id }}"
-                   style="text-decoration:none;color:inherit;">
-
-                    {{ job.company_name }}
-
-                </a>
-
-            </div>
-
-            <div class="feed-meta">
-                📍 {{ job.location }}
-            </div>
-
-        </div>
-
-        <div class="dropdown ms-auto">
-
-    <button class="btn btn-sm border-0"
-            data-bs-toggle="dropdown">
-
-        <i class="fas fa-ellipsis-v"></i>
-
-    </button>
-
-    <ul class="dropdown-menu dropdown-menu-end">
-
-        <li>
-
-            <a class="dropdown-item text-danger"
-               href="/delete-job/{{ job.id }}"
-               onclick="return confirm('Delete this post?')">
-
-                <i class="fas fa-trash me-2"></i>
-                Delete Post
-
-            </a>
-
-        </li>
-
-    </ul>
-
-</div>
-
-    </div>
-
-    <!-- IMAGE -->
-
-    {% if job.images %}
-
+        <!-- MEDIA (Swiper + Observer Logic) -->
+        {% if job.images %}
         <div class="swiper feedSwiper">
-
-        <div class="swiper-wrapper">
-
-        {% for img in job.images.split(',') %}
-
-        <div class="swiper-slide">
-
-        {% set ext = img.split('.')[-1].lower() %}
-
-        {% if ext in ['mp4','mov','webm','mkv'] %}
-
-        <div class="feed-media reel-media video-container">
-
-        <video
-        class="feed-image feed-video"
-        autoplay
-        muted
-        loop
-        playsinline
-        preload="metadata"
-        onclick="openMedia(this,'/static/uploads/{{ img }}','video')">
-
-        <source
-        src="/static/uploads/{{ img }}"
-        type="video/mp4">
-
-        Your browser does not support HTML5 video.
-
-        </video>
-
-        <button
-        class="mute-btn"
-        onclick="toggleMute(event,this)">
-        🔇
-        </button>
-
+            <div class="swiper-wrapper">
+                {% for img in job.images.split(',') %}
+                <div class="swiper-slide">
+                    {% set ext = img.split('.')[-1].lower() %}
+                    {% if ext in ['mp4','mov','webm','mkv'] %}
+                    <div class="feed-media reel-media video-container">
+                        <video class="feed-image feed-video" autoplay muted loop playsinline preload="metadata" onclick="openMedia(this,'/static/uploads/{{ img }}','video')">
+                            <source src="/static/uploads/{{ img }}" type="video/mp4">
+                        </video>
+                        <button class="mute-btn" onclick="toggleMute(event,this)">🔇</button>
+                    </div>
+                    {% else %}
+                    <div class="feed-media post-media">
+                        <img src="/static/uploads/{{ img }}" class="feed-image" onclick="openMedia('/static/uploads/{{ img }}','image')">
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="swiper-pagination"></div>
         </div>
-
-        {% else %}
-
-        <div class="feed-media post-media">
-
-        <img
-        src="/static/uploads/{{ img }}"
-        class="feed-image"
-        onclick="openMedia('/static/uploads/{{ img }}','image')">
-
-        </div>
-
         {% endif %}
 
+        <!-- CONTENT -->
+        <div class="job-details-wrapper p-3">
+            {% if job.post_type == "video" %}
+                <div id="desc-{{ job.id }}" class="description-text">{{ job.description }}</div>
+                <span id="toggle-{{ job.id }}" class="toggle-btn" onclick="toggleDescription('{{ job.id }}')">See more</span>
+            {% else %}
+                <h4 class="job-title" style="margin-bottom: 8px;">{{ job.job_title }}</h4>
+                <div class="salary-tag">₹ {{ job.salary }}</div>
+                <div id="desc-{{ job.id }}" class="description-text" style="margin: 8px 0;">{{ job.description }}</div>
+                <span id="toggle-{{ job.id }}" class="toggle-btn" onclick="toggleDescription('{{ job.id }}')">See more</span>
+            {% endif %}
         </div>
 
-        {% endfor %}
-
-        </div>
-
-        <div class="swiper-pagination"></div>
-
-        </div>
-
-    {% endif %}
-
-    <!-- CONTENT -->
-
-    <div class="p-3">
-
-        {% if job.post_type == "video" %}
-
-<p class="mt-3">
-
-{{ job.description or "" }}
-
-</p>
-
-{% else %}
-
-<h4 class="job-title">
-
-{{ job.job_title }}
-
-</h4>
-
-<div class="salary-tag">
-
-₹ {{ job.salary }}
-
-</div>
-
-<p class="mt-3">
-
-{{ (job.description or "")[:140] }}
-
-{% if job.description and job.description|length > 140 %}
-
-<span id="dots{{ job.id }}">...</span>
-
-<span id="more{{ job.id }}" style="display:none;">
-
-{{ (job.description or "")[140:] }}
-
-</span>
-
-<a href="#"
-id="btn{{ job.id }}"
-onclick="toggleText({{ job.id }});return false;">
-
-See More
-
-</a>
-
-{% endif %}
-
-</p>
-
-{% endif %}
-
+        <!-- BUTTONS (Kept your HR buttons) -->
         <div class="feed-buttons">
-
-    <a href="/job-applicants/{{ job.id }}"
-       class="btn btn-primary">
-
-        <i class="fas fa-users"></i>
-        Applicants
-
-    </a>
-
-    <a href="/edit-job/{{ job.id }}"
-       class="btn btn-outline-dark">
-
-        <i class="fas fa-pen"></i>
-        Edit
-
-    </a>
-
-    <a href="/share-job/{{ job.id }}"
-       class="btn btn-success">
-
-        <i class="fab fa-whatsapp"></i>
-        Share
-
-    </a>
-
-</div>
-
+            <a href="/job-applicants/{{ job.id }}" class="btn btn-primary"><i class="fas fa-users"></i> Applicants</a>
+            <a href="/edit-job/{{ job.id }}" class="btn btn-outline-dark"><i class="fas fa-pen"></i> Edit</a>
+            <a href="/share-job/{{ job.id }}" class="btn btn-success"><i class="fab fa-whatsapp"></i> Share</a>
+        </div>
     </div>
-
-</div>
-
-{% else %}
-
-<div class="stats-card text-center">
-
-    <h4>No Jobs Available</h4>
-
-    <p>Please check again later.</p>
-
-</div>
-
-{% endfor %}
-
+    {% endfor %}
 </div>
 
 <style>
-
-.feed-card{
-    background:#fff;
-    border-radius:20px;
-    overflow:hidden;
-    margin-bottom:25px;
-    padding:0 !important;
-    box-shadow:0 2px 12px rgba(0,0,0,.08);
-    border:1px solid #eee;
-}
-
-.feed-header{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:14px 16px;
-}
-
-.feed-avatar{
-    width:48px;
-    height:48px;
-    border-radius:50%;
-    background:linear-gradient(
-        135deg,
-        #2563eb,
-        #7c3aed
-    );
-    color:white;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:18px;
-    font-weight:700;
-}
-
-.feed-company{
-    font-size:16px;
-    font-weight:700;
-}
-
-.feed-meta{
-    font-size:13px;
-    color:#6b7280;
-}
-
-.feed-media{
-
-    width:100%;
-    position:relative;
-    overflow:hidden;
-
-}
-
-.post-media{
-
-    aspect-ratio:4/5;
-    background:#fff;
-
-}
-
-.reel-media{
-
-    aspect-ratio:9/16;
-    background:#000;
-
-}
-
-.feed-image,
-.feed-video{
-
-    width:100%;
-    height:100%;
-    display:block;
-    position:absolute;
-    inset:0;
-
-}
-
-.feed-image{
-
-    object-fit:cover;
-
-}
-
-.feed-video{
-
-    object-fit:cover;
-
-}
-
-.job-title{
-    font-weight:700;
-    margin-bottom:10px;
-}
-
-.salary-tag{
-    display:inline-block;
-    background:#dcfce7;
-    color:#15803d;
-    padding:8px 14px;
-    border-radius:20px;
-    font-weight:700;
-}
-
-.feed-buttons{
-    display:flex;
-    gap:10px;
-    margin-top:20px;
-}
-
-.feed-buttons .btn{
-    flex:1;
-    height:50px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    gap:6px;
-
-    border-radius:14px;
-    font-weight:600;
-
-    padding:0;
-}
-
-.feed-buttons .btn i{
-    font-size:16px;
-}
-
-.btn-success{
-    background:#16a34a !important;
-    border-color:#16a34a !important;
-}
-
-@media(max-width:768px){
-
-.post-media{
-
-aspect-ratio:4/5;
-
-}
-
-.reel-media{
-
-height:85vh;
-
-}
-
-.feed-buttons{
-gap:8px;
-}
-
-.feed-buttons .btn{
-height:48px;
-font-size:14px;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-}
-
-@media (max-width:768px){
-    .content{
-        padding:0 !important;
-        padding-bottom:120px !important;
-    }
-}
-
-/* ===================================
-   Instagram Desktop Feed
-   Mobile Unchanged
-=================================== */
-
-@media (min-width:992px){
-
-    .desktop-feed{
-        max-width:650px;
-        margin:0 auto;
-    }
-
-    .feed-card{
-        width:100%;
-        margin-bottom:28px;
-    }
-
-    .post-media{
-        aspect-ratio:4/5;
-    }
-
-    .reel-media{
-        height:85vh;
-    }
-
-}
-
-.swiper{
-
-width:100%;
-
-}
-
-.swiper-slide{
-
-width:100%;
-
-}
-
-.swiper-pagination-bullet{
-
-background:white;
-
-opacity:.6;
-
-}
-
-.swiper-pagination-bullet-active{
-
-background:#2563eb;
-
-opacity:1;
-
-}
-
-.media-viewer{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#000;
-display:none;
-justify-content:center;
-align-items:center;
-z-index:99999;
-}
-
-.media-viewer img,
-.media-viewer video{
-max-width:100%;
-max-height:100%;
-object-fit:contain;
-}
-
-.mute-btn{
-position:absolute;
-right:12px;
-bottom:12px;
-width:42px;
-height:42px;
-border:none;
-border-radius:50%;
-background:rgba(0,0,0,.5);
-color:#fff;
-font-size:18px;
-cursor:pointer;
-}
-
-.video-container{
-
-position:relative;
-
-}
-
-.viewer-back{
-
-position:absolute;
-top:20px;
-left:20px;
-z-index:100000;
-
-background:rgba(0,0,0,.6);
-color:#fff;
-
-border:none;
-
-padding:10px 16px;
-
-border-radius:30px;
-
-font-size:16px;
-
-}
-
+/* Synchronized Styles */
+.feed-card { background: #fff; border-radius: 20px; margin-bottom: 25px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.08); border: 1px solid #eee; }
+.feed-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
+.feed-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
+.feed-company { font-size: 16px; font-weight: 700; }
+.feed-meta { font-size: 13px; color: #6b7280; }
+.feed-media { width: 100%; position: relative; overflow: hidden; background: #000; }
+.post-media { aspect-ratio: 4/5; }
+.reel-media { aspect-ratio: 9/16; }
+.feed-image, .feed-video { width: 100%; height: 100%; display: block; object-fit: contain; background-color: #f3f4f6; }
+.job-title { font-size: 18px; font-weight: 700; color: #111827; }
+.salary-tag { display: inline-block; background: #dcfce7; color: #15803d; padding: 8px 14px; border-radius: 20px; font-weight: 700; }
+.feed-buttons { display: flex; gap: 10px; padding: 0 16px 16px 16px; }
+.feed-buttons .btn { flex: 1; height: 50px; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 14px; font-weight: 600; }
+.mute-btn { position: absolute; right: 12px; bottom: 12px; width: 42px; height: 42px; border: none; border-radius: 50%; background: rgba(0,0,0,.5); color: #fff; font-size: 18px; cursor: pointer; }
+.description-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.toggle-btn { color: #666; cursor: pointer; font-size: 0.9em; font-weight: 600; display: block; margin-top: 4px; }
+@media (min-width: 992px) { .desktop-feed { max-width: 650px; margin: 0 auto; } }
 </style>
 
 <div id="mediaViewer" class="media-viewer">
-
-<button class="viewer-back"
-onclick="closeMedia()">
-
-← Back
-
-</button>
-
-<img
-id="viewerImage"
-style="display:none;">
-
-<video
-id="viewerVideo"
-playsinline
-muted
-autoplay
-style="display:none;"
-onclick="toggleVideo(this)">
-</video>
-
+    <button class="viewer-back" onclick="closeMedia()">← Back</button>
+    <img id="viewerImage" style="display:none; max-width:100%; max-height:100%;">
+    <video id="viewerVideo" playsinline muted autoplay style="display:none; max-width:100%; max-height:100%;"></video>
 </div>
 
 <script>
@@ -604,34 +149,33 @@ function toggleMute(e, btn){
 
     const video = btn.previousElementSibling;
 
-    // Mute every video first
-    document.querySelectorAll(".feed-video").forEach(v => {
+    // If already unmuted, mute it
+    if(!video.muted){
+
+        video.muted = true;
+        btn.innerHTML = "🔇";
+        return;
+
+    }
+
+    // Mute all videos first
+    document.querySelectorAll(".feed-video").forEach(v=>{
 
         v.muted = true;
 
         const b = v.parentElement.querySelector(".mute-btn");
-        if(b) b.innerHTML = "🔇";
+
+        if(b){
+            b.innerHTML = "🔇";
+        }
 
     });
 
-    // Toggle only this video
+    // Unmute current video
     video.muted = false;
     btn.innerHTML = "🔊";
+
 }
-
-// Tap video to pause/play
-document.getElementById("viewerVideo").onclick=function(e){
-
-    e.stopPropagation();
-
-    if(this.paused){
-        this.play();
-    }else{
-        this.pause();
-    }
-
-};
-
 
 // Android back button closes fullscreen
 window.addEventListener("popstate",function(){
@@ -718,6 +262,47 @@ const observer = new IntersectionObserver((entries) => {
 document.querySelectorAll(".feed-video").forEach(video => {
     observer.observe(video);
 });
+
+</script>
+
+<script>
+
+function toggleSpark(jobId){
+
+    fetch("/spark/" + jobId, {
+        method: "POST"
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if(data.success){
+
+            document.getElementById(
+                "spark-count-" + jobId
+            ).innerHTML = data.count;
+
+        }
+
+    })
+
+    .catch(error => console.log(error));
+
+}
+
+function toggleDescription(jobId) {
+    const desc = document.getElementById('desc-' + jobId);
+    const toggle = document.getElementById('toggle-' + jobId);
+    
+    if (desc.style.webkitLineClamp === 'unset') {
+        desc.style.webkitLineClamp = '2';
+        toggle.innerText = 'See more';
+    } else {
+        desc.style.webkitLineClamp = 'unset';
+        toggle.innerText = 'See less';
+    }
+}
 
 </script>
 
