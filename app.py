@@ -6683,56 +6683,64 @@ def post_job():
 
     return render_template("post_job.html")
 
+import os
+import uuid
+import subprocess
+from flask import request, flash, redirect, render_template
+from flask_login import login_required, current_user
+
+# Helper function for compression
+def compress_video(input_path, output_path):
+    # This resizes to 1080p, uses H.264, and optimizes for web[span_1](start_span)[span_1](end_span)
+    command = [
+        'ffmpeg', '-i', input_path,
+        '-vf', 'scale=-2:1080',
+        '-c:v', 'libx264',
+        '-crf', '28',
+        '-preset', 'veryfast',
+        '-c:a', 'aac',
+        '-y', output_path
+    ]
+    subprocess.run(command, check=True)
+
 @app.route("/post-video", methods=["GET", "POST"])
 @login_required
 def post_video():
-
     if request.method == "POST":
-
         video = request.files.get("company_video")
-
         if not video or video.filename == "":
-
             flash("Please select a video.", "danger")
             return redirect("/post-video")
 
-        import uuid
-
-        ext = video.filename.rsplit(".",1)[1].lower()
-
+        ext = video.filename.rsplit(".", 1)[1].lower()
         filename = f"{uuid.uuid4().hex}.{ext}"
+        
+        # Define temporary path for processing
+        temp_filepath = os.path.join(app.config["UPLOAD_FOLDER"], f"temp_{filename}")
+        final_filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
-        filepath = os.path.join(
-            app.config["UPLOAD_FOLDER"],
-            filename
-        )
-
-        video.save(filepath)
+        # Save and compress
+        video.save(temp_filepath)
+        try:
+            compress_video(temp_filepath, final_filepath)
+        finally:
+            # Always remove the temporary uncompressed file[span_2](start_span)[span_2](end_span)
+            if os.path.exists(temp_filepath):
+                os.remove(temp_filepath)
 
         job = JobPost(
-
             hr_id=current_user.id,
-
             company_name=current_user.company,
-
             location=request.form.get("location"),
-
             description=request.form.get("description"),
-
             images=filename,
-
             post_type="video"
-
         )
 
         db.session.add(job)
         db.session.commit()
 
-        flash(
-            "Company video posted successfully.",
-            "success"
-        )
-
+        flash("Company video posted successfully.", "success")
         return redirect("/feed")
 
     return render_template("post_video.html")
