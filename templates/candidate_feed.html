@@ -129,16 +129,23 @@
 
 <script>
 function toggleCandidateSpark(jobId){
+    const btn = event.target;
+    btn.style.transform = "scale(1.2)"; // Visual feedback
+    
     fetch("/candidate-spark/" + jobId, {
         method: "POST"
     })
     .then(response => response.json())
     .then(data => {
+        btn.style.transform = "scale(1)"; // Reset feedback
         if(data.success){
             document.getElementById("spark-count-" + jobId).innerHTML = data.count;
         }
     })
-    .catch(error => console.log(error));
+    .catch(error => {
+        btn.style.transform = "scale(1)";
+        console.error("Error:", error);
+    });
 }
 </script>
 
