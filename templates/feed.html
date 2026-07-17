@@ -159,39 +159,37 @@ onchange="this.form.submit()">
 
     {% if job.post_type == "video" %}
 
-<p>
+    <div class="feed-content">
+        <p>{{ job.description }}</p>
+    </div>
 
-{{ job.description }}
+    {% else %}
 
-</p>
+    <h4 class="job-title">
 
-{% else %}
+    {{ job.job_title }}
 
-<h4 class="job-title">
+    </h4>
 
-{{ job.job_title }}
+    <div class="salary-tag">
 
-</h4>
+    ₹ {{ job.salary }}
 
-<div class="salary-tag">
+    </div>
 
-₹ {{ job.salary }}
+    <p>
 
-</div>
+    {{ job.description }}
 
-<p>
+    </p>
 
-{{ job.description }}
-
-</p>
-
-{% endif %}
+    {% endif %}
 
         <div class="feed-buttons">
 
-{% if job.post_type == "video" %}
+    {% if job.post_type == "video" %}
 
-<div class="feed-actions">
+    <div class="video-actions">
 
     <button
         class="action-btn"
@@ -471,6 +469,68 @@ Share
 
     color:#25D366;
     font-size:28px;
+
+}
+
+.video-content{
+
+    padding:14px 16px 6px;
+
+}
+
+.video-content p{
+
+    margin:0;
+
+    font-size:15px;
+
+    line-height:1.5;
+
+    color:#333;
+
+}
+
+.video-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    padding:10px 16px 16px;
+
+}
+
+.video-actions .action-btn{
+
+    background:none;
+
+    border:none;
+
+    padding:0;
+
+    font-size:30px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-decoration:none;
+
+    color:#222;
+
+}
+
+.video-actions .action-count{
+
+    margin-left:-14px;
+
+    font-size:15px;
+
+    font-weight:600;
 
 }
 
