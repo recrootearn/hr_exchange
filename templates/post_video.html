@@ -329,6 +329,20 @@ class="submit-btn">
 
 </div>
 
+<div id="videoAlert" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:20px;">
+      <div class="modal-body text-center p-4">
+        <h5>❌ Upload Failed</h5>
+        <p class="mb-0">Maximum 60 seconds video is allowed.</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0">
+        <button class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
 <script>
@@ -402,7 +416,7 @@ videoInput.addEventListener("change", function () {
         // Maximum 60 seconds
         if (video.duration > 60) {
 
-            alert("❌ Maximum 60 seconds video is allowed.");
+            new bootstrap.Modal(document.getElementById("videoAlert")).show();
 
             videoInput.value = "";
 
