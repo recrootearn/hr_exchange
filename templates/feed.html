@@ -386,13 +386,13 @@ Share
 
 .feed-buttons{
     display:flex;
-    gap:10px;
-    margin-top:20px;
+    gap:8px;
+    margin:12px;
 }
 
 .feed-buttons .btn{
     flex:1;
-    height:50px;
+    height:40px;
 
     display:flex;
     align-items:center;
@@ -400,10 +400,11 @@ Share
 
     gap:6px;
 
-    border-radius:14px;
+    border-radius:10px;
+    font-size:14px;
     font-weight:600;
 
-    padding:0;
+    padding:0 12px;
 }
 
 .feed-buttons .btn i{
@@ -639,19 +640,32 @@ function toggleMute(e, btn){
 
     const video = btn.previousElementSibling;
 
-    // Mute every video first
-    document.querySelectorAll(".feed-video").forEach(v => {
+    // If already unmuted, mute it
+    if(!video.muted){
+
+        video.muted = true;
+        btn.innerHTML = "🔇";
+        return;
+
+    }
+
+    // Mute all videos first
+    document.querySelectorAll(".feed-video").forEach(v=>{
 
         v.muted = true;
 
         const b = v.parentElement.querySelector(".mute-btn");
-        if(b) b.innerHTML = "🔇";
+
+        if(b){
+            b.innerHTML = "🔇";
+        }
 
     });
 
-    // Toggle only this video
+    // Unmute current video
     video.muted = false;
     btn.innerHTML = "🔊";
+
 }
 
 // Android back button closes fullscreen
