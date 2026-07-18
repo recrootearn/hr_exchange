@@ -376,7 +376,7 @@ value="{{ current_user.company }}">
 
 <label class="form-label">
 
-HR Type
+Designation
 
 </label>
 
@@ -385,22 +385,32 @@ name="hr_type"
 class="form-select">
 
 <option
-value="Company HR"
-{% if current_user.hr_type=="Company HR" %}
+value="Founder"
+{% if current_user.hr_type=="Founder" %}
 selected
 {% endif %}>
 
-Company HR
+Founder
 
 </option>
 
 <option
-value="Consultancy HR"
-{% if current_user.hr_type=="Consultancy HR" %}
+value="Co-founder"
+{% if current_user.hr_type=="Co-founder" %}
 selected
 {% endif %}>
 
-Consultancy HR
+Co-founder
+
+</option>
+
+<option
+value="HR"
+{% if current_user.hr_type=="HR" %}
+selected
+{% endif %}>
+
+HR
 
 </option>
 
