@@ -7730,6 +7730,10 @@ def edit_job(job_id):
         job=job
     )
 
+@app.route("/account-deletion-policy", methods=["GET"])
+def account_deletion_policy():
+    return render_template("account_deletion_policy.html")
+
 @app.route('/delete-account')
 @login_required
 def delete_account():
