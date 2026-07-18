@@ -34,7 +34,7 @@
 
     {% if applications %}
         {% for app in applications %}
-            {% set job = JobPost.query.get(app.job_id) %}
+           {% set job = JobPost.query.filter_by(id=app.job_id).first() %}
             {% set hr = User.query.get(job.hr_id) %}
 
             <div class="job-card">
