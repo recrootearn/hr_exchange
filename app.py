@@ -107,7 +107,7 @@ def generate_candidate_referral_code():
 # =========================
 # CONFIG & DB SETUP
 # =========================
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://recrootearn:Kymore%4095@localhost/recrootearn'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
