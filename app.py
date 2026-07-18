@@ -8261,7 +8261,12 @@ def upload():
             url_for('home')
         )
 
-    return render_template('upload.html')
+    settings = get_business_settings()
+
+    return render_template(
+        'upload.html',
+        settings=settings
+    )
 
 @app.route('/bulk-upload', methods=['POST'])
 @login_required
