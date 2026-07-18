@@ -290,8 +290,13 @@ label{
         <div class="card-box">
 
             <h2>
-                🚀 Upload Candidate
+               🚀 Upload Candidate
             </h2>
+
+            <div class="badge bg-primary fs-6 mb-3">
+                Daily Upload Limit:
+               {{ settings.daily_candidate_upload_limit }} Candidates
+            </div>
 
             <form method="POST">
 
@@ -365,29 +370,43 @@ label{
                 name="category"
                 class="form-control mb-4">
 
-                    <option>
-                        IT
-                    </option>
-
-                    <option>
-                        Advisory
-                    </option>
-
-                    <option>
-                        Finance
-                    </option>
-
-                    <option>
-                        Healthcare
-                    </option>
-
-                    <option>
-                        Automobile
-                    </option>
-
-                    <option>
-                        Broking
-                    </option>
+                    <option>Information Technology (IT)</option>
+                    <option>Banking & Financial Services (BFSI)</option>
+                    <option>Insurance</option>
+                    <option>Finance</option>
+                    <option>Accounting</option>
+                    <option>Sales & Marketing</option>
+                    <option>Human Resources (HR)</option>
+                    <option>BPO / KPO</option>
+                    <option>Manufacturing</option>
+                    <option>Healthcare</option>
+                    <option>Education</option>
+                    <option>Retail</option>
+                    <option>Logistics & Supply Chain</option>
+                    <option>Telecom</option>
+                    <option>Construction</option>
+                    <option>Hospitality</option>
+                    <option>Automobile</option>
+                    <option>E-commerce</option>
+                    <option>Real Estate</option>
+                    <option>Pharmaceuticals</option>
+                    <option>FMCG</option>
+                    <option>Media & Entertainment</option>
+                    <option>Travel & Tourism</option>
+                    <option>Legal Services</option>
+                    <option>Government</option>
+                    <option>NGO / Non-Profit</option>
+                    <option>Agriculture</option>
+                    <option>Aviation</option>
+                    <option>Engineering</option>
+                    <option>Architecture & Interior Design</option>
+                    <option>Food & Beverage</option>
+                    <option>Textile & Apparel</option>
+                    <option>Chemicals</option>
+                    <option>Mining & Metals</option>
+                    <option>Renewable Energy</option>
+                    <option>Consulting</option>
+                    <option>Recruitment & Staffing</option>
 
                 </select>
 
@@ -410,11 +429,16 @@ label{
         <div class="card-box">
 
             <h2>
-                📂 Bulk Upload
+               📂 Bulk Upload
             </h2>
 
+            <div class="badge bg-primary fs-6 mb-3">
+                Daily Upload Limit:
+                {{ settings.daily_candidate_upload_limit }} Candidates
+            </div>
+
             <form
-            method="POST"
+                method="POST"
             action="/bulk-upload"
             enctype="multipart/form-data">
 

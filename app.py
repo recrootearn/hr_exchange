@@ -707,6 +707,11 @@ class BusinessSettings(db.Model):
     hr_to_candidate_reward = db.Column(db.Integer, default=25)
     candidate_to_candidate_reward = db.Column(db.Integer, default=25)
 
+    daily_candidate_upload_limit = db.Column(
+        db.Integer,
+        default=100
+    )
+
     hr_minimum_purchase = db.Column(db.Integer, default=500)
 
     hr_daily_referral_limit = db.Column(db.Integer, default=10)
@@ -2156,6 +2161,13 @@ def admin_business_settings():
 
             settings.daily_referral_target = int(
                 request.form.get("daily_referral_target", 10)
+            )
+
+            settings.daily_candidate_upload_limit = int(
+                request.form.get(
+                    "daily_candidate_upload_limit",
+                    100
+                )
             )
 
             # ======================================
@@ -8143,9 +8155,11 @@ def upload():
 
         # UPLOAD LIMIT
 
+        settings = get_business_settings()
+
         if Candidate.query.filter_by(
             uploaded_by=current_user.id
-        ).count() >= 100:
+        ).count() >= settings.daily_candidate_upload_limit:
 
             flash(
                 "Upload limit reached",
