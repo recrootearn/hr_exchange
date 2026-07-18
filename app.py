@@ -10131,7 +10131,7 @@ def delete_job(id):
     db.session.commit()
 
     flash("Job deleted successfully.", "success")
-    return redirect("/feed")
+    return redirect("/profile")
 
 @app.route('/payment-success')
 @login_required
