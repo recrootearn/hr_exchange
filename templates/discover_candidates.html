@@ -357,7 +357,7 @@
 
         <div class="default-avatar">
 
-            {{ hr.first_name[:1] }}
+            {{ hr.first_name[0] if hr.first_name else "H" }}
 
         </div>
 
@@ -365,8 +365,7 @@
 
     <div class="name">
 
-        {{ hr.first_name }}
-        {{ hr.last_name }}
+        {{ (hr.first_name or "Unknown") ~ " " ~ (hr.last_name or "") }}
 
     </div>
 
