@@ -6432,6 +6432,7 @@ def spark(job_id):
                     user_type="hr",
                     message=f"{current_user.first_name} {current_user.last_name} sparked your video.",
                     link=f"/job-view/{job.id}",
+                    image=current_user.profile_photo,
                     type="spark"
                 )
 
