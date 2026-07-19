@@ -3,60 +3,53 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
-<div class="mb-2">
-    <form method="GET">
+<form method="GET" id="filterForm">
 
-        <div class="row g-2">
+<div class="feed-filters">
 
-            <!-- Location Filter -->
-            <div class="col-6">
-                <select name="location"
-                        class="form-select"
-                        onchange="this.form.submit()">
+    <!-- Location -->
+    <select name="location"
+            class="modern-filter"
+            onchange="document.getElementById('filterForm').submit()">
 
-                    <option value=""
-                        {% if not selected_location %}selected{% endif %}>
-                        🌍 All Locations
-                    </option>
+        <option value="">📍 City</option>
 
-                    {% for city in locations %}
-                    <option value="{{ city }}"
-                        {% if selected_location and selected_location.lower()==city.lower() %}selected{% endif %}>
-                        {{ city }}
-                    </option>
-                    {% endfor %}
+        {% for city in locations %}
+        <option value="{{ city }}"
+        {% if selected_location and selected_location.lower()==city.lower() %}selected{% endif %}>
+            {{ city }}
+        </option>
+        {% endfor %}
 
-                </select>
-            </div>
+    </select>
 
-            <!-- Content Filter -->
-            <div class="col-6">
-                <select name="content"
-                        class="form-select"
-                        onchange="this.form.submit()">
+    <!-- All -->
+    <button type="submit"
+            name="content"
+            value="all"
+            class="filter-chip {% if selected_content=='all' %}active{% endif %}">
+        📋 All
+    </button>
 
-                    <option value="all"
-                        {% if selected_content=="all" %}selected{% endif %}>
-                        📋 All
-                    </option>
+    <!-- Hiring -->
+    <button type="submit"
+            name="content"
+            value="jobs"
+            class="filter-chip {% if selected_content=='jobs' %}active{% endif %}">
+        📢 Hiring
+    </button>
 
-                    <option value="jobs"
-                        {% if selected_content=="jobs" %}selected{% endif %}>
-                        💼 Job Posts
-                    </option>
+    <!-- Videos -->
+    <button type="submit"
+            name="content"
+            value="videos"
+            class="filter-chip {% if selected_content=='videos' %}active{% endif %}">
+        🎥 Videos
+    </button>
 
-                    <option value="videos"
-                        {% if selected_content=="videos" %}selected{% endif %}>
-                        🎬 Videos
-                    </option>
-
-                </select>
-            </div>
-
-        </div>
-
-    </form>
 </div>
+
+</form>
 
 <div class="desktop-feed">
     {% for job in jobs %}
@@ -201,6 +194,48 @@
 .mute-btn { position: absolute; right: 12px; bottom: 12px; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); color: #fff; border: none; }
 .description-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .toggle-btn { color: #666; cursor: pointer; font-size: 0.9em; font-weight: 600; display: block; margin-top: 4px; }
+
+.feed-filters{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px;
+    width:100%;
+    box-sizing:border-box;
+}
+
+.feed-filters > *{
+    flex:1;
+    min-width:0;
+}
+
+.modern-filter{
+    width:100%;
+    height:46px;
+    border:none;
+    border-radius:14px;
+    background:#f5f7fb;
+    padding:0 8px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.filter-chip{
+    width:100%;
+    height:46px;
+    border:none;
+    border-radius:14px;
+    background:#f5f7fb;
+    font-size:13px;
+    font-weight:600;
+    white-space:nowrap;
+}
+
+.filter-chip.active{
+    background:#2563eb;
+    color:#fff;
+}
+
 @media (max-width: 768px) {
     .content {
         padding: 0 !important;
