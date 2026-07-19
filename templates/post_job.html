@@ -244,6 +244,19 @@ textarea.form-control{
 
 }
 
+.cover-btn{
+    position:absolute;
+    bottom:6px;
+    left:6px;
+    background:#2563eb;
+    color:#fff;
+    border:none;
+    border-radius:20px;
+    padding:4px 8px;
+    font-size:11px;
+    cursor:pointer;
+}
+
 .submit-btn{
 
     width:100%;
@@ -1006,17 +1019,9 @@ reader.onload=function(e){
 container.innerHTML+=`
 
 <div class="img-box">
-
-<img src="${e.target.result}">
-
-<div
-class="remove-btn"
-onclick="removeImage(${index})">
-
-×
-
-</div>
-
+    <img src="${e.target.result}">
+    <button class="cover-btn" onclick="makeCover(${index})">⭐</button>
+    <div class="remove-btn" onclick="removeImage(${index})">×</div>
 </div>
 
 `;
@@ -1037,6 +1042,14 @@ updateInputFiles();
 
 renderPreview();
 
+}
+
+function makeCover(index){
+    const cover = selectedFiles.splice(index,1)[0];
+    selectedFiles.unshift(cover);
+
+    updateInputFiles();
+    renderPreview();
 }
 
 // ============================
