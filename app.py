@@ -7309,7 +7309,6 @@ def discover_candidates():
 
     # HRS
     hr_query = User.query.filter(
-        User.is_admin == False,
         User.id != current_user.id
     )
 
