@@ -9980,9 +9980,18 @@ def edit_profile():
 
         return redirect(url_for("profile"))
 
+    cities = sorted({
+        city for (city,) in db.session.query(User.company_city)
+        .filter(User.company_city.isnot(None))
+        .distinct()
+        .all()
+        if city
+    })
+
     return render_template(
         "edit_profile.html",
-        profile_completion=current_user.profile_completion or 0
+        profile_completion=current_user.profile_completion or 0,
+        cities=cities
     )
 
 # =========================

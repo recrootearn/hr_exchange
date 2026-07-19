@@ -202,6 +202,8 @@ padding:18px;
 
 }
 
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+
 </style>
 
 <div class="post-job-wrapper">
@@ -426,11 +428,26 @@ Company City
 
 </label>
 
-<input
-type="text"
-name="company_city"
-class="form-control"
-value="{{ current_user.company_city }}">
+<select
+    id="company_city"
+    name="company_city"
+    class="form-select">
+
+    {% if current_user.company_city %}
+    <option value="{{ current_user.company_city }}" selected>
+        {{ current_user.company_city }}
+    </option>
+    {% endif %}
+
+    {% for city in cities %}
+        {% if city != current_user.company_city %}
+        <option value="{{ city }}">
+            {{ city }}
+        </option>
+        {% endif %}
+    {% endfor %}
+
+</select>
 
 </div>
 
@@ -605,6 +622,8 @@ class="submit-btn">
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
 <script>
 
 const photoInput =
@@ -719,6 +738,18 @@ reader.readAsDataURL(file);
 });
 
 }
+
+new TomSelect("#company_city",{
+    create:true,
+    createOnBlur:true,
+    persist:false,
+    maxOptions:5000,
+    placeholder:"Search or add company city",
+    sortField:{
+        field:"text",
+        direction:"asc"
+    }
+});
 
 </script>
 
