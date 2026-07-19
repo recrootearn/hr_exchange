@@ -608,16 +608,34 @@
         </div>
 
         <div class="info-item">
+    <div class="info-label">📍 Address</div>
 
-            <div class="info-label">
-                📍 Address
+    <div class="info-value">
+
+        {% if hr.company_house %}
+            <div>{{ hr.company_house }}</div>
+        {% endif %}
+
+        {% if hr.company_road %}
+            <div>{{ hr.company_road }}</div>
+        {% endif %}
+
+        {% if hr.company_area %}
+            <div>{{ hr.company_area }}</div>
+        {% endif %}
+
+        {% if hr.company_city or hr.company_state or hr.company_pincode %}
+            <div>
+                {{ hr.company_city }}
+                {% if hr.company_state %}, {{ hr.company_state }}{% endif %}
+                {% if hr.company_pincode %} - {{ hr.company_pincode }}{% endif %}
             </div>
+        {% endif %}
 
-            <div class="info-value">
-                {{ hr.full_company_address or "Not Available" }}
-            </div>
+        <div>{{ hr.company_country or "India" }}</div>
 
-        </div>
+    </div>
+</div>
 
         <div class="info-item">
 

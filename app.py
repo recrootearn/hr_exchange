@@ -147,6 +147,12 @@ class User(UserMixin, db.Model):
     ifsc_code = db.Column(db.String(100))
     session_token = db.Column(db.String(200))
     fcm_token = db.Column(db.Text)
+    company_house = db.Column(db.String(200))
+    company_road = db.Column(db.String(200))
+    company_area = db.Column(db.String(200))
+    company_state = db.Column(db.String(100))
+    company_pincode = db.Column(db.String(20))
+    company_country = db.Column(db.String(100), default="India")
     app_token = db.Column(db.String(128), unique=True, nullable=True)
 
 
@@ -9862,6 +9868,13 @@ def edit_profile():
         current_user.full_company_address = request.form.get('full_company_address')
         current_user.company_website = request.form.get('company_website')
         current_user.about_company = request.form.get('about_company')
+        current_user.company_house = request.form.get("company_house")
+        current_user.company_road = request.form.get("company_road")
+        current_user.company_area = request.form.get("company_area")
+        current_user.company_city = request.form.get("company_city")
+        current_user.company_state = request.form.get("company_state")
+        current_user.company_pincode = request.form.get("company_pincode")
+        current_user.company_country = request.form.get("company_country")
 
         # ----------------------------
         # BANK DETAILS
@@ -9954,7 +9967,14 @@ def edit_profile():
         if current_user.company_city:
             completion += 10
 
-        if current_user.full_company_address:
+        if (
+            current_user.company_house and
+            current_user.company_road and
+            current_user.company_area and
+            current_user.company_city and
+            current_user.company_state and
+            current_user.company_pincode
+        ):
             completion += 10
 
         if current_user.company_website:

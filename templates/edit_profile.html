@@ -468,19 +468,53 @@ value="{{ current_user.company_website }}">
 
 </div>
 
-<div class="col-12">
+<div class="col-md-6">
+    <label class="form-label">House No. / Building</label>
+    <input type="text"
+           name="company_house"
+           class="form-control"
+           value="{{ current_user.company_house or '' }}">
+</div>
 
-<label class="form-label">
+<div class="col-md-6">
+    <label class="form-label">Road / Street</label>
+    <input type="text"
+           name="company_road"
+           class="form-control"
+           value="{{ current_user.company_road or '' }}">
+</div>
 
-Full Company Address
+<div class="col-md-6">
+    <label class="form-label">Area / Locality</label>
+    <input type="text"
+           name="company_area"
+           class="form-control"
+           value="{{ current_user.company_area or '' }}">
+</div>
 
-</label>
+<div class="col-md-6">
+    <label class="form-label">State</label>
+    <input type="text"
+           name="company_state"
+           class="form-control"
+           value="{{ current_user.company_state or '' }}">
+</div>
 
-<textarea
-    name="full_company_address"
-    class="form-control"
-    rows="6"
-    placeholder="House No. / Building Name&#10;Road / Street&#10;Area / Locality&#10;City&#10;State - Pincode">{{ current_user.full_company_address }}</textarea>
+<div class="col-md-6">
+    <label class="form-label">Pincode</label>
+    <input type="text"
+           name="company_pincode"
+           class="form-control"
+           maxlength="6"
+           value="{{ current_user.company_pincode or '' }}">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Country</label>
+    <input type="text"
+           name="company_country"
+           class="form-control"
+           value="{{ current_user.company_country or 'India' }}">
 </div>
 
 </div>
