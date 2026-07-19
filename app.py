@@ -6472,7 +6472,7 @@ def spark(job_id):
             send_notification(
                 user_id=job.hr_id,
                 user_type="hr",
-                message=f"{candidate.name} sparked your company video.",
+                message=f"{current_user.first_name} {current_user.last_name} sparked your video.",
                 link=f"/job-view/{job.id}",
                 type="spark"
             )
