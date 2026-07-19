@@ -9804,7 +9804,9 @@ def profile():
         followed_hr_id=current_user.id
     ).count()
 
-    following_count = 0
+    following_count = Follow.query.filter_by(
+        follower_hr_id=current_user.id
+    ).count()
 
     return render_template(
         'profile.html',
