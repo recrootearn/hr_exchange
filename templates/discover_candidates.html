@@ -423,7 +423,7 @@
 
         <div class="default-avatar">
 
-            {{ candidate.full_name[:1] }}
+            {{ candidate.full_name[0] if candidate.full_name else "U" }}
 
         </div>
 
@@ -431,7 +431,7 @@
 
     <div class="name">
 
-        {{ candidate.full_name }}
+        {{ candidate.full_name or "Unknown Candidate" }}
 
     </div>
 
