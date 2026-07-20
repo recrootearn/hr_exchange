@@ -2701,6 +2701,43 @@ def admin_edit_candidate(candidate_id):
         candidate=candidate
     )
 
+@app.route('/admin/edit-hr/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def admin_edit_hr(user_id):
+
+    if not current_user.is_admin:
+        abort(403)
+
+    user = User.query.get_or_404(user_id)
+
+    if request.method == "POST":
+
+        user.first_name = request.form.get("first_name")
+        user.last_name = request.form.get("last_name")
+        user.username = request.form.get("username")
+        user.company = request.form.get("company")
+        user.mobile = request.form.get("mobile")
+        user.email = request.form.get("email")
+        user.hr_type = request.form.get("hr_type")
+
+        user.company_house = request.form.get("company_house")
+        user.company_road = request.form.get("company_road")
+        user.company_area = request.form.get("company_area")
+        user.company_city = request.form.get("company_city")
+        user.company_state = request.form.get("company_state")
+        user.company_pincode = request.form.get("company_pincode")
+        user.company_country = request.form.get("company_country")
+
+        db.session.commit()
+
+        flash("HR details updated successfully.", "success")
+        return redirect(url_for("admin_users"))
+
+    return render_template(
+        "admin_edit_hr.html",
+        user=user
+    )
+
 @app.route('/my-uploads')
 @login_required
 def my_uploads():
@@ -6529,8 +6566,9 @@ def spark(job_id):
             send_notification(
                 user_id=job.hr_id,
                 user_type="hr",
-                message=f"{candidate.name} sparked your company video.",
+                message=f"{candidate.full_name} sparked your video.",
                 link=f"/job-view/{job.id}",
+                image=candidate.profile_photo,
                 type="spark"
             )
 
@@ -6582,8 +6620,9 @@ def candidate_spark(job_id):
         send_notification(
             user_id=job.hr_id,
             user_type="hr",
-            message=f"{candidate.full_name} sparked your company video.",
+            message=f"{candidate.full_name} sparked your video.",
             link=f"/job-view/{job.id}",
+            image=candidate.profile_photo,
             type="spark"
         )
 

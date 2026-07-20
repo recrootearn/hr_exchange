@@ -1,0 +1,790 @@
+,{% extends "base.html" %}
+
+{% block content %}
+
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+
+<style>
+
+body{
+    background:#eef3fb;
+}
+
+.post-job-wrapper{
+    max-width:850px;
+    margin:20px auto 100px;
+    padding:12px;
+}
+
+.post-job-card{
+
+    background:#fff;
+
+    border-radius:24px;
+
+    overflow:hidden;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
+
+}
+
+.post-header{
+
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+
+    color:#fff;
+
+    padding:32px 20px;
+
+    text-align:center;
+
+}
+
+.post-header h2{
+
+    font-size:32px;
+
+    font-weight:800;
+
+    margin:0;
+
+}
+
+.post-header p{
+
+    margin-top:8px;
+
+    opacity:.9;
+
+}
+
+.profile-photo{
+
+    width:110px;
+
+    height:110px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:4px solid rgba(255,255,255,.9);
+
+    margin-bottom:15px;
+
+    background:#fff;
+
+}
+
+.form-section{
+
+    padding:22px;
+
+    border-bottom:1px solid #eef2f7;
+
+}
+
+.section-title{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:#111827;
+
+    margin-bottom:18px;
+
+}
+
+.form-label{
+
+    font-weight:700;
+
+    color:#374151;
+
+    margin-bottom:8px;
+
+}
+
+.form-control,
+.form-select{
+
+    min-height:56px;
+
+    border-radius:16px !important;
+
+    border:1px solid #d7dce5;
+
+    font-size:16px;
+
+    padding:14px 16px !important;
+
+}
+
+.form-control:focus,
+.form-select:focus{
+
+    border-color:#2563eb;
+
+    box-shadow:0 0 0 .2rem rgba(37,99,235,.15);
+
+}
+
+textarea.form-control{
+
+    min-height:130px;
+
+    resize:none;
+
+}
+
+.progress{
+
+    height:10px;
+
+    border-radius:20px;
+
+}
+
+.progress-bar{
+
+    border-radius:20px;
+
+}
+
+.submit-btn{
+
+    width:100%;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+
+    color:#fff;
+
+    font-size:18px;
+
+    font-weight:700;
+
+}
+
+@media(max-width:768px){
+
+.post-job-wrapper{
+
+margin:0 0 90px;
+
+padding:0;
+
+}
+
+.post-job-card{
+
+border-radius:0;
+
+box-shadow:none;
+
+}
+
+.post-header{
+
+padding:28px 16px;
+
+}
+
+.form-section{
+
+padding:18px;
+
+}
+
+}
+
+</style>
+
+<div class="post-job-wrapper">
+
+<div class="post-job-card">
+
+<div class="post-header">
+
+{% if current_user.profile_photo %}
+
+<img
+src="/static/uploads/{{ current_user.profile_photo }}"
+class="profile-photo">
+
+{% else %}
+
+<img
+src="/static/uploads/default.png"
+class="profile-photo">
+
+{% endif %}
+
+<h2>👤 ADMIN HR Edit</h2>
+
+<p>Update HR professional information</p>
+
+</div>
+
+<form
+method="POST"
+enctype="multipart/form-data">
+
+{% if profile_completion %}
+
+<div class="form-section">
+
+<div class="d-flex justify-content-between">
+
+<span class="fw-bold">
+
+Profile Completion
+
+</span>
+
+<strong>
+
+{{ profile_completion }}%
+
+</strong>
+
+</div>
+
+<div class="progress mt-2">
+
+<div
+class="progress-bar bg-success"
+style="width:{{ profile_completion }}%;">
+
+</div>
+
+</div>
+
+</div>
+
+{% endif %}
+
+<div class="form-section">
+
+<div class="section-title">
+
+👤 Personal Information
+
+</div>
+
+<div class="row g-3">
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+First Name
+
+</label>
+
+<input
+type="text"
+name="first_name"
+class="form-control"
+value="{{ current_user.first_name }}">
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Last Name
+
+</label>
+
+<input
+type="text"
+name="last_name"
+class="form-control"
+value="{{ current_user.last_name }}">
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Mobile Number
+
+</label>
+
+<input
+type="text"
+class="form-control"
+value="{{ current_user.mobile }}"
+readonly>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Email Address
+
+</label>
+
+<input
+type="email"
+name="email"
+class="form-control"
+value="{{ current_user.email }}">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="form-section">
+
+<div class="section-title">
+
+🏢 Company Information
+
+</div>
+
+<div class="row g-3">
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Company Name
+
+</label>
+
+<input
+type="text"
+name="company"
+class="form-control"
+value="{{ current_user.company }}">
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Designation
+
+</label>
+
+<select
+name="hr_type"
+class="form-select">
+
+<option
+value="Founder"
+{% if current_user.hr_type=="Founder" %}
+selected
+{% endif %}>
+
+Founder
+
+</option>
+
+<option
+value="Co-founder"
+{% if current_user.hr_type=="Co-founder" %}
+selected
+{% endif %}>
+
+Co-founder
+
+</option>
+
+<option
+value="HR"
+{% if current_user.hr_type=="HR" %}
+selected
+{% endif %}>
+
+HR
+
+</option>
+
+</select>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Company City
+
+</label>
+
+<select
+    id="company_city"
+    name="company_city"
+    class="form-select">
+
+    {% if current_user.company_city %}
+    <option value="{{ current_user.company_city }}" selected>
+        {{ current_user.company_city }}
+    </option>
+    {% endif %}
+
+    {% for city in cities %}
+        {% if city != current_user.company_city %}
+        <option value="{{ city }}">
+            {{ city }}
+        </option>
+        {% endif %}
+    {% endfor %}
+
+</select>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Company Website
+
+</label>
+
+<input
+type="text"
+name="company_website"
+class="form-control"
+placeholder="https://company.com"
+value="{{ current_user.company_website }}">
+
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">House No. / Building</label>
+    <input type="text"
+           name="company_house"
+           class="form-control"
+           value="{{ current_user.company_house or '' }}">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Road / Street</label>
+    <input type="text"
+           name="company_road"
+           class="form-control"
+           value="{{ current_user.company_road or '' }}">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Area / Locality</label>
+    <input type="text"
+           name="company_area"
+           class="form-control"
+           value="{{ current_user.company_area or '' }}">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">State</label>
+    <input type="text"
+           name="company_state"
+           class="form-control"
+           value="{{ current_user.company_state or '' }}">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Pincode</label>
+    <input type="text"
+           name="company_pincode"
+           class="form-control"
+           maxlength="6"
+           value="{{ current_user.company_pincode or '' }}">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Country</label>
+    <input type="text"
+           name="company_country"
+           class="form-control"
+           value="{{ current_user.company_country or 'India' }}">
+</div>
+
+</div>
+
+</div>
+
+<div class="form-section">
+
+<div class="section-title">
+
+📷 Profile Photo
+
+</div>
+
+<div class="row g-3">
+
+<div class="col-12">
+
+<label class="form-label">
+
+Change Profile Photo
+
+</label>
+
+<input
+type="file"
+name="photo"
+class="form-control">
+
+<small class="text-muted">
+
+Upload JPG, JPEG or PNG image.
+
+</small>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="form-section">
+
+<div class="section-title">
+
+📄 Verification Documents
+
+</div>
+
+<div class="row g-4">
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+MSME Certificate
+
+</label>
+
+{% if current_user.msme_certificate %}
+
+<a
+href="/static/uploads/{{ current_user.msme_certificate }}"
+target="_blank"
+class="btn btn-success w-100 mb-3">
+
+✅ View Uploaded MSME Certificate
+
+</a>
+
+{% endif %}
+
+<input
+type="file"
+name="msme_certificate"
+class="form-control">
+
+<small class="text-muted">
+
+Upload MSME Registration Certificate
+
+</small>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="form-label">
+
+Gumasta Certificate
+
+</label>
+
+{% if current_user.gumasta_certificate %}
+
+<a
+href="/static/uploads/{{ current_user.gumasta_certificate }}"
+target="_blank"
+class="btn btn-primary w-100 mb-3">
+
+✅ View Uploaded Gumasta Certificate
+
+</a>
+
+{% endif %}
+
+<input
+type="file"
+name="gumasta_certificate"
+class="form-control">
+
+<small class="text-muted">
+
+Upload Gumasta / Shop Establishment Certificate
+
+</small>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="form-section">
+
+<button
+type="submit"
+class="submit-btn">
+
+💾 Update HR
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+<script>
+
+const photoInput =
+document.querySelector('input[name="photo"]');
+
+if(photoInput){
+
+photoInput.addEventListener(
+'change',
+function(e){
+
+let file=e.target.files[0];
+
+if(!file) return;
+
+let reader=new FileReader();
+
+reader.onload=function(event){
+
+let img=new Image();
+
+img.onload=function(){
+
+let canvas=document.createElement("canvas");
+
+let maxSize=800;
+
+let width=img.width;
+
+let height=img.height;
+
+if(width>height){
+
+if(width>maxSize){
+
+height*=maxSize/width;
+
+width=maxSize;
+
+}
+
+}else{
+
+if(height>maxSize){
+
+width*=maxSize/height;
+
+height=maxSize;
+
+}
+
+}
+
+canvas.width=width;
+
+canvas.height=height;
+
+let ctx=canvas.getContext("2d");
+
+ctx.drawImage(
+
+img,
+
+0,
+
+0,
+
+width,
+
+height
+
+);
+
+canvas.toBlob(function(blob){
+
+let compressedFile=new File(
+
+[blob],
+
+file.name,
+
+{
+
+type:"image/jpeg"
+
+}
+
+);
+
+let dt=new DataTransfer();
+
+dt.items.add(compressedFile);
+
+photoInput.files=dt.files;
+
+},
+
+"image/jpeg",
+
+0.80
+
+);
+
+};
+
+img.src=event.target.result;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+}
+
+new TomSelect("#company_city",{
+    create:true,
+    createOnBlur:true,
+    persist:false,
+    maxOptions:40,
+    placeholder:"Search or add company city",
+    sortField:{
+        field:"text",
+        direction:"asc"
+    }
+});
+
+</script>
+
+{% endblock %}
