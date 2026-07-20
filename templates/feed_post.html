@@ -34,7 +34,7 @@
                     {% set ext = img.split('.')[-1].lower() %}
                     {% if ext in ['mp4','mov','webm','mkv'] %}
                     <div class="feed-media reel-media video-container">
-                        <video class="feed-image feed-video" autoplay loop playsinline preload="metadata" onclick="openMedia(this,'/static/uploads/{{ img }}','video')">
+                        <video class="feed-image feed-video" autoplay muted loop playsinline preload="metadata" onclick="openMedia(this,'/static/uploads/{{ img }}','video')">
                             <source src="/static/uploads/{{ img }}" type="video/mp4">
                         </video>
                         <button class="mute-btn" onclick="toggleMute(event,this)">🔇</button>
@@ -113,6 +113,8 @@
 
 @media (min-width: 992px) { .desktop-feed { max-width: 650px; margin: 0 auto; } }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script>
 
@@ -288,28 +290,102 @@ document.querySelectorAll(".feed-video").forEach(video => observer.observe(video
 
 <script>
 
-function toggleSpark(jobId){
+let reportModal;
 
-    fetch("/spark/" + jobId, {
-        method: "POST"
+document.addEventListener("DOMContentLoaded", function () {
+    reportModal = new bootstrap.Modal(
+        document.getElementById("reportModal")
+    );
+});
+
+function openReportModal(postId){
+
+    document.getElementById("reportPostId").value = postId;
+
+    document.getElementById("reportComment").value = "";
+
+    document.getElementById("reportReason").selectedIndex = 0;
+
+    reportModal.show();
+
+}
+
+function submitReport(){
+
+    let postId = document.getElementById("reportPostId").value;
+
+    let reason = document.getElementById("reportReason").value;
+
+    let comment = document.getElementById("reportComment").value;
+
+    fetch("/report-post/" + postId, {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+
+        body:
+            "reason=" + encodeURIComponent(reason)
+            + "&comment=" + encodeURIComponent(comment)
+
     })
 
-    .then(response => response.json())
+    .then(r => r.json())
 
     .then(data => {
 
         if(data.success){
 
+            reportModal.hide();
+
             document.getElementById(
-                "spark-count-" + jobId
-            ).innerHTML = data.count;
+                "post" + postId
+            ).remove();
+
+            alert(
+                "Report submitted successfully."
+            );
+
+        }else{
+
+            alert(
+                data.message || "Unable to submit report."
+            );
 
         }
 
+    });
+
+}
+
+function toggleSpark(jobId) {
+    // 1. Vibration for mobile devices
+    if (navigator.vibrate) {
+        navigator.vibrate(100);
+    }
+
+    // 2. Add animation class
+    const btn = event.currentTarget;
+    btn.classList.add('spark-animate');
+    
+    // Remove class after animation finishes (0.3s)
+    setTimeout(() => {
+        btn.classList.remove('spark-animate');
+    }, 300);
+
+    // 3. Existing API call
+    fetch("/spark/" + jobId, {
+        method: "POST"
     })
-
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("spark-count-" + jobId).innerHTML = data.count;
+        }
+    })
     .catch(error => console.log(error));
-
 }
 
 function toggleDescription(jobId) {
