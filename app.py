@@ -154,7 +154,7 @@ class User(UserMixin, db.Model):
     company_pincode = db.Column(db.String(20))
     company_country = db.Column(db.String(100), default="India")
     app_token = db.Column(db.String(128), unique=True, nullable=True)
-
+    last_streak_reset = db.Column(db.Date, nullable=True)
 
     account_holder_name = db.Column(db.String(200))
     trust_score = db.Column(db.Integer, default=100)
@@ -1885,6 +1885,22 @@ def home():
     # Update Last Login
     # ==========================
     current_user.last_login = india_time()
+
+    # ==========================
+    # Reset Daily Streaks
+    # ==========================
+    today = india_time().date()
+
+    if current_user.last_streak_reset != today:
+        current_user.daily_login_completed = False
+        current_user.daily_upload_completed = False
+        current_user.daily_referral_completed = False
+
+        current_user.last_streak_reset = today
+
+    # Today's login completed
+    current_user.daily_login_completed = True
+
     db.session.commit()
 
     industry = request.args.get('industry')
@@ -1966,9 +1982,9 @@ def home():
     # DAILY STREAKS
     # ==========================
 
-    today = date.today()
+    today = india_time().date()
 
-    daily_login_completed = True
+    daily_login_completed = current_user.daily_login_completed
 
     today_uploads = Candidate.query.filter(
         Candidate.uploaded_by == current_user.id,
