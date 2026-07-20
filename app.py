@@ -1490,7 +1490,7 @@ def send_notification(
 
                 user.fcm_token,
 
-                "RecrootEarn",
+                "",
 
                 message
 
