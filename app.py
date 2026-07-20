@@ -373,6 +373,8 @@ class CandidateUser(UserMixin, db.Model):
         default=india_time
     )
 
+    last_login = db.Column(db.DateTime)
+
 class CreditPurchase(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -4809,6 +4811,8 @@ def candidate_login():
             # Generate App Token if not already present
             if not user.app_token:
                 user.app_token = secrets.token_hex(64)
+
+            user.last_login = india_time()
 
             db.session.commit()
 

@@ -121,6 +121,8 @@
 
 <th>Joined</th>
 
+<th>Last Login</th>
+
 <th>Status</th>
 
 <th>Actions</th>
@@ -313,39 +315,36 @@ No Resume
 </td>
 
 <td>
-
-{% if c.created_at %}
-
-{{ c.created_at.strftime("%d-%m-%Y") }}
-
-{% else %}
-
--
-
-{% endif %}
-
+    {% if c.created_at %}
+        {{ c.created_at.strftime("%d-%m-%Y") }}
+    {% else %}
+        -
+    {% endif %}
 </td>
 
 <td>
+    {% if c.last_login %}
+        <div>{{ c.last_login.strftime("%d-%m-%Y") }}</div>
+        <small class="text-muted">
+            {{ c.last_login.strftime("%I:%M %p") }}
+        </small>
+    {% else %}
+        <span class="badge bg-secondary">
+            Never Logged In
+        </span>
+    {% endif %}
+</td>
 
-{% if c.is_deleted %}
-
-<span class="badge bg-danger">
-
-Blocked
-
-</span>
-
-{% else %}
-
-<span class="badge bg-success">
-
-Active
-
-</span>
-
-{% endif %}
-
+<td>
+    {% if c.is_deleted %}
+        <span class="badge bg-danger">
+            Blocked
+        </span>
+    {% else %}
+        <span class="badge bg-success">
+            Active
+        </span>
+    {% endif %}
 </td>
 
 <td>
