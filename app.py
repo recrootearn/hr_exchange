@@ -1881,6 +1881,12 @@ def home():
 
     from datetime import date
 
+    # ==========================
+    # Update Last Login
+    # ==========================
+    current_user.last_login = india_time()
+    db.session.commit()
+
     industry = request.args.get('industry')
     designation = request.args.get('designation')
     city = request.args.get('city')
