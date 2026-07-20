@@ -1991,13 +1991,18 @@ def home():
         db.func.date(Candidate.created_at) == today
     ).count()
 
-    daily_upload_completed = today_uploads >= 10
+    current_user.daily_upload_completed = (today_uploads >= 10)
 
     today_referrals = User.query.filter(
         User.referred_by == current_user.referral_code
     ).count()
 
-    daily_referral_completed = today_referrals > 0
+    current_user.daily_referral_completed = (today_referrals > 0)
+
+    db.session.commit()
+
+    daily_upload_completed = current_user.daily_upload_completed
+    daily_referral_completed = current_user.daily_referral_completed
 
     # ==========================
     # CANDIDATE LIST
