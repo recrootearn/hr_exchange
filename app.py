@@ -4851,6 +4851,12 @@ def candidate_dashboard():
     )
 
     # ==========================
+    # Update Last Login
+    # ==========================
+    candidate.last_login = india_time()
+    db.session.commit()
+
+    # ==========================
     # Candidate Level
     # ==========================
 
