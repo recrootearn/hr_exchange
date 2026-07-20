@@ -212,10 +212,10 @@ padding:18px;
 
 <div class="post-header">
 
-{% if current_user.profile_photo %}
+{% if user.profile_photo %}
 
 <img
-src="/static/uploads/{{ current_user.profile_photo }}"
+src="/static/uploads/{{ user.profile_photo }}"
 class="profile-photo">
 
 {% else %}
@@ -292,7 +292,7 @@ First Name
 type="text"
 name="first_name"
 class="form-control"
-value="{{ current_user.first_name }}">
+value="{{ user.first_name }}">
 
 </div>
 
@@ -308,7 +308,7 @@ Last Name
 type="text"
 name="last_name"
 class="form-control"
-value="{{ current_user.last_name }}">
+value="{{ user.last_name }}">
 
 </div>
 
@@ -323,7 +323,7 @@ Mobile Number
 <input
 type="text"
 class="form-control"
-value="{{ current_user.mobile }}"
+value="{{ user.mobile }}"
 readonly>
 
 </div>
@@ -340,7 +340,7 @@ Email Address
 type="email"
 name="email"
 class="form-control"
-value="{{ current_user.email }}">
+value="{{ user.email }}">
 
 </div>
 
@@ -370,7 +370,7 @@ Company Name
 type="text"
 name="company"
 class="form-control"
-value="{{ current_user.company }}">
+value="{{ user.company }}">
 
 </div>
 
@@ -388,7 +388,7 @@ class="form-select">
 
 <option
 value="Founder"
-{% if current_user.hr_type=="Founder" %}
+{% if user.hr_type=="Founder" %}
 selected
 {% endif %}>
 
@@ -398,7 +398,7 @@ Founder
 
 <option
 value="Co-founder"
-{% if current_user.hr_type=="Co-founder" %}
+{% if user.hr_type=="Co-founder" %}
 selected
 {% endif %}>
 
@@ -408,7 +408,7 @@ Co-founder
 
 <option
 value="HR"
-{% if current_user.hr_type=="HR" %}
+{% if user.hr_type=="HR" %}
 selected
 {% endif %}>
 
@@ -433,14 +433,14 @@ Company City
     name="company_city"
     class="form-select">
 
-    {% if current_user.company_city %}
-    <option value="{{ current_user.company_city }}" selected>
-        {{ current_user.company_city }}
+    {% if user.company_city %}
+    <option value="{{ user.company_city }}" selected>
+        {{ user.company_city }}
     </option>
     {% endif %}
 
     {% for city in cities %}
-        {% if city != current_user.company_city %}
+        {% if city != user.company_city %}
         <option value="{{ city }}">
             {{ city }}
         </option>
@@ -464,7 +464,7 @@ type="text"
 name="company_website"
 class="form-control"
 placeholder="https://company.com"
-value="{{ current_user.company_website }}">
+value="{{ user.company_website }}">
 
 </div>
 
@@ -473,7 +473,7 @@ value="{{ current_user.company_website }}">
     <input type="text"
            name="company_house"
            class="form-control"
-           value="{{ current_user.company_house or '' }}">
+           value="{{ user.company_house or '' }}">
 </div>
 
 <div class="col-md-6">
@@ -481,7 +481,7 @@ value="{{ current_user.company_website }}">
     <input type="text"
            name="company_road"
            class="form-control"
-           value="{{ current_user.company_road or '' }}">
+           value="{{ user.company_road or '' }}">
 </div>
 
 <div class="col-md-6">
@@ -489,7 +489,7 @@ value="{{ current_user.company_website }}">
     <input type="text"
            name="company_area"
            class="form-control"
-           value="{{ current_user.company_area or '' }}">
+           value="{{ user.company_area or '' }}">
 </div>
 
 <div class="col-md-6">
@@ -497,7 +497,7 @@ value="{{ current_user.company_website }}">
     <input type="text"
            name="company_state"
            class="form-control"
-           value="{{ current_user.company_state or '' }}">
+           value="{{ user.company_state or '' }}">
 </div>
 
 <div class="col-md-6">
@@ -506,7 +506,7 @@ value="{{ current_user.company_website }}">
            name="company_pincode"
            class="form-control"
            maxlength="6"
-           value="{{ current_user.company_pincode or '' }}">
+           value="{{ user.company_pincode or '' }}">
 </div>
 
 <div class="col-md-6">
@@ -514,7 +514,7 @@ value="{{ current_user.company_website }}">
     <input type="text"
            name="company_country"
            class="form-control"
-           value="{{ current_user.company_country or 'India' }}">
+           value="{{ user.company_country or 'India' }}">
 </div>
 
 </div>
@@ -574,10 +574,10 @@ MSME Certificate
 
 </label>
 
-{% if current_user.msme_certificate %}
+{% if user.msme_certificate %}
 
 <a
-href="/static/uploads/{{ current_user.msme_certificate }}"
+href="/static/uploads/{{ user.msme_certificate }}"
 target="_blank"
 class="btn btn-success w-100 mb-3">
 
@@ -608,10 +608,10 @@ Gumasta Certificate
 
 </label>
 
-{% if current_user.gumasta_certificate %}
+{% if user.gumasta_certificate %}
 
 <a
-href="/static/uploads/{{ current_user.gumasta_certificate }}"
+href="/static/uploads/{{ user.gumasta_certificate }}"
 target="_blank"
 class="btn btn-primary w-100 mb-3">
 
