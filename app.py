@@ -2667,6 +2667,40 @@ def edit_notification_template(id):
         template=template
     )
 
+@app.route('/admin/edit-candidate/<int:candidate_id>', methods=['GET', 'POST'])
+@login_required
+def admin_edit_candidate(candidate_id):
+
+    if not current_user.is_admin:
+        abort(403)
+
+    candidate = CandidateUser.query.get_or_404(candidate_id)
+
+    if request.method == "POST":
+
+        candidate.full_name = request.form.get("full_name")
+        candidate.email = request.form.get("email")
+        candidate.mobile = request.form.get("mobile")
+        candidate.gender = request.form.get("gender")
+        candidate.dob = request.form.get("dob")
+        candidate.city = request.form.get("city")
+        candidate.state = request.form.get("state")
+        candidate.address = request.form.get("address")
+        candidate.qualification = request.form.get("qualification")
+        candidate.experience = request.form.get("experience")
+        candidate.skills = request.form.get("skills")
+        candidate.about_me = request.form.get("about_me")
+
+        db.session.commit()
+
+        flash("Candidate details updated successfully.", "success")
+        return redirect(url_for("admin_candidate_users"))
+
+    return render_template(
+        "admin_edit_candidate.html",
+        candidate=candidate
+    )
+
 @app.route('/my-uploads')
 @login_required
 def my_uploads():

@@ -357,12 +357,9 @@ View
 
 </a>
 
-<a
-href="/admin/edit-candidate/{{ c.id }}"
-class="btn btn-warning btn-sm mb-1">
-
-Edit
-
+<a href="{{ url_for('admin_edit_candidate', candidate_id=c.id) }}"
+   class="btn btn-primary btn-sm">
+    <i class="fas fa-edit"></i> Edit
 </a>
 
 {% if not c.is_deleted %}
