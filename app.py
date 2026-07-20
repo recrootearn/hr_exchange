@@ -167,6 +167,10 @@ class User(UserMixin, db.Model):
         default=False
     )
     referral_code = db.Column(db.String(20), unique=True)
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
 
     daily_referral_rewards = db.Column(
         db.Integer,
@@ -1994,7 +1998,8 @@ def home():
     current_user.daily_upload_completed = (today_uploads >= 10)
 
     today_referrals = User.query.filter(
-        User.referred_by == current_user.referral_code
+        User.referred_by == current_user.referral_code,
+        db.func.date(User.created_at) == today
     ).count()
 
     current_user.daily_referral_completed = (today_referrals > 0)
