@@ -484,35 +484,43 @@ playCurrentVideo(current);
 });
 
 const observer = new IntersectionObserver((entries) => {
-
     entries.forEach(entry => {
 
         const video = entry.target;
-        const btn = video.parentElement.querySelector(".mute-btn");
 
         if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
 
-            video.play().catch(()=>{});
+            document.querySelectorAll(".feed-video").forEach(v => {
+                if (v !== video) {
+                    v.pause();
+                    v.muted = true;
+
+                    const b = v.parentElement.querySelector(".mute-btn");
+                    if (b) b.innerHTML = "🔇";
+                }
+            });
+
+            video.muted = false;
+            video.play().catch(() => {});
+
+            const btn = video.parentElement.querySelector(".mute-btn");
+            if (btn) btn.innerHTML = "🔊";
 
         } else {
 
-            video.muted = true;
             video.pause();
+            video.muted = true;
 
-            if(btn){
-                btn.innerHTML = "🔇";
-            }
+            const btn = video.parentElement.querySelector(".mute-btn");
+            if (btn) btn.innerHTML = "🔇";
         }
 
     });
-
 }, {
-    threshold: [0.6]
+    threshold: 0.6
 });
 
-document.querySelectorAll(".feed-video").forEach(video => {
-    observer.observe(video);
-});
+document.querySelectorAll(".feed-video").forEach(video => observer.observe(video));
 
 </script>
 
