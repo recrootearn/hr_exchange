@@ -8833,12 +8833,30 @@ def wrong_experience(id):
 @app.route('/admin')
 @login_required
 def admin():
-    if not admin_only(): return "Access Denied", 403
-    return render_template('admin.html', total_users=User.query.count(), 
-                           total_candidates=Candidate.query.count(), 
-                           total_candidate_users=CandidateUser.query.count(),
-                           total_unlocks=Unlock.query.count(),
-                           recent_candidates=Candidate.query.order_by(Candidate.created_at.desc()).limit(10).all())
+    if not admin_only():
+        return "Access Denied", 403
+
+    today = india_time().date()
+
+    return render_template(
+        'admin.html',
+        total_users=User.query.count(),
+        total_candidates=Candidate.query.count(),
+        total_candidate_users=CandidateUser.query.count(),
+        total_unlocks=Unlock.query.count(),
+
+        today_active_hr=User.query.filter(
+            db.func.date(User.last_login) == today
+        ).count(),
+
+        today_active_candidates=CandidateUser.query.filter(
+            db.func.date(CandidateUser.last_login) == today
+        ).count(),
+
+        recent_candidates=Candidate.query.order_by(
+            Candidate.created_at.desc()
+        ).limit(10).all()
+    )
 
 @app.route('/admin/users')
 @login_required
