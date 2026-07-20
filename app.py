@@ -8836,6 +8836,7 @@ def admin():
     if not admin_only(): return "Access Denied", 403
     return render_template('admin.html', total_users=User.query.count(), 
                            total_candidates=Candidate.query.count(), 
+                           total_candidate_users=CandidateUser.query.count(),
                            total_unlocks=Unlock.query.count(),
                            recent_candidates=Candidate.query.order_by(Candidate.created_at.desc()).limit(10).all())
 
