@@ -524,6 +524,13 @@ class JobPost(db.Model):
     video_caption = db.Column(db.Text)
     hashtags = db.Column(db.String(300))
 
+    comments = db.relationship(
+        "Comment",
+        backref="job",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
     sparks = db.relationship(
         "Spark",
         backref="job",
@@ -1246,6 +1253,105 @@ class PasswordReset(db.Model):
     email = db.Column(db.String(120))
 
     otp = db.Column(db.String(10))
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    job_id = db.Column(
+        db.Integer,
+        db.ForeignKey("job_post.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    hr_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True
+    )
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=True
+    )
+
+    parent_comment_id = db.Column(
+        db.Integer,
+        db.ForeignKey("comment.id"),
+        nullable=True
+    )
+
+    comment = db.Column(db.Text, nullable=False)
+
+    edited = db.Column(db.Boolean, default=False)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+    replies = db.relationship(
+        "Comment",
+        backref=db.backref(
+            "parent",
+            remote_side=[id]
+        ),
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+class CommentLike(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    comment_id = db.Column(
+        db.Integer,
+        db.ForeignKey("comment.id", ondelete="CASCADE"),
+        nullable=False
+    )
+
+    hr_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True
+    )
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+class CommentReport(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    comment_id = db.Column(
+        db.Integer,
+        db.ForeignKey("comment.id", ondelete="CASCADE")
+    )
+
+    hr_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True
+    )
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=True
+    )
+
+    reason = db.Column(db.String(100))
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
 
 # =========================
 # LOGIN MANAGER
@@ -10770,6 +10876,224 @@ def forgot_password():
     return render_template(
         'forgot_password.html'
     )
+
+@app.route("/comment/<int:job_id>", methods=["POST"])
+def add_comment(job_id):
+
+    if not current_user.is_authenticated and "candidate_id" not in session:
+        return jsonify({"success": False})
+
+    text = request.form.get("comment", "").strip()
+
+    if not text:
+        return jsonify({"success": False})
+
+    comment = Comment(
+        job_id=job_id,
+        comment=text
+    )
+
+    if current_user.is_authenticated:
+        comment.hr_id = current_user.id
+    else:
+        comment.candidate_id = session["candidate_id"]
+
+    parent = request.form.get("parent_comment_id")
+
+    if parent:
+        comment.parent_comment_id = int(parent)
+
+    db.session.add(comment)
+    db.session.commit()
+
+    return jsonify({
+        "success": True,
+        "comment_id": comment.id
+    })
+
+@app.route("/delete-comment/<int:id>", methods=["POST"])
+def delete_comment(id):
+
+    comment = Comment.query.get_or_404(id)
+
+    allowed = False
+
+    if current_user.is_authenticated:
+        allowed = comment.hr_id == current_user.id
+
+    elif "candidate_id" in session:
+        allowed = comment.candidate_id == session["candidate_id"]
+
+    if not allowed:
+        return jsonify({"success": False})
+
+    db.session.delete(comment)
+    db.session.commit()
+
+    return jsonify({"success": True})
+
+@app.route("/comment-like/<int:comment_id>", methods=["POST"])
+def toggle_comment_like(comment_id):
+
+    if current_user.is_authenticated:
+        hr_id = current_user.id
+        candidate_id = None
+
+    elif "candidate_id" in session:
+        hr_id = None
+        candidate_id = session["candidate_id"]
+
+    else:
+        return jsonify({"success": False})
+
+    like = CommentLike.query.filter_by(
+        comment_id=comment_id,
+        hr_id=hr_id,
+        candidate_id=candidate_id
+    ).first()
+
+    if like:
+        db.session.delete(like)
+        liked = False
+    else:
+        db.session.add(CommentLike(
+            comment_id=comment_id,
+            hr_id=hr_id,
+            candidate_id=candidate_id
+        ))
+        liked = True
+
+    db.session.commit()
+
+    count = CommentLike.query.filter_by(
+        comment_id=comment_id
+    ).count()
+
+    return jsonify({
+        "success": True,
+        "liked": liked,
+        "count": count
+    })
+
+@app.route("/mention-search")
+def mention_search():
+
+    q = request.args.get("q","").strip()
+
+    results = []
+
+    hrs = User.query.filter(
+        User.company_name.ilike(f"%{q}%")
+    ).limit(5).all()
+
+    candidates = CandidateUser.query.filter(
+        CandidateUser.full_name.ilike(f"%{q}%")
+    ).limit(5).all()
+
+    for u in hrs:
+        results.append({
+            "id": u.id,
+            "type": "hr",
+            "name": u.company_name
+        })
+
+    for u in candidates:
+        results.append({
+            "id": u.id,
+            "type": "candidate",
+            "name": u.full_name
+        })
+
+    return jsonify(results)
+
+@app.route("/comments/<int:job_id>")
+def get_comments(job_id):
+
+    def serialize_comment(comment):
+
+        # Get comment owner
+        hr = User.query.get(comment.hr_id) if comment.hr_id else None
+        candidate = CandidateUser.query.get(comment.candidate_id) if comment.candidate_id else None
+
+        if hr:
+            name = f"{hr.first_name} {hr.last_name}"
+            photo = hr.profile_photo if hasattr(hr, "profile_photo") else ""
+            user_type = "hr"
+        elif candidate:
+            name = candidate.full_name
+            photo = candidate.profile_photo if hasattr(candidate, "profile_photo") else ""
+            user_type = "candidate"
+        else:
+            name = "Deleted User"
+            photo = ""
+            user_type = ""
+
+        # Check if current user liked this comment
+        liked = False
+
+        if current_user.is_authenticated:
+
+            liked = CommentLike.query.filter_by(
+                comment_id=comment.id,
+                hr_id=current_user.id
+            ).first() is not None
+
+        elif "candidate_id" in session:
+
+            liked = CommentLike.query.filter_by(
+                comment_id=comment.id,
+                candidate_id=session["candidate_id"]
+            ).first() is not None
+
+        # Like count
+        like_count = CommentLike.query.filter_by(
+            comment_id=comment.id
+        ).count()
+
+        # Recursive replies
+        replies = Comment.query.filter_by(
+            parent_comment_id=comment.id
+        ).order_by(Comment.created_at.asc()).all()
+
+        return {
+            "id": comment.id,
+
+            "job_id": comment.job_id,
+
+            "parent_comment_id": comment.parent_comment_id,
+
+            "name": name,
+
+            "photo": photo,
+
+            "user_type": user_type,
+
+            "comment": comment.comment,
+
+            "edited": comment.edited,
+
+            "created_at": comment.created_at.strftime("%d %b %Y %I:%M %p"),
+
+            "likes": like_count,
+
+            "liked": liked,
+
+            "replies": [
+                serialize_comment(reply)
+                for reply in replies
+            ]
+        }
+
+    # Load top-level comments
+    comments = Comment.query.filter_by(
+        job_id=job_id,
+        parent_comment_id=None
+    ).order_by(Comment.created_at.desc()).all()
+
+    return jsonify([
+        serialize_comment(comment)
+        for comment in comments
+    ])
 
 @login_manager.user_loader
 def load_user(user_id):
