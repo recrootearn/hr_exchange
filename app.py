@@ -11078,6 +11078,18 @@ def get_comments(job_id):
 
             "liked": liked,
 
+            "is_owner": (
+                (
+                    current_user.is_authenticated
+                    and comment.hr_id == current_user.id
+                )
+                or
+                (
+                    "candidate_id" in session
+                    and comment.candidate_id == session["candidate_id"]
+                )
+            ),
+
             "replies": [
                 serialize_comment(reply)
                 for reply in replies

@@ -269,20 +269,22 @@
 
     height:88vh;
 
+    max-height:100dvh;
+
     background:#fff;
 
     border-radius:30px 30px 0 0;
-
-    transform:translateY(100%);
-
-    transition:
-    transform .28s cubic-bezier(.22,.8,.32,1);
 
     display:flex;
 
     flex-direction:column;
 
+    transform:translateY(100%);
+
+    transition:transform .28s cubic-bezier(.22,.8,.32,1);
+
     z-index:9999;
+
 }
 
 .comments-sheet.show{
@@ -338,9 +340,13 @@
 
     border-top:1px solid #eee;
 
-    width:100%;
+    background:#fff;
 
-    box-sizing:border-box;
+    position:sticky;
+
+    bottom:0;
+
+    z-index:10;
 
 }
 
@@ -1342,6 +1348,31 @@ window.addEventListener("popstate",function(){
 
 });
 
+const input = document.getElementById("commentText");
+
+input.addEventListener("focus", function(){
+
+    setTimeout(function(){
+
+        const sheet = document.getElementById("commentsModal");
+
+        sheet.style.height = "100dvh";
+
+        input.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+    },300);
+
+});
+
+input.addEventListener("blur", function(){
+
+    document.getElementById("commentsModal").style.height = "88vh";
+
+});
+
 const sheet=document.getElementById("commentsModal");
 
 let startY=0;
@@ -1494,8 +1525,9 @@ function replyTo(id){
 
     replyToComment = id;
 
-    document.getElementById("commentText")
-        .placeholder = "Reply...";
+    document.getElementById("replyBanner").style.display = "flex";
+
+    document.getElementById("commentText").placeholder = "Reply...";
 
     document.getElementById("commentText").focus();
 
@@ -1511,8 +1543,8 @@ function renderComment(c, level = 0){
         <div class="comment-avatar">
 
             ${
-                c.profile
-                ? `<img src="${c.profile}">`
+                c.photo
+                ? `<img src="${c.photo}">`
                 : `<div class="avatar-letter">${c.name.charAt(0)}</div>`
             }
 
