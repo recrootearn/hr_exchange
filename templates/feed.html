@@ -346,7 +346,9 @@
 
     bottom:0;
 
-    z-index:10;
+    z-index:100;
+
+    padding-bottom:calc(env(safe-area-inset-bottom) + 10px);
 
 }
 
@@ -1816,6 +1818,25 @@ function reportSelectedComment(){
         }
 
     });
+
+}
+
+const commentsModal = document.getElementById("commentsModal");
+
+if (window.visualViewport) {
+
+    function updateKeyboard() {
+
+        const keyboardHeight =
+            window.innerHeight - window.visualViewport.height;
+
+        commentsModal.style.bottom =
+            keyboardHeight > 0 ? keyboardHeight + "px" : "0px";
+
+    }
+
+    visualViewport.addEventListener("resize", updateKeyboard);
+    visualViewport.addEventListener("scroll", updateKeyboard);
 
 }
 
