@@ -6534,6 +6534,7 @@ def spark(job_id):
         if existing:
 
             db.session.delete(existing)
+            sparked = False
 
         else:
 
@@ -6543,6 +6544,8 @@ def spark(job_id):
                     hr_id=current_user.id
                 )
             )
+
+            sparked = True
 
             if job.hr_id != current_user.id:
 
@@ -6557,52 +6560,13 @@ def spark(job_id):
 
         db.session.commit()
 
-        return jsonify({
-            "success": True,
-            "count": len(job.sparks)
-        })
-
-    # -----------------------------
-    # Candidate Spark
-    # -----------------------------
-    if "candidate_id" in session:
-
-        existing = Spark.query.filter_by(
-            job_id=job.id,
-            candidate_id=session["candidate_id"]
-        ).first()
-
-        if existing:
-
-            db.session.delete(existing)
-
-        else:
-
-            candidate = CandidateUser.query.get(
-                session["candidate_id"]
-            )
-
-            db.session.add(
-                Spark(
-                    job_id=job.id,
-                    candidate_id=candidate.id
-                )
-            )
-
-            send_notification(
-                user_id=job.hr_id,
-                user_type="hr",
-                message=f"{candidate.full_name} sparked your video.",
-                link=f"/job-view/{job.id}",
-                image=candidate.profile_photo,
-                type="spark"
-            )
-
-        db.session.commit()
+        # Refresh job to get updated spark count
+        db.session.refresh(job)
 
         return jsonify({
             "success": True,
-            "count": len(job.sparks)
+            "count": len(job.sparks),
+            "sparked": sparked
         })
 
     return jsonify({
