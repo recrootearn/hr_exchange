@@ -963,8 +963,6 @@ Start the conversation.
 
 let openedFeedVideo = null;
 let currentFeedVideo = null;
-let selectedComment = null;
-let selectedCommentText = "";
 
 window.soundEnabled = false;
 
@@ -1505,41 +1503,17 @@ function replyTo(id){
 
 function renderComment(c, level = 0){
 
-    let actions="";
-
-    if(c.is_owner){
-
-        actions=`
-            <span onclick="replyTo(${c.id})">Reply</span>
-            ·
-            <span onclick="editComment(${c.id})">Edit</span>
-            ·
-            <span onclick="deleteComment(${c.id})">Delete</span>
-        `;
-
-    }else{
-
-        actions=`
-            <span onclick="replyTo(${c.id})">Reply</span>
-            ·
-            <span onclick="reportComment(${c.id})">Report</span>
-        `;
-
-    }
-
-    let html=`
+    let html = `
 
     <div class="comment-card"
-         style="margin-left:${level*18}px">
+         style="margin-left:${level * 18}px">
 
         <div class="comment-avatar">
 
             ${
                 c.profile
-                ?
-                `<img src="${c.profile}">`
-                :
-                `<div class="avatar-letter">${c.name.charAt(0)}</div>`
+                ? `<img src="${c.profile}">`
+                : `<div class="avatar-letter">${c.name.charAt(0)}</div>`
             }
 
         </div>
@@ -1551,15 +1525,11 @@ function renderComment(c, level = 0){
                 <div>
 
                     <span class="comment-name">
-
                         ${c.name}
-
                     </span>
 
                     <span class="comment-time">
-
                         ${c.time || ""}
-
                     </span>
 
                 </div>
@@ -1567,21 +1537,16 @@ function renderComment(c, level = 0){
                 <div class="comment-like">
 
                     <button
-
                         id="like-${c.id}"
-
-                        class="heart-btn ${c.liked ? "liked":""}"
-
+                        class="heart-btn ${c.liked ? "liked" : ""}"
                         onclick="toggleCommentLike(${c.id})">
 
-                        <i class="${c.liked ? 'fas':'far'} fa-heart"></i>
+                        <i class="${c.liked ? "fas" : "far"} fa-heart"></i>
 
                     </button>
 
                     <small id="like-count-${c.id}">
-
                         ${c.likes}
-
                     </small>
 
                 </div>
@@ -1589,60 +1554,53 @@ function renderComment(c, level = 0){
             </div>
 
             <div class="comment-text">
-
                 ${c.comment}
-
             </div>
 
             <div class="comment-actions">
 
-    <span onclick="replyTo(${c.id})">
-        Reply
-    </span>
+                <span onclick="replyTo(${c.id})">
+                    Reply
+                </span>
 
-    <button
-        class="comment-menu"
-        onclick="openCommentMenu(${c.id},`${c.comment}`,${c.is_owner})">
+                <button
+                    class="comment-menu"
+                    onclick="openCommentMenu(${c.id}, \`${c.comment}\`, ${c.is_owner})">
 
-        <i class="fas fa-ellipsis-h"></i>
+                    <i class="fas fa-ellipsis-h"></i>
 
-    </button>
+                </button>
 
-</div>
+            </div>
 
         </div>
 
     </div>
+
     `;
 
-    if(c.replies.length){
+    if(c.replies && c.replies.length){
 
-        html+=`
+        html += `
 
         <div class="reply-toggle"
-
              onclick="toggleReplies(${c.id})">
 
-             View ${c.replies.length} replies
+            View ${c.replies.length} replies
 
         </div>
 
-        <div
-
-            id="reply-${c.id}"
-
-            style="display:none">
+        <div id="reply-${c.id}" style="display:none;">
 
         `;
 
-        c.replies.forEach(r=>{
+        c.replies.forEach(function(r){
 
-            html+=renderComment(r,level+1);
+            html += renderComment(r, level + 1);
 
         });
 
-        html+="</div>";
-
+        html += `</div>`;
     }
 
     return html;
