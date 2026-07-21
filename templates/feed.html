@@ -338,22 +338,30 @@
 
     border-top:1px solid #eee;
 
-    background:#fff;
+    width:100%;
+
+    box-sizing:border-box;
+
 }
 
 .comment-input input{
 
     flex:1;
 
-    border:none;
+    min-width:0;
 
-    outline:none;
+}
 
-    background:#f5f5f5;
+.send-btn{
 
-    border-radius:30px;
+    flex:0 0 46px;
 
-    padding:12px 18px;
+    width:46px;
+
+    height:46px;
+
+    border-radius:50%;
+
 }
 
 .emoji-btn{
@@ -838,39 +846,27 @@ animation:commentIn .25s ease;
 
 </div>
 
-<div id="commentMenu"
+<div id="commentMenu" class="comment-menu-sheet">
 
-class="comment-menu-sheet">
+    <div id="editOption" onclick="editSelectedComment()">
+        ✏️ Edit
+    </div>
 
-<div onclick="editSelectedComment()">
+    <div id="deleteOption" onclick="deleteSelectedComment()">
+        🗑 Delete
+    </div>
 
-✏️ Edit
+    <div onclick="copyComment()">
+        📋 Copy
+    </div>
 
-</div>
+    <div onclick="reportSelectedComment()">
+        🚩 Report
+    </div>
 
-<div onclick="deleteSelectedComment()">
-
-🗑 Delete
-
-</div>
-
-<div onclick="copyComment()">
-
-📋 Copy
-
-</div>
-
-<div onclick="reportSelectedComment()">
-
-🚩 Report
-
-</div>
-
-<div onclick="closeCommentMenu()">
-
-Cancel
-
-</div>
+    <div onclick="closeCommentMenu()">
+        Cancel
+    </div>
 
 </div>
 
@@ -967,6 +963,8 @@ Start the conversation.
 
 let openedFeedVideo = null;
 let currentFeedVideo = null;
+let selectedComment = null;
+let selectedCommentText = "";
 
 window.soundEnabled = false;
 
@@ -1207,17 +1205,23 @@ function submitReport(){
 
 }
 
-let selectedComment=null;
+let selectedComment = null;
+let selectedCommentText = "";
+let selectedCommentOwner = false;
 
-function openCommentMenu(id){
+function openCommentMenu(id, text, owner){
 
-selectedComment=id;
+    selectedComment = id;
+    selectedCommentText = text;
+    selectedCommentOwner = owner;
 
-document
+    document.getElementById("commentMenu").classList.add("show");
 
-.getElementById("commentMenu")
+    document.getElementById("editOption").style.display =
+        owner ? "block" : "none";
 
-.classList.add("show");
+    document.getElementById("deleteOption").style.display =
+        owner ? "block" : "none";
 
 }
 
@@ -1593,16 +1597,12 @@ function renderComment(c, level = 0){
             <div class="comment-actions">
 
     <span onclick="replyTo(${c.id})">
-
         Reply
-
     </span>
 
     <button
-
         class="comment-menu"
-
-        onclick="openCommentMenu(${c.id})">
+        onclick="openCommentMenu(${c.id},`${c.comment}`,${c.is_owner})">
 
         <i class="fas fa-ellipsis-h"></i>
 
@@ -1711,6 +1711,121 @@ function chooseMention(name){
     commentText.value = text;
 
     mentionBox.style.display="none";
+
+}
+
+function editSelectedComment(){
+
+    closeCommentMenu();
+
+    let newText = prompt("Edit comment", selectedCommentText);
+
+    if(newText==null) return;
+
+    fetch("/edit-comment/" + selectedComment,{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+
+        body:"comment="+encodeURIComponent(newText)
+
+    })
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        if(data.success){
+
+            loadComments();
+
+        }else{
+
+            alert(data.message || "Unable to edit.");
+
+        }
+
+    });
+
+}
+
+function deleteSelectedComment(){
+
+    closeCommentMenu();
+
+    if(!confirm("Delete this comment?")) return;
+
+    fetch("/delete-comment/" + selectedComment,{
+
+        method:"POST"
+
+    })
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        if(data.success){
+
+            loadComments();
+
+        }else{
+
+            alert(data.message || "Unable to delete.");
+
+        }
+
+    });
+
+}
+
+function copyComment(){
+
+    closeCommentMenu();
+
+    navigator.clipboard.writeText(selectedCommentText);
+
+    alert("Comment copied.");
+}
+
+function reportSelectedComment(){
+
+    closeCommentMenu();
+
+    let reason = prompt("Reason for reporting");
+
+    if(reason==null) return;
+
+    fetch("/report-comment/" + selectedComment,{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+
+        body:"reason="+encodeURIComponent(reason)
+
+    })
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        if(data.success){
+
+            alert("Comment reported.");
+
+        }else{
+
+            alert(data.message || "Unable to report.");
+
+        }
+
+    });
 
 }
 

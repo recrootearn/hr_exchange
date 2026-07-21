@@ -11095,6 +11095,72 @@ def get_comments(job_id):
         for comment in comments
     ])
 
+@app.route("/edit-comment/<int:comment_id>", methods=["POST"])
+@login_required
+def edit_comment(comment_id):
+
+    comment = Comment.query.get_or_404(comment_id)
+
+    if current_user.role == "candidate":
+        if comment.candidate_id != current_user.id:
+            return jsonify(success=False, message="Permission denied")
+    else:
+        if comment.hr_id != current_user.id:
+            return jsonify(success=False, message="Permission denied")
+
+    text = request.form.get("comment", "").strip()
+
+    if not text:
+        return jsonify(success=False, message="Comment cannot be empty")
+
+    comment.comment = text
+    comment.edited = True
+
+    db.session.commit()
+
+    return jsonify(success=True)
+
+@app.route("/delete-comment/<int:comment_id>", methods=["POST"])
+@login_required
+def delete_comment(comment_id):
+
+    comment = Comment.query.get_or_404(comment_id)
+
+    if current_user.role == "candidate":
+        if comment.candidate_id != current_user.id:
+            return jsonify(success=False, message="Permission denied")
+    else:
+        if comment.hr_id != current_user.id:
+            return jsonify(success=False, message="Permission denied")
+
+    db.session.delete(comment)
+    db.session.commit()
+
+    return jsonify(success=True)
+
+@app.route("/report-comment/<int:comment_id>", methods=["POST"])
+@login_required
+def report_comment(comment_id):
+
+    comment = Comment.query.get_or_404(comment_id)
+
+    reason = request.form.get("reason", "").strip()
+
+    report = CommentReport(
+        comment_id=comment.id,
+        reason=reason
+    )
+
+    if current_user.role == "candidate":
+        report.candidate_id = current_user.id
+    else:
+        report.hr_id = current_user.id
+
+    db.session.add(report)
+    db.session.commit()
+
+    return jsonify(success=True)
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
