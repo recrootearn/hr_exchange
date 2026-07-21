@@ -8045,10 +8045,18 @@ def feed_post(id):
         JobPost.created_at.desc()
     ).all()
 
+    sparked_jobs = [
+        s.job_id
+        for s in Spark.query.filter_by(
+            hr_id=current_user.id
+        ).all()
+    ]
+
     return render_template(
         'feed_post.html',
         jobs=jobs,
-        selected_id=id
+        selected_id=id,
+        sparked_jobs=sparked_jobs
     )
 
 @app.route('/candidate-logout')
