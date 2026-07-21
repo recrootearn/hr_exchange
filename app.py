@@ -6596,7 +6596,7 @@ def candidate_spark(job_id):
     if existing:
 
         db.session.delete(existing)
-        db.session.commit()
+        sparked = False
 
     else:
 
@@ -6607,6 +6607,8 @@ def candidate_spark(job_id):
             )
         )
 
+        sparked = True
+
         send_notification(
             user_id=job.hr_id,
             user_type="hr",
@@ -6616,11 +6618,14 @@ def candidate_spark(job_id):
             type="spark"
         )
 
-        db.session.commit()
+    db.session.commit()
+
+    db.session.refresh(job)
 
     return jsonify({
         "success": True,
-        "count": Spark.query.filter_by(job_id=job.id).count()
+        "count": len(job.sparks),
+        "sparked": sparked
     })
 
 @app.route('/follow-hr-user/<int:id>')

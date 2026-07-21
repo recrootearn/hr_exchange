@@ -156,7 +156,14 @@
         <!-- Video Spark and Share buttons -->
         <div class="video-actions" style="display: flex; align-items: center; gap: 16px; width: 100%;">
             <!-- Updated onclick to toggleCandidateSpark -->
-            <button class="action-btn" type="button" onclick="toggleCandidateSpark({{ job.id }})" style="background: none; border: none; cursor: pointer; padding: 8px; font-size: 24px;">⚡</button>
+            <button
+                id="spark-btn-{{ job.id }}"
+                class="action-btn spark-btn {% if job.id in sparked_jobs %}sparked{% endif %}"
+                type="button"
+                onclick="toggleCandidateSpark({{ job.id }}, this)"
+            >
+            <i class="fas fa-bolt"></i>
+            </button>
             <span id="spark-count-{{ job.id }}" class="action-count" style="font-weight: 600; font-size: 14px; margin-left: -10px;">{{ job.sparks|length }}</span>
             <a href="/share-job/{{ job.id }}" class="action-btn" style="color: #2563eb; text-decoration: none; display: flex; align-items: center; padding: 8px; font-size: 24px;">
                 <i class="fas fa-paper-plane"></i>
@@ -194,6 +201,37 @@
 .mute-btn { position: absolute; right: 12px; bottom: 12px; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); color: #fff; border: none; }
 .description-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .toggle-btn { color: #666; cursor: pointer; font-size: 0.9em; font-weight: 600; display: block; margin-top: 4px; }
+.spark-btn{
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:8px;
+    font-size:26px;
+    color:#9ca3af;
+    transition:.25s ease;
+}
+
+.spark-btn.sparked{
+    color:#FFC107;
+}
+
+.spark-btn.sparked i{
+    filter:drop-shadow(0 0 6px rgba(255,193,7,.55));
+}
+
+.spark-btn:active{
+    transform:scale(1.25);
+}
+
+.spark-animate{
+    animation:pop .3s ease;
+}
+
+@keyframes pop{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.3);}
+    100%{transform:scale(1);}
+}
 
 .feed-filters{
     display:flex;
@@ -331,24 +369,41 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script>
-function toggleCandidateSpark(jobId){
-    const btn = event.target;
-    btn.style.transform = "scale(1.2)"; // Visual feedback
-    
-    fetch("/candidate-spark/" + jobId, {
-        method: "POST"
+function toggleCandidateSpark(jobId, btn){
+
+    if(navigator.vibrate){
+        navigator.vibrate(80);
+    }
+
+    btn.classList.add("spark-animate");
+
+    setTimeout(()=>{
+        btn.classList.remove("spark-animate");
+    },300);
+
+    fetch("/candidate-spark/" + jobId,{
+        method:"POST"
     })
-    .then(response => response.json())
-    .then(data => {
-        btn.style.transform = "scale(1)"; // Reset feedback
+    .then(response=>response.json())
+    .then(data=>{
+
         if(data.success){
-            document.getElementById("spark-count-" + jobId).innerHTML = data.count;
+
+            document.getElementById(
+                "spark-count-" + jobId
+            ).innerHTML = data.count;
+
+            if(data.sparked){
+                btn.classList.add("sparked");
+            }else{
+                btn.classList.remove("sparked");
+            }
+
         }
+
     })
-    .catch(error => {
-        btn.style.transform = "scale(1)";
-        console.error("Error:", error);
-    });
+    .catch(console.error);
+
 }
 </script>
 
