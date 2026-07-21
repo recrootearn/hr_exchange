@@ -138,19 +138,47 @@
         <div class="feed-buttons">
             {% if job.post_type == "video" %}
                 <div class="video-actions">
-                    <button
-                        id="spark-btn-{{ job.id }}"
-                        class="action-btn spark-btn {% if job.id in sparked_jobs %}sparked{% endif %}"
-                        type="button"
-                        onclick="toggleSpark({{ job.id }}, this)"
-                    >
-                        <i class="fas fa-bolt"></i>
-                    </button>
-                    <span id="spark-count-{{ job.id }}" class="action-count">{{ job.sparks|length }}</span>
-                    <a href="/share-job/{{ job.id }}" class="action-btn" style="color: #2563eb; text-decoration: none;">
-                        <i class="fas fa-paper-plane"></i>
-                    </a>
-                </div>
+
+    <!-- Spark -->
+    <button
+        id="spark-btn-{{ job.id }}"
+        class="action-btn spark-btn {% if job.id in sparked_jobs %}sparked{% endif %}"
+        type="button"
+        onclick="toggleSpark({{ job.id }}, this)">
+        <i class="fas fa-bolt"></i>
+    </button>
+
+    <span id="spark-count-{{ job.id }}" class="action-count">
+        {{ job.sparks|length }}
+    </span>
+
+    <!-- Comment -->
+    <button
+        class="action-btn"
+        onclick="openComments({{ job.id }})">
+
+        <i class="far fa-comment"></i>
+
+    </button>
+
+    <span
+        id="comment-count-{{ job.id }}"
+        class="action-count">
+
+        {{ job.comments|length }}
+
+    </span>
+
+    <!-- Share -->
+    <a href="/share-job/{{ job.id }}"
+       class="action-btn"
+       style="color:#2563eb;text-decoration:none;">
+
+        <i class="fas fa-paper-plane"></i>
+
+    </a>
+
+</div>
             {% else %}
                 <a href="/job-view/{{ job.id }}" class="btn btn-info">View</a>
                 {% if job.id in applied_jobs %}
@@ -350,6 +378,71 @@
             </div>
 
         </div>
+
+    </div>
+
+</div>
+
+<div id="commentsModal"
+     style="
+        display:none;
+        position:fixed;
+        left:0;
+        right:0;
+        bottom:0;
+        height:70%;
+        background:white;
+        border-radius:25px 25px 0 0;
+        z-index:9999;
+        box-shadow:0 -5px 20px rgba(0,0,0,.2);
+">
+
+    <div style="padding:15px;font-weight:bold;text-align:center;">
+        <div style="display:flex;
+        justify-content:space-between;
+        align-items:center;">
+
+        <b>Comments</b>
+
+        <button
+        onclick="closeComments()">
+
+        ✕
+
+        </button>
+
+        </div>
+    </div>
+
+    <div id="commentsContainer"
+         style="
+            height:75%;
+            overflow-y:auto;
+            padding:15px;
+         ">
+    </div>
+
+    <div style="
+        display:flex;
+        padding:15px;
+        border-top:1px solid #eee;
+    ">
+
+        <input
+            id="commentText"
+            placeholder="Add a comment..."
+            style="
+                flex:1;
+                border:none;
+                outline:none;
+            ">
+
+        <div id="mentionBox"
+        style="display:none;"></div>
+
+        <button onclick="sendComment()">
+            Post
+        </button>
 
     </div>
 
@@ -649,6 +742,192 @@ function toggleDescription(jobId) {
         desc.style.webkitLineClamp = 'unset';
         toggle.innerText = 'See less';
     }
+}
+
+let currentJobId = null;
+
+function openComments(jobId){
+
+    currentJobId = jobId;
+
+    document.getElementById("commentsModal").style.display = "block";
+
+    loadComments();
+
+}
+
+function closeComments(){
+
+    document.getElementById("commentsModal").style.display = "none";
+
+}
+
+function loadComments(){
+
+    fetch("/comments/" + currentJobId)
+
+    .then(r => r.json())
+
+    .then(data => {
+
+        let html = "";
+
+        data.forEach(c=>{
+            html += renderComment(c);
+        });
+
+        document.getElementById("commentsContainer").innerHTML = html;
+
+    });
+
+}
+
+function sendComment(){
+
+    let text = document.getElementById("commentText").value;
+
+    if(text.trim()=="") return;
+
+    fetch("/comment/" + currentJobId,{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+
+        body:
+        "comment="+encodeURIComponent(text)+
+        "&parent_comment_id="+(replyToComment || "")
+
+    })
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        if(data.success){
+
+            replyToComment = null;
+
+            document.getElementById("commentText").placeholder =
+            "Add a comment...";
+
+            loadComments();
+
+        }
+
+    });
+
+}
+
+let replyToComment = null;
+
+function replyTo(id){
+
+    replyToComment = id;
+
+    document.getElementById("commentText")
+        .placeholder = "Reply...";
+
+    document.getElementById("commentText").focus();
+
+}
+
+function renderComment(c, level = 0) {
+
+    let html = `
+        <div style="margin-left:${level * 20}px">
+            <b>${c.name}</b><br>
+            ${c.comment}<br>
+
+            <button
+            id="like-${c.id}"
+            onclick="toggleCommentLike(${c.id})">
+
+            ❤️
+            </button>
+
+            <span id="like-count-${c.id}">
+            ${c.likes}
+            </span>
+
+            <button
+            onclick="replyTo(${c.id})">
+
+            Reply
+
+            </button>
+        </div>
+    `;
+
+    c.replies.forEach(r => {
+        html += renderComment(r, level + 1);
+    });
+
+    return html;
+}
+
+function toggleCommentLike(commentId){
+
+    fetch("/comment-like/" + commentId,{
+        method:"POST"
+    })
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        if(data.success){
+
+            document.getElementById(
+                "like-count-" + commentId
+            ).innerHTML = data.count;
+
+            document.getElementById(
+                "like-" + commentId
+            ).classList.toggle(
+                "liked-comment",
+                data.liked
+            );
+
+        }
+
+    });
+
+}
+
+let mentionBox = document.getElementById("mentionBox");
+
+commentText.addEventListener("keyup", function(){
+
+    let value = this.value;
+
+    let match = value.match(/@(\w+)$/);
+
+    if(!match){
+        mentionBox.style.display="none";
+        return;
+    }
+
+    fetch("/mention-search?q="+match[1])
+
+    .then(r=>r.json())
+
+    .then(showMentionSuggestions);
+
+});
+
+function chooseMention(name){
+
+    let text = commentText.value;
+
+    text = text.replace(/@\w+$/, "@"+name+" ");
+
+    commentText.value = text;
+
+    mentionBox.style.display="none";
+
 }
 
 </script>
