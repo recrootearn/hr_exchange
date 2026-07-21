@@ -69,8 +69,14 @@
     {% if job.post_type == "video" %}
         <!-- Video post styling -->
         <div class="video-actions" style="display: flex; align-items: center; gap: 16px; width: 100%;">
-            <button class="action-btn" type="button" onclick="toggleSpark({{ job.id }})" 
-                    style="background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 8px; font-size: 24px;">⚡</button>
+            <button
+                id="spark-btn-{{ job.id }}"
+                class="action-btn spark-btn {% if job.id in sparked_jobs %}sparked{% endif %}"
+                type="button"
+                onclick="toggleSpark({{ job.id }}, this)"
+            >
+            <i class="fas fa-bolt"></i>
+            </button>
             <span id="spark-count-{{ job.id }}" class="action-count" style="font-weight: 600; font-size: 14px; margin-left: -10px;">{{ job.sparks|length }}</span>
             <a href="/share-job/{{ job.id }}" class="action-btn" style="color: #2563eb; text-decoration: none; display: flex; align-items: center; padding: 8px; font-size: 24px;">
                 <i class="fas fa-paper-plane"></i>
@@ -101,6 +107,37 @@
 .salary-tag { display: inline-block; background: #dcfce7; color: #15803d; padding: 8px 14px; border-radius: 20px; font-weight: 700; }
 .feed-buttons { display: flex; gap: 10px; padding: 0 16px 16px 16px; }
 .feed-buttons .btn { flex: 1; height: 50px; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 14px; font-weight: 600; }
+.spark-btn{
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:8px;
+    font-size:26px;
+    color:#9ca3af;
+    transition:.25s ease;
+}
+
+.spark-btn.sparked{
+    color:#FFC107;
+}
+
+.spark-btn.sparked i{
+    filter:drop-shadow(0 0 6px rgba(255,193,7,.55));
+}
+
+.spark-btn:active{
+    transform:scale(1.25);
+}
+
+.spark-animate{
+    animation:pop .3s ease;
+}
+
+@keyframes pop{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.3);}
+    100%{transform:scale(1);}
+}
 .mute-btn { position: absolute; right: 12px; bottom: 12px; width: 42px; height: 42px; border: none; border-radius: 50%; background: rgba(0,0,0,.5); color: #fff; font-size: 18px; cursor: pointer; }
 .description-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .toggle-btn { color: #666; cursor: pointer; font-size: 0.9em; font-weight: 600; display: block; margin-top: 4px; }
@@ -360,32 +397,40 @@ function submitReport(){
 
 }
 
-function toggleSpark(jobId) {
-    // 1. Vibration for mobile devices
-    if (navigator.vibrate) {
-        navigator.vibrate(100);
+function toggleSpark(jobId, btn){
+
+    if(navigator.vibrate){
+        navigator.vibrate(80);
     }
 
-    // 2. Add animation class
-    const btn = event.currentTarget;
-    btn.classList.add('spark-animate');
-    
-    // Remove class after animation finishes (0.3s)
-    setTimeout(() => {
-        btn.classList.remove('spark-animate');
-    }, 300);
+    btn.classList.add("spark-animate");
 
-    // 3. Existing API call
-    fetch("/spark/" + jobId, {
-        method: "POST"
+    setTimeout(()=>{
+        btn.classList.remove("spark-animate");
+    },300);
+
+    fetch("/spark/" + jobId,{
+        method:"POST"
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById("spark-count-" + jobId).innerHTML = data.count;
+    .then(r=>r.json())
+    .then(data=>{
+
+        if(data.success){
+
+            document.getElementById(
+                "spark-count-" + jobId
+            ).innerHTML = data.count;
+
+            if(data.sparked){
+                btn.classList.add("sparked");
+            }else{
+                btn.classList.remove("sparked");
+            }
+
         }
+
     })
-    .catch(error => console.log(error));
+    .catch(console.error);
 }
 
 function toggleDescription(jobId) {
