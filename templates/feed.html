@@ -943,40 +943,6 @@ Cancel
 
 </div>
 
-    <div id="commentsContainer"
-         style="
-            height:75%;
-            overflow-y:auto;
-            padding:15px;
-         ">
-    </div>
-
-    <div style="
-        display:flex;
-        padding:15px;
-        border-top:1px solid #eee;
-    ">
-
-        <input
-            id="commentText"
-            placeholder="Add a comment..."
-            style="
-                flex:1;
-                border:none;
-                outline:none;
-            ">
-
-        <div id="mentionBox"
-        style="display:none;"></div>
-
-        <button onclick="sendComment()">
-            Post
-        </button>
-
-    </div>
-
-</div>
-
 <div class="empty-comments">
 
 💬
@@ -1469,8 +1435,8 @@ function sendComment(){
         },
 
         body:
-        "comment="+encodeURIComponent(text)+
-        "&parent_comment_id="+(replyToComment || "")
+            "comment="+encodeURIComponent(text)+
+            "&parent_comment_id="+(replyToComment || "")
 
     })
 
@@ -1478,29 +1444,33 @@ function sendComment(){
 
     .then(data=>{
 
-        if(data.success){
+        if(!data.success) return;
 
-    replyToComment = null;
+        replyToComment = null;
 
-    const input = document.getElementById("commentText");
+        const input=document.getElementById("commentText");
 
-    input.value = "";                         // Clear text
-    input.placeholder = "Add a comment...";
+        input.value="";
 
-    document.getElementById("replyBanner").style.display = "none";
+        input.placeholder="Add a comment...";
 
-    loadComments();
+        document.getElementById("replyBanner").style.display="none";
 
-    setTimeout(function(){
+        loadComments();
 
-        const box = document.getElementById("commentsContainer");
-        box.scrollTop = box.scrollHeight;
+        setTimeout(function(){
 
-    },200);
+            const box=document.getElementById("commentsContainer");
 
-    if(navigator.vibrate){
-        navigator.vibrate(20);
-    }
+            box.scrollTop=box.scrollHeight;
+
+        },200);
+
+        if(navigator.vibrate){
+
+            navigator.vibrate(20);
+
+        }
 
     });
 
