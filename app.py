@@ -11097,7 +11097,7 @@ def get_comments(job_id):
 
 @app.route("/edit-comment/<int:comment_id>", methods=["POST"])
 @login_required
-def edit_comment(comment_id):
+def edit_post_comment(comment_id):
 
     comment = Comment.query.get_or_404(comment_id)
 
@@ -11122,7 +11122,7 @@ def edit_comment(comment_id):
 
 @app.route("/delete-comment/<int:comment_id>", methods=["POST"])
 @login_required
-def delete_comment(comment_id):
+def delete_post_comment(comment_id):
 
     comment = Comment.query.get_or_404(comment_id)
 
@@ -11140,7 +11140,7 @@ def delete_comment(comment_id):
 
 @app.route("/report-comment/<int:comment_id>", methods=["POST"])
 @login_required
-def report_comment(comment_id):
+def report_post_comment(comment_id):
 
     comment = Comment.query.get_or_404(comment_id)
 
