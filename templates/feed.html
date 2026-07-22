@@ -1756,7 +1756,6 @@ function editSelectedComment(){
 }
 
 function deleteSelectedComment(){
-
     closeCommentMenu();
 
     if(!confirm("Delete this comment?")) return;
@@ -1764,7 +1763,15 @@ function deleteSelectedComment(){
     fetch("/delete-comment/" + selectedComment, {
         method: "POST"
     })
-    .then(r => r.json())
+    .then(async r => {
+        const text = await r.text();
+        try {
+            return JSON.parse(text);
+        } catch(e) {
+            console.error("Non-JSON response:", text);
+            throw new Error("Server returned non-JSON response");
+        }
+    })
     .then(data => {
         if(data.success){
             loadComments();
@@ -1773,10 +1780,9 @@ function deleteSelectedComment(){
         }
     })
     .catch(err => {
-        console.error(err);
-        alert("An error occurred while deleting.");
+        console.error("Fetch Error:", err);
+        alert("Delete failed: " + err.message);
     });
-
 }
 
 function copyComment(){
