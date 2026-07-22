@@ -312,6 +312,16 @@
     padding-bottom: 70px; 
 }
 
+body.keyboard-open .comments-sheet {
+    bottom: 0 !important;
+    top: auto !important;
+    height: 50vh !important;
+}
+
+body.keyboard-open .comments-body {
+    padding-bottom: 60px !important;
+}
+
 .comments-sheet.show{
 
     transform:translateY(0);
@@ -1825,32 +1835,29 @@ function reportSelectedComment(){
 const commentsModal = document.getElementById("commentsModal");
 const commentInput = document.getElementById("commentText");
 
+commentInput.addEventListener("focus", function() {
+    document.body.classList.add("keyboard-open");
+    setTimeout(() => {
+        commentInput.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 200);
+});
+
+commentInput.addEventListener("blur", function() {
+    setTimeout(() => {
+        document.body.classList.remove("keyboard-open");
+    }, 150);
+});
+
 if (window.visualViewport) {
-    function updateSheetForKeyboard() {
+    window.visualViewport.addEventListener("resize", function() {
         if (!commentsModal.classList.contains("show")) return;
-
-        const viewport = window.visualViewport;
-        // Calculate exact keyboard height offset
-        const keyboardHeight = window.innerHeight - viewport.height;
-
-        if (keyboardHeight > 40) {
-            // Keyboard is OPEN: pin the sheet right above the keyboard
-            commentsModal.style.bottom = keyboardHeight + "px";
-            commentsModal.style.height = (viewport.height * 0.75) + "px";
+        const keyboardHeight = window.innerHeight - window.visualViewport.height;
+        if (keyboardHeight > 50) {
+            document.body.classList.add("keyboard-open");
         } else {
-            // Keyboard is CLOSED: pin sheet back to the bottom of the screen
-            commentsModal.style.bottom = "0px";
-            commentsModal.style.height = "80vh";
+            document.body.classList.remove("keyboard-open");
         }
-
-        // Scroll input into clear view
-        setTimeout(() => {
-            commentInput.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }, 50);
-    }
-
-    window.visualViewport.addEventListener("resize", updateSheetForKeyboard);
-    window.visualViewport.addEventListener("scroll", updateSheetForKeyboard);
+    });
 }
 
 </script>
