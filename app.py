@@ -1953,6 +1953,33 @@ def check_candidate_profile():
             url_for("edit_candidate_profile")
         )
 
+@app.before_request
+def update_last_login():
+    if request.endpoint is None:
+        return
+
+    # HR
+    if current_user.is_authenticated:
+        today = india_time()
+        if (
+            current_user.last_login is None or
+            current_user.last_login.date() != today.date()
+        ):
+            current_user.last_login = today
+            db.session.commit()
+
+    # Candidate
+    elif session.get("candidate_id"):
+        candidate = CandidateUser.query.get(session["candidate_id"])
+        if candidate:
+            today = india_time()
+            if (
+                candidate.last_login is None or
+                candidate.last_login.date() != today.date()
+            ):
+                candidate.last_login = today
+                db.session.commit()
+
 # =========================
 # USER ROUTES
 # =========================
