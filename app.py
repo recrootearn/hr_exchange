@@ -10889,10 +10889,13 @@ def add_comment(job_id):
         comment=text
     )
 
-    if current_user.is_authenticated:
-        comment.hr_id = current_user.id
-    else:
+    if "candidate_id" in session:
         comment.candidate_id = session["candidate_id"]
+        comment.hr_id = None
+
+    elif current_user.is_authenticated:
+        comment.hr_id = current_user.id
+        comment.candidate_id = None
 
     parent = request.form.get("parent_comment_id")
 
