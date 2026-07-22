@@ -1985,6 +1985,28 @@ def splash():
 @login_required
 def home():
 
+    # ==========================
+    # Update Last Login
+    # ==========================
+    current_user.last_login = india_time()
+
+    # ==========================
+    # Reset Daily Streaks
+    # ==========================
+    today = india_time().date()
+
+    if current_user.last_streak_reset != today:
+        current_user.daily_login_completed = False
+        current_user.daily_upload_completed = False
+        current_user.daily_referral_completed = False
+
+        current_user.last_streak_reset = today
+
+    # Today's login completed
+    current_user.daily_login_completed = True
+
+    db.session.commit()
+
     from datetime import date
 
     industry = request.args.get('industry')
@@ -8219,28 +8241,6 @@ def check_mobile():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
-    # ==========================
-    # Update Last Login
-    # ==========================
-    current_user.last_login = india_time()
-
-    # ==========================
-    # Reset Daily Streaks
-    # ==========================
-    today = india_time().date()
-
-    if current_user.last_streak_reset != today:
-        current_user.daily_login_completed = False
-        current_user.daily_upload_completed = False
-        current_user.daily_referral_completed = False
-
-        current_user.last_streak_reset = today
-
-    # Today's login completed
-    current_user.daily_login_completed = True
-
-    db.session.commit()
 
     if request.method == 'POST':
 
