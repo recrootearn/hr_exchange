@@ -250,8 +250,6 @@
 
     background:rgba(0,0,0,.35);
 
-    backdrop-filter:blur(3px);
-
     display:none;
 
     z-index:9998;
@@ -1342,17 +1340,20 @@ function openComments(jobId){
 }
 
 function closeComments(){
-    commentState = 0; // State 0: Fully closed
+    commentState = 0;
     const modal = document.getElementById("commentsModal");
     const overlay = document.getElementById("commentsOverlay");
     const input = document.getElementById("commentText");
 
-    // Force hide modal and overlay immediately
+    if (input) input.blur();
+    document.body.classList.remove("keyboard-open");
+
+    // Immediately hide modal and overlay without waiting for transitions
     modal.classList.remove("show");
     modal.style.transform = "translateY(100%)";
     overlay.style.display = "none";
+    overlay.style.backdropFilter = "none"; // Removes the blur effect
 
-    // Clean up history stack safely if needed
     if (history.state && history.state.comments) {
         history.back();
     }
