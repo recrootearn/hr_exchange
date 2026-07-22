@@ -1312,6 +1312,8 @@ function openComments(jobId){
     currentJobId = jobId;
     commentState = 1; // State 1: Sheet is open
 
+    history.pushState({comments:true}, "", location.href);
+
     document.getElementById("commentsOverlay").style.display = "block";
     requestAnimationFrame(() => {
         document.getElementById("commentsModal").classList.add("show");
@@ -1332,6 +1334,9 @@ function closeComments(){
     setTimeout(()=>{
         document.getElementById("commentsOverlay").style.display = "none";
     }, 250);
+    if (history.state && history.state.comments) {
+    history.back();
+    }
 }
 
 // Intercept browser back button cleanly using our internal state machine
@@ -1341,8 +1346,7 @@ window.addEventListener("popstate", function(event){
 
     // Prevent the browser from actually navigating away from the page
     // by immediately pushing the current page back onto the stack
-    history.pushState(null, "", window.location.href);
-
+    
     if(commentState === 2) {
         // First back press (when typing/keyboard open): Close keyboard only, keep comment sheet open
         input.blur();
@@ -1357,9 +1361,6 @@ window.addEventListener("popstate", function(event){
 
 // Push a dummy history state right when entering the page or opening comments 
 // so the first physical back press is always intercepted by our listener instead of leaving the dashboard
-function initCommentHistory() {
-    history.pushState(null, "", window.location.href);
-}
 // Run it once on load or call it inside openComments
 
 const commentInputEl = document.getElementById("commentText");
