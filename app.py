@@ -10992,11 +10992,19 @@ def get_comments(job_id):
 
         if hr:
             name = f"{hr.first_name} {hr.last_name}"
-            photo = hr.profile_photo if hasattr(hr, "profile_photo") else ""
+            photo = (
+                url_for("static", filename=f"uploads/{hr.profile_photo}")
+                if hr and hr.profile_photo
+                else ""
+            )
             user_type = "hr"
         elif candidate:
             name = candidate.full_name
-            photo = candidate.profile_photo if hasattr(candidate, "profile_photo") else ""
+            photo = (
+                url_for("static", filename=f"uploads/{candidate.profile_photo}")
+                if candidate and candidate.profile_photo
+                else ""
+            )
             user_type = "candidate"
         else:
             name = "Deleted User"
