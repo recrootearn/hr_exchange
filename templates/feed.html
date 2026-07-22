@@ -1559,6 +1559,9 @@ function replyTo(id){
 
 function renderComment(c, level = 0){
 
+    // Escape backticks and quotes safely for the inline click handler
+    const safeCommentText = c.comment.replace(/[`'\\]/g, '\\$&');
+
     let html = `
 
     <div class="comment-card"
@@ -1619,13 +1622,13 @@ function renderComment(c, level = 0){
                     Reply
                 </span>
 
-                <button
-                    class="comment-menu"
-                    onclick="openCommentMenu(${c.id}, \`${c.comment}\`, ${c.is_owner})">
-
-                    <i class="fas fa-ellipsis-h"></i>
-
-                </button>
+                ${
+                    c.is_owner 
+                    ? `<button class="comment-menu" onclick="openCommentMenu(${c.id}, \`${safeCommentText}\`, ${c.is_owner})">
+                           <i class="fas fa-ellipsis-h"></i>
+                       </button>`
+                    : ``
+                }
 
             </div>
 

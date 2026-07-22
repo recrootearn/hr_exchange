@@ -1328,26 +1328,22 @@ class CommentLike(db.Model):
 
 class CommentReport(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-
     comment_id = db.Column(
         db.Integer,
-        db.ForeignKey("comment.id", ondelete="CASCADE")
+        db.ForeignKey("comment.id", ondelete="CASCADE"),
+        nullable=False
     )
-
     hr_id = db.Column(
         db.Integer,
         db.ForeignKey("user.id"),
         nullable=True
     )
-
     candidate_id = db.Column(
         db.Integer,
         db.ForeignKey("candidate_user.id"),
         nullable=True
     )
-
     reason = db.Column(db.String(100))
-
     created_at = db.Column(
         db.DateTime,
         default=india_time
@@ -11113,42 +11109,12 @@ def edit_post_comment(comment_id):
 
     return jsonify(success=True)
 
-@app.route("/delete-comment/<int:comment_id>", methods=["POST"])
-def delete_post_comment(comment_id):
-    try:
-        comment = Comment.query.get_or_404(comment_id)
-
-        allowed = False
-        if current_user.is_authenticated:
-            allowed = (comment.hr_id == current_user.id)
-        elif "candidate_id" in session:
-            allowed = (comment.candidate_id == session["candidate_id"])
-
-        if not allowed:
-            return jsonify(success=False, message="Permission denied")
-
-        # 1. Delete associated comment likes first to prevent foreign key errors
-        CommentLike.query.filter_by(comment_id=comment.id).delete()
-
-        # 2. Delete associated comment reports if any exist
-        CommentReport.query.filter_by(comment_id=comment.id).delete()
-
-        # 3. Now safely delete the comment
-        db.session.delete(comment)
-        db.session.commit()
-
-        return jsonify(success=True)
-    except Exception as e:
-        db.session.rollback()
-        print("Delete Comment Error:", str(e))
-        return jsonify(success=False, message=str(e))
-
 @app.route("/report-comment/<int:comment_id>", methods=["POST"])
 def report_post_comment(comment_id):
-
     comment = Comment.query.get_or_404(comment_id)
     reason = request.form.get("reason", "").strip()
 
+    # Prevent duplicate reports from the same user if desired, or allow multiple
     report = CommentReport(
         comment_id=comment.id,
         reason=reason
@@ -11162,12 +11128,76 @@ def report_post_comment(comment_id):
     db.session.add(report)
     db.session.commit()
 
-    return jsonify(success=True)
+    # Check total reports for automatic deletion (threshold = 3 reports)
+    total_reports = CommentReport.query.filter_by(comment_id=comment.id).count()
+    if total_reports >= 3:
+        # Clean up related records and delete comment automatically
+        CommentLike.query.filter_by(comment_id=comment.id).delete()
+        CommentReport.query.filter_by(comment_id=comment.id).delete()
+        db.session.delete(comment)
+        db.session.commit()
+        return jsonify(success=True, auto_deleted=True, message="Comment removed due to multiple reports.")
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+    return jsonify(success=True, auto_deleted=False)
 
+
+@app.route("/delete-comment/<int:comment_id>", methods=["POST"])
+def delete_post_comment(comment_id):
+    try:
+        comment = Comment.query.get_or_404(comment_id)
+        job = JobPost.query.get(comment.job_id)
+
+        # Permissions: Allowed if Admin, Comment Owner, or Post Owner
+        is_admin = current_user.is_authenticated and current_user.is_admin
+        is_comment_owner = False
+        is_post_owner = False
+
+        if current_user.is_authenticated:
+            is_comment_owner = (comment.hr_id == current_user.id)
+            is_post_owner = (job and job.hr_id == current_user.id)
+        elif "candidate_id" in session:
+            is_comment_owner = (comment.candidate_id == session["candidate_id"])
+            is_post_owner = (job and job.hr_id == session["candidate_id"]) # if candidate owns post depending on your schema
+
+        if not (is_admin or is_comment_owner or is_post_owner):
+            return jsonify(success=False, message="Permission denied")
+
+        # Cleanup child relations
+        CommentLike.query.filter_by(comment_id=comment.id).delete()
+        CommentReport.query.filter_by(comment_id=comment.id).delete()
+        
+        db.session.delete(comment)
+        db.session.commit()
+
+        return jsonify(success=True)
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(success=False, message=str(e))
+
+
+@app.route("/admin/reported-comments")
+@login_required
+def admin_reported_comments():
+    if not current_user.is_admin:
+        return "Access Denied", 403
+
+    # Group reported comments for review in a separate window/template
+    reported_comments = db.session.query(
+        Comment,
+        func.count(CommentReport.id).label("total_reports")
+    ).join(
+        CommentReport,
+        CommentReport.comment_id == Comment.id
+    ).group_by(
+        Comment.id
+    ).order_by(
+        func.count(CommentReport.id).desc()
+    ).all()
+
+    return render_template(
+        "admin_reported_comments.html",
+        reported_comments=reported_comments
+    )
 
 # =========================
 # SINGLE DEVICE LOGIN CHECK
