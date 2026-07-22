@@ -11119,6 +11119,7 @@ def delete_post_comment(comment_id):
 
     comment = Comment.query.get_or_404(comment_id)
 
+    # Permission check for HR user or Candidate session
     allowed = False
 
     if current_user.is_authenticated:

@@ -1761,26 +1761,20 @@ function deleteSelectedComment(){
 
     if(!confirm("Delete this comment?")) return;
 
-    fetch("/delete-comment/" + selectedComment,{
-
-        method:"POST"
-
+    fetch("/delete-comment/" + selectedComment, {
+        method: "POST"
     })
-
-    .then(r=>r.json())
-
-    .then(data=>{
-
+    .then(r => r.json())
+    .then(data => {
         if(data.success){
-
             loadComments();
-
-        }else{
-
-            alert(data.message || "Unable to delete.");
-
+        } else {
+            alert(data.message || "Unable to delete comment.");
         }
-
+    })
+    .catch(err => {
+        console.error(err);
+        alert("An error occurred while deleting.");
     });
 
 }
