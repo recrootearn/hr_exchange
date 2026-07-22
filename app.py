@@ -8328,7 +8328,7 @@ def login():
             # NORMAL HR
 
             return redirect(
-                url_for("home")
+                url_for("feed")
             )
 
         user.failed_logins += 1
