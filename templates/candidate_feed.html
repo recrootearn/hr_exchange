@@ -195,20 +195,7 @@
 </div>  
     {% endfor %}
 </div>
-            {% else %}
-                <a href="/job-view/{{ job.id }}" class="btn btn-info">View</a>
-                {% if job.id in applied_jobs %}
-                    <button class="btn btn-success" disabled>Applied</button>
-                {% else %}
-                    <a href="/apply-job-hr/{{ job.id }}" class="btn btn-primary">Apply</a>
-                {% endif %}
-                <a href="/share-job/{{ job.id }}" class="btn btn-success">Share</a>
-            {% endif %}
-        </div>
-    </div>
-    {% endfor %}
-</div>
-
+            
 <style>
 .feed-card { background: #fff; border-radius: 16px; margin-bottom: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; }
 .feed-header { display: flex; align-items: center; gap: 12px; padding: 16px; }
