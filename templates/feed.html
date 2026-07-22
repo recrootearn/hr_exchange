@@ -1316,9 +1316,9 @@ function openComments(jobId){
         document.getElementById("commentsModal").classList.add("show");
     });
 
-    // Push state immediately so back button closes sheet instead of leaving page
+    // Push a state so the back button can be intercepted
     if(!commentHistoryAdded){
-        history.pushState({comments: true}, "");
+        history.pushState({comments: true}, "", window.location.href);
         commentHistoryAdded = true;
     }
 
@@ -1328,6 +1328,8 @@ function openComments(jobId){
 function closeComments(){
     const modal = document.getElementById("commentsModal");
 
+    if(!modal.classList.contains("show")) return;
+
     modal.classList.remove("show");
 
     setTimeout(()=>{
@@ -1336,20 +1338,22 @@ function closeComments(){
 
     if(commentHistoryAdded){
         commentHistoryAdded = false;
-        history.back();
+        history.back(); // Go back past the dummy state we pushed
     }
 }
 
-// Listen to browser back button (popstate) to intercept and close sheet instead of navigating
+// Intercept the back button cleanly
 window.addEventListener("popstate", function(event){
     const modal = document.getElementById("commentsModal");
 
     if(modal.classList.contains("show")){
+        // Close the comment sheet instead of going back to dashboard
         modal.classList.remove("show");
         document.getElementById("commentsOverlay").style.display = "none";
         commentHistoryAdded = false;
         
-        // Prevent default navigation back to dashboard
+        // Push the current page state back onto the history stack 
+        // so pressing back again won't accidentally trigger a dashboard jump
         history.pushState(null, "", window.location.href);
     }
 });
