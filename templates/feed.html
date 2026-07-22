@@ -1344,17 +1344,21 @@ function openComments(jobId){
 function closeComments(){
     commentState = 0; // State 0: Fully closed
     const modal = document.getElementById("commentsModal");
+    const overlay = document.getElementById("commentsOverlay");
     const input = document.getElementById("commentText");
 
-    input.blur();
-    modal.classList.remove("show");
+    // Force remove keyboard and blur input
+    if (input) input.blur();
     document.body.classList.remove("keyboard-open");
 
-    setTimeout(()=>{
-        document.getElementById("commentsOverlay").style.display = "none";
-    }, 250);
+    // Force hide modal and overlay immediately
+    modal.classList.remove("show");
+    modal.style.transform = "translateY(100%)";
+    overlay.style.display = "none";
+
+    // Clean up history stack safely if needed
     if (history.state && history.state.comments) {
-    history.back();
+        history.back();
     }
 }
 
