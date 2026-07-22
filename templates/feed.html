@@ -1354,8 +1354,20 @@ window.addEventListener("popstate", function(event){
         commentState = 1; // Drop back to State 1 (Sheet open)
     } 
     else if(commentState === 1) {
-        // Second back press (when keyboard is closed): Close comment sheet fully
-        closeComments();
+        event.preventDefault();
+
+        const modal = document.getElementById("commentsModal");
+
+        modal.classList.remove("show");
+        document.body.classList.remove("keyboard-open");
+
+        setTimeout(() => {
+            document.getElementById("commentsOverlay").style.display = "none";
+        }, 250);
+
+        commentState = 0;
+
+        history.pushState({comments:true}, "", location.href);
     }
 });
 
