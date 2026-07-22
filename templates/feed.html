@@ -1308,7 +1308,6 @@ function toggleDescription(jobId) {
 let commentHistoryAdded = false;
 
 function openComments(jobId){
-
     currentJobId = jobId;
 
     document.getElementById("commentsOverlay").style.display = "block";
@@ -1317,51 +1316,42 @@ function openComments(jobId){
         document.getElementById("commentsModal").classList.add("show");
     });
 
+    // Push state immediately so back button closes sheet instead of leaving page
     if(!commentHistoryAdded){
-        history.pushState({comments:true},"");
+        history.pushState({comments: true}, "");
         commentHistoryAdded = true;
     }
 
     loadComments();
-
 }
 
 function closeComments(){
-
-    const modal=document.getElementById("commentsModal");
+    const modal = document.getElementById("commentsModal");
 
     modal.classList.remove("show");
 
     setTimeout(()=>{
-
-        document.getElementById("commentsOverlay").style.display="none";
-
-    },250);
+        document.getElementById("commentsOverlay").style.display = "none";
+    }, 250);
 
     if(commentHistoryAdded){
-
-        commentHistoryAdded=false;
-
+        commentHistoryAdded = false;
         history.back();
-
     }
-
 }
 
-window.addEventListener("popstate",function(){
-
-    const modal=document.getElementById("commentsModal");
+// Listen to browser back button (popstate) to intercept and close sheet instead of navigating
+window.addEventListener("popstate", function(event){
+    const modal = document.getElementById("commentsModal");
 
     if(modal.classList.contains("show")){
-
         modal.classList.remove("show");
-
-        document.getElementById("commentsOverlay").style.display="none";
-
-        commentHistoryAdded=false;
-
+        document.getElementById("commentsOverlay").style.display = "none";
+        commentHistoryAdded = false;
+        
+        // Prevent default navigation back to dashboard
+        history.pushState(null, "", window.location.href);
     }
-
 });
 
 const input = document.getElementById("commentText");
