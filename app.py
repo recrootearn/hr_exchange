@@ -11113,7 +11113,6 @@ def edit_post_comment(comment_id):
 
     return jsonify(success=True)
 
-
 @app.route("/delete-comment/<int:comment_id>", methods=["POST"])
 def delete_post_comment(comment_id):
     try:
@@ -11128,6 +11127,13 @@ def delete_post_comment(comment_id):
         if not allowed:
             return jsonify(success=False, message="Permission denied")
 
+        # 1. Delete associated comment likes first to prevent foreign key errors
+        CommentLike.query.filter_by(comment_id=comment.id).delete()
+
+        # 2. Delete associated comment reports if any exist
+        CommentReport.query.filter_by(comment_id=comment.id).delete()
+
+        # 3. Now safely delete the comment
         db.session.delete(comment)
         db.session.commit()
 
