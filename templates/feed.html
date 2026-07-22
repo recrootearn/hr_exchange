@@ -261,16 +261,43 @@
     position: fixed;
     left: 0;
     right: 0;
+    top: auto; /* let JS control positioning */
     bottom: 0;
-    height: 88vh;
-    max-height: 90dvh;
+    height: 80vh;
+    max-height: 80vh;
     background: #fff;
     border-radius: 30px 30px 0 0;
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     transform: translateY(100%);
-    transition: transform .28s cubic-bezier(.22,.8,.32,1);
+    transition: transform .25s cubic-bezier(.22,.8,.32,1);
+    z-index: 9998;
+}
+
+.comments-sheet.show {
+    transform: translateY(0);
+}
+
+.comments-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    padding-bottom: 70px; /* Leaves room so last comments aren't hidden */
+}
+
+.comment-input {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    background: #fff;
     z-index: 9999;
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    box-sizing: border-box;
+    border-top: 1px solid #eee;
 }
 
 .comments-sheet.show {
@@ -283,21 +310,6 @@
     padding: 15px;
     /* Ensure space at the bottom so the last comment isn't hidden behind the input */
     padding-bottom: 70px; 
-}
-
-.comment-input {
-    position: absolute; /* Absolute inside the sheet so it sticks to the bottom of the sheet */
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    background: #fff;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    box-sizing: border-box;
-    border-top: 1px solid #eee;
 }
 
 .comments-sheet.show{
@@ -1814,33 +1826,31 @@ const commentsModal = document.getElementById("commentsModal");
 const commentInput = document.getElementById("commentText");
 
 if (window.visualViewport) {
-    function handleViewportResize() {
-        // Only apply when the comments modal is open
+    function updateSheetForKeyboard() {
         if (!commentsModal.classList.contains("show")) return;
 
         const viewport = window.visualViewport;
-        
-        // Calculate the keyboard height offset
+        // Calculate exact keyboard height offset
         const keyboardHeight = window.innerHeight - viewport.height;
 
-        if (keyboardHeight > 50) {
-            // Keyboard is OPEN: Move the sheet up by the keyboard height
+        if (keyboardHeight > 40) {
+            // Keyboard is OPEN: pin the sheet right above the keyboard
             commentsModal.style.bottom = keyboardHeight + "px";
-            commentsModal.style.height = (viewport.height * 0.85) + "px"; // Adjust sheet height dynamically if needed
+            commentsModal.style.height = (viewport.height * 0.75) + "px";
         } else {
-            // Keyboard is CLOSED: Reset to bottom
+            // Keyboard is CLOSED: pin sheet back to the bottom of the screen
             commentsModal.style.bottom = "0px";
-            commentsModal.style.height = "88vh";
+            commentsModal.style.height = "80vh";
         }
 
-        // Scroll input or active comment into view
+        // Scroll input into clear view
         setTimeout(() => {
             commentInput.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }, 100);
+        }, 50);
     }
 
-    window.visualViewport.addEventListener("resize", handleViewportResize);
-    window.visualViewport.addEventListener("scroll", handleViewportResize);
+    window.visualViewport.addEventListener("resize", updateSheetForKeyboard);
+    window.visualViewport.addEventListener("scroll", updateSheetForKeyboard);
 }
 
 </script>
