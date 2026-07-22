@@ -1322,79 +1322,33 @@ function toggleDescription(jobId) {
     }
 }
 
-// States: 0 = Closed, 1 = Comment Sheet Open, 2 = Keyboard Open / Typing
-let commentState = 0; 
-
 function openComments(jobId){
+
     currentJobId = jobId;
-    commentState = 1; // State 1: Sheet is open
 
-    history.pushState({comments:true}, "", location.href);
-
-    const overlay = document.getElementById("commentsOverlay");
-    overlay.style.display = "block";
-    overlay.style.backdropFilter = "blur(3px)"; // Restore blur when opening
+    document.getElementById("commentsOverlay").style.display = "block";
 
     requestAnimationFrame(() => {
         document.getElementById("commentsModal").classList.add("show");
     });
 
     loadComments();
+
 }
 
 function closeComments(){
-    commentState = 0; // State 0: Fully closed
-    const modal = document.getElementById("commentsModal");
-    const overlay = document.getElementById("commentsOverlay");
-    const input = document.getElementById("commentText");
 
-    if (input) input.blur();
+    document.getElementById("commentText").blur();
+
     document.body.classList.remove("keyboard-open");
 
-    modal.classList.remove("show");
-    modal.style.transform = "translateY(100%)";
+    document.getElementById("commentsModal").classList.remove("show");
 
-    setTimeout(()=>{
-        overlay.style.display = "none";
-        overlay.style.backdropFilter = "none"; // Clear blur completely on close so it doesn't stick
-    }, 250);
+    setTimeout(function(){
+        document.getElementById("commentsOverlay").style.display = "none";
+    },250);
 
-    if (history.state && history.state.comments) {
-        history.back();
-    }
 }
-
-// Intercept browser back button cleanly using our internal state machine
-window.addEventListener("popstate", function(event){
-    const modal = document.getElementById("commentsModal");
-    const input = document.getElementById("commentText");
-
-    // Prevent the browser from actually navigating away from the page
-    // by immediately pushing the current page back onto the stack
-    
-    if(commentState === 2) {
-        // First back press (when typing/keyboard open): Close keyboard only, keep comment sheet open
-        input.blur();
-        document.body.classList.remove("keyboard-open");
-        commentState = 1; // Drop back to State 1 (Sheet open)
-    } 
-    else if(commentState === 1) {
-        event.preventDefault();
-
-        const modal = document.getElementById("commentsModal");
-
-        modal.classList.remove("show");
-        document.body.classList.remove("keyboard-open");
-
-        setTimeout(() => {
-            document.getElementById("commentsOverlay").style.display = "none";
-        }, 250);
-
-        commentState = 0;
-
-        history.pushState({comments:true}, "", location.href);
-    }
-});
 
 // Push a dummy history state right when entering the page or opening comments 
 // so the first physical back press is always intercepted by our listener instead of leaving the dashboard
