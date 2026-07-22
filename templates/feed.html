@@ -1559,8 +1559,10 @@ function replyTo(id){
 
 function renderComment(c, level = 0){
 
-    // Escape backticks and quotes safely for the inline click handler
     const safeCommentText = c.comment.replace(/[`'\\]/g, '\\$&');
+
+    // Check if photo exists and is not empty or "None"
+    const hasValidPhoto = c.photo && c.photo !== "None" && c.photo.trim() !== "";
 
     let html = `
 
@@ -1570,8 +1572,8 @@ function renderComment(c, level = 0){
         <div class="comment-avatar">
 
             ${
-                c.photo
-                ? `<img src="${c.photo}">`
+                hasValidPhoto
+                ? `<img src="${c.photo}" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'avatar-letter\'>${c.name.charAt(0)}</div>';">`
                 : `<div class="avatar-letter">${c.name.charAt(0)}</div>`
             }
 
