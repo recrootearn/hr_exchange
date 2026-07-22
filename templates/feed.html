@@ -1316,7 +1316,7 @@ function openComments(jobId){
         document.getElementById("commentsModal").classList.add("show");
     });
 
-    // Push a state so the back button can be intercepted
+    // Push state when opening comments so back button can close the sheet
     if(!commentHistoryAdded){
         history.pushState({comments: true}, "", window.location.href);
         commentHistoryAdded = true;
@@ -1338,23 +1338,30 @@ function closeComments(){
 
     if(commentHistoryAdded){
         commentHistoryAdded = false;
-        history.back(); // Go back past the dummy state we pushed
+        history.back(); // Pop the comment history state safely
     }
 }
 
-// Intercept the back button cleanly
+// Handle multi-stage back button behavior
 window.addEventListener("popstate", function(event){
     const modal = document.getElementById("commentsModal");
+    const input = document.getElementById("commentText");
 
+    // Check if comments are open
     if(modal.classList.contains("show")){
-        // Close the comment sheet instead of going back to dashboard
+        // Case 1: If the keyboard/input is currently focused, blur it first (First Back)
+        if(document.activeElement === input) {
+            input.blur();
+            document.body.classList.remove("keyboard-open");
+            // Re-push the comment state so the next back press will close the sheet
+            history.pushState({comments: true}, "", window.location.href);
+            return;
+        }
+
+        // Case 2: Keyboard is closed, so close the entire comment sheet (Second Back)
         modal.classList.remove("show");
         document.getElementById("commentsOverlay").style.display = "none";
         commentHistoryAdded = false;
-        
-        // Push the current page state back onto the history stack 
-        // so pressing back again won't accidentally trigger a dashboard jump
-        history.pushState(null, "", window.location.href);
     }
 });
 
