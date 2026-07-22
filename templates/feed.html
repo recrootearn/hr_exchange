@@ -1331,7 +1331,10 @@ function openComments(jobId){
 
     history.pushState({comments:true}, "", location.href);
 
-    document.getElementById("commentsOverlay").style.display = "block";
+    const overlay = document.getElementById("commentsOverlay");
+    overlay.style.display = "block";
+    overlay.style.backdropFilter = "blur(3px)"; // Restore blur when opening
+
     requestAnimationFrame(() => {
         document.getElementById("commentsModal").classList.add("show");
     });
@@ -1340,7 +1343,7 @@ function openComments(jobId){
 }
 
 function closeComments(){
-    commentState = 0;
+    commentState = 0; // State 0: Fully closed
     const modal = document.getElementById("commentsModal");
     const overlay = document.getElementById("commentsOverlay");
     const input = document.getElementById("commentText");
@@ -1348,11 +1351,13 @@ function closeComments(){
     if (input) input.blur();
     document.body.classList.remove("keyboard-open");
 
-    // Immediately hide modal and overlay without waiting for transitions
     modal.classList.remove("show");
     modal.style.transform = "translateY(100%)";
-    overlay.style.display = "none";
-    overlay.style.backdropFilter = "none"; // Removes the blur effect
+
+    setTimeout(()=>{
+        overlay.style.display = "none";
+        overlay.style.backdropFilter = "none"; // Clear blur completely on close so it doesn't stick
+    }, 250);
 
     if (history.state && history.state.comments) {
         history.back();
