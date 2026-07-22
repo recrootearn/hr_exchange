@@ -1322,32 +1322,45 @@ function toggleDescription(jobId) {
     }
 }
 
-function openComments(jobId){
+function openComments(jobId) {
 
     currentJobId = jobId;
 
-    document.getElementById("commentsOverlay").style.display = "block";
+    const modal = document.getElementById("commentsModal");
+    const overlay = document.getElementById("commentsOverlay");
+
+    // Reset any previous swipe transform
+    modal.style.transform = "";
+
+    overlay.style.display = "block";
 
     requestAnimationFrame(() => {
-        document.getElementById("commentsModal").classList.add("show");
+        modal.classList.add("show");
     });
 
     loadComments();
-
 }
 
-function closeComments(){
+function closeComments() {
 
-    document.getElementById("commentText").blur();
+    const modal = document.getElementById("commentsModal");
+    const overlay = document.getElementById("commentsOverlay");
+    const input = document.getElementById("commentText");
 
+    // Close keyboard
+    input.blur();
     document.body.classList.remove("keyboard-open");
 
-    document.getElementById("commentsModal").classList.remove("show");
+    // Reset any swipe transform
+    modal.style.transform = "";
 
-    setTimeout(function(){
-        document.getElementById("commentsOverlay").style.display = "none";
-    },250);
+    // Hide sheet
+    modal.classList.remove("show");
 
+    // Hide overlay after animation
+    setTimeout(() => {
+        overlay.style.display = "none";
+    }, 250);
 }
 
 // Push a dummy history state right when entering the page or opening comments 
@@ -1413,7 +1426,7 @@ sheet.addEventListener("touchmove",e=>{
 
     if(diff>0){
 
-        sheet.style.transform=`translateY(${diff}px)`;
+        sheet.style.transform="";
 
     }
 
