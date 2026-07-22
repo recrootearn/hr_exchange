@@ -11119,8 +11119,8 @@ def delete_post_comment(comment_id):
 
     comment = Comment.query.get_or_404(comment_id)
 
-    # Check permission correctly for either HR or Candidate
     allowed = False
+
     if current_user.is_authenticated:
         allowed = (comment.hr_id == current_user.id)
     elif "candidate_id" in session:
@@ -11133,7 +11133,6 @@ def delete_post_comment(comment_id):
     db.session.commit()
 
     return jsonify(success=True)
-
 
 @app.route("/report-comment/<int:comment_id>", methods=["POST"])
 def report_post_comment(comment_id):
