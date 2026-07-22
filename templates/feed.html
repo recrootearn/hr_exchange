@@ -1305,27 +1305,23 @@ function toggleDescription(jobId) {
     }
 }
 
-let commentHistoryAdded = false;
+// States: 0 = Closed, 1 = Comment Sheet Open, 2 = Keyboard Open / Typing
+let commentState = 0; 
 
 function openComments(jobId){
     currentJobId = jobId;
+    commentState = 1; // State 1: Sheet is open
 
     document.getElementById("commentsOverlay").style.display = "block";
-
     requestAnimationFrame(() => {
         document.getElementById("commentsModal").classList.add("show");
     });
-
-    // Push a single history state for the comment sheet
-    if(!commentHistoryAdded){
-        history.pushState({comments: true}, "", window.location.href);
-        commentHistoryAdded = true;
-    }
 
     loadComments();
 }
 
 function closeComments(){
+    commentState = 0; // State 0: Fully closed
     const modal = document.getElementById("commentsModal");
     const input = document.getElementById("commentText");
 
@@ -1336,44 +1332,48 @@ function closeComments(){
     setTimeout(()=>{
         document.getElementById("commentsOverlay").style.display = "none";
     }, 250);
-
-    if(commentHistoryAdded){
-        commentHistoryAdded = false;
-        history.back(); // Pop the state we pushed
-    }
 }
 
-// Clean 2-step back button handling: 1st back closes keyboard, 2nd back closes comments
+// Intercept browser back button cleanly using our internal state machine
 window.addEventListener("popstate", function(event){
     const modal = document.getElementById("commentsModal");
     const input = document.getElementById("commentText");
 
-    if(modal.classList.contains("show")){
-        // Step 1: If keyboard is open/focused, blur it first and prevent sheet close
-        if(document.activeElement === input || document.body.classList.contains("keyboard-open")) {
-            input.blur();
-            document.body.classList.remove("keyboard-open");
-            
-            // Re-push state so the next back press will close the comment sheet instead of going to dashboard
-            history.pushState({comments: true}, "", window.location.href);
-            return;
-        }
+    // Prevent the browser from actually navigating away from the page
+    // by immediately pushing the current page back onto the stack
+    history.pushState(null, "", window.location.href);
 
-        // Step 2: Keyboard is already closed, so fully close the comment sheet right here
-        modal.classList.remove("show");
-        document.getElementById("commentsOverlay").style.display = "none";
-        commentHistoryAdded = false;
+    if(commentState === 2) {
+        // First back press (when typing/keyboard open): Close keyboard only, keep comment sheet open
+        input.blur();
+        document.body.classList.remove("keyboard-open");
+        commentState = 1; // Drop back to State 1 (Sheet open)
+    } 
+    else if(commentState === 1) {
+        // Second back press (when keyboard is closed): Close comment sheet fully
+        closeComments();
     }
 });
 
-// Simplified input focus handlers that don't mess with window height/history
+// Push a dummy history state right when entering the page or opening comments 
+// so the first physical back press is always intercepted by our listener instead of leaving the dashboard
+function initCommentHistory() {
+    history.pushState(null, "", window.location.href);
+}
+// Run it once on load or call it inside openComments
+
 const commentInputEl = document.getElementById("commentText");
+
 commentInputEl.addEventListener("focus", function() {
     document.body.classList.add("keyboard-open");
+    commentState = 2; // State 2: Keyboard is active/typing
 });
 
 commentInputEl.addEventListener("blur", function() {
     document.body.classList.remove("keyboard-open");
+    if(commentState === 2) {
+        commentState = 1; // Fallback to sheet open if blurred manually
+    }
 });
 
 const input = document.getElementById("commentText");
