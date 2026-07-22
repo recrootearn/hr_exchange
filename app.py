@@ -11116,24 +11116,26 @@ def edit_post_comment(comment_id):
 
 @app.route("/delete-comment/<int:comment_id>", methods=["POST"])
 def delete_post_comment(comment_id):
+    try:
+        comment = Comment.query.get_or_404(comment_id)
 
-    comment = Comment.query.get_or_404(comment_id)
+        allowed = False
+        if current_user.is_authenticated:
+            allowed = (comment.hr_id == current_user.id)
+        elif "candidate_id" in session:
+            allowed = (comment.candidate_id == session["candidate_id"])
 
-    # Permission check for HR user or Candidate session
-    allowed = False
+        if not allowed:
+            return jsonify(success=False, message="Permission denied")
 
-    if current_user.is_authenticated:
-        allowed = (comment.hr_id == current_user.id)
-    elif "candidate_id" in session:
-        allowed = (comment.candidate_id == session["candidate_id"])
+        db.session.delete(comment)
+        db.session.commit()
 
-    if not allowed:
-        return jsonify(success=False, message="Permission denied")
-
-    db.session.delete(comment)
-    db.session.commit()
-
-    return jsonify(success=True)
+        return jsonify(success=True)
+    except Exception as e:
+        db.session.rollback()
+        print("Delete Comment Error:", str(e))
+        return jsonify(success=False, message=str(e))
 
 @app.route("/report-comment/<int:comment_id>", methods=["POST"])
 def report_post_comment(comment_id):
