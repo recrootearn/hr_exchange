@@ -10911,27 +10911,6 @@ def add_comment(job_id):
         "comment_id": comment.id
     })
 
-@app.route("/delete-comment/<int:id>", methods=["POST"])
-def delete_comment(id):
-
-    comment = Comment.query.get_or_404(id)
-
-    allowed = False
-
-    if current_user.is_authenticated:
-        allowed = comment.hr_id == current_user.id
-
-    elif "candidate_id" in session:
-        allowed = comment.candidate_id == session["candidate_id"]
-
-    if not allowed:
-        return jsonify({"success": False})
-
-    db.session.delete(comment)
-    db.session.commit()
-
-    return jsonify({"success": True})
-
 @app.route("/comment-like/<int:comment_id>", methods=["POST"])
 def toggle_comment_like(comment_id):
 
