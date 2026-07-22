@@ -11108,17 +11108,19 @@ def get_comments(job_id):
     ])
 
 @app.route("/edit-comment/<int:comment_id>", methods=["POST"])
-@login_required
 def edit_post_comment(comment_id):
 
     comment = Comment.query.get_or_404(comment_id)
 
-    if current_user.role == "candidate":
-        if comment.candidate_id != current_user.id:
-            return jsonify(success=False, message="Permission denied")
-    else:
-        if comment.hr_id != current_user.id:
-            return jsonify(success=False, message="Permission denied")
+    # Check permission correctly for either HR or Candidate
+    allowed = False
+    if current_user.is_authenticated:
+        allowed = (comment.hr_id == current_user.id)
+    elif "candidate_id" in session:
+        allowed = (comment.candidate_id == session["candidate_id"])
+
+    if not allowed:
+        return jsonify(success=False, message="Permission denied")
 
     text = request.form.get("comment", "").strip()
 
@@ -11132,30 +11134,32 @@ def edit_post_comment(comment_id):
 
     return jsonify(success=True)
 
+
 @app.route("/delete-comment/<int:comment_id>", methods=["POST"])
-@login_required
 def delete_post_comment(comment_id):
 
     comment = Comment.query.get_or_404(comment_id)
 
-    if current_user.role == "candidate":
-        if comment.candidate_id != current_user.id:
-            return jsonify(success=False, message="Permission denied")
-    else:
-        if comment.hr_id != current_user.id:
-            return jsonify(success=False, message="Permission denied")
+    # Check permission correctly for either HR or Candidate
+    allowed = False
+    if current_user.is_authenticated:
+        allowed = (comment.hr_id == current_user.id)
+    elif "candidate_id" in session:
+        allowed = (comment.candidate_id == session["candidate_id"])
+
+    if not allowed:
+        return jsonify(success=False, message="Permission denied")
 
     db.session.delete(comment)
     db.session.commit()
 
     return jsonify(success=True)
 
+
 @app.route("/report-comment/<int:comment_id>", methods=["POST"])
-@login_required
 def report_post_comment(comment_id):
 
     comment = Comment.query.get_or_404(comment_id)
-
     reason = request.form.get("reason", "").strip()
 
     report = CommentReport(
@@ -11163,10 +11167,10 @@ def report_post_comment(comment_id):
         reason=reason
     )
 
-    if current_user.role == "candidate":
-        report.candidate_id = current_user.id
-    else:
+    if current_user.is_authenticated:
         report.hr_id = current_user.id
+    elif "candidate_id" in session:
+        report.candidate_id = session["candidate_id"]
 
     db.session.add(report)
     db.session.commit()
