@@ -105,7 +105,14 @@
                     {% set ext = img.split('.')[-1].lower() %}
                     {% if ext in ['mp4','mov','webm','mkv'] %}
                     <div class="feed-media reel-media video-container">
-                        <video class="feed-image feed-video" autoplay muted loop playsinline preload="metadata" onclick="openMedia(this,'/static/uploads/{{ img }}','video')">
+                        <video class="feed-image feed-video"
+                               autoplay
+                               muted
+                               loop
+                               playsinline
+                               preload="auto"
+                               poster="/static/uploads/{{ img.rsplit('.', 1)[0] }}.jpg"
+                               onclick="openMedia(this,'/static/uploads/{{ img }}','video')">
                             <source src="/static/uploads/{{ img }}" type="video/mp4">
                         </video>
                         <button class="mute-btn" onclick="toggleMute(event,this)">🔇</button>
