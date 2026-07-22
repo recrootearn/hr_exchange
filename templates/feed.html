@@ -357,14 +357,23 @@ body.keyboard-open .comments-body {
     text-align:center;
 }
 
-.comments-close{
-    width:36px;
-    height:36px;
-    border:none;
-    background:none;
-    font-size:22px;
-    cursor:pointer;
-    color:#666;
+.comments-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    position: relative;
+}
+
+.comments-close i {
+    pointer-events: none; /* Ensures clicks pass through the icon to the button element */
 }
 
 .comments-body{
