@@ -1347,10 +1347,6 @@ function closeComments(){
     const overlay = document.getElementById("commentsOverlay");
     const input = document.getElementById("commentText");
 
-    // Force remove keyboard and blur input
-    if (input) input.blur();
-    document.body.classList.remove("keyboard-open");
-
     // Force hide modal and overlay immediately
     modal.classList.remove("show");
     modal.style.transform = "translateY(100%)";
