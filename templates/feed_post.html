@@ -1260,23 +1260,23 @@ function toggleDescription(jobId) {
     }
 }
 
-function openComments(jobId) {
+function openCommentMenu(id, text, owner, postOwner){
 
-    currentJobId = jobId;
+    selectedComment = id;
+    selectedCommentText = text;
+    selectedCommentOwner = owner;
 
-    const modal = document.getElementById("commentsModal");
-    const overlay = document.getElementById("commentsOverlay");
+    document.getElementById("commentMenu").classList.add("show");
 
-    // Reset any previous swipe transform
-    modal.style.transform = "";
+    // Show delete option if the user is either the comment creator OR the post owner
+    document.getElementById("deleteOption").style.display =
+        (owner || postOwner) ? "block" : "none";
 
-    overlay.style.display = "block";
-
-    requestAnimationFrame(() => {
-        modal.classList.add("show");
-    });
-
-    loadComments();
+    // Keep edit option restricted strictly to the original comment owner
+    const editOptionEl = document.getElementById("editOption");
+    if (editOptionEl) {
+        editOptionEl.style.display = owner ? "block" : "none";
+    }
 }
 
 function closeComments() {
@@ -1521,112 +1521,55 @@ function replyTo(id){
 function renderComment(c, level = 0){
 
     const safeCommentText = c.comment.replace(/[`'\\]/g, '\\$&');
-
-    // Check if photo exists and is not empty or "None"
     const hasValidPhoto = c.photo && c.photo !== "None" && c.photo.trim() !== "";
+    const showMenuButton = c.is_owner || c.is_post_owner;
 
     let html = `
-
-    <div class="comment-card"
-         style="margin-left:${level * 18}px">
-
+    <div class="comment-card" style="margin-left:${level * 18}px">
         <div class="comment-avatar">
-
             ${
                 hasValidPhoto
                 ? `<img src="${c.photo}" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'avatar-letter\'>${c.name.charAt(0)}</div>';">`
                 : `<div class="avatar-letter">${c.name.charAt(0)}</div>`
             }
-
         </div>
-
         <div class="comment-content">
-
             <div class="comment-top">
-
                 <div>
-
-                    <span class="comment-name">
-                        ${c.name}
-                    </span>
-
-                    <span class="comment-time">
-                        ${c.time || ""}
-                    </span>
-
+                    <span class="comment-name">${c.name}</span>
+                    <span class="comment-time">${c.time || ""}</span>
                 </div>
-
                 <div class="comment-like">
-
-                    <button
-                        id="like-${c.id}"
-                        class="heart-btn ${c.liked ? "liked" : ""}"
-                        onclick="toggleCommentLike(${c.id})">
-
+                    <button id="like-${c.id}" class="heart-btn ${c.liked ? "liked" : ""}" onclick="toggleCommentLike(${c.id})">
                         <i class="${c.liked ? "fas" : "far"} fa-heart"></i>
-
                     </button>
-
-                    <small id="like-count-${c.id}">
-                        ${c.likes}
-                    </small>
-
+                    <small id="like-count-${c.id}">${c.likes}</small>
                 </div>
-
             </div>
-
-            <div class="comment-text">
-                ${c.comment}
-            </div>
-
+            <div class="comment-text">${c.comment}</div>
             <div class="comment-actions">
-
-                <span onclick="replyTo(${c.id})">
-                    Reply
-                </span>
-
+                <span onclick="replyTo(${c.id})">Reply</span>
                 ${
-                    c.is_owner 
-                    ? `<button class="comment-menu" onclick="openCommentMenu(${c.id}, \`${safeCommentText}\`, ${c.is_owner})">
+                    showMenuButton 
+                    ? `<button class="comment-menu" onclick="openCommentMenu(${c.id}, \`${safeCommentText}\`, ${c.is_owner}, ${c.is_post_owner})">
                            <i class="fas fa-ellipsis-h"></i>
                        </button>`
                     : ``
                 }
-
             </div>
-
         </div>
-
     </div>
-
     `;
 
     if(c.replies && c.replies.length){
-
-        html += `
-
-        <div class="reply-toggle"
-             onclick="toggleReplies(${c.id})">
-
-            View ${c.replies.length} replies
-
-        </div>
-
-        <div id="reply-${c.id}" style="display:none;">
-
-        `;
-
+        html += `<div class="reply-toggle" onclick="toggleReplies(${c.id})">View ${c.replies.length} replies</div><div id="reply-${c.id}" style="display:none;">`;
         c.replies.forEach(function(r){
-
             html += renderComment(r, level + 1);
-
         });
-
         html += `</div>`;
     }
 
     return html;
-
 }
 
 function toggleCommentLike(commentId){

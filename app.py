@@ -11016,7 +11016,6 @@ def get_comments(job_id):
 
     def serialize_comment(comment):
 
-        # Get comment owner
         hr = User.query.get(comment.hr_id) if comment.hr_id else None
         candidate = CandidateUser.query.get(comment.candidate_id) if comment.candidate_id else None
 
@@ -11041,90 +11040,61 @@ def get_comments(job_id):
             photo = ""
             user_type = ""
 
-        # Check if current user liked this comment
         liked = False
-
         if current_user.is_authenticated:
-
             liked = CommentLike.query.filter_by(
                 comment_id=comment.id,
                 hr_id=current_user.id
             ).first() is not None
-
         elif "candidate_id" in session:
-
             liked = CommentLike.query.filter_by(
                 comment_id=comment.id,
                 candidate_id=session["candidate_id"]
             ).first() is not None
 
-        # Like count
         like_count = CommentLike.query.filter_by(
             comment_id=comment.id
         ).count()
 
-        # Recursive replies
         replies = Comment.query.filter_by(
             parent_comment_id=comment.id
         ).order_by(Comment.created_at.asc()).all()
 
+        is_owner = (
+            (current_user.is_authenticated and comment.hr_id == current_user.id)
+            or
+            ("candidate_id" in session and comment.candidate_id == session["candidate_id"])
+        )
+
+        is_post_owner = (
+            current_user.is_authenticated
+            and comment.job
+            and comment.job.hr_id == current_user.id
+        )
+
         return {
             "id": comment.id,
-
             "job_id": comment.job_id,
-
             "parent_comment_id": comment.parent_comment_id,
-
             "name": name,
-
             "photo": photo,
-
             "user_type": user_type,
-
             "comment": comment.comment,
-
             "edited": comment.edited,
-
             "created_at": comment.created_at.strftime("%d %b %Y %I:%M %p"),
-
             "likes": like_count,
-
             "liked": liked,
-
-            "is_owner": (
-                (
-                    current_user.is_authenticated
-                    and comment.hr_id == current_user.id
-                )
-                or
-                (
-                    "candidate_id" in session
-                    and comment.candidate_id == session["candidate_id"]
-                )
-            ),
-
-            "is_post_owner": (
-                current_user.is_authenticated
-                and comment.job
-                and comment.job.hr_id == current_user.id
-            ),
-
-            "replies": [
-                serialize_comment(reply)
-                for reply in replies
-            ]
+            "is_owner": is_owner,
+            "is_post_owner": is_post_owner,
+            "replies": [serialize_comment(reply) for reply in replies]
         }
 
-    # Load top-level comments
     comments = Comment.query.filter_by(
         job_id=job_id,
         parent_comment_id=None
     ).order_by(Comment.created_at.desc()).all()
 
-    return jsonify([
-        serialize_comment(comment)
-        for comment in comments
-    ])
+    return jsonify([serialize_comment(comment) for comment in comments])
 
 @app.route("/edit-comment/<int:comment_id>", methods=["POST"])
 def edit_post_comment(comment_id):
