@@ -1260,42 +1260,41 @@ function toggleDescription(jobId) {
     }
 }
 
-function openCommentMenu(id, text, owner, postOwner){
-
-    selectedComment = id;
-    selectedCommentText = text;
-    selectedCommentOwner = owner;
-
-    document.getElementById("commentMenu").classList.add("show");
-
-    // Show delete option if the user is either the comment creator OR the post owner
-    document.getElementById("deleteOption").style.display =
-        (owner || postOwner) ? "block" : "none";
-
-    // Keep edit option restricted strictly to the original comment owner
-    const editOptionEl = document.getElementById("editOption");
-    if (editOptionEl) {
-        editOptionEl.style.display = owner ? "block" : "none";
-    }
-}
-
-function closeComments() {
+function openComments(jobId) {
+    currentJobId = jobId;
 
     const modal = document.getElementById("commentsModal");
     const overlay = document.getElementById("commentsOverlay");
     const input = document.getElementById("commentText");
 
-    // Close keyboard
-    input.blur();
+    if (!modal || !overlay) return;
+
+    // Reset any previous swipe transform
+    modal.style.transform = "";
+    overlay.style.display = "block";
+
+    requestAnimationFrame(() => {
+        modal.classList.add("show");
+    });
+
+    loadComments();
+}
+
+function closeComments() {
+    const modal = document.getElementById("commentsModal");
+    const overlay = document.getElementById("commentsOverlay");
+    const input = document.getElementById("commentText");
+
+    if (!modal || !overlay) return;
+
+    if (input) {
+        input.blur();
+    }
     document.body.classList.remove("keyboard-open");
 
-    // Reset any swipe transform
     modal.style.transform = "";
-
-    // Hide sheet
     modal.classList.remove("show");
 
-    // Hide overlay after animation
     setTimeout(() => {
         overlay.style.display = "none";
     }, 250);
