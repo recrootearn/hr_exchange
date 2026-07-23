@@ -11103,6 +11103,12 @@ def get_comments(job_id):
                 )
             ),
 
+            "is_post_owner": (
+                current_user.is_authenticated
+                and comment.job
+                and comment.job.hr_id == current_user.id
+            ),
+
             "replies": [
                 serialize_comment(reply)
                 for reply in replies

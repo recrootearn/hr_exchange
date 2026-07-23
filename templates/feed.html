@@ -1661,7 +1661,7 @@ function renderComment(c, level = 0){
                 </span>
 
                 ${
-                    c.is_owner 
+                    (c.is_owner || c.is_post_owner) 
                     ? `<button class="comment-menu" onclick="openCommentMenu(${c.id}, \`${safeCommentText}\`, ${c.is_owner})">
                            <i class="fas fa-ellipsis-h"></i>
                        </button>`
