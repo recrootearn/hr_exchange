@@ -279,43 +279,29 @@
 }
 
 .skill{
-
-    display:inline-block;
-
-    padding:8px 16px;
-
-    background:#2563eb;
-
-    color:#fff;
-
-    border-radius:50px;
-
-    margin:5px;
-
-    font-size:13px;
-
+    display:inline-flex;
+    align-items:center;
+    padding:8px 14px;
+    margin:6px;
+    border-radius:30px;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+    color:#2563eb;
+    font-size:14px;
     font-weight:600;
-
 }
 
 .field{
-
-    display:inline-block;
-
-    padding:8px 16px;
-
-    background:#10b981;
-
-    color:#fff;
-
-    border-radius:50px;
-
-    margin:5px;
-
-    font-size:13px;
-
+    display:inline-flex;
+    align-items:center;
+    padding:8px 14px;
+    margin:6px;
+    border-radius:30px;
+    background:#ecfdf5;
+    border:1px solid #a7f3d0;
+    color:#059669;
+    font-size:14px;
     font-weight:600;
-
 }
 
 .resume-card{
@@ -326,6 +312,16 @@
 
     padding:18px;
 
+}
+
+.about-card{
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:18px;
+    padding:18px;
+    color:#374151;
+    font-size:15px;
+    line-height:1.9;
 }
 
 @media(max-width:768px){
@@ -716,15 +712,8 @@ class="btn edit-btn">
 
     {% if candidate.about_me %}
 
-        <div
-        style="
-        color:#374151;
-        line-height:1.8;
-        font-size:15px;
-        ">
-
+        <div class="about-card">
             {{ candidate.about_me }}
-
         </div>
 
     {% else %}
