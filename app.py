@@ -10948,9 +10948,8 @@ def add_comment(job_id):
     if job and job.hr_id:
         # Prevent self-notification if post owner comments on their own post
         is_self_comment = (
-            (current_user.is_authenticated and job.hr_id == current_user.id)
-            or 
-            ("candidate_id" in session and job.hr_id == session["candidate_id"])
+            current_user.is_authenticated
+            and job.hr_id == current_user.id
         )
         
         if not is_self_comment:
