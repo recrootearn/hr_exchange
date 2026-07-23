@@ -10916,13 +10916,22 @@ def add_comment(job_id):
         comment=text
     )
 
+    actor_name = ""
+    actor_photo = ""
+
     if "candidate_id" in session:
         comment.candidate_id = session["candidate_id"]
         comment.hr_id = None
+        candidate = CandidateUser.query.get(session["candidate_id"])
+        if candidate:
+            actor_name = candidate.full_name
+            actor_photo = candidate.profile_photo
 
     elif current_user.is_authenticated:
         comment.hr_id = current_user.id
         comment.candidate_id = None
+        actor_name = f"{current_user.first_name} {current_user.last_name}"
+        actor_photo = current_user.profile_photo
 
     parent = request.form.get("parent_comment_id")
 
@@ -10930,6 +10939,30 @@ def add_comment(job_id):
         comment.parent_comment_id = int(parent)
 
     db.session.add(comment)
+    db.session.flush() # Flushes to make sure comment.job is accessible if needed
+
+    # ==========================================
+    # NOTIFY POST OWNER OF NEW COMMENT
+    # ==========================================
+    job = JobPost.query.get(job_id)
+    if job and job.hr_id:
+        # Prevent self-notification if post owner comments on their own post
+        is_self_comment = (
+            (current_user.is_authenticated and job.hr_id == current_user.id)
+            or 
+            ("candidate_id" in session and job.hr_id == session["candidate_id"])
+        )
+        
+        if not is_self_comment:
+            send_notification(
+                user_id=job.hr_id,
+                user_type="hr",
+                message=f"{actor_name} commented on your post: \"{text[:30]}...\"",
+                link=f"/job-view/{job.id}",
+                image=actor_photo,
+                type="comment"
+            )
+
     db.session.commit()
 
     return jsonify({
