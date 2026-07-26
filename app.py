@@ -7295,7 +7295,7 @@ def post_enquiries(post_id):
     return render_template(
         "post_enquiries.html",
         enquiries=enquiries,
-        job=job
+        job=job,
         User=User,
         CandidateUser=CandidateUser
     )
