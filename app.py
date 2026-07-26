@@ -7507,14 +7507,22 @@ def candidate_feed():
         ]
 
         sparked_jobs = [
-
             s.job_id
-
             for s in Spark.query.filter_by(
                 candidate_id=session["candidate_id"]
             ).all()
-
         ]
+
+        enquired_jobs = [
+            e.post_id
+            for e in PostEnquiry.query.filter_by(
+                enquiry_candidate_id=session["candidate_id"]
+            ).all()
+        ]
+
+    else:
+
+        enquired_jobs = []
 
     return render_template(
 
@@ -7525,6 +7533,8 @@ def candidate_feed():
         applied_jobs=applied_jobs,
 
         sparked_jobs=sparked_jobs,
+
+        enquired_jobs=enquired_jobs,
 
         selected_id=selected_id,
 

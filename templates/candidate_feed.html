@@ -181,27 +181,43 @@
             <a href="/share-job/{{ job.id }}" class="action-btn" style="color: #2563eb; text-decoration: none; display: flex; align-items: center; padding: 8px; font-size: 24px;">
                 <i class="fas fa-paper-plane"></i>
             </a>
-            {% if job.cta_type == "shop" %}
-            <a
-            href="{{ job.cta_url }}"
-            target="_blank"
-            class="cta-btn">
+            {% if job.cta_type=="shop" %}
 
-            🛒 Shop Now
+<a href="{{ job.cta_url }}"
+   target="_blank"
+   class="cta-btn">
 
-            </a>
+    <i class="fas fa-shopping-cart"></i>&nbsp;Shop Now
 
-            {% elif job.cta_type == "enquire" %}
+</a>
 
-            <button
-            class="cta-btn"
-            onclick="sendEnquiry({{ job.id }})">
+{% elif job.cta_type=="enquire" %}
 
-            📩 Enquire
+{% if job.id in enquired_jobs %}
 
-            </button>
+<button
+    id="enquiry-btn-{{ job.id }}"
+    class="cta-btn enquired"
+    disabled>
 
-            {% endif %}
+    <i class="fas fa-check-circle"></i>&nbsp;Enquired
+
+</button>
+
+{% else %}
+
+<button
+    id="enquiry-btn-{{ job.id }}"
+    class="cta-btn"
+    onclick="sendEnquiry({{ job.id }})">
+
+    <i class="fas fa-envelope"></i>&nbsp;Enquire
+
+</button>
+
+{% endif %}
+
+{% endif %}
         </div>
     {% else %}
         <!-- Existing job post buttons -->
@@ -1976,6 +1992,38 @@ if (window.visualViewport) {
             document.body.classList.remove("keyboard-open");
         }
     });
+}
+
+function sendEnquiry(postId){
+
+    fetch("/enquire-post/" + postId,{
+        method:"POST"
+    })
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        if(data.success){
+
+            const btn=document.getElementById("enquiry-btn-"+postId);
+
+            btn.innerHTML='<i class="fas fa-check-circle"></i>&nbsp;Enquired';
+
+            btn.classList.add("enquired");
+
+            btn.disabled=true;
+
+            btn.onclick=null;
+
+        }else{
+
+            alert(data.message);
+
+        }
+
+    });
+
 }
 
 </script>
