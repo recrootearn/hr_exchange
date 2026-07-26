@@ -120,6 +120,13 @@
 
     </a>
 
+    <a href="{{ url_for('post_enquiries', post_id=job.id) }}"
+   class="cta-btn">
+
+    <i class="fas fa-envelope"></i>
+    Enquiries ({{ job.enquiries|length }})
+    </a>
+
 </div>
             {% else %}
                 <a href="/job-applicants/{{ job.id }}" class="btn btn-primary"><i class="fas fa-users"></i> Applicants</a>

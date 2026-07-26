@@ -206,10 +206,12 @@
 {% if job.cta_type=="enquire" %}
 
 <button
-    class="btn btn-warning cta-btn"
+    id="enquiry-btn-{{ job.id }}"
+    class="cta-btn"
     onclick="sendEnquiry({{ job.id }})">
 
-    📩 Enquire
+    <i class="fas fa-envelope"></i>
+    Enquire
 
 </button>
 
@@ -247,35 +249,43 @@
 .feed-image { width: 100%; height: 100%; display: block; object-fit: contain; background-color: #f3f4f6; }
 .video-actions { display: flex; align-items: center; gap: 16px; width: 100%; }
 .cta-btn{
+
     margin-left:auto;
+
+    width:140px;
+    height:42px;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
-    min-width:130px;
-    height:42px;
-
-    padding:0 18px;
-
-    border:none !important;
+    border:none;
     border-radius:12px;
 
-    background:#198754 !important;
+    background:#1f8f55;
     color:#fff !important;
 
-    font-size:15px;
+    font-size:16px;
     font-weight:700;
 
     text-decoration:none;
 
-    flex-shrink:0;
-
     cursor:pointer;
+
+    transition:.25s;
+
+    flex-shrink:0;
 }
 
-.cta-btn.enquire{
-    background:#0d6efd !important;
+.cta-btn:hover{
+    background:#177344;
+}
+
+.cta-btn:disabled,
+.cta-btn.disabled{
+    background:#d1d5db;
+    color:#666 !important;
+    cursor:not-allowed;
 }
 
 .action-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 8px; font-size: 24px; }
@@ -1970,6 +1980,42 @@ if (window.visualViewport) {
             document.body.classList.remove("keyboard-open");
         }
     });
+}
+
+function sendEnquiry(postId){
+
+    if(!confirm("Send enquiry for this post?")){
+        return;
+    }
+
+    fetch("/enquire-post/" + postId,{
+        method:"POST"
+    })
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        if(data.success){
+
+            const btn=document.getElementById("enquiry-btn-"+postId);
+
+            btn.innerHTML='<i class="fas fa-check"></i> Enquired';
+
+            btn.disabled=true;
+
+            btn.style.background="#9ca3af";
+
+            btn.style.cursor="not-allowed";
+
+        }else{
+
+            alert(data.message);
+
+        }
+
+    });
+
 }
 
 </script>

@@ -1,0 +1,456 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.page-title{
+    font-size:30px;
+    font-weight:700;
+    margin-bottom:25px;
+    color:#222;
+}
+
+.enquiry-card{
+    background:#fff;
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:18px;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+    border:1px solid #eef2f7;
+    width:100%;
+    box-sizing:border-box;
+    overflow:hidden;
+}
+
+.enquiry-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.enquiry-left{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.enquiry-avatar{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:#fff;
+    font-size:26px;
+    font-weight:bold;
+}
+
+.enquiry-name{
+    font-size:22px;
+    font-weight:700;
+}
+
+.enquiry-type{
+    color:#6b7280;
+    font-size:15px;
+}
+
+.date-badge{
+    padding:8px 15px;
+    border-radius:30px;
+    background:#2563eb;
+    color:#fff;
+    font-size:13px;
+    font-weight:600;
+}
+
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:12px;
+    margin-top:15px;
+}
+
+.info-box{
+    background:#f8fafc;
+    border-radius:12px;
+    padding:12px;
+}
+
+.info-title{
+    color:#64748b;
+    font-size:13px;
+    margin-bottom:5px;
+}
+
+.action-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:20px;
+}
+
+.no-data{
+    background:#fff;
+    border-radius:20px;
+    padding:60px 20px;
+    text-align:center;
+}
+
+@media(max-width:768px){
+
+.enquiry-card{
+    padding:12px;
+}
+
+.enquiry-top{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+}
+
+.info-grid{
+    grid-template-columns:1fr;
+}
+
+.action-buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+}
+
+.action-buttons .btn{
+    width:100%;
+}
+
+}
+
+</style>
+
+<div class="container py-3">
+
+<h2 class="page-title">
+📩 Post Enquiries
+</h2>
+
+<div class="row mb-4">
+
+<div class="col-md-4 mb-2">
+<input
+type="text"
+id="searchInput"
+class="form-control"
+placeholder="🔍 Search enquiry...">
+</div>
+
+<div class="col-md-4 mb-2">
+<select id="typeFilter" class="form-select">
+<option value="All">All</option>
+<option value="Candidate">Candidate</option>
+<option value="HR">HR</option>
+</select>
+</div>
+
+<div class="col-md-4 mb-2">
+<select id="sortFilter" class="form-select">
+<option value="newest">Newest First</option>
+<option value="oldest">Oldest First</option>
+</select>
+</div>
+
+</div>
+
+{% if enquiries %}
+
+{% for enquiry in enquiries %}
+
+{% if enquiry.enquiry_candidate_id %}
+
+{% set candidate = CandidateUser.query.get(enquiry.enquiry_candidate_id) %}
+
+{% if candidate %}
+
+<div class="enquiry-card"
+     data-type="Candidate"
+     data-name="{{ candidate.full_name|lower }}"
+     data-id="{{ enquiry.id }}">
+
+    <div class="enquiry-top">
+
+        <div class="enquiry-left">
+
+            <div class="enquiry-avatar">
+                {{ candidate.full_name[0] }}
+            </div>
+
+            <div>
+
+                <div class="enquiry-name">
+                    {{ candidate.full_name }}
+                </div>
+
+                <div class="enquiry-type">
+                    👤 Candidate Enquiry
+                </div>
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <span class="date-badge">
+                {{ enquiry.created_at.strftime("%d %b %Y") }}
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="info-grid">
+
+        <div class="info-box">
+            <div class="info-title">📱 Mobile</div>
+            {{ candidate.mobile }}
+        </div>
+
+        <div class="info-box">
+            <div class="info-title">📧 Email</div>
+            {{ candidate.email }}
+        </div>
+
+        <div class="info-box">
+            <div class="info-title">📍 City</div>
+            {{ candidate.city or "Not Added" }}
+        </div>
+
+        <div class="info-box">
+            <div class="info-title">💼 Experience</div>
+            {{ candidate.experience or "Not Added" }}
+        </div>
+
+    </div>
+
+    <div class="action-buttons">
+
+        <a href="/candidate/{{ candidate.id }}"
+           class="btn btn-primary">
+            👤 View Profile
+        </a>
+
+        <a href="tel:{{ candidate.mobile }}"
+           class="btn btn-success">
+            📞 Call
+        </a>
+
+        <a href="https://wa.me/91{{ candidate.mobile }}"
+           target="_blank"
+           class="btn btn-success">
+            💬 WhatsApp
+        </a>
+
+        <a href="mailto:{{ candidate.email }}"
+           class="btn btn-info">
+            ✉️ Email
+        </a>
+
+        {% if candidate.resume_file %}
+        <a href="/static/uploads/{{ candidate.resume_file }}"
+           target="_blank"
+           class="btn btn-dark">
+            📄 Resume
+        </a>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endif %}
+
+{% if enquiry.enquiry_hr_id %}
+
+{% set hr = User.query.get(enquiry.enquiry_hr_id) %}
+
+{% if hr %}
+
+<div class="enquiry-card"
+     data-type="HR"
+     data-name="{{ (hr.first_name ~ ' ' ~ hr.last_name)|lower }}"
+     data-id="{{ enquiry.id }}">
+
+    <div class="enquiry-top">
+
+        <div class="enquiry-left">
+
+            <div class="enquiry-avatar">
+                {{ hr.first_name[0] }}
+            </div>
+
+            <div>
+
+                <div class="enquiry-name">
+                    {{ hr.first_name }} {{ hr.last_name }}
+                </div>
+
+                <div class="enquiry-type">
+                    🏢 HR Enquiry
+                </div>
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <span class="date-badge">
+                {{ enquiry.created_at.strftime("%d %b %Y") }}
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="info-grid">
+
+        <div class="info-box">
+            <div class="info-title">🏢 Company</div>
+            {{ hr.company or "Not Added" }}
+        </div>
+
+        <div class="info-box">
+            <div class="info-title">📱 Mobile</div>
+            {{ hr.mobile }}
+        </div>
+
+        <div class="info-box">
+            <div class="info-title">📧 Email</div>
+            {{ hr.email }}
+        </div>
+
+        <div class="info-box">
+            <div class="info-title">📍 City</div>
+            {{ hr.company_city or "Not Added" }}
+        </div>
+
+        <div class="info-box">
+            <div class="info-title">💼 HR Type</div>
+            {{ hr.hr_type or "Not Added" }}
+        </div>
+
+    </div>
+
+    <div class="action-buttons">
+
+        <a href="/company/{{ hr.id }}"
+           class="btn btn-primary">
+            👤 View Company
+        </a>
+
+        <a href="tel:{{ hr.mobile }}"
+           class="btn btn-success">
+            📞 Call
+        </a>
+
+        <a href="https://wa.me/91{{ hr.mobile }}"
+           target="_blank"
+           class="btn btn-success">
+            💬 WhatsApp
+        </a>
+
+        <a href="mailto:{{ hr.email }}"
+           class="btn btn-info">
+            ✉️ Email
+        </a>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endif %}
+
+{% endfor %}
+
+{% else %}
+
+<div class="no-data">
+
+    <img
+        src="/static/images/no-data.png"
+        style="width:120px;margin-bottom:20px;">
+
+    <h3>
+        📩 No Enquiries Yet
+    </h3>
+
+    <p class="text-muted">
+        Once someone enquires about this promotional post,
+        they will appear here.
+    </p>
+
+</div>
+
+{% endif %}
+
+</div>
+
+<script>
+
+function filterEnquiries(){
+
+    let search=document.getElementById("searchInput").value.toLowerCase();
+    let type=document.getElementById("typeFilter").value;
+
+    document.querySelectorAll(".enquiry-card").forEach(card=>{
+
+        let show=true;
+
+        if(search && !card.dataset.name.includes(search))
+            show=false;
+
+        if(type!="All" && card.dataset.type!=type)
+            show=false;
+
+        card.style.display=show?"block":"none";
+
+    });
+
+}
+
+document.getElementById("searchInput")
+.addEventListener("keyup",filterEnquiries);
+
+document.getElementById("typeFilter")
+.addEventListener("change",filterEnquiries);
+
+document.getElementById("sortFilter")
+.addEventListener("change",function(){
+
+    let container=document.querySelector(".container");
+
+    let cards=[...document.querySelectorAll(".enquiry-card")];
+
+    if(this.value=="newest"){
+
+        cards.sort((a,b)=>Number(b.dataset.id)-Number(a.dataset.id));
+
+    }else{
+
+        cards.sort((a,b)=>Number(a.dataset.id)-Number(b.dataset.id));
+
+    }
+
+    cards.forEach(card=>container.appendChild(card));
+
+});
+
+</script>
+
+{% endblock %}

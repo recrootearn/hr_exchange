@@ -617,6 +617,17 @@ class CandidateWithdrawal(db.Model):
         default=india_time
     )
 
+class PostEnquiry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    post_id = db.Column(db.Integer, db.ForeignKey("job_post.id"))
+    hr_id = db.Column(db.Integer, db.ForeignKey("user.id"))  # Owner of the post
+
+    enquiry_hr_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
+    enquiry_candidate_id = db.Column(db.Integer, db.ForeignKey("candidate_user.id"), nullable=True)
+
+    created_at = db.Column(db.DateTime, default=india_time)
+
 class Follow(db.Model):
 
     id = db.Column(
@@ -7264,6 +7275,81 @@ def post_video():
         return redirect("/feed")
 
     return render_template("post_video.html")
+
+@app.route("/post-enquiries/<int:post_id>")
+@login_required
+def post_enquiries(post_id):
+
+    job = JobPost.query.get_or_404(post_id)
+
+    if job.hr_id != current_user.id:
+        abort(403)
+
+    enquiries = (
+        db.session.query(PostEnquiry, CandidateUser)
+        .join(
+            CandidateUser,
+            CandidateUser.id == PostEnquiry.candidate_id
+        )
+        .filter(PostEnquiry.post_id == post_id)
+        .order_by(PostEnquiry.created_at.desc())
+        .all()
+    )
+
+    return render_template(
+        "post_enquiries.html",
+        enquiries=enquiries,
+        job=job
+    )
+
+@app.route("/enquire-post/<int:post_id>", methods=["POST"])
+def enquire_post(post_id):
+
+    job = JobPost.query.get_or_404(post_id)
+
+    # HR enquiry
+    if current_user.is_authenticated:
+
+        already = PostEnquiry.query.filter_by(
+            post_id=post_id,
+            enquiry_hr_id=current_user.id
+        ).first()
+
+        if already:
+            return jsonify(success=False, message="You have already enquired.")
+
+        enquiry = PostEnquiry(
+            post_id=job.id,
+            hr_id=job.hr_id,
+            enquiry_hr_id=current_user.id
+        )
+
+    # Candidate enquiry
+    elif "candidate_id" in session:
+
+        candidate_id = session["candidate_id"]
+
+        already = PostEnquiry.query.filter_by(
+            post_id=post_id,
+            enquiry_candidate_id=candidate_id
+        ).first()
+
+        if already:
+            return jsonify(success=False, message="You have already enquired.")
+
+        enquiry = PostEnquiry(
+            post_id=job.id,
+            hr_id=job.hr_id,
+            enquiry_candidate_id=candidate_id
+        )
+
+    else:
+        return jsonify(success=False, message="Please login first.")
+
+    db.session.add(enquiry)
+    db.session.commit()
+
+    return jsonify(success=True)
 
 @app.route('/job/<int:id>')
 def view_job(id):
