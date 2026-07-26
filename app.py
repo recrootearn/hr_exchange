@@ -7296,6 +7296,8 @@ def post_enquiries(post_id):
         "post_enquiries.html",
         enquiries=enquiries,
         job=job
+        User=User,
+        CandidateUser=CandidateUser
     )
 
 @app.route("/enquire-post/<int:post_id>", methods=["POST"])
