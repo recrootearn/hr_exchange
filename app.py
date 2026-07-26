@@ -7370,6 +7370,35 @@ def enquire_post(post_id):
 
     return jsonify(success=True)
 
+@app.route("/candidate-enquire-post/<int:post_id>", methods=["POST"])
+def candidate_enquire_post(post_id):
+
+    if "candidate_id" not in session:
+        return jsonify(success=False, message="Please login as Candidate.")
+
+    candidate_id = session["candidate_id"]
+
+    job = JobPost.query.get_or_404(post_id)
+
+    already = PostEnquiry.query.filter_by(
+        post_id=post_id,
+        enquiry_candidate_id=candidate_id
+    ).first()
+
+    if already:
+        return jsonify(success=False, message="Already enquired.")
+
+    enquiry = PostEnquiry(
+        post_id=job.id,
+        hr_id=job.hr_id,
+        enquiry_candidate_id=candidate_id
+    )
+
+    db.session.add(enquiry)
+    db.session.commit()
+
+    return jsonify(success=True)
+
 @app.route('/job/<int:id>')
 def view_job(id):
 
