@@ -7347,6 +7347,18 @@ def enquire_post(post_id):
             hr_id=job.hr_id,
             enquiry_candidate_id=candidate_id
         )
+        
+        # Fetch candidate details to send to the HR post owner
+        candidate = CandidateUser.query.get(candidate_id)
+        if candidate and job.hr_id:
+            send_notification(
+                user_id=job.hr_id,
+                user_type="hr",
+                message=f"📩 New Enquiry! {candidate.full_name} ({candidate.mobile}) enquired about your post: {job.job_title or 'Video Post'}",
+                link=f"/candidate/{candidate.id}",
+                image=candidate.profile_photo,
+                type="enquiry"
+            )
 
     else:
         return jsonify(success=False, message="Please login first.")
