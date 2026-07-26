@@ -7252,7 +7252,9 @@ def post_video():
             location=request.form.get("location"),
             description=request.form.get("description"),
             images=filename,
-            post_type="video"
+            post_type="video",
+            cta_type=request.form.get("cta_type"),
+            cta_url=request.form.get("cta_url")
         )
 
         db.session.add(job)
