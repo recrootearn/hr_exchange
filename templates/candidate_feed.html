@@ -183,41 +183,41 @@
             </a>
             {% if job.cta_type=="shop" %}
 
-<a href="{{ job.cta_url }}"
-   target="_blank"
-   class="cta-btn">
+            <a href="{{ job.cta_url }}"
+            target="_blank"
+            class="cta-btn">
 
-    <i class="fas fa-shopping-cart"></i>&nbsp;Shop Now
+            <i class="fas fa-shopping-cart"></i>&nbsp;Shop Now
 
-</a>
+            </a>
 
-{% elif job.cta_type=="enquire" %}
+            {% elif job.cta_type=="enquire" %}
 
-{% if job.id in enquired_jobs %}
+            {% if job.id in enquired_jobs %}
 
-<button
-    id="enquiry-btn-{{ job.id }}"
-    class="cta-btn enquired"
-    disabled>
+            <button
+            id="enquiry-btn-{{ job.id }}"
+            class="cta-btn enquired"
+            disabled>
 
-    <i class="fas fa-check-circle"></i>&nbsp;Enquired
+            <i class="fas fa-check-circle"></i>&nbsp;Enquired
 
-</button>
+            </button>
 
-{% else %}
+            {% else %}
 
-<button
-    id="enquiry-btn-{{ job.id }}"
-    class="cta-btn"
-    onclick="sendEnquiry({{ job.id }})">
+            <button
+            id="enquiry-btn-{{ job.id }}"
+            class="cta-btn"
+            onclick="sendEnquiry({{ job.id }})">
 
-    <i class="fas fa-envelope"></i>&nbsp;Enquire
+            <i class="fas fa-envelope"></i>&nbsp;Enquire
 
-</button>
+            </button>
 
-{% endif %}
+            {% endif %}
 
-{% endif %}
+            {% endif %}
         </div>
     {% else %}
         <!-- Existing job post buttons -->
@@ -281,6 +281,39 @@
 
 }
 .action-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 8px; font-size: 24px; }
+.cta-btn {
+    margin-left: auto;
+    min-width: 120px;
+    height: 42px;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 25px;
+    background: #1f8f55;
+    color: #fff !important;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .25s;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.cta-btn:hover {
+    background: #177344;
+}
+
+.cta-btn.enquired {
+    background: #ffffff;
+    color: #1f8f55 !important;
+    border: 2px solid #1f8f55;
+}
+
+.cta-btn:disabled {
+    cursor: not-allowed;
+}
 .spark-btn{
     background:none;
     border:none;
