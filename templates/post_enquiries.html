@@ -163,6 +163,9 @@ placeholder="🔍 Search enquiry...">
 
 </div>
 
+<!-- WRAPPER ADDED HERE FOR SECURE SORTING & DISPLAY -->
+<div id="enquiriesListContainer">
+
 {% if enquiries %}
 
 {% for enquiry in enquiries %}
@@ -399,6 +402,8 @@ placeholder="🔍 Search enquiry...">
 
 {% endif %}
 
+</div> <!-- END OF #enquiriesListContainer -->
+
 </div>
 
 <script>
@@ -433,7 +438,8 @@ document.getElementById("typeFilter")
 document.getElementById("sortFilter")
 .addEventListener("change",function(){
 
-    let container=document.querySelector(".container");
+    // TARGETS THE WRAPPER INSTEAD OF THE ROOT CONTAINER
+    let container=document.getElementById("enquiriesListContainer");
 
     let cards=[...document.querySelectorAll(".enquiry-card")];
 

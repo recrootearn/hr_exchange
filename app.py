@@ -7354,7 +7354,7 @@ def enquire_post(post_id):
             send_notification(
                 user_id=job.hr_id,
                 user_type="hr",
-                message=f"📩 New Enquiry! {candidate.full_name} ({candidate.mobile}) enquired about your post: {job.job_title or 'Video Post'}",
+                message=f"📩 New Enquiry from Candidate: {candidate.full_name} ({candidate.mobile}) for {job.job_title or 'your post'}",
                 link=f"/candidate/{candidate.id}",
                 image=candidate.profile_photo,
                 type="enquiry"
