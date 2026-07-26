@@ -7282,55 +7282,19 @@ def post_enquiries(post_id):
 
     job = JobPost.query.get_or_404(post_id)
 
-    # Only owner of the post can view enquiries
     if job.hr_id != current_user.id:
         abort(403)
 
-    enquiries = PostEnquiry.query.filter_by(
-        post_id=post_id
-    ).order_by(
-        PostEnquiry.created_at.desc()
-    ).all()
-
-    enquiry_list = []
-
-    for enquiry in enquiries:
-
-        if enquiry.enquiry_candidate_id:
-
-            candidate = CandidateUser.query.get(
-                enquiry.enquiry_candidate_id
-            )
-
-            enquiry_list.append({
-                "type": "candidate",
-                "name": candidate.full_name if candidate else "Unknown Candidate",
-                "mobile": candidate.mobile if candidate else "",
-                "email": candidate.email if candidate else "",
-                "created_at": enquiry.created_at
-            })
-
-        elif enquiry.enquiry_hr_id:
-
-            hr = User.query.get(
-                enquiry.enquiry_hr_id
-            )
-
-            enquiry_list.append({
-                "type": "hr",
-                "name": (
-                    f"{hr.first_name} {hr.last_name}"
-                    if hr else "Unknown HR"
-                ),
-                "company": hr.company if hr else "",
-                "mobile": hr.mobile if hr else "",
-                "email": hr.email if hr else "",
-                "created_at": enquiry.created_at
-            })
+    enquiries = (
+        PostEnquiry.query
+        .filter_by(post_id=post_id)
+        .order_by(PostEnquiry.created_at.desc())
+        .all()
+    )
 
     return render_template(
         "post_enquiries.html",
-        enquiries=enquiry_list,
+        enquiries=enquiries,
         job=job
     )
 
