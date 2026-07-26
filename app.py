@@ -540,6 +540,13 @@ class JobPost(db.Model):
         cascade="all, delete-orphan"
     )
 
+    enquiries = db.relationship(
+        "PostEnquiry",
+        backref="job",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=india_time
