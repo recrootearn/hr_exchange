@@ -7883,6 +7883,16 @@ def feed():
 
     ]
 
+    enquired_jobs = [
+
+        e.post_id
+
+        for e in PostEnquiry.query.filter_by(
+            enquiry_hr_id=current_user.id
+        ).all()
+
+    ]
+
     # -----------------------------
     # Available Locations
     # -----------------------------
@@ -7921,6 +7931,8 @@ def feed():
         applied_jobs=applied_jobs,
 
         sparked_jobs=sparked_jobs,
+
+        enquired_jobs=enquired_jobs,
 
         locations=locations,
 
