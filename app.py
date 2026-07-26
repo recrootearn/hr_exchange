@@ -7325,8 +7325,8 @@ def enquire_post(post_id):
 
         enquiry = PostEnquiry(
             post_id=job.id,
-            hr_id=job.hr_id,
-            enquiry_hr_id=current_user.id
+            hr_id=job.hr_id,           # Post owner HR ID
+            enquiry_hr_id=current_user.id # Enquiring HR ID
         )
 
     # Candidate enquiry
@@ -7344,17 +7344,17 @@ def enquire_post(post_id):
 
         enquiry = PostEnquiry(
             post_id=job.id,
-            hr_id=job.hr_id,
-            enquiry_candidate_id=candidate_id
+            hr_id=job.hr_id,               # Post owner HR ID
+            enquiry_candidate_id=candidate_id # Enquiring Candidate ID (enquiry_hr_id stays None)
         )
         
-        # Fetch candidate details to send to the HR post owner
+        # Notify the post owner HR with candidate details
         candidate = CandidateUser.query.get(candidate_id)
         if candidate and job.hr_id:
             send_notification(
                 user_id=job.hr_id,
                 user_type="hr",
-                message=f"📩 New Enquiry from Candidate: {candidate.full_name} ({candidate.mobile}) for {job.job_title or 'your post'}",
+                message=f"📩 New Enquiry from Candidate: {candidate.full_name} ({candidate.mobile}) for your post",
                 link=f"/candidate/{candidate.id}",
                 image=candidate.profile_photo,
                 type="enquiry"
