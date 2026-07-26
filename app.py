@@ -523,6 +523,8 @@ class JobPost(db.Model):
     post_type = db.Column(db.String(20), default="hiring")
     video_caption = db.Column(db.Text)
     hashtags = db.Column(db.String(300))
+    cta_type = db.Column(db.String(20), default="none")
+    cta_url = db.Column(db.String(500))
 
     comments = db.relationship(
         "Comment",
