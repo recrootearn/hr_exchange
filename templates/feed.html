@@ -1997,10 +1997,6 @@ if (window.visualViewport) {
 
 function sendEnquiry(postId){
 
-    if(!confirm("Send enquiry for this post?")){
-        return;
-    }
-
     fetch("/enquire-post/" + postId,{
         method:"POST"
     })
@@ -2011,8 +2007,10 @@ function sendEnquiry(postId){
 
         if(data.success){
 
+            const btn = document.getElementById("enquiry-btn-" + postId);
+
             btn.innerHTML =
-            '<i class="fas fa-check-circle"></i>&nbsp;Enquired';
+                '<i class="fas fa-check-circle"></i>&nbsp;Enquired';
 
             btn.classList.add("enquired");
             btn.disabled = true;
