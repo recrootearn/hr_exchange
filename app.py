@@ -27,6 +27,7 @@ from zoneinfo import ZoneInfo
 from flask import jsonify
 from push_notification import send_push_notification
 from datetime import datetime, timedelta, date
+from sqlalchemy import case
 
 IST = ZoneInfo("Asia/Kolkata")
 
@@ -7919,7 +7920,8 @@ def candidate_feed():
             )
         )
         .order_by(
-            BoostPost.created_at.desc().nullslast(),
+            case((BoostPost.id == None, 1), else_=0),
+            BoostPost.created_at.desc(),
             JobPost.created_at.desc()
         )
         .all()
@@ -8356,7 +8358,8 @@ def feed():
             )
         )
         .order_by(
-            BoostPost.created_at.desc().nullslast(),
+            case((BoostPost.id == None, 1), else_=0),
+            BoostPost.created_at.desc(),
             JobPost.created_at.desc()
         )
         .all()
