@@ -211,6 +211,7 @@
         {% endif %}
         <a href="/share-job/{{ job.id }}" class="btn btn-success"><i class="fab fa-whatsapp"></i> Share</a>
     {% endif %}
+</div>
 
 <div class="job-details-wrapper">
             {% if job.post_type == "video" %}
@@ -229,8 +230,7 @@
                 <span id="toggle-{{ job.id }}" class="toggle-btn" onclick="toggleDescription('{{ job.id }}')">See more</span>
             {% endif %}
         </div>
-
-</div>  
+  
     {% endfor %}
 </div>
             
