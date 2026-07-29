@@ -6143,13 +6143,6 @@ def boost_post(job_id):
                 flash("Please select at least one city.", "danger")
                 return redirect(request.url)
 
-            if len(selected_cities) > settings.boost_max_cities:
-                flash(
-                    f"Maximum {settings.boost_max_cities} cities allowed.",
-                    "danger"
-                )
-                return redirect(request.url)
-
             total_credits = (
                 len(selected_cities)
                 * days
