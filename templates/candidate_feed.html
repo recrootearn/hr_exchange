@@ -164,12 +164,10 @@
             {{ job.comments|length }}
         </span>
 
-        <!-- Share -->
         <a href="/share-job/{{ job.id }}"
-           class="action-btn">
-
-            <i class="fas fa-paper-plane"></i>
-
+           class="action-btn"
+           style="color:#2563eb; text-decoration:none; display:flex; align-items:center; padding:8px; font-size:24px;">
+           <i class="fas fa-paper-plane"></i>
         </a>
 
         <!-- CTA -->
@@ -1003,14 +1001,6 @@ animation:commentIn .25s ease;
         margin: 0 !important;
     }
 
-    .feed-card {
-        border-radius: 0 !important;
-        border-left: none !important;
-        border-right: none !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        margin-bottom: 16px !important;
-    }
 }
 
 @media (min-width: 992px) { 
