@@ -129,24 +129,6 @@
         </div>
         {% endif %}
 
-        <div class="job-details-wrapper">
-            {% if job.post_type == "video" %}
-                <div id="desc-{{ job.id }}" class="description-text">{{ job.description }}</div>
-                {% if job.description and job.description|length > 50 %}
-                <span id="toggle-{{ job.id }}"
-                class="toggle-btn"
-                onclick="toggleDescription('{{ job.id }}')">
-                See more
-                </span>
-                {% endif %}
-            {% else %}
-                <h4 class="job-title" style="margin-bottom: 8px;">{{ job.job_title }}</h4>
-                <div class="salary-tag">₹ {{ job.salary }}</div>
-                <div id="desc-{{ job.id }}" class="description-text" style="margin: 8px 0;">{{ job.description }}</div>
-                <span id="toggle-{{ job.id }}" class="toggle-btn" onclick="toggleDescription('{{ job.id }}')">See more</span>
-            {% endif %}
-        </div>
-
         <!-- UPDATED BUTTONS -->
 <div class="feed-buttons">
     {% if job.post_type == "video" %}
@@ -232,6 +214,24 @@
 </div>  
     {% endfor %}
 </div>
+
+<div class="job-details-wrapper">
+            {% if job.post_type == "video" %}
+                <div id="desc-{{ job.id }}" class="description-text">{{ job.description }}</div>
+                {% if job.description and job.description|length > 50 %}
+                <span id="toggle-{{ job.id }}"
+                class="toggle-btn"
+                onclick="toggleDescription('{{ job.id }}')">
+                See more
+                </span>
+                {% endif %}
+            {% else %}
+                <h4 class="job-title" style="margin-bottom: 8px;">{{ job.job_title }}</h4>
+                <div class="salary-tag">₹ {{ job.salary }}</div>
+                <div id="desc-{{ job.id }}" class="description-text" style="margin: 8px 0;">{{ job.description }}</div>
+                <span id="toggle-{{ job.id }}" class="toggle-btn" onclick="toggleDescription('{{ job.id }}')">See more</span>
+            {% endif %}
+        </div>
             
 <style>
 .feed-card { background: #fff; border-radius: 16px; margin-bottom: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; }
