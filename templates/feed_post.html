@@ -20,12 +20,17 @@
             <div class="dropdown ms-auto">
                 <button class="btn btn-sm border-0" data-bs-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item text-danger" href="/delete-job/{{ job.id }}" onclick="return confirm('Delete this post?')"><i class="fas fa-trash me-2"></i>Delete Post</a>
-                        <a href="/boost-post/{{ job.id }}">
-                           Boost Post
-                        </a>
-</li>
-                </ul>
+                <li>
+                <a class="dropdown-item text-danger" href="/delete-job/{{ job.id }}" onclick="return confirm('Delete this post?')">
+                <i class="fas fa-trash me-2"></i>Delete Post
+                </a>
+                </li>
+                <li>
+                <a class="dropdown-item" href="/boost-post/{{ job.id }}">
+                <i class="fas fa-rocket me-2"></i>Boost Post
+                </a>
+                </li>
+              </ul>
             </div>
         </div>
 
