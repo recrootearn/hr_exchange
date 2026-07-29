@@ -315,20 +315,10 @@
 .feed-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
 .feed-company { font-weight: 700; font-size: 15px; color: #111827; }
 .feed-meta { font-size: 13px; color: #6b7280; margin-top: 2px; }
+.job-details-wrapper { padding: 16px 16px 8px 16px; }
 .job-title { font-size: 18px; font-weight: 700; color: #111827; }
 .salary-tag { display: inline-block; background: #ecfdf5; color: #065f46; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 13px; }
-.job-details-wrapper {
-    padding: 0 16px 16px;
-}
-
-.feed-buttons {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 12px;      /* Space below image/video */
-    margin-bottom: 12px;   /* Space above description */
-    padding: 0 16px;
-}
+.feed-buttons { display: flex; align-items: center; gap: 12px; padding: 0 16px 16px 16px; }
 .feed-buttons .btn { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 14px; }
 .feed-media { width: 100%; position: relative; background: #000; }
 .post-media { aspect-ratio: 4/5; }
@@ -336,70 +326,45 @@
 .feed-image { width: 100%; height: 100%; display: block; object-fit: contain; background-color: #f3f4f6; }
 .video-actions { display: flex; align-items: center; gap: 16px; width: 100%; }
 .cta-btn{
-
     margin-left:auto;
 
-    padding:8px 16px;
-
-    border-radius:999px;
-
-    border:1px solid rgba(255,255,255,.25);
-
-    background:rgba(255,255,255,.18);
-
-    backdrop-filter:blur(14px);
-
-    -webkit-backdrop-filter:blur(14px);
-
-    color:#fff;
-
-    text-decoration:none;
-
-    font-weight:700;
-
-    font-size:14px;
+    min-width:120px;
+    height:42px;
+    padding:0 18px;
 
     display:flex;
-
     align-items:center;
+    justify-content:center;
 
-    gap:6px;
+    border:none;
+    border-radius:25px;
 
+    background:#1f8f55;
+    color:#fff !important;
+
+    font-size:15px;
+    font-weight:700;
+
+    cursor:pointer;
+    transition:.25s;
+    flex-shrink:0;
 }
+
+.cta-btn:hover{
+    background:#177344;
+}
+
+.cta-btn.enquired{
+    background:#ffffff;
+    color:#1f8f55 !important;
+    border:2px solid #1f8f55;
+}
+
+.cta-btn:disabled{
+    cursor:not-allowed;
+}
+
 .action-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 8px; font-size: 24px; }
-.cta-btn {
-    margin-left: auto;
-    min-width: 120px;
-    height: 42px;
-    padding: 0 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    border-radius: 25px;
-    background: #1f8f55;
-    color: #fff !important;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: .25s;
-    flex-shrink: 0;
-    text-decoration: none;
-}
-
-.cta-btn:hover {
-    background: #177344;
-}
-
-.cta-btn.enquired {
-    background: #ffffff;
-    color: #1f8f55 !important;
-    border: 2px solid #1f8f55;
-}
-
-.cta-btn:disabled {
-    cursor: not-allowed;
-}
 .spark-btn{
     background:none;
     border:none;
@@ -994,21 +959,10 @@ animation:commentIn .25s ease;
         padding: 0 !important;
         padding-bottom: 120px !important;
     }
-    
-    .desktop-feed {
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 0 !important;
-    }
-
 }
 
-@media (min-width: 992px) { 
-    .desktop-feed { 
-        max-width: 600px; 
-        margin: 0 auto; 
-    } 
-}
+@media (min-width: 992px) { .desktop-feed { max-width: 600px; margin: 0 auto; } }
+
 </style>
 
 <div id="mediaViewer" class="media-viewer">
