@@ -129,109 +129,183 @@
         </div>
         {% endif %}
 
-        <!-- UPDATED BUTTONS -->
+        <!-- ACTION BUTTONS -->
 <div class="feed-buttons">
+
     {% if job.post_type == "video" %}
-        <!-- Video Spark and Share buttons -->
-        <div class="video-actions" style="display: flex; align-items: center; gap: 16px; width: 100%;">
-            <!-- Updated onclick to toggleCandidateSpark -->
-            <button
-                id="spark-btn-{{ job.id }}"
-                class="action-btn spark-btn {% if job.id in sparked_jobs %}sparked{% endif %}"
-                type="button"
-                onclick="toggleCandidateSpark({{ job.id }}, this)"
-            >
+
+    <div class="video-actions" style="display:flex;align-items:center;gap:16px;width:100%;">
+
+        <!-- Spark -->
+        <button
+            id="spark-btn-{{ job.id }}"
+            class="action-btn spark-btn {% if job.id in sparked_jobs %}sparked{% endif %}"
+            type="button"
+            onclick="toggleCandidateSpark({{ job.id }}, this)">
+
             <i class="fas fa-bolt"></i>
-            </button>
-            <span id="spark-count-{{ job.id }}" class="action-count" style="font-weight: 600; font-size: 14px; margin-left: -10px;">{{ job.sparks|length }}</span>
-            <!-- Comment -->
-            <button
+
+        </button>
+
+        <span id="spark-count-{{ job.id }}" class="action-count">
+            {{ job.sparks|length }}
+        </span>
+
+        <!-- Comment -->
+        <button
             class="action-btn"
             onclick="openComments({{ job.id }})">
 
             <i class="far fa-comment"></i>
 
-            </button>
+        </button>
 
-            <span
-            id="comment-count-{{ job.id }}"
-            class="action-count">
-
+        <span id="comment-count-{{ job.id }}" class="action-count">
             {{ job.comments|length }}
+        </span>
 
-            </span>
-            <a href="/share-job/{{ job.id }}" class="action-btn" style="color: #2563eb; text-decoration: none; display: flex; align-items: center; padding: 8px; font-size: 24px;">
-                <i class="fas fa-paper-plane"></i>
-            </a>
-            {% if job.cta_type=="shop" %}
+        <!-- Share -->
+        <a href="/share-job/{{ job.id }}"
+           class="action-btn">
 
-            <a href="{{ job.cta_url }}"
-            target="_blank"
-            class="cta-btn">
+            <i class="fas fa-paper-plane"></i>
 
-            <i class="fas fa-shopping-cart"></i>&nbsp;Shop Now
+        </a>
 
-            </a>
+        <!-- CTA -->
+        {% if job.cta_type=="shop" %}
 
-            {% elif job.cta_type=="enquire" %}
+        <a href="{{ job.cta_url }}"
+           target="_blank"
+           class="cta-btn">
+
+            <i class="fas fa-shopping-cart"></i>
+            Shop Now
+
+        </a>
+
+        {% elif job.cta_type=="enquire" %}
 
             {% if job.id in enquired_jobs %}
 
             <button
-            id="enquiry-btn-{{ job.id }}"
-            class="cta-btn enquired"
-            disabled>
+                id="enquiry-btn-{{ job.id }}"
+                class="cta-btn enquired"
+                disabled>
 
-            <i class="fas fa-check-circle"></i>&nbsp;Enquired
+                <i class="fas fa-check-circle"></i>
+                Enquired
 
             </button>
 
             {% else %}
 
             <button
-            id="enquiry-btn-{{ job.id }}"
-            class="cta-btn"
-            onclick="sendEnquiry({{ job.id }})">
+                id="enquiry-btn-{{ job.id }}"
+                class="cta-btn"
+                onclick="sendEnquiry({{ job.id }})">
 
-            <i class="fas fa-envelope"></i>&nbsp;Enquire
+                <i class="fas fa-envelope"></i>
+                Enquire
 
             </button>
 
             {% endif %}
 
-            {% endif %}
-        </div>
-    {% else %}
-        <!-- Existing job post buttons -->
-        <a href="/job-view/{{ job.id }}" class="btn btn-info"><i class="fas fa-eye"></i> View</a>
-        {% if job.id in applied_jobs %}
-            <button class="btn btn-success" disabled><i class="fas fa-check-circle"></i> Applied</button>
-        {% else %}
-            <a href="/apply-job/{{ job.id }}" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Apply</a>
         {% endif %}
-        <a href="/share-job/{{ job.id }}" class="btn btn-success"><i class="fab fa-whatsapp"></i> Share</a>
+
+    </div>
+
+    {% else %}
+
+    <a href="/job-view/{{ job.id }}" class="btn btn-info">
+        <i class="fas fa-eye"></i> View
+    </a>
+
+    {% if job.id in applied_jobs %}
+
+    <button class="btn btn-success" disabled>
+        <i class="fas fa-check-circle"></i> Applied
+    </button>
+
+    {% else %}
+
+    <a href="/apply-job/{{ job.id }}" class="btn btn-primary">
+        <i class="fas fa-paper-plane"></i> Apply
+    </a>
+
     {% endif %}
-</div>  
-    {% endfor %}
+
+    <a href="/share-job/{{ job.id }}" class="btn btn-success">
+        <i class="fab fa-whatsapp"></i> Share
+    </a>
+
+    {% endif %}
+
 </div>
 
+<!-- DESCRIPTION BELOW BUTTONS -->
 <div class="job-details-wrapper">
-            {% if job.post_type == "video" %}
-                <div id="desc-{{ job.id }}" class="description-text">{{ job.description }}</div>
-                {% if job.description and job.description|length > 50 %}
-                <span id="toggle-{{ job.id }}"
-                class="toggle-btn"
-                onclick="toggleDescription('{{ job.id }}')">
-                See more
-                </span>
-                {% endif %}
-            {% else %}
-                <h4 class="job-title" style="margin-bottom: 8px;">{{ job.job_title }}</h4>
-                <div class="salary-tag">₹ {{ job.salary }}</div>
-                <div id="desc-{{ job.id }}" class="description-text" style="margin: 8px 0;">{{ job.description }}</div>
-                <span id="toggle-{{ job.id }}" class="toggle-btn" onclick="toggleDescription('{{ job.id }}')">See more</span>
-            {% endif %}
+
+    {% if job.post_type == "video" %}
+
+        <div id="desc-{{ job.id }}" class="description-text">
+
+            {{ job.description }}
+
         </div>
+
+        {% if job.description and job.description|length > 50 %}
+
+        <span
+            id="toggle-{{ job.id }}"
+            class="toggle-btn"
+            onclick="toggleDescription('{{ job.id }}')">
+
+            See more
+
+        </span>
+
+        {% endif %}
+
+    {% else %}
+
+        <h4 class="job-title">
+
+            {{ job.job_title }}
+
+        </h4>
+
+        <div class="salary-tag">
+
+            ₹ {{ job.salary }}
+
+        </div>
+
+        <div
+            id="desc-{{ job.id }}"
+            class="description-text">
+
+            {{ job.description }}
+
+        </div>
+
+        {% if job.description and job.description|length > 50 %}
+
+        <span
+            id="toggle-{{ job.id }}"
+            class="toggle-btn"
+            onclick="toggleDescription('{{ job.id }}')">
+
+            See more
+
+        </span>
+
+        {% endif %}
+
+    {% endif %}
+
+</div>
             
 <style>
 .feed-card { background: #fff; border-radius: 16px; margin-bottom: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; }
