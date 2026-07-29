@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3 class="mb-4">
+        🚀 Active Boosts
+    </h3>
+
+    <div class="table-responsive">
+
+        <table class="table table-bordered table-hover align-middle">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>HR</th>
+
+                    <th>Job</th>
+
+                    <th>Type</th>
+
+                    <th>Status</th>
+
+                    <th>Credits Left</th>
+
+                    <th>Days</th>
+
+                    <th>Expiry</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for boost in boosts %}
+
+                <tr>
+
+                    <td>{{ boost.id }}</td>
+
+                    <td>
+                        {{ boost.hr.company if boost.hr else "-" }}
+                    </td>
+
+                    <td>
+                        {{ boost.job.job_title if boost.job else "-" }}
+                    </td>
+
+                    <td>
+                        {{ boost.boost_type.replace("_"," ").title() }}
+                    </td>
+
+                    <td>
+
+                        {% if boost.status=="Active" %}
+
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-danger">
+                                Expired
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {{ boost.credits_remaining }}
+
+                    </td>
+
+                    <td>
+
+                        {{ boost.days_completed }}/{{ boost.days }}
+
+                    </td>
+
+                    <td>
+
+                        {{ boost.expires_at.strftime('%d %b %Y') }}
+
+                    </td>
+
+                    <td>
+
+                        {% if boost.status=="Active" %}
+
+                        <a
+                            href="/admin/expire-boost/{{ boost.id }}"
+                            class="btn btn-sm btn-danger">
+
+                            Expire
+
+                        </a>
+
+                        {% else %}
+
+                            -
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

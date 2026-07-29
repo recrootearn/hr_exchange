@@ -27,6 +27,7 @@ from zoneinfo import ZoneInfo
 from flask import jsonify
 from push_notification import send_push_notification
 from datetime import datetime, timedelta, date
+from models import City
 
 IST = ZoneInfo("Asia/Kolkata")
 
@@ -155,6 +156,11 @@ class User(UserMixin, db.Model):
     company_country = db.Column(db.String(100), default="India")
     app_token = db.Column(db.String(128), unique=True, nullable=True)
     last_streak_reset = db.Column(db.Date, nullable=True)
+    boost_posts = db.relationship(
+        "BoostPost",
+        backref="hr",
+        lazy=True
+    )
 
     account_holder_name = db.Column(db.String(200))
     trust_score = db.Column(db.Integer, default=100)
@@ -526,6 +532,13 @@ class JobPost(db.Model):
     cta_type = db.Column(db.String(20), default="none")
     cta_url = db.Column(db.String(500))
 
+    boosts = db.relationship(
+        "BoostPost",
+        backref="job",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
     comments = db.relationship(
         "Comment",
         backref="job",
@@ -850,6 +863,79 @@ class BusinessSettings(db.Model):
         default=india_time,
         onupdate=india_time
     )
+
+    # ==========================
+    # Boost Promotion
+    # ==========================
+
+    enable_boost_posts = db.Column(db.Boolean, default=True)
+
+    boost_city_price = db.Column(db.Integer, default=5)
+    boost_pan_india_price = db.Column(db.Integer, default=50)
+
+    boost_min_days = db.Column(db.Integer, default=1)
+    boost_max_days = db.Column(db.Integer, default=30)
+
+    boost_max_active_posts = db.Column(db.Integer, default=5)
+
+    boost_max_impressions = db.Column(db.Integer, default=10000)
+
+    boost_credits_per_day = db.Column(db.Integer, default=5)
+
+class BoostCity(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    boost_id = db.Column(
+        db.Integer,
+        db.ForeignKey("boost_post.id", ondelete="CASCADE")
+    )
+
+    city = db.Column(db.String(100))
+
+class BoostPost(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    job_id = db.Column(db.Integer, db.ForeignKey("job_post.id"))
+
+    hr_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+    boost_type = db.Column(db.String(20))
+    # city
+    # state
+    # pan_india
+
+    state = db.Column(db.String(100))
+
+    cities = db.Column(db.Text)
+    # JSON string
+
+    days = db.Column(db.Integer)
+
+    total_credits = db.Column(db.Integer)
+
+    status = db.Column(db.String(20), default="Active")
+
+    impressions = db.Column(db.Integer, default=0)
+
+    clicks = db.Column(db.Integer, default=0)
+
+    applications = db.Column(db.Integer, default=0)
+
+    starts_at = db.Column(db.DateTime, default=india_time)
+
+    expires_at = db.Column(db.DateTime)
+
+    created_at = db.Column(db.DateTime, default=india_time)
+
+    credits_used = db.Column(db.Integer, default=0)
+
+    credits_remaining = db.Column(db.Integer, default=0)
+
+    days_completed = db.Column(db.Integer, default=0)
+
+    last_credit_deduction = db.Column(db.Date)
 
 class BroadcastNotification(db.Model):
 
@@ -1828,6 +1914,50 @@ def get_candidate_level(xp):
         "remaining": remaining,
         "progress": round(progress),
     }
+
+def process_boosts():
+
+    settings = get_business_settings()
+
+    today = india_time().date()
+
+    boosts = BoostPost.query.filter_by(status="Active").all()
+
+    for boost in boosts:
+
+        # Already processed today
+        if boost.last_credit_deduction == today:
+            continue
+
+        # Expired by date
+        if india_time() >= boost.expires_at:
+            boost.status = "Expired"
+            continue
+
+        # Expired by impressions
+        if boost.impressions >= settings.boost_max_impressions:
+            boost.status = "Expired"
+            continue
+
+        # Expired by credits
+        if boost.credits_remaining <= 0:
+            boost.status = "Expired"
+            continue
+
+        deduction = min(
+            settings.boost_credits_per_day,
+            boost.credits_remaining
+        )
+
+        boost.credits_used += deduction
+        boost.credits_remaining -= deduction
+        boost.days_completed += 1
+        boost.last_credit_deduction = today
+
+        if boost.credits_remaining <= 0:
+            boost.status = "Expired"
+
+    db.session.commit()
 
 @app.before_request
 def check_candidate_session():
@@ -5951,6 +6081,290 @@ def candidate_referral():
         referral_link=referral_link
     )
 
+@app.route("/boost-post/<int:job_id>", methods=["GET", "POST"])
+@login_required
+def boost_post(job_id):
+
+    job = JobPost.query.get_or_404(job_id)
+
+    # Only owner can boost
+    if job.hr_id != current_user.id:
+        flash("Unauthorized access.", "danger")
+        return redirect(url_for("feed"))
+
+    settings = get_business_settings()
+
+    existing_boost = BoostPost.query.filter(
+        BoostPost.job_id == job.id,
+        BoostPost.status == "Active"
+    ).first()
+
+    if existing_boost:
+        flash(
+            "This post is already boosted.",
+            "warning"
+        )
+        return redirect(url_for("boost_post", job_id=job.id))
+
+    if request.method == "POST":
+
+        boost_type = request.form.get("boost_type")
+        state = request.form.get("state", "")
+        selected_cities = request.form.getlist("cities")
+        days = int(request.form.get("days", 1))
+
+        # -----------------------
+        # Validation
+        # -----------------------
+
+        if days < settings.boost_min_days:
+            flash(
+                f"Minimum boost duration is {settings.boost_min_days} day(s).",
+                "danger"
+            )
+            return redirect(request.url)
+
+        if days > settings.boost_max_days:
+            flash(
+                f"Maximum boost duration is {settings.boost_max_days} day(s).",
+                "danger"
+            )
+            return redirect(request.url)
+
+        total_credits = 0
+
+        # -----------------------
+        # Credit Calculation
+        # -----------------------
+
+        if boost_type == "city":
+
+            if len(selected_cities) == 0:
+                flash("Please select at least one city.", "danger")
+                return redirect(request.url)
+
+            if len(selected_cities) > settings.boost_max_cities:
+                flash(
+                    f"Maximum {settings.boost_max_cities} cities allowed.",
+                    "danger"
+                )
+                return redirect(request.url)
+
+            total_credits = (
+                len(selected_cities)
+                * days
+                * settings.boost_city_price
+            )
+
+        elif boost_type == "state":
+
+            total_credits = (
+                days
+                * settings.boost_state_price
+            )
+
+        elif boost_type == "pan_india":
+
+            total_credits = (
+                days
+                * settings.boost_pan_india_price
+            )
+
+        else:
+
+            flash("Invalid boost type.", "danger")
+            return redirect(request.url)
+
+        # -----------------------
+        # Credit Check
+        # -----------------------
+
+        if current_user.paid_credits < total_credits:
+
+            flash(
+                "You don't have enough paid credits.",
+                "danger"
+            )
+
+            return redirect(request.url)
+
+        # -----------------------
+        # Deduct Credits
+        # -----------------------
+
+        current_user.paid_credits -= total_credits
+
+        db.session.add(
+            CreditHistory(
+                user_id=current_user.id,
+                amount=-total_credits,
+                action="Boost Promotion"
+            )
+        )
+
+        # -----------------------
+        # Save Boost
+        # -----------------------
+
+        boost = BoostPost(
+            job_id=job.id,
+            hr_id=current_user.id,
+            boost_type=boost_type,
+            state=state,
+            days=days,
+            total_credits=total_credits,
+
+            starts_at=india_time(),
+            expires_at=india_time() + timedelta(days=days),
+
+            status="Active",
+
+            impressions=0,
+            clicks=0,
+            applications=0,
+
+            credits_used=0,
+            credits_remaining=total_credits,
+
+            days_completed=0,
+            last_credit_deduction=None
+        )
+
+        db.session.add(boost)
+        db.session.flush()
+
+        # -----------------------
+        # Save Cities
+        # -----------------------
+
+        if boost_type == "city":
+
+            for city in selected_cities:
+
+                db.session.add(
+                    BoostCity(
+                        boost_id=boost.id,
+                        city=city
+                    )
+                )
+
+        db.session.commit()
+
+        flash(
+            f"Your post has been boosted successfully using {total_credits} credits.",
+            "success"
+        )
+
+        return redirect(url_for("feed"))
+
+    locations = (
+
+        db.session.query(
+            func.lower(JobPost.location)
+        )
+
+        .filter(
+            JobPost.location.isnot(None),
+            JobPost.location != ""
+        )
+
+        .distinct()
+
+        .order_by(
+            func.lower(JobPost.location)
+        )
+
+        .all()
+
+    )
+
+    locations = [
+        loc[0].title()
+        for loc in locations
+    ]
+
+    return render_template(
+        "boost_post.html",
+        job=job,
+        settings=settings,
+        locations=locations
+    )
+
+@app.route("/admin/boost-settings", methods=["GET", "POST"])
+@login_required
+def admin_boost_settings():
+
+    if not admin_only():
+        return redirect(url_for("feed"))
+
+    settings = get_business_settings()
+
+    if request.method == "POST":
+
+        settings.enable_boost_posts = "enable_boost_posts" in request.form
+
+        settings.boost_city_price = int(
+            request.form["boost_city_price"]
+        )
+
+        settings.boost_pan_india_price = int(
+            request.form["boost_pan_india_price"]
+        )
+
+        settings.boost_min_days = int(
+            request.form["boost_min_days"]
+        )
+
+        settings.boost_max_days = int(
+            request.form["boost_max_days"]
+        )
+
+        settings.boost_max_active_posts = int(
+            request.form["boost_max_active_posts"]
+        )
+
+        settings.boost_max_impressions = int(
+            request.form["boost_max_impressions"]
+        )
+
+        settings.boost_credits_per_day = int(
+            request.form["boost_credits_per_day"]
+        )
+
+        db.session.commit()
+
+        flash(
+            "Boost settings updated successfully.",
+            "success"
+        )
+
+        return redirect(url_for("admin_boost_settings"))
+
+    return render_template(
+        "admin_boost_settings.html",
+        settings=settings
+    )
+
+@app.route("/admin/boosts")
+@login_required
+def admin_boosts():
+
+    if not admin_only():
+        return redirect(url_for("feed"))
+
+    boosts = (
+        BoostPost.query
+        .order_by(
+            BoostPost.created_at.desc()
+        )
+        .all()
+    )
+
+    return render_template(
+        "admin_boosts.html",
+        boosts=boosts
+    )
+
 @app.route('/company/<int:id>')
 def company_profile(id):
 
@@ -7496,9 +7910,30 @@ def candidate_feed():
     # -----------------------------
     # Fetch Jobs
     # -----------------------------
-    jobs = jobs_query.order_by(
-        JobPost.created_at.desc()
-    ).all()
+    jobs = (
+        jobs_query
+        .outerjoin(
+            BoostPost,
+            db.and_(
+                BoostPost.job_id == JobPost.id,
+                BoostPost.status == "Active"
+            )
+        )
+        .order_by(
+            BoostPost.created_at.desc().nullslast(),
+            JobPost.created_at.desc()
+        )
+        .all()
+    )
+
+    # -----------------------------
+    # Mark Boosted Posts
+    # -----------------------------
+    for job in jobs:
+        job.active_boost = any(
+            boost.status == "Active"
+            for boost in job.boosts
+        )
 
     # -----------------------------
     # Available Locations
@@ -7912,9 +8347,30 @@ def feed():
     # -----------------------------
     # Fetch Feed
     # -----------------------------
-    jobs = query.order_by(
-        JobPost.created_at.desc()
-    ).all()
+    jobs = (
+        query
+        .outerjoin(
+            BoostPost,
+            db.and_(
+                BoostPost.job_id == JobPost.id,
+                BoostPost.status == "Active"
+            )
+        )
+        .order_by(
+            BoostPost.created_at.desc().nullslast(),
+            JobPost.created_at.desc()
+        )
+        .all()
+    )
+
+    # -----------------------------
+    # Mark Boosted Posts
+    # -----------------------------
+    for job in jobs:
+        job.active_boost = any(
+            boost.status == "Active"
+            for boost in job.boosts
+        )
 
     # -----------------------------
     # Applied Jobs

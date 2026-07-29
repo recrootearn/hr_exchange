@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Boost Post{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4" style="max-width:700px;">
+
+    <div class="card shadow rounded-4">
+
+        <div class="card-body">
+
+            <h3 class="mb-4 text-center">
+                ⭐ Boost Your Job Post
+            </h3>
+
+            <div class="alert alert-warning">
+
+                <b>Job</b><br>
+                {{ job.job_title }}
+
+                <hr>
+
+                <b>Company</b><br>
+                {{ job.company_name }}
+
+                <hr>
+
+                <b>Paid Credits Available</b><br>
+
+                <span class="badge bg-success fs-6">
+                    {{ current_user.paid_credits }}
+                </span>
+
+            </div>
+
+            <form method="POST">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Boost Type
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="boost_type"
+                        id="boostType"
+                        onchange="toggleBoost()">
+
+                        <option value="city">
+                            City Boost
+                        </option>
+
+                        <option value="pan_india">
+                            PAN India
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div
+                    class="mb-3"
+                    id="cityBox">
+
+                    <label class="form-label">
+
+                        Select Cities
+
+                    </label>
+
+                    <select class="form-select" multiple name="cities">
+
+                    {% for city in locations %}
+                    <option value="{{ city }}">
+                    {{ city }}
+                    </option>
+                    {% endfor %}
+
+                    </select>
+
+                    <small class="text-muted">
+                        Hold CTRL to select multiple cities.
+                    </small>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Duration (Days)
+
+                    </label>
+
+                    <input
+                        type="number"
+                        class="form-control"
+                        name="days"
+                        value="1"
+                        min="1">
+
+                </div>
+
+                <div class="alert alert-info">
+
+                    <b>Pricing</b>
+
+                    <br><br>
+
+                    ₹ Credits are calculated automatically.
+
+                    <br>
+
+                    City Boost =
+                    Number of Cities × Days ×
+                    {{ settings.boost_city_price }}
+
+                    <br>
+
+                    State Boost =
+                    Days ×
+                    {{ settings.boost_state_price }}
+
+                    <br>
+
+                    PAN India =
+                    Days ×
+                    {{ settings.boost_pan_india_price }}
+
+                </div>
+
+                <button
+                    class="btn btn-warning w-100 btn-lg">
+
+                    ⭐ Boost Now
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function toggleBoost(){
+
+    var type=document.getElementById("boostType").value;
+
+    var cityBox=document.getElementById("cityBox");
+
+    if(type=="city"){
+
+        cityBox.style.display="block";
+
+    }else{
+
+        cityBox.style.display="none";
+
+    }
+
+}
+
+toggleBoost();
+
+</script>
+
+{% endblock %}

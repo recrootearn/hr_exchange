@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3 class="mb-4">
+        🚀 Boost Settings
+    </h3>
+
+    <form method="POST">
+
+        <div class="card shadow-sm">
+
+            <div class="card-body">
+
+                <div class="form-check form-switch mb-4">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="enable_boost_posts"
+                        {% if settings.enable_boost_posts %}checked{% endif %}
+                    >
+
+                    <label class="form-check-label">
+                        Enable Boost Posts
+                    </label>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label>City Boost Price (Credits)</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="boost_city_price"
+                            value="{{ settings.boost_city_price }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>PAN India Boost Price (Credits)</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="boost_pan_india_price"
+                            value="{{ settings.boost_pan_india_price }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Minimum Days</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="boost_min_days"
+                            value="{{ settings.boost_min_days }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Maximum Days</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="boost_max_days"
+                            value="{{ settings.boost_max_days }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Credits Deducted Per Day</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="boost_credits_per_day"
+                            value="{{ settings.boost_credits_per_day }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Maximum Active Boosts</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="boost_max_active_posts"
+                            value="{{ settings.boost_max_active_posts }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label>Maximum Impressions</label>
+                        <input
+                            type="number"
+                            class="form-control"
+                            name="boost_max_impressions"
+                            value="{{ settings.boost_max_impressions }}"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <button
+                    class="btn btn-success">
+                    Save Settings
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
