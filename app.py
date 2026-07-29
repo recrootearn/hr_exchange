@@ -27,7 +27,6 @@ from zoneinfo import ZoneInfo
 from flask import jsonify
 from push_notification import send_push_notification
 from datetime import datetime, timedelta, date
-from models import City
 
 IST = ZoneInfo("Asia/Kolkata")
 
