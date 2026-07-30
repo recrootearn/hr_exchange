@@ -6,24 +6,45 @@
 
 <style>
 
-.boost-container{
-    max-width:750px;
-    margin:auto;
-    padding:12px;
+/* ===== Override base container ===== */
+
+.container{
+    max-width:100% !important;
+    width:100% !important;
+    padding:0 !important;
+    margin:0 !important;
 }
+
+.container-fluid{
+    padding:0 !important;
+    margin:0 !important;
+}
+
+.content{
+    padding:0 !important;
+}
+
+.boost-container{
+    width:100%;
+    max-width:100%;
+    padding:12px;
+    margin:0;
+}
+
+/* ===== Card ===== */
 
 .boost-card{
     border:none;
     border-radius:22px;
-    box-shadow:0 5px 20px rgba(0,0,0,.08);
     overflow:hidden;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
 
 .boost-header{
     background:linear-gradient(135deg,#ff9800,#ffc107);
     color:#fff;
     text-align:center;
-    padding:25px 15px;
+    padding:25px;
 }
 
 .boost-header h3{
@@ -31,87 +52,172 @@
     font-weight:700;
 }
 
+.boost-header p{
+    margin-top:8px;
+    margin-bottom:0;
+    opacity:.95;
+}
+
+/* ===== Job Info ===== */
+
 .info-card{
     background:#f8f9fa;
-    border-radius:15px;
-    padding:15px;
-    margin-bottom:18px;
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:20px;
 }
 
 .info-title{
-    font-size:13px;
+    font-size:14px;
     color:#666;
 }
 
 .info-value{
-    font-size:18px;
+    font-size:20px;
     font-weight:700;
 }
 
 .credit-badge{
-    font-size:18px;
-    padding:8px 18px;
+    font-size:20px;
+    padding:8px 20px;
     border-radius:30px;
 }
 
+/* ===== Inputs ===== */
+
+.form-label{
+    font-weight:700;
+}
+
+.form-select,
+.form-control{
+    border-radius:14px;
+    min-height:52px;
+}
+
+/* ===== City Box ===== */
+
 .city-container{
+
     border:1px solid #ddd;
-    border-radius:12px;
-    max-height:250px;
-    overflow-y:auto;
-    padding:10px;
+
+    border-radius:15px;
+
     background:#fff;
+
+    max-height:250px;
+
+    overflow-y:auto;
+
 }
 
-.form-check{
-    padding:8px;
+.city-container .form-check{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:14px;
+
+    margin:0;
+
     border-bottom:1px solid #eee;
+
 }
 
-.form-check:last-child{
+.city-container .form-check:last-child{
+
     border-bottom:none;
+
 }
+
+.city-container .form-check-input{
+
+    margin:0;
+
+    position:static;
+
+    float:none;
+
+    width:20px;
+
+    height:20px;
+
+    flex-shrink:0;
+
+}
+
+.city-container .form-check-label{
+
+    margin:0;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    flex:1;
+
+}
+
+/* ===== Cards ===== */
 
 .price-card{
+
     background:#fff8e1;
+
     border:1px solid #ffe082;
-    border-radius:15px;
-    padding:15px;
+
+    border-radius:16px;
+
+    padding:18px;
+
 }
 
 .cost-card{
+
     background:#e8f5e9;
-    border:1px solid #4caf50;
-    border-radius:15px;
-    padding:15px;
-    margin-top:15px;
+
+    border:1px solid #43a047;
+
+    border-radius:16px;
+
+    padding:18px;
+
+    margin-top:18px;
+
     text-align:center;
+
 }
 
 .cost-card h2{
-    margin:0;
+
     color:#2e7d32;
+
     font-weight:700;
+
+    margin:5px 0;
+
 }
 
 .btn-boost{
-    width:100%;
-    border-radius:14px;
-    padding:14px;
-    font-size:18px;
-    font-weight:700;
-}
 
-@media (max-width: 768px) {
-    .content {
-        padding: 0 !important;
-        padding-bottom: 120px !important;
-    }
+    width:100%;
+
+    border-radius:14px;
+
+    padding:14px;
+
+    font-size:18px;
+
+    font-weight:700;
+
 }
 
 </style>
 
-<div class="container-fluid px-2">
+<div class="container-fluid">
 
 <div class="boost-container">
 
@@ -121,8 +227,8 @@
 
 <h3>⭐ Boost Your Job</h3>
 
-<p class="mb-0">
-Reach more candidates and get more applications
+<p>
+Reach more candidates and increase applications
 </p>
 
 </div>
@@ -131,20 +237,44 @@ Reach more candidates and get more applications
 
 <div class="info-card">
 
-<div class="info-title">Job Title</div>
-<div class="info-value">{{ job.job_title }}</div>
+<div class="info-title">
+
+Job Title
+
+</div>
+
+<div class="info-value">
+
+{{ job.job_title or "Not Available" }}
+
+</div>
 
 <hr>
 
-<div class="info-title">Company</div>
-<div class="info-value">{{ job.company_name }}</div>
+<div class="info-title">
+
+Company
+
+</div>
+
+<div class="info-value">
+
+{{ job.company_name }}
+
+</div>
 
 <hr>
 
-<div class="info-title">Paid Credits Available</div>
+<div class="info-title">
+
+Paid Credits Available
+
+</div>
 
 <span class="badge bg-success credit-badge">
+
 {{ current_user.paid_credits }}
+
 </span>
 
 </div>
@@ -153,32 +283,44 @@ Reach more candidates and get more applications
 
 <div class="mb-3">
 
-<label class="form-label fw-bold">
+<label class="form-label">
+
 Boost Type
+
 </label>
 
 <select
+
 class="form-select"
+
 name="boost_type"
+
 id="boostType"
+
 onchange="toggleBoost()">
 
 <option value="city">
+
 📍 City Boost
+
 </option>
 
 <option value="pan_india">
+
 🇮🇳 PAN India
+
 </option>
 
 </select>
 
 </div>
 
-<div class="mb-3" id="cityBox">
+<div id="cityBox" class="mb-3">
 
-<label class="form-label fw-bold">
+<label class="form-label">
+
 Select Cities
+
 </label>
 
 <div class="city-container">
@@ -188,15 +330,23 @@ Select Cities
 <div class="form-check">
 
 <input
+
 class="form-check-input cityCheck"
+
 type="checkbox"
+
 name="cities"
+
 value="{{ city }}"
+
 id="city{{ loop.index }}"
+
 onchange="calculateCost()">
 
 <label
+
 class="form-check-label"
+
 for="city{{ loop.index }}">
 
 {{ city }}
@@ -210,24 +360,35 @@ for="city{{ loop.index }}">
 </div>
 
 <small class="text-muted">
+
 Select one or more cities.
+
 </small>
 
 </div>
 
 <div class="mb-3">
 
-<label class="form-label fw-bold">
+<label class="form-label">
+
 Boost Duration (Days)
+
 </label>
 
 <input
+
 type="number"
+
 class="form-control"
+
 id="days"
+
 name="days"
+
 value="1"
+
 min="1"
+
 oninput="calculateCost()">
 
 </div>
@@ -238,39 +399,55 @@ oninput="calculateCost()">
 
 <hr>
 
-<p class="mb-2">
+<p class="mb-3">
+
 📍 <b>City Boost</b><br>
-Number of Selected Cities × Days ×
-<b>{{ settings.boost_city_price }}</b>
-Credits
+
+Selected Cities × Days ×
+
+<b>{{ settings.boost_city_price }}</b> Credits
+
 </p>
 
 <p class="mb-0">
+
 🇮🇳 <b>PAN India</b><br>
+
 Days ×
-<b>{{ settings.boost_pan_india_price }}</b>
-Credits
+
+<b>{{ settings.boost_pan_india_price }}</b> Credits
+
 </p>
 
 </div>
 
 <div class="cost-card">
 
-<div>Estimated Cost</div>
+<div class="fw-bold fs-5">
+
+Estimated Cost
+
+</div>
 
 <h2 id="estimatedCost">
+
 0 Credits
+
 </h2>
 
-<small id="formulaText">
+<div id="formulaText" class="text-muted">
+
 Select cities and days
-</small>
+
+</div>
 
 </div>
 
 <button
+
 type="submit"
-class="btn btn-warning mt-4 btn-boost">
+
+class="btn btn-warning btn-boost mt-4">
 
 ⭐ Boost Now
 
@@ -288,50 +465,67 @@ class="btn btn-warning mt-4 btn-boost">
 
 <script>
 
-const cityPrice={{ settings.boost_city_price }};
-const panIndiaPrice={{ settings.boost_pan_india_price }};
+const cityPrice = {{ settings.boost_city_price }};
+const panIndiaPrice = {{ settings.boost_pan_india_price }};
 
 function toggleBoost(){
 
-    const type=document.getElementById("boostType").value;
-    const cityBox=document.getElementById("cityBox");
+    const type = document.getElementById("boostType").value;
+    const cityBox = document.getElementById("cityBox");
 
-    if(type==="city"){
-        cityBox.style.display="block";
+    if(type === "city"){
+
+        cityBox.style.display = "block";
+
     }else{
-        cityBox.style.display="none";
+
+        cityBox.style.display = "none";
+
     }
 
     calculateCost();
+
 }
 
 function calculateCost(){
 
-    const days=parseInt(document.getElementById("days").value)||1;
-    const type=document.getElementById("boostType").value;
+    const days =
+        parseInt(document.getElementById("days").value) || 1;
 
-    let cost=0;
+    const type =
+        document.getElementById("boostType").value;
 
-    if(type==="city"){
+    let cost = 0;
 
-        const cities=document.querySelectorAll(".cityCheck:checked").length;
+    if(type === "city"){
 
-        cost=cities*days*cityPrice;
+        const selectedCities =
+            document.querySelectorAll(".cityCheck:checked").length;
 
-        document.getElementById("formulaText").innerHTML=
-        cities+" Cities × "+days+" Days × "+cityPrice+" Credits";
+        cost = selectedCities * days * cityPrice;
+
+        document.getElementById("formulaText").innerHTML =
+            selectedCities +
+            " Cities × " +
+            days +
+            " Days × " +
+            cityPrice +
+            " Credits";
 
     }else{
 
-        cost=days*panIndiaPrice;
+        cost = days * panIndiaPrice;
 
-        document.getElementById("formulaText").innerHTML=
-        days+" Days × "+panIndiaPrice+" Credits";
+        document.getElementById("formulaText").innerHTML =
+            days +
+            " Days × " +
+            panIndiaPrice +
+            " Credits";
 
     }
 
-    document.getElementById("estimatedCost").innerHTML=
-    cost+" Credits";
+    document.getElementById("estimatedCost").innerHTML =
+        cost + " Credits";
 
 }
 
