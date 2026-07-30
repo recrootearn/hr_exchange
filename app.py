@@ -1919,7 +1919,8 @@ def process_boosts():
 
     settings = get_business_settings()
 
-    today = india_time().date()
+    current_time = india_time().replace(tzinfo=None)
+    today = current_time.date()
 
     boosts = BoostPost.query.filter_by(status="Active").all()
 
@@ -1930,7 +1931,7 @@ def process_boosts():
             continue
 
         # Expired by date
-        if india_time() >= boost.expires_at:
+        if current_time() >= boost.expires_at:
             boost.status = "Expired"
             continue
 
