@@ -34,9 +34,19 @@
                 </a>
                 </li>
                 <li>
-                <a class="dropdown-item" href="/boost-post/{{ job.id }}">
-                <i class="fas fa-rocket me-2"></i>Boost Post
+                {% set active_boost = job.boosts
+                |selectattr("status", "equalto", "Active")
+                |list %}
+
+                {% if active_boost %}
+                <a class="dropdown-item" href="/manage-boost/{{ job.id }}">
+                <i class="fas fa-chart-line me-2"></i>Manage Boost
                 </a>
+                {% else %}
+                <a class="dropdown-item" href="/boost-post/{{ job.id }}">
+                <i class="fas fa-rocket me-2"></i>Boost Now
+                </a>
+                {% endif %}
                 </li>
               </ul>
             </div>

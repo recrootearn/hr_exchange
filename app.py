@@ -6283,6 +6283,29 @@ def boost_post(job_id):
         locations=locations
     )
 
+@app.route("/manage-boost/<int:job_id>")
+@login_required
+def manage_boost(job_id):
+
+    job = JobPost.query.get_or_404(job_id)
+
+    boost = BoostPost.query.filter_by(
+        job_id=job.id,
+        status="Active"
+    ).order_by(
+        BoostPost.id.desc()
+    ).first()
+
+    if not boost:
+        flash("No active boost found.")
+        return redirect(url_for("feed_post"))
+
+    return render_template(
+        "manage_boost.html",
+        job=job,
+        boost=boost
+    )
+
 @app.route("/admin/boost-settings", methods=["GET", "POST"])
 @login_required
 def admin_boost_settings():

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h3>Manage Boost</h3>
+
+<hr>
+
+<p><b>Post:</b> {{ job.job_title }}</p>
+
+<p><b>Status:</b> {{ boost.status }}</p>
+
+<p><b>Credits Used:</b> {{ boost.credits_used }}</p>
+
+<p><b>Credits Remaining:</b> {{ boost.credits_remaining }}</p>
+
+<p><b>Impressions:</b> {{ boost.impressions }}</p>
+
+<p><b>Clicks:</b> {{ boost.clicks }}</p>
+
+<p><b>Applications:</b> {{ boost.applications }}</p>
+
+<p><b>Expires:</b> {{ boost.expires_at }}</p>
+
+</div>
+
+{% endblock %}
