@@ -6266,16 +6266,16 @@ def manage_boost(job_id):
 
     job = JobPost.query.get_or_404(job_id)
 
-    boost = BoostPost.query.filter_by(
-        job_id=job.id,
-        status="Active"
+    boost = BoostPost.query.filter(
+        BoostPost.job_id == job.id,
+        BoostPost.status.in_(["Active", "Paused"])
     ).order_by(
         BoostPost.id.desc()
     ).first()
 
     if not boost:
         flash("No active boost found.")
-        return redirect(url_for("feed_post"))
+        return redirect(url_for("feed"))
 
     # Analytics
     ctr = 0
@@ -6314,7 +6314,7 @@ def pause_boost(boost_id):
 
     if boost.hr_id != current_user.id:
         flash("Unauthorized access.", "danger")
-        return redirect(url_for("feed_post"))
+        return redirect(url_for("feed"))
 
     if boost.status != "Active":
         flash("Only active boosts can be paused.", "warning")
@@ -6336,7 +6336,7 @@ def resume_boost(boost_id):
 
     if boost.hr_id != current_user.id:
         flash("Unauthorized access.", "danger")
-        return redirect(url_for("feed_post"))
+        return redirect(url_for("feed"))
 
     if boost.status != "Paused":
         flash("Only paused boosts can be resumed.", "warning")
