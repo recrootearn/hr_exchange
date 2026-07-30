@@ -1,168 +1,337 @@
 {% extends "base.html" %}
 
-{% block title %}Boost Post{% endblock %}
+{% block title %}Boost Job{% endblock %}
 
 {% block content %}
 
-<div class="container mt-4" style="max-width:700px;">
+<style>
 
-    <div class="card shadow rounded-4">
+.boost-container{
+    max-width:750px;
+    margin:auto;
+    padding:12px;
+}
 
-        <div class="card-body">
+.boost-card{
+    border:none;
+    border-radius:22px;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+    overflow:hidden;
+}
 
-            <h3 class="mb-4 text-center">
-                ⭐ Boost Your Job Post
-            </h3>
+.boost-header{
+    background:linear-gradient(135deg,#ff9800,#ffc107);
+    color:#fff;
+    text-align:center;
+    padding:25px 15px;
+}
 
-            <div class="alert alert-warning">
+.boost-header h3{
+    margin:0;
+    font-weight:700;
+}
 
-                <b>Job</b><br>
-                {{ job.job_title }}
+.info-card{
+    background:#f8f9fa;
+    border-radius:15px;
+    padding:15px;
+    margin-bottom:18px;
+}
 
-                <hr>
+.info-title{
+    font-size:13px;
+    color:#666;
+}
 
-                <b>Company</b><br>
-                {{ job.company_name }}
+.info-value{
+    font-size:18px;
+    font-weight:700;
+}
 
-                <hr>
+.credit-badge{
+    font-size:18px;
+    padding:8px 18px;
+    border-radius:30px;
+}
 
-                <b>Paid Credits Available</b><br>
+.city-container{
+    border:1px solid #ddd;
+    border-radius:12px;
+    max-height:250px;
+    overflow-y:auto;
+    padding:10px;
+    background:#fff;
+}
 
-                <span class="badge bg-success fs-6">
-                    {{ current_user.paid_credits }}
-                </span>
+.form-check{
+    padding:8px;
+    border-bottom:1px solid #eee;
+}
 
-            </div>
+.form-check:last-child{
+    border-bottom:none;
+}
 
-            <form method="POST">
+.price-card{
+    background:#fff8e1;
+    border:1px solid #ffe082;
+    border-radius:15px;
+    padding:15px;
+}
 
-                <div class="mb-3">
+.cost-card{
+    background:#e8f5e9;
+    border:1px solid #4caf50;
+    border-radius:15px;
+    padding:15px;
+    margin-top:15px;
+    text-align:center;
+}
 
-                    <label class="form-label">
-                        Boost Type
-                    </label>
+.cost-card h2{
+    margin:0;
+    color:#2e7d32;
+    font-weight:700;
+}
 
-                    <select
-                        class="form-select"
-                        name="boost_type"
-                        id="boostType"
-                        onchange="toggleBoost()">
+.btn-boost{
+    width:100%;
+    border-radius:14px;
+    padding:14px;
+    font-size:18px;
+    font-weight:700;
+}
 
-                        <option value="city">
-                            City Boost
-                        </option>
+@media (max-width: 768px) {
+    .content {
+        padding: 0 !important;
+        padding-bottom: 120px !important;
+    }
+}
 
-                        <option value="pan_india">
-                            PAN India
-                        </option>
+</style>
 
-                    </select>
+<div class="container-fluid px-2">
 
-                </div>
+<div class="boost-container">
 
-                <div
-                    class="mb-3"
-                    id="cityBox">
+<div class="card boost-card">
 
-                    <label class="form-label">
+<div class="boost-header">
 
-                        Select Cities
+<h3>⭐ Boost Your Job</h3>
 
-                    </label>
+<p class="mb-0">
+Reach more candidates and get more applications
+</p>
 
-                    <select class="form-select" multiple name="cities">
+</div>
 
-                    {% for city in locations %}
-                    <option value="{{ city }}">
-                    {{ city }}
-                    </option>
-                    {% endfor %}
+<div class="card-body">
 
-                    </select>
+<div class="info-card">
 
-                    <small class="text-muted">
-                        Hold CTRL to select multiple cities.
-                    </small>
+<div class="info-title">Job Title</div>
+<div class="info-value">{{ job.job_title }}</div>
 
-                </div>
+<hr>
 
-                <div class="mb-3">
+<div class="info-title">Company</div>
+<div class="info-value">{{ job.company_name }}</div>
 
-                    <label class="form-label">
+<hr>
 
-                        Duration (Days)
+<div class="info-title">Paid Credits Available</div>
 
-                    </label>
+<span class="badge bg-success credit-badge">
+{{ current_user.paid_credits }}
+</span>
 
-                    <input
-                        type="number"
-                        class="form-control"
-                        name="days"
-                        value="1"
-                        min="1">
+</div>
 
-                </div>
+<form method="POST">
 
-                <div class="alert alert-info">
+<div class="mb-3">
 
-                    <b>Pricing</b>
+<label class="form-label fw-bold">
+Boost Type
+</label>
 
-                    <br><br>
+<select
+class="form-select"
+name="boost_type"
+id="boostType"
+onchange="toggleBoost()">
 
-                    ₹ Credits are calculated automatically.
+<option value="city">
+📍 City Boost
+</option>
 
-                    <br>
+<option value="pan_india">
+🇮🇳 PAN India
+</option>
 
-                    City Boost =
-                    Number of Cities × Days ×
-                    {{ settings.boost_city_price }}
+</select>
 
-                    <br>
+</div>
 
-                    State Boost =
-                    Days ×
-                    {{ settings.boost_state_price }}
+<div class="mb-3" id="cityBox">
 
-                    <br>
+<label class="form-label fw-bold">
+Select Cities
+</label>
 
-                    PAN India =
-                    Days ×
-                    {{ settings.boost_pan_india_price }}
+<div class="city-container">
 
-                </div>
+{% for city in locations %}
 
-                <button
-                    class="btn btn-warning w-100 btn-lg">
+<div class="form-check">
 
-                    ⭐ Boost Now
+<input
+class="form-check-input cityCheck"
+type="checkbox"
+name="cities"
+value="{{ city }}"
+id="city{{ loop.index }}"
+onchange="calculateCost()">
 
-                </button>
+<label
+class="form-check-label"
+for="city{{ loop.index }}">
 
-            </form>
+{{ city }}
 
-        </div>
+</label>
 
-    </div>
+</div>
+
+{% endfor %}
+
+</div>
+
+<small class="text-muted">
+Select one or more cities.
+</small>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label fw-bold">
+Boost Duration (Days)
+</label>
+
+<input
+type="number"
+class="form-control"
+id="days"
+name="days"
+value="1"
+min="1"
+oninput="calculateCost()">
+
+</div>
+
+<div class="price-card">
+
+<h5>💰 Pricing</h5>
+
+<hr>
+
+<p class="mb-2">
+📍 <b>City Boost</b><br>
+Number of Selected Cities × Days ×
+<b>{{ settings.boost_city_price }}</b>
+Credits
+</p>
+
+<p class="mb-0">
+🇮🇳 <b>PAN India</b><br>
+Days ×
+<b>{{ settings.boost_pan_india_price }}</b>
+Credits
+</p>
+
+</div>
+
+<div class="cost-card">
+
+<div>Estimated Cost</div>
+
+<h2 id="estimatedCost">
+0 Credits
+</h2>
+
+<small id="formulaText">
+Select cities and days
+</small>
+
+</div>
+
+<button
+type="submit"
+class="btn btn-warning mt-4 btn-boost">
+
+⭐ Boost Now
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
 
 </div>
 
 <script>
 
+const cityPrice={{ settings.boost_city_price }};
+const panIndiaPrice={{ settings.boost_pan_india_price }};
+
 function toggleBoost(){
 
-    var type=document.getElementById("boostType").value;
+    const type=document.getElementById("boostType").value;
+    const cityBox=document.getElementById("cityBox");
 
-    var cityBox=document.getElementById("cityBox");
-
-    if(type=="city"){
-
+    if(type==="city"){
         cityBox.style.display="block";
+    }else{
+        cityBox.style.display="none";
+    }
+
+    calculateCost();
+}
+
+function calculateCost(){
+
+    const days=parseInt(document.getElementById("days").value)||1;
+    const type=document.getElementById("boostType").value;
+
+    let cost=0;
+
+    if(type==="city"){
+
+        const cities=document.querySelectorAll(".cityCheck:checked").length;
+
+        cost=cities*days*cityPrice;
+
+        document.getElementById("formulaText").innerHTML=
+        cities+" Cities × "+days+" Days × "+cityPrice+" Credits";
 
     }else{
 
-        cityBox.style.display="none";
+        cost=days*panIndiaPrice;
+
+        document.getElementById("formulaText").innerHTML=
+        days+" Days × "+panIndiaPrice+" Credits";
 
     }
+
+    document.getElementById("estimatedCost").innerHTML=
+    cost+" Credits";
 
 }
 
