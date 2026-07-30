@@ -1916,46 +1916,14 @@ def get_candidate_level(xp):
     }
 
 def process_boosts():
-
-    settings = get_business_settings()
-
     current_time = india_time().replace(tzinfo=None)
-    today = current_time.date()
 
     boosts = BoostPost.query.filter_by(status="Active").all()
 
     for boost in boosts:
 
-        # Already processed today
-        if boost.last_credit_deduction == today:
-            continue
-
-        # Expired by date
+        # Expire only after end date
         if current_time >= boost.expires_at:
-            boost.status = "Expired"
-            continue
-
-        # Expired by impressions
-        if boost.impressions >= settings.boost_max_impressions:
-            boost.status = "Expired"
-            continue
-
-        # Expired by credits
-        if boost.credits_remaining <= 0:
-            boost.status = "Expired"
-            continue
-
-        deduction = min(
-            settings.boost_credits_per_day,
-            boost.credits_remaining
-        )
-
-        boost.credits_used += deduction
-        boost.credits_remaining -= deduction
-        boost.days_completed += 1
-        boost.last_credit_deduction = today
-
-        if boost.credits_remaining <= 0:
             boost.status = "Expired"
 
     db.session.commit()
