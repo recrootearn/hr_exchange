@@ -2,27 +2,175 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<style>
+.manage-container{
+    width:100%;
+    max-width:100%;
+    padding:12px;
+    margin:0;
+}
 
-<h3>Manage Boost</h3>
+.analytics-card{
+    border-radius:16px;
+    background:#fff;
+    padding:16px;
+    margin-bottom:15px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.analytics-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:15px;
+}
+
+.stat-card{
+    background:#f8f9fa;
+    border-radius:14px;
+    padding:18px 10px;
+    text-align:center;
+}
+
+.stat-card h3{
+    font-size:24px;
+    margin:0;
+    font-weight:700;
+}
+
+.stat-card p{
+    margin-top:8px;
+    color:#666;
+    font-size:14px;
+}
+
+.action-btn{
+    width:100%;
+    border-radius:12px;
+    padding:12px;
+    font-weight:600;
+    margin-bottom:10px;
+}
+
+.progress{
+    height:12px;
+    border-radius:20px;
+}
+
+.progress-bar{
+    border-radius:20px;
+}
+</style>
+
+<div class="container-fluid px-2">
+
+<div class="manage-container">
+
+<div class="analytics-card">
+
+<h4 class="mb-2">🚀 Boost Dashboard</h4>
+
+<h6 class="text-muted">{{ job.job_title }}</h6>
 
 <hr>
 
-<p><b>Post:</b> {{ job.job_title }}</p>
+<b>Status :</b>
 
-<p><b>Status:</b> {{ boost.status }}</p>
+{% if boost.status=="Active" %}
+<span class="badge bg-success">Active</span>
+{% elif boost.status=="Paused" %}
+<span class="badge bg-warning text-dark">Paused</span>
+{% else %}
+<span class="badge bg-danger">{{ boost.status }}</span>
+{% endif %}
 
-<p><b>Credits Used:</b> {{ boost.credits_used }}</p>
+<br><br>
 
-<p><b>Credits Remaining:</b> {{ boost.credits_remaining }}</p>
+<b>Expiry :</b> {{ boost.expires_at }}
 
-<p><b>Impressions:</b> {{ boost.impressions }}</p>
+<br><br>
 
-<p><b>Clicks:</b> {{ boost.clicks }}</p>
+<b>Credits Remaining</b>
 
-<p><b>Applications:</b> {{ boost.applications }}</p>
+<div class="progress mt-2">
+<div class="progress-bar bg-success"
+style="width:{{ (boost.credits_remaining*100)/(boost.total_credits or 1) }}%">
+</div>
+</div>
 
-<p><b>Expires:</b> {{ boost.expires_at }}</p>
+<small>
+{{ boost.credits_remaining }} / {{ boost.total_credits }} Credits Left
+</small>
+
+</div>
+
+
+<div class="analytics-grid">
+
+<div class="stat-card">
+<h3>{{ boost.impressions }}</h3>
+<p>👀 Impressions</p>
+</div>
+
+<div class="stat-card">
+<h3>{{ boost.clicks }}</h3>
+<p>👆 Clicks</p>
+</div>
+
+<div class="stat-card">
+<h3>{{ boost.applications }}</h3>
+<p>📝 Applications</p>
+</div>
+
+<div class="stat-card">
+<h3>{{ ctr }}%</h3>
+<p>📈 CTR</p>
+</div>
+
+<div class="stat-card">
+<h3>{{ application_rate }}%</h3>
+<p>🎯 Apply Rate</p>
+</div>
+
+<div class="stat-card">
+<h3>{{ days_remaining }}</h3>
+<p>📅 Days Left</p>
+</div>
+
+</div>
+
+
+<div class="analytics-card">
+
+{% if boost.status=="Active" %}
+
+<a href="/pause-boost/{{ boost.id }}"
+class="btn btn-warning action-btn">
+⏸ Pause Boost
+</a>
+
+<a href="/end-boost/{{ boost.id }}"
+class="btn btn-danger action-btn">
+⛔ End Boost
+</a>
+
+{% elif boost.status=="Paused" %}
+
+<a href="/resume-boost/{{ boost.id }}"
+class="btn btn-success action-btn">
+▶ Resume Boost
+</a>
+
+<a href="/end-boost/{{ boost.id }}"
+class="btn btn-danger action-btn">
+⛔ End Boost
+</a>
+
+{% endif %}
+
+</div>
+
+</div>
 
 </div>
 

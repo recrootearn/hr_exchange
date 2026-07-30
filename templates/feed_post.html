@@ -5,7 +5,9 @@
 
 <div class="desktop-feed">
     {% for job in jobs %}
-    <div id="post{{ job.id }}" class="feed-card">
+    <div id="post{{ job.id }}"
+     class="feed-card"
+     data-job-id="{{ job.id }}">
         <!-- HEADER (Kept your existing Delete Dropdown) -->
         <div class="feed-header">
             <div class="feed-avatar">
@@ -19,7 +21,11 @@
             </div>
             <div class="ms-auto d-flex align-items-center gap-2">
 
-            {% if job.boosts|selectattr("status","equalto","Active")|list|length > 0 %}
+            {% set active_boost = job.boosts
+            |selectattr("status","equalto","Active")
+            |list %}
+
+            {% if active_boost %}
             <span class="promoted-badge">
             📢 Promoted
             </span>
@@ -34,10 +40,7 @@
                 </a>
                 </li>
                 <li>
-                {% set active_boost = job.boosts
-                |selectattr("status", "equalto", "Active")
-                |list %}
-
+                
                 {% if active_boost %}
                 <a class="dropdown-item" href="/manage-boost/{{ job.id }}">
                 <i class="fas fa-chart-line me-2"></i>Manage Boost
@@ -1891,6 +1894,69 @@ if (window.visualViewport) {
     });
 }
 
+</script>
+
+<script>
+const viewedPosts = new Set();
+
+const observer = new IntersectionObserver((entries) => {
+
+    entries.forEach(entry => {
+
+        if (!entry.isIntersecting)
+            return;
+
+        if (entry.intersectionRatio < 0.5)
+            return;
+
+        const card = entry.target;
+        const jobId = card.dataset.jobId;
+
+        if (viewedPosts.has(jobId))
+            return;
+
+        viewedPosts.add(jobId);
+
+        setTimeout(() => {
+
+            fetch("/record-impression/" + jobId, {
+                method: "POST"
+            });
+
+        }, 2000);
+
+    });
+
+},{
+    threshold: 0.5
+});
+
+document.querySelectorAll(".feed-card").forEach(card=>{
+    observer.observe(card);
+});
+</script>
+
+<script>
+const clickedPosts = new Set();
+
+document.querySelectorAll(".feed-card").forEach(card => {
+
+    card.addEventListener("click", function(){
+
+        const jobId = this.dataset.jobId;
+
+        if(clickedPosts.has(jobId))
+            return;
+
+        clickedPosts.add(jobId);
+
+        fetch("/record-click/" + jobId,{
+            method:"POST"
+        });
+
+    });
+
+});
 </script>
 
 {% endblock %}

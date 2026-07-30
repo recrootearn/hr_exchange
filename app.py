@@ -1960,6 +1960,14 @@ def process_boosts():
     db.session.commit()
 
 @app.before_request
+def process_boost_system():
+
+    if request.endpoint == "static":
+        return
+
+    process_boosts()
+
+@app.before_request
 def check_candidate_session():
 
     if "candidate_id" in session:
@@ -6300,11 +6308,100 @@ def manage_boost(job_id):
         flash("No active boost found.")
         return redirect(url_for("feed_post"))
 
+    # Analytics
+    ctr = 0
+    if boost.impressions > 0:
+        ctr = round(
+            (boost.clicks / boost.impressions) * 100,
+            2
+        )
+
+    application_rate = 0
+    if boost.clicks > 0:
+        application_rate = round(
+            (boost.applications / boost.clicks) * 100,
+            2
+        )
+
+    days_remaining = max(
+        0,
+        boost.days - boost.days_completed
+    )
+
     return render_template(
         "manage_boost.html",
         job=job,
-        boost=boost
+        boost=boost,
+        ctr=ctr,
+        application_rate=application_rate,
+        days_remaining=days_remaining
     )
+
+@app.route("/pause-boost/<int:boost_id>")
+@login_required
+def pause_boost(boost_id):
+
+    boost = BoostPost.query.get_or_404(boost_id)
+
+    if boost.hr_id != current_user.id:
+        flash("Unauthorized access.", "danger")
+        return redirect(url_for("feed_post"))
+
+    if boost.status != "Active":
+        flash("Only active boosts can be paused.", "warning")
+        return redirect(url_for("manage_boost", job_id=boost.job_id))
+
+    boost.status = "Paused"
+
+    db.session.commit()
+
+    flash("Boost paused successfully.", "success")
+
+    return redirect(url_for("manage_boost", job_id=boost.job_id))
+
+@app.route("/resume-boost/<int:boost_id>")
+@login_required
+def resume_boost(boost_id):
+
+    boost = BoostPost.query.get_or_404(boost_id)
+
+    if boost.hr_id != current_user.id:
+        flash("Unauthorized access.", "danger")
+        return redirect(url_for("feed_post"))
+
+    if boost.status != "Paused":
+        flash("Only paused boosts can be resumed.", "warning")
+        return redirect(url_for("manage_boost", job_id=boost.job_id))
+
+    boost.status = "Active"
+
+    db.session.commit()
+
+    flash("Boost resumed successfully.", "success")
+
+    return redirect(url_for("manage_boost", job_id=boost.job_id))
+
+@app.route("/end-boost/<int:boost_id>")
+@login_required
+def end_boost(boost_id):
+
+    boost = BoostPost.query.get_or_404(boost_id)
+
+    if boost.hr_id != current_user.id:
+        flash("Unauthorized access.", "danger")
+        return redirect(url_for("feed_post"))
+
+    if boost.status == "Ended":
+        flash("Boost is already ended.", "warning")
+        return redirect(url_for("manage_boost", job_id=boost.job_id))
+
+    boost.status = "Ended"
+
+    db.session.commit()
+
+    flash("Boost ended successfully.", "success")
+
+    return redirect(url_for("feed_post"))
 
 @app.route("/admin/boost-settings", methods=["GET", "POST"])
 @login_required
@@ -8212,6 +8309,14 @@ def apply_job(job_id):
     # Check if all daily tasks are completed
     check_daily_reward(candidate)
 
+    boost = BoostPost.query.filter_by(
+        job_id=job_id,
+        status="Active"
+    ).first()
+
+    if boost:
+        boost.applications += 1
+
     db.session.commit()
 
     next_page = request.args.get('next')
@@ -8251,6 +8356,14 @@ def apply_job_hr(id):
         image=current_user.profile_photo,
         type="job_application"
     )
+
+    boost = BoostPost.query.filter_by(
+        job_id=id,
+        status="Active"
+    ).first()
+
+    if boost:
+        boost.applications += 1
 
     db.session.commit()
 
@@ -8490,6 +8603,23 @@ def applied_jobs_hr():
         JobPost=JobPost,
         User=User
     )
+
+@app.route("/record-impression/<int:job_id>", methods=["POST"])
+@login_required
+def record_impression(job_id):
+
+    boost = BoostPost.query.filter_by(
+        job_id=job_id,
+        status="Active"
+    ).first()
+
+    if not boost:
+        return "", 204
+
+    boost.impressions += 1
+    db.session.commit()
+
+    return "", 204
 
 @app.route('/my-applicants')
 @login_required
