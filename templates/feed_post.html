@@ -5,56 +5,58 @@
 
 <div class="desktop-feed">
     {% for job in jobs %}
-    <div id="post{{ job.id }}"
-     class="feed-card"
-     data-job-id="{{ job.id }}">
-        <!-- HEADER (Kept your existing Delete Dropdown) -->
-        <div class="feed-header">
-            <div class="feed-avatar">
-                {{ job.company_name[:1].upper() if job.company_name else 'R' }}
-            </div>
-            <div>
-                <div class="feed-company">
-                    <a href="/company/{{ job.hr_id }}" style="text-decoration:none;color:inherit;">{{ job.company_name }}</a>
-                </div>
-                <div class="feed-meta">📍 {{ job.location }}</div>
-            </div>
-            <div class="ms-auto d-flex align-items-center gap-2">
+<div id="post{{ job.id }}" class="feed-card" data-job-id="{{ job.id }}">
 
-            {% set active_boost = job.boosts
-            |selectattr("status","equalto","Active")
-            |list %}
+    {# Calculate active_boost at the root level of the card loop #}
+    {% set active_boost = [] %}
+    {% for b in job.boosts %}
+        {% if b.status and b.status|lower == 'active' %}
+            {% set _ = active_boost.append(b) %}
+        {% endif %}
+    {% endfor %}
 
-            {% if active_boost %}
-            <span class="promoted-badge">
+    <!-- HEADER -->
+    <div class="feed-header">
+        <div class="feed-avatar">
+            {{ job.company_name[:1].upper() if job.company_name else 'R' }}
+        </div>
+        <div>
+            <div class="feed-company">
+                <a href="/company/{{ job.hr_id }}" style="text-decoration:none;color:inherit;">{{ job.company_name }}</a>
+            </div>
+            <div class="feed-meta">📍 {{ job.location }}</div>
+        </div>
+        <div class="ms-auto d-flex align-items-center gap-2">
+
+        {% if active_boost %}
+        <span class="promoted-badge">
             📢 Promoted
-            </span>
-            {% endif %}
+        </span>
+        {% endif %}
 
-            <div class="dropdown">
-                <button class="btn btn-sm border-0" data-bs-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
-                <ul class="dropdown-menu dropdown-menu-end">
+        <div class="dropdown">
+            <button class="btn btn-sm border-0" data-bs-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+            <ul class="dropdown-menu dropdown-menu-end">
                 <li>
-                <a class="dropdown-item text-danger" href="/delete-job/{{ job.id }}" onclick="return confirm('Delete this post?')">
-                <i class="fas fa-trash me-2"></i>Delete Post
-                </a>
+                    <a class="dropdown-item text-danger" href="/delete-job/{{ job.id }}" onclick="return confirm('Delete this post?')">
+                        <i class="fas fa-trash me-2"></i>Delete Post
+                    </a>
                 </li>
                 <li>
-                
-                {% if active_boost %}
-                <a class="dropdown-item" href="/manage-boost/{{ job.id }}">
-                <i class="fas fa-chart-line me-2"></i>Manage Boost
-                </a>
-                {% else %}
-                <a class="dropdown-item" href="/boost-post/{{ job.id }}">
-                <i class="fas fa-rocket me-2"></i>Boost Now
-                </a>
-                {% endif %}
+                    {% if active_boost %}
+                    <a class="dropdown-item" href="/manage-boost/{{ job.id }}">
+                        <i class="fas fa-chart-line me-2"></i>Manage Boost
+                    </a>
+                    {% else %}
+                    <a class="dropdown-item" href="/boost-post/{{ job.id }}">
+                        <i class="fas fa-rocket me-2"></i>Boost Now
+                    </a>
+                    {% endif %}
                 </li>
-              </ul>
-            </div>
+            </ul>
         </div>
-        </div>
+    </div>
+</div>
 
         <!-- MEDIA -->
         {% if job.images %}
