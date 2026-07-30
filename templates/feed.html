@@ -75,6 +75,14 @@
         </div>
     </div>
 
+    <div class="d-flex align-items-center gap-2">
+
+    {% if job.is_promoted %}
+    <span class="promoted-badge">
+        📢 Promoted
+    </span>
+    {% endif %}
+
     <!-- Three Dots -->
     <div class="dropdown">
         <button class="btn btn-sm border-0 bg-transparent"
@@ -83,14 +91,12 @@
         </button>
 
         <ul class="dropdown-menu dropdown-menu-end">
-
             <li>
                 <button class="dropdown-item"
                         onclick="openReportModal({{ job.id }})">
                     🚩 Report
                 </button>
             </li>
-
         </ul>
     </div>
 
