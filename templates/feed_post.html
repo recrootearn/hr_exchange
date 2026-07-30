@@ -17,7 +17,15 @@
                 </div>
                 <div class="feed-meta">📍 {{ job.location }}</div>
             </div>
-            <div class="dropdown ms-auto">
+            <div class="ms-auto d-flex align-items-center gap-2">
+
+            {% if job.boosts|selectattr("status","equalto","Active")|list|length > 0 %}
+            <span class="promoted-badge">
+            📢 Promoted
+            </span>
+            {% endif %}
+
+            <div class="dropdown">
                 <button class="btn btn-sm border-0" data-bs-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
                 <ul class="dropdown-menu dropdown-menu-end">
                 <li>
@@ -32,6 +40,7 @@
                 </li>
               </ul>
             </div>
+        </div>
         </div>
 
         <!-- MEDIA -->
@@ -276,6 +285,17 @@
     padding: 15px;
     /* Ensure space at the bottom so the last comment isn't hidden behind the input */
     padding-bottom: 70px; 
+}
+
+.promoted-badge{
+    background:linear-gradient(135deg,#FFD54F,#FFB300);
+    color:#222;
+    font-size:11px;
+    font-weight:700;
+    padding:5px 10px;
+    border-radius:999px;
+    white-space:nowrap;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
 }
 
 body.keyboard-open .comments-sheet {
