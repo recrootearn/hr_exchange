@@ -75,7 +75,14 @@
         </div>
     </div>
 
-    <!-- Three Dots -->
+    <div class="ms-auto d-flex align-items-center gap-2">
+
+    {% if job.boosts|selectattr("status","equalto","Active")|list|length > 0 %}
+        <span class="promoted-badge">
+            📢 Promoted
+        </span>
+    {% endif %}
+
     <div class="dropdown">
         <button class="btn btn-sm border-0 bg-transparent"
                 data-bs-toggle="dropdown">
@@ -83,17 +90,16 @@
         </button>
 
         <ul class="dropdown-menu dropdown-menu-end">
-
             <li>
                 <button class="dropdown-item"
                         onclick="openReportModal({{ job.id }})">
                     🚩 Report
                 </button>
             </li>
-
         </ul>
     </div>
 
+    </div>
 </div>
 
         <!-- MEDIA -->
@@ -871,6 +877,17 @@ max-height:220px;
 
 overflow:auto;
 
+}
+
+.promoted-badge{
+    background:linear-gradient(135deg,#FFD54F,#FFB300);
+    color:#222;
+    font-size:11px;
+    font-weight:700;
+    padding:5px 10px;
+    border-radius:999px;
+    white-space:nowrap;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);
 }
 
 @keyframes commentIn{
