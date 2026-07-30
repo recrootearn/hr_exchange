@@ -1931,7 +1931,7 @@ def process_boosts():
             continue
 
         # Expired by date
-        if current_time() >= boost.expires_at:
+        if current_time >= boost.expires_at:
             boost.status = "Expired"
             continue
 
