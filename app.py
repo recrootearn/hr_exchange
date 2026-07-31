@@ -429,6 +429,11 @@ class CreditPurchase(db.Model):
 
     created_at = db.Column(db.DateTime, default=india_time)
 
+    invoice_number = db.Column(db.String(50), unique=True)
+    invoice_file = db.Column(db.String(255))
+    payment_id = db.Column(db.String(100))
+    payment_status = db.Column(db.String(20), default="Paid")
+
 class NotificationQueue(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -1926,11 +1931,33 @@ def generate_invoice_pdf(user, purchase, payment_id):
         dest=pdf
     )
 
-    return pdf.getvalue()
+    invoice_no = f"INV-{purchase.created_at.strftime('%Y%m%d')}-{purchase.id:06d}"
+
+    invoice_folder = os.path.join(
+        app.root_path,
+        "static",
+        "invoices"
+    )
+
+    os.makedirs(invoice_folder, exist_ok=True)
+
+    invoice_path = os.path.join(
+        invoice_folder,
+        invoice_no + ".pdf"
+    )
+
+    with open(invoice_path, "wb") as f:
+        f.write(pdf.getvalue())
+
+    return (
+        pdf.getvalue(),
+        invoice_no,
+        invoice_path
+    )
 
 def send_invoice_email(user, purchase, payment_id):
     try:
-        pdf = generate_invoice_pdf(
+        pdf, invoice_no, invoice_path = generate_invoice_pdf(
             user,
             purchase,
             payment_id
@@ -1965,6 +1992,13 @@ RecrootEarn Team
         )
 
         mail.send(msg)
+
+        purchase.invoice_number = invoice_no
+        purchase.invoice_file = f"static/invoices/{invoice_no}.pdf"
+        purchase.payment_id = payment_id
+        purchase.payment_status = "Paid"
+
+db.session.commit()
 
     except Exception as e:
         print("Invoice Email Error:", e)
@@ -3931,6 +3965,24 @@ def admin_reported_posts():
 
         reports=reports
 
+    )
+
+@app.route("/admin/invoices")
+@login_required
+def admin_invoices():
+
+    if not current_user.is_admin:
+        flash("Unauthorized", "danger")
+        return redirect("/dashboard")
+
+    invoices = CreditPurchase.query.order_by(
+        CreditPurchase.created_at.desc()
+    ).all()
+
+    return render_template(
+        "admin_invoices.html",
+        invoices=invoices,
+        User=User
     )
 
 @app.route("/admin/view-report/<int:post_id>")
@@ -11393,6 +11445,13 @@ def payment_success():
                     link="/wallet",
                     type="referral_reward"
                 )
+
+    db.session.commit()
+
+    purchase.invoice_number = invoice_no
+    purchase.invoice_file = invoice_path
+    purchase.payment_id = razorpay_payment_id
+    purchase.payment_status = "Paid"
 
     db.session.commit()
 

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h3>
+📄 Invoice Management
+</h3>
+
+<table class="table table-bordered table-hover mt-3">
+
+<thead class="table-primary">
+
+<tr>
+
+<th>Invoice</th>
+
+<th>HR</th>
+
+<th>Company</th>
+
+<th>Amount</th>
+
+<th>Date</th>
+
+<th>Status</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for invoice in invoices %}
+
+{% set hr = User.query.get(invoice.user_id) %}
+
+<tr>
+
+<td>
+
+{{ invoice.invoice_number }}
+
+</td>
+
+<td>
+
+{{ hr.first_name }} {{ hr.last_name }}
+
+</td>
+
+<td>
+
+{{ hr.company }}
+
+</td>
+
+<td>
+
+₹{{ invoice.amount_paid }}
+
+</td>
+
+<td>
+
+{{ invoice.created_at.strftime("%d %b %Y") }}
+
+</td>
+
+<td>
+
+<span class="badge bg-success">
+
+{{ invoice.payment_status }}
+
+</span>
+
+</td>
+
+<td>
+
+<a
+href="/{{ invoice.invoice_file }}"
+target="_blank"
+class="btn btn-sm btn-primary">
+
+View
+
+</a>
+
+<a
+href="/{{ invoice.invoice_file }}"
+download
+class="btn btn-sm btn-success">
+
+Download
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}
