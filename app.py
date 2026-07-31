@@ -1957,6 +1957,7 @@ def generate_invoice_pdf(user, purchase, payment_id):
 
 def send_invoice_email(user, purchase, payment_id):
     try:
+
         pdf, invoice_no, invoice_path = generate_invoice_pdf(
             user,
             purchase,
@@ -1986,7 +1987,7 @@ RecrootEarn Team
 """
 
         msg.attach(
-            filename=f"Invoice_{purchase.id}.pdf",
+            filename=f"Invoice_{invoice_no}.pdf",
             content_type="application/pdf",
             data=pdf
         )
@@ -1998,7 +1999,7 @@ RecrootEarn Team
         purchase.payment_id = payment_id
         purchase.payment_status = "Paid"
 
-db.session.commit()
+        db.session.commit()
 
     except Exception as e:
         print("Invoice Email Error:", e)
