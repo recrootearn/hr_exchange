@@ -1896,7 +1896,7 @@ def generate_invoice_pdf(user, purchase, payment_id):
     html = render_template(
         "invoice.html",
 
-        logo_path=os.path.abspath("static/logo.png"),
+        logo_path=os.path.abspath("static/images/invoice_logo.png"),
 
         invoice_no=f"INV-{purchase.created_at.strftime('%Y%m%d')}-{purchase.id:06d}",
 
