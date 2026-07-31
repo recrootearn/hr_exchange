@@ -121,6 +121,68 @@ body{
     font-size:14px;
 }
 
+.amount-card{
+    background:#f8fafc;
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:25px;
+}
+
+.title{
+    text-align:left;
+    font-size:18px;
+    color:#111827;
+    margin-bottom:15px;
+}
+
+.pay-option{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    background:#ffffff;
+    border:2px solid #e5e7eb;
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:14px;
+    cursor:pointer;
+    transition:0.25s;
+}
+
+.pay-option:hover{
+    border-color:#7c3aed;
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(124,58,237,.15);
+}
+
+.pay-option.active{
+    border-color:#7c3aed;
+    background:#f3e8ff;
+}
+
+.icon{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background:#f3f4f6;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:26px;
+}
+
+.continue-btn{
+    width:100%;
+    height:60px;
+    margin-top:20px;
+    border:none;
+    border-radius:18px;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:#fff;
+    font-size:20px;
+    font-weight:700;
+    cursor:pointer;
+}
+
 </style>
 
 </head>
@@ -130,40 +192,54 @@ body{
 <div class="payment-card">
 
     <div class="logo">
-
         RECROOT<span>EARN</span>
-
     </div>
 
     <div class="subtitle">
-
         Secure Credit Purchase
-
     </div>
 
-    <div class="amount">
-
-        ₹{{ amount }}
-
+    <div class="amount-card">
+        <div class="amount">₹{{ amount }}</div>
+        <div class="credit-text">
+            {{ credits }} Credits
+        </div>
     </div>
 
-    <div class="credit-text">
+    <h3 class="title">
+        Choose Payment Method
+    </h3>
 
-        Buy {{ credits }} Credits
-
+    <div class="pay-option upi" onclick="payUPI()">
+        <div class="icon">🟣</div>
+        <div>
+            <b>PhonePe / Google Pay / Paytm</b><br>
+            <small>Pay instantly using any UPI App</small>
+        </div>
     </div>
 
-    <button id="rzp-button"
-            class="pay-btn">
+    <div class="pay-option" onclick="payCard()">
+        <div class="icon">💳</div>
+        <div>
+            <b>Debit / Credit Card</b><br>
+            <small>Visa • Mastercard • RuPay</small>
+        </div>
+    </div>
 
-        Pay Securely
+    <div class="pay-option" onclick="payNetbanking()">
+        <div class="icon">🏦</div>
+        <div>
+            <b>Net Banking</b><br>
+            <small>All major Indian banks</small>
+        </div>
+    </div>
 
+    <button class="continue-btn">
+        Continue →
     </button>
 
     <div class="secure">
-
-        🔒 Secured by Razorpay
-
+        🔒 Powered by Razorpay
     </div>
 
 </div>
@@ -210,6 +286,41 @@ document.getElementById('rzp-button').onclick = function(e){
 
     e.preventDefault();
 
+}
+
+var selectedMethod = "upi";
+
+document.querySelectorAll(".pay-option").forEach(function(item){
+    item.addEventListener("click",function(){
+
+        document.querySelectorAll(".pay-option").forEach(function(i){
+            i.classList.remove("active");
+        });
+
+        this.classList.add("active");
+
+        if(this.innerText.includes("UPI"))
+            selectedMethod="upi";
+
+        else if(this.innerText.includes("Card"))
+            selectedMethod="card";
+
+        else
+            selectedMethod="netbanking";
+    });
+});
+
+function openPayment(){
+
+    options.method = selectedMethod;
+
+    var rzp = new Razorpay(options);
+    rzp.open();
+}
+
+document.querySelector(".continue-btn").onclick=function(e){
+    openPayment();
+    e.preventDefault();
 }
 
 </script>
