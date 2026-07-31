@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,24 +17,25 @@
 }
 
 body{
-    height:100vh;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#ffffff;
     display:flex;
     justify-content:center;
     align-items:center;
-    background:#ffffff;
-    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    padding:20px;
 }
 
 .payment-card{
 
-    width:90%;
+    width:100%;
     max-width:420px;
 
     background:#1565C0;
 
     border-radius:30px;
 
-    padding:40px;
+    padding:35px 25px;
 
     text-align:center;
 
@@ -44,41 +44,62 @@ body{
 
 .logo{
 
-    font-size:40px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:clamp(30px,8vw,46px);
+
     font-weight:900;
-    color:#ffffff;
-    margin-bottom:10px;
+
+    margin-bottom:20px;
+
+    line-height:1;
+
+    white-space:nowrap;
 }
 
-.logo span{
+.recroot{
+    color:white;
+}
+
+.earn{
     color:#22C55E;
 }
 
 .subtitle{
 
     color:#EAF4FF;
-    margin-bottom:30px;
-    font-size:16px;
+
+    font-size:18px;
+
+    margin-bottom:40px;
 }
 
 .amount{
 
-    font-size:50px;
+    font-size:clamp(48px,12vw,64px);
+
     font-weight:900;
-    color:#ffffff;
-    margin-bottom:8px;
+
+    color:white;
+
+    margin-bottom:12px;
 }
 
 .credit-text{
 
     color:#EAF4FF;
-    margin-bottom:30px;
+
     font-size:18px;
+
+    margin-bottom:35px;
 }
 
 .pay-btn{
 
     width:100%;
+
     height:60px;
 
     border:none;
@@ -87,9 +108,9 @@ body{
 
     background:#22C55E;
 
-    color:#ffffff;
+    color:white;
 
-    font-size:20px;
+    font-size:22px;
 
     font-weight:800;
 
@@ -103,8 +124,6 @@ body{
     background:#16A34A;
 
     transform:translateY(-2px);
-
-    box-shadow:0 10px 25px rgba(34,197,94,.35);
 }
 
 .secure{
@@ -113,7 +132,7 @@ body{
 
     color:#EAF4FF;
 
-    font-size:14px;
+    font-size:15px;
 }
 
 </style>
@@ -125,7 +144,7 @@ body{
 <div class="payment-card">
 
     <div class="logo">
-        RECROOT<span>EARN</span>
+        <span class="recroot">RECROOT</span><span class="earn">EARN</span>
     </div>
 
     <div class="subtitle">
@@ -140,12 +159,8 @@ body{
         Buy {{ credits }} Credits
     </div>
 
-    <button
-        id="rzp-button"
-        class="pay-btn">
-
+    <button id="rzp-button" class="pay-btn">
         Pay Securely
-
     </button>
 
     <div class="secure">
@@ -180,9 +195,7 @@ var options = {
                 "upi":{
                     "name":"Pay via UPI / GPay / PhonePe",
                     "instruments":[
-                        {
-                            "method":"upi"
-                        }
+                        {"method":"upi"}
                     ]
                 }
             },
@@ -196,11 +209,11 @@ var options = {
 
     "handler":function(response){
 
-        window.location.href=
-        "/payment-success?"
+        window.location.href="/payment-success?"
         +"payment_id="+response.razorpay_payment_id
         +"&order_id="+response.razorpay_order_id
         +"&signature="+response.razorpay_signature;
+
     },
 
     "theme":{
@@ -222,5 +235,4 @@ document.getElementById("rzp-button").onclick=function(e){
 </script>
 
 </body>
-
 </html>
