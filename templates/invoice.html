@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<style>
+
+body{
+font-family:Arial,sans-serif;
+margin:0;
+padding:0;
+background:#f5f7fb;
+}
+
+.container{
+width:800px;
+margin:auto;
+background:white;
+border-radius:12px;
+overflow:hidden;
+border:1px solid #ddd;
+}
+
+.header{
+background:#1565C0;
+color:white;
+padding:25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+height:70px;
+}
+
+.company h1{
+margin:0;
+font-size:30px;
+}
+
+.company p{
+margin:3px 0;
+font-size:14px;
+}
+
+.paid{
+background:#2ecc71;
+padding:10px 18px;
+border-radius:30px;
+font-weight:bold;
+font-size:18px;
+}
+
+.section{
+padding:25px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+background:#1565C0;
+color:white;
+padding:12px;
+}
+
+td{
+padding:12px;
+border-bottom:1px solid #ddd;
+}
+
+.info td{
+border:none;
+padding:4px;
+}
+
+.total{
+margin-top:25px;
+width:300px;
+float:right;
+}
+
+.total td{
+border:none;
+}
+
+.total .grand{
+background:#1565C0;
+color:white;
+font-size:20px;
+font-weight:bold;
+}
+
+.footer{
+background:#f7f7f7;
+padding:20px;
+text-align:center;
+font-size:13px;
+color:#555;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<div>
+
+<img src="{{ logo_path }}" class="logo">
+
+</div>
+
+<div class="company">
+
+<h1>RecrootEarn</h1>
+
+<p><b>A Product of KR INVESTMENTS</b></p>
+
+<p>203, New Anjani Nagar</p>
+
+<p>Vijay Nagar, Indore (M.P.) - 452010</p>
+
+<p>www.recrootearn.com</p>
+
+</div>
+
+<div class="paid">
+
+PAID
+
+</div>
+
+</div>
+
+<div class="section">
+
+<table class="info">
+
+<tr>
+
+<td><b>Invoice No</b></td>
+
+<td>{{ invoice_no }}</td>
+
+<td><b>Invoice Date</b></td>
+
+<td>{{ invoice_date }}</td>
+
+</tr>
+
+<tr>
+
+<td><b>Payment ID</b></td>
+
+<td>{{ payment_id }}</td>
+
+<td><b>Status</b></td>
+
+<td>Paid</td>
+
+</tr>
+
+</table>
+
+<br>
+
+<h3>Bill To</h3>
+
+<table class="info">
+
+<tr>
+
+<td>Name</td>
+
+<td>{{ customer_name }}</td>
+
+</tr>
+
+<tr>
+
+<td>Company</td>
+
+<td>{{ company }}</td>
+
+</tr>
+
+<tr>
+
+<td>Email</td>
+
+<td>{{ email }}</td>
+
+</tr>
+
+<tr>
+
+<td>Mobile</td>
+
+<td>{{ mobile }}</td>
+
+</tr>
+
+</table>
+
+<br>
+
+<table>
+
+<tr>
+
+<th>Description</th>
+
+<th>Credits</th>
+
+<th>Amount</th>
+
+</tr>
+
+<tr>
+
+<td>{{ package }}</td>
+
+<td>{{ credits }}</td>
+
+<td>₹{{ amount }}</td>
+
+</tr>
+
+</table>
+
+<table class="total">
+
+<tr>
+
+<td>Total Paid</td>
+
+<td class="grand">
+
+₹{{ amount }}
+
+</td>
+
+</tr>
+
+</table>
+
+<div style="clear:both;"></div>
+
+</div>
+
+<div class="footer">
+
+<b>Thank you for choosing RecrootEarn.</b>
+
+<br><br>
+
+Website :
+www.recrootearn.com
+
+<br>
+
+Email :
+info@recrootearn.com
+
+<br>
+
+Phone :
++91 9584642181
+
+<br><br>
+
+This is a computer generated invoice and does not require any signature.
+
+</div>
+
+</div>
+
+</body>
+
+</html>

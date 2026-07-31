@@ -29,6 +29,9 @@ from push_notification import send_push_notification
 from datetime import datetime, timedelta, date
 from sqlalchemy import case
 from flask_mail import Mail, Message
+from flask import render_template
+from xhtml2pdf import pisa
+from io import BytesIO
 
 IST = ZoneInfo("Asia/Kolkata")
 
@@ -1887,6 +1890,84 @@ RecrootEarn Team
 """
 
     mail.send(msg)
+
+def generate_invoice_pdf(user, purchase, payment_id):
+
+    html = render_template(
+        "invoice.html",
+
+        logo_path=os.path.abspath("static/logo.png"),
+
+        invoice_no=f"INV-{purchase.created_at.strftime('%Y%m%d')}-{purchase.id:06d}",
+
+        invoice_date=purchase.created_at.strftime("%d %b %Y"),
+
+        payment_id=payment_id,
+
+        customer_name=f"{user.first_name} {user.last_name}",
+
+        company=user.company or "-",
+
+        email=user.email,
+
+        mobile=user.mobile,
+
+        package=purchase.package_name,
+
+        credits=purchase.credits_bought,
+
+        amount=f"{purchase.amount_paid:.2f}"
+    )
+
+    pdf = BytesIO()
+
+    pisa.CreatePDF(
+        src=html,
+        dest=pdf
+    )
+
+    return pdf.getvalue()
+
+def send_invoice_email(user, purchase, payment_id):
+    try:
+        pdf = generate_invoice_pdf(
+            user,
+            purchase,
+            payment_id
+        )
+
+        msg = Message(
+            subject=f"Payment Invoice - #{purchase.id}",
+            recipients=[user.email]
+        )
+
+        msg.body = f"""
+Hello {user.first_name},
+
+Thank you for your purchase on RecrootEarn.
+
+Your payment has been received successfully.
+
+Amount Paid : ₹{purchase.amount_paid}
+Credits Purchased : {purchase.credits_bought}
+Package : {purchase.package_name}
+
+Please find your invoice attached.
+
+Regards,
+RecrootEarn Team
+"""
+
+        msg.attach(
+            filename=f"Invoice_{purchase.id}.pdf",
+            content_type="application/pdf",
+            data=pdf
+        )
+
+        mail.send(msg)
+
+    except Exception as e:
+        print("Invoice Email Error:", e)
 
 def check_daily_bonus(candidate):
 
@@ -11222,6 +11303,22 @@ def payment_success():
     credits = session.get('buy_credits', 0)
     amount = session.get('buy_amount', 0)
 
+    razorpay_payment_id = request.args.get("payment_id", "N/A")
+
+    razorpay_payment_id = request.args.get("payment_id")
+    razorpay_order_id = request.args.get("order_id")
+    razorpay_signature = request.args.get("signature")
+
+    try:
+        client.utility.verify_payment_signature({
+            "razorpay_order_id": razorpay_order_id,
+            "razorpay_payment_id": razorpay_payment_id,
+            "razorpay_signature": razorpay_signature
+        })
+    except Exception:
+        flash("Payment verification failed.", "danger")
+        return redirect("/buy-credits")
+
     # ADD PAID CREDITS
     current_user.paid_credits += credits
 
@@ -11298,6 +11395,14 @@ def payment_success():
                 )
 
     db.session.commit()
+
+    # SEND INVOICE EMAIL
+    if current_user.email:
+        send_invoice_email(
+            current_user,
+            purchase,
+            razorpay_payment_id
+        )
 
     # PREVENT DUPLICATE REWARD
     session.pop("buy_credits", None)
