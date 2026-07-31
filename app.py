@@ -11449,13 +11449,6 @@ def payment_success():
 
     db.session.commit()
 
-    purchase.invoice_number = invoice_no
-    purchase.invoice_file = invoice_path
-    purchase.payment_id = razorpay_payment_id
-    purchase.payment_status = "Paid"
-
-    db.session.commit()
-
     # SEND INVOICE EMAIL
     if current_user.email:
         send_invoice_email(
