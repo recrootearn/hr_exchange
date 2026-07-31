@@ -28,6 +28,7 @@ from flask import jsonify
 from push_notification import send_push_notification
 from datetime import datetime, timedelta, date
 from sqlalchemy import case
+from flask_mail import Mail, Message
 
 IST = ZoneInfo("Asia/Kolkata")
 
@@ -49,6 +50,21 @@ from datetime import timedelta
 import secrets
 
 app = Flask(__name__)
+
+app.config["MAIL_SERVER"] = "smtp.hostinger.com"
+app.config["MAIL_PORT"] = 465
+app.config["MAIL_USE_SSL"] = True
+app.config["MAIL_USE_TLS"] = False
+
+app.config["MAIL_USERNAME"] = "info@recrootearn.com"
+app.config["MAIL_PASSWORD"] = "Manojcycle@95"
+
+app.config["MAIL_DEFAULT_SENDER"] = (
+    "RecrootEarn",
+    "info@recrootearn.com"
+)
+
+mail = Mail(app)
 
 # ==========================
 # MSG91 OTP CONFIGURATION
@@ -156,6 +172,7 @@ class User(UserMixin, db.Model):
     company_country = db.Column(db.String(100), default="India")
     app_token = db.Column(db.String(128), unique=True, nullable=True)
     last_streak_reset = db.Column(db.Date, nullable=True)
+    welcome_email_sent = db.Column(db.Boolean, default=False)
     boost_posts = db.relationship(
         "BoostPost",
         backref="hr",
@@ -280,6 +297,8 @@ class CandidateUser(UserMixin, db.Model):
     session_token = db.Column(db.String(200))
 
     fcm_token = db.Column(db.Text)
+
+    welcome_email_sent = db.Column(db.Boolean, default=False)
 
     career_level = db.Column(db.String(20))
 
@@ -1847,6 +1866,27 @@ def process_notification_queue():
         item.status = "Sent"
 
     db.session.commit()
+
+def send_welcome_email(email, name):
+    msg = Message(
+        "Welcome to RecrootEarn",
+        recipients=[email]
+    )
+
+    msg.body = f"""
+Hello {name},
+
+Welcome to RecrootEarn!
+
+Your account has been created successfully.
+
+Thank you for joining us.
+
+Regards,
+RecrootEarn Team
+"""
+
+    mail.send(msg)
 
 def check_daily_bonus(candidate):
 
@@ -5880,6 +5920,14 @@ def edit_candidate_profile():
     candidate.profile_completion = completion
 
     db.session.commit()
+
+    if candidate.email and not candidate.welcome_email_sent:
+        send_welcome_email(
+            candidate.email,
+            candidate.full_name
+        )
+        candidate.welcome_email_sent = True
+        db.session.commit()
 
     if request.method == 'POST':
 
@@ -10965,6 +11013,14 @@ def edit_profile():
         current_user.profile_completion = completion
 
         db.session.commit()
+
+        if current_user.email and not current_user.welcome_email_sent:
+            send_welcome_email(
+                current_user.email,
+                current_user.first_name
+            )
+            current_user.welcome_email_sent = True
+            db.session.commit()
 
         flash(
             "Profile Updated Successfully",
