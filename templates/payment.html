@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Buy Credits</title>
 
@@ -14,173 +11,313 @@ content="width=device-width, initial-scale=1.0">
 
 <style>
 
-body{
+*{
     margin:0;
-    height:100vh;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+
+    background:#f5f6fb;
+
     display:flex;
+
     justify-content:center;
+
     align-items:center;
-    background:
-    linear-gradient(
-    135deg,
-    #0f172a,
-    #1e1b4b,
-    #581c87
-    );
-    font-family:Arial;
+
+    min-height:100vh;
+
+    padding:20px;
+
 }
 
 .payment-card{
 
-    width:90%;
-    max-width:420px;
+    width:100%;
 
-    background:white;
+    max-width:430px;
+
+    background:#ffffff;
 
     border-radius:30px;
 
-    padding:40px;
+    padding:30px 20px;
 
-    text-align:center;
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
 
-    box-shadow:
-    0 20px 60px rgba(0,0,0,0.3);
 }
 
 .logo{
 
-    font-size:36px;
+    text-align:center;
+
+    font-size:42px;
+
     font-weight:900;
-    margin-bottom:10px;
+
     color:#111827;
+
 }
 
 .logo span{
+
     color:#7c3aed;
+
 }
 
 .subtitle{
+
+    text-align:center;
+
     color:#6b7280;
-    margin-bottom:30px;
+
+    margin-top:10px;
+
+    font-size:18px;
+
+}
+
+.amount-card{
+
+    margin-top:30px;
+
+    background:#f8f8fc;
+
+    border-radius:25px;
+
+    padding:35px 20px;
+
+    text-align:center;
+
 }
 
 .amount{
 
-    font-size:48px;
+    font-size:70px;
+
     font-weight:900;
+
     color:#111827;
 
-    margin-bottom:8px;
 }
 
 .credit-text{
 
+    margin-top:10px;
+
     color:#6b7280;
-    margin-bottom:30px;
+
+    font-size:20px;
+
 }
 
-.pay-btn{
+.title{
+
+    margin-top:35px;
+
+    margin-bottom:20px;
+
+    font-size:20px;
+
+    font-weight:700;
+
+    color:#111827;
+
+}
+
+.pay-option{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    border:2px solid #e5e7eb;
+
+    border-radius:22px;
+
+    padding:18px;
+
+    margin-bottom:18px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    background:white;
+
+}
+
+.pay-option:hover{
+
+    transform:translateY(-2px);
+
+    border-color:#7c3aed;
+
+    box-shadow:0 12px 30px rgba(124,58,237,.12);
+
+}
+
+.pay-option.active{
+
+    border-color:#7c3aed;
+
+    background:#faf5ff;
+
+}
+
+.icon{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:50%;
+
+    background:#f3f4f6;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:30px;
+
+    flex-shrink:0;
+
+}
+
+.method-title{
+
+    font-size:18px;
+
+    font-weight:700;
+
+    color:#111827;
+
+}
+
+.method-sub{
+
+    color:#6b7280;
+
+    margin-top:4px;
+
+    font-size:15px;
+
+}
+
+.continue-btn{
 
     width:100%;
+
     height:60px;
 
     border:none;
 
     border-radius:18px;
 
-    background:
-    linear-gradient(
-    135deg,
-    #2563eb,
-    #7c3aed
-    );
+    margin-top:20px;
+
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
 
     color:white;
 
-    font-size:20px;
+    font-size:22px;
 
-    font-weight:800;
+    font-weight:700;
 
     cursor:pointer;
 
-    transition:0.3s;
+    transition:.25s;
+
 }
 
-.pay-btn:hover{
+.continue-btn:hover{
 
-    transform:translateY(-3px);
+    transform:translateY(-2px);
 
-    box-shadow:
-    0 15px 35px rgba(124,58,237,0.35);
+    box-shadow:0 15px 30px rgba(124,58,237,.30);
+
 }
 
 .secure{
 
-    margin-top:18px;
+    margin-top:22px;
+
+    text-align:center;
+
     color:#6b7280;
-    font-size:14px;
+
+    font-size:15px;
+
 }
 
-.amount-card{
-    background:#f8fafc;
-    border-radius:20px;
-    padding:20px;
-    margin-bottom:25px;
+@media(max-width:480px){
+
+.payment-card{
+
+    border-radius:0;
+
+    min-height:100vh;
+
+    padding:25px 18px;
+
+    box-shadow:none;
+
+}
+
+.logo{
+
+    font-size:34px;
+
+}
+
+.amount{
+
+    font-size:58px;
+
+}
+
+.credit-text{
+
+    font-size:18px;
+
 }
 
 .title{
-    text-align:left;
+
     font-size:18px;
-    color:#111827;
-    margin-bottom:15px;
+
 }
 
-.pay-option{
-    display:flex;
-    align-items:center;
-    gap:15px;
-    background:#ffffff;
-    border:2px solid #e5e7eb;
-    border-radius:18px;
-    padding:18px;
-    margin-bottom:14px;
-    cursor:pointer;
-    transition:0.25s;
+.method-title{
+
+    font-size:17px;
+
 }
 
-.pay-option:hover{
-    border-color:#7c3aed;
-    transform:translateY(-2px);
-    box-shadow:0 10px 25px rgba(124,58,237,.15);
-}
+.method-sub{
 
-.pay-option.active{
-    border-color:#7c3aed;
-    background:#f3e8ff;
+    font-size:14px;
+
 }
 
 .icon{
-    width:52px;
-    height:52px;
-    border-radius:50%;
-    background:#f3f4f6;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:26px;
+
+    width:55px;
+
+    height:55px;
+
+    font-size:28px;
+
 }
 
-.continue-btn{
-    width:100%;
-    height:60px;
-    margin-top:20px;
-    border:none;
-    border-radius:18px;
-    background:linear-gradient(135deg,#2563eb,#7c3aed);
-    color:#fff;
-    font-size:20px;
-    font-weight:700;
-    cursor:pointer;
 }
 
 </style>
@@ -200,41 +337,74 @@ body{
     </div>
 
     <div class="amount-card">
-        <div class="amount">₹{{ amount }}</div>
+        <div class="amount">
+            ₹{{ amount }}
+        </div>
+
         <div class="credit-text">
             {{ credits }} Credits
         </div>
     </div>
 
-    <h3 class="title">
+    <div class="title">
         Choose Payment Method
-    </h3>
+    </div>
 
-    <div class="pay-option upi" onclick="payUPI()">
+    <div class="pay-option active" onclick="selectMethod('upi',this)">
+
         <div class="icon">🟣</div>
+
         <div>
-            <b>PhonePe / Google Pay / Paytm</b><br>
-            <small>Pay instantly using any UPI App</small>
+
+            <div class="method-title">
+                PhonePe / Google Pay / Paytm
+            </div>
+
+            <div class="method-sub">
+                Pay instantly using any UPI App
+            </div>
+
         </div>
+
     </div>
 
-    <div class="pay-option" onclick="payCard()">
+    <div class="pay-option" onclick="selectMethod('card',this)">
+
         <div class="icon">💳</div>
+
         <div>
-            <b>Debit / Credit Card</b><br>
-            <small>Visa • Mastercard • RuPay</small>
+
+            <div class="method-title">
+                Debit / Credit Card
+            </div>
+
+            <div class="method-sub">
+                Visa • Mastercard • RuPay
+            </div>
+
         </div>
+
     </div>
 
-    <div class="pay-option" onclick="payNetbanking()">
+    <div class="pay-option" onclick="selectMethod('netbanking',this)">
+
         <div class="icon">🏦</div>
+
         <div>
-            <b>Net Banking</b><br>
-            <small>All major Indian banks</small>
+
+            <div class="method-title">
+                Net Banking
+            </div>
+
+            <div class="method-sub">
+                All major Indian banks
+            </div>
+
         </div>
+
     </div>
 
-    <button class="continue-btn">
+    <button class="continue-btn" id="continueBtn">
         Continue →
     </button>
 
@@ -246,85 +416,68 @@ body{
 
 <script>
 
+let selectedMethod = "upi";
+
+function selectMethod(method, element){
+
+    selectedMethod = method;
+
+    document.querySelectorAll(".pay-option").forEach(function(item){
+        item.classList.remove("active");
+    });
+
+    element.classList.add("active");
+}
+
 var options = {
 
-    "key": "{{ razorpay_key }}",
+    key: "{{ razorpay_key }}",
 
-    "amount": "{{ order['amount'] }}",
+    amount: "{{ order['amount'] }}",
 
-    "currency": "INR",
+    currency: "INR",
 
-    "name": "RecrootEarn",
+    name: "RecrootEarn",
 
-    "description": "Credit Purchase",
+    description: "Credit Purchase",
 
-    "image": "https://recrootearn.com/static/logo.png",
+    image: "https://recrootearn.com/static/logo.png",
 
-    "order_id": "{{ order['id'] }}",
+    order_id: "{{ order['id'] }}",
 
-    "handler": function (response){
+    prefill: {},
 
-        window.location.href =
-        "/payment-success?"
-        + "payment_id=" + response.razorpay_payment_id
-        + "&order_id=" + response.razorpay_order_id
-        + "&signature=" + response.razorpay_signature;
-
+    notes: {
+        payment_method: selectedMethod
     },
 
-    "theme": {
-        "color": "#7c3aed"
-    }
+    theme: {
+        color: "#7c3aed"
+    },
 
+    handler: function (response){
+
+        window.location.href =
+            "/payment-success?" +
+            "payment_id=" + response.razorpay_payment_id +
+            "&order_id=" + response.razorpay_order_id +
+            "&signature=" + response.razorpay_signature;
+    }
 };
 
-var rzp1 = new Razorpay(options);
-
-document.getElementById('rzp-button').onclick = function(e){
-
-    rzp1.open();
+document.getElementById("continueBtn").addEventListener("click", function(e){
 
     e.preventDefault();
 
-}
-
-var selectedMethod = "upi";
-
-document.querySelectorAll(".pay-option").forEach(function(item){
-    item.addEventListener("click",function(){
-
-        document.querySelectorAll(".pay-option").forEach(function(i){
-            i.classList.remove("active");
-        });
-
-        this.classList.add("active");
-
-        if(this.innerText.includes("UPI"))
-            selectedMethod="upi";
-
-        else if(this.innerText.includes("Card"))
-            selectedMethod="card";
-
-        else
-            selectedMethod="netbanking";
-    });
-});
-
-function openPayment(){
-
-    options.method = selectedMethod;
+    options.notes.payment_method = selectedMethod;
 
     var rzp = new Razorpay(options);
-    rzp.open();
-}
 
-document.querySelector(".continue-btn").onclick=function(e){
-    openPayment();
-    e.preventDefault();
-}
+    rzp.open();
+
+});
 
 </script>
 
 </body>
-
 </html>
