@@ -3,250 +3,224 @@
 <head>
   <meta charset="UTF-8">
   <title>Invoice - RecrootEarn</title>
-  <!-- SVG / Font Icons (Lucide Icons) -->
-  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @page {
+      size: A4;
+      margin: 0;
+    }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
 
     body {
-      background-color: #f4f6f8;
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .invoice-card {
-      width: 800px;
+      width: 794px; /* Exact A4 width in pixels at 96 DPI */
+      height: 1122px; /* Exact A4 height */
+      margin: 0 auto;
       background: #ffffff;
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-      border: 1px solid #e2e8f0;
+      color: #1a1a1a;
+      padding: 35px 40px;
       position: relative;
     }
 
-    /* Top Section */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 30px;
+    /* Clearfix / Utility */
+    .row {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
     }
 
-    .company-info {
-      display: flex;
-      gap: 15px;
+    .col {
+      display: table-cell;
+      vertical-align: top;
+    }
+
+    /* HEADER */
+    .header-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 25px;
+    }
+
+    .logo-td {
+      width: 115px;
+      vertical-align: top;
     }
 
     .logo-box {
-      width: 110px;
-      height: 110px;
-      background-color: #0052cc;
-      border-radius: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      width: 100px;
+      height: 100px;
+      background-color: #0b57d0;
+      border-radius: 18px;
+      text-align: center;
+      line-height: 100px;
       color: #ffffff;
-      font-weight: 800;
       font-size: 11px;
+      font-weight: bold;
       letter-spacing: 0.5px;
-      box-shadow: 0 4px 10px rgba(0, 82, 204, 0.2);
     }
 
     .logo-box span {
-      color: #39cc3b;
+      color: #38b92d;
     }
 
-    .company-details {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+    .company-td {
+      vertical-align: top;
+      padding-left: 10px;
     }
 
     .brand-title {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 800;
-      color: #0052cc;
+      color: #0b57d0;
       line-height: 1;
     }
 
     .brand-title span {
-      color: #2fb12d;
+      color: #38b92d;
     }
 
-    .brand-subtitle {
-      font-size: 13px;
-      color: #5e6c84;
-      font-weight: 600;
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: #555555;
       margin-top: 4px;
       margin-bottom: 12px;
     }
 
-    .brand-subtitle span {
-      color: #0052cc;
+    .brand-sub span {
+      color: #0b57d0;
     }
 
-    .contact-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 13px;
-      color: #172b4d;
-      font-weight: 500;
+    .contact-line {
+      font-size: 11px;
+      color: #333333;
+      margin-bottom: 4px;
+      line-height: 1.3;
     }
 
-    .contact-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .contact-line span {
+      color: #0b57d0;
+      font-weight: bold;
+      margin-right: 4px;
     }
 
-    .contact-item i {
-      width: 15px;
-      height: 15px;
-      color: #0052cc;
-    }
-
-    /* Invoice Title & Meta */
-    .invoice-meta-container {
+    .meta-td {
       text-align: right;
+      vertical-align: top;
+      width: 320px;
     }
 
-    .invoice-title-row {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 15px;
-      margin-bottom: 25px;
+    .invoice-head {
+      margin-bottom: 15px;
     }
 
     .invoice-title {
-      font-size: 36px;
-      font-weight: 800;
-      color: #0052cc;
-      letter-spacing: 0.5px;
+      display: inline-block;
+      font-size: 32px;
+      font-weight: 900;
+      color: #0b57d0;
+      vertical-align: middle;
+      margin-right: 10px;
     }
 
     .paid-badge {
+      display: inline-block;
       background-color: #28a745;
-      color: white;
-      font-size: 16px;
-      font-weight: 700;
-      padding: 6px 16px;
-      border-radius: 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .paid-badge i {
-      width: 18px;
-      height: 18px;
-      stroke-width: 3;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: bold;
+      padding: 5px 14px;
+      border-radius: 6px;
+      vertical-align: middle;
     }
 
     .meta-table {
+      width: 100%;
       border-collapse: collapse;
-      margin-left: auto;
+      margin-top: 10px;
     }
 
     .meta-table td {
-      padding: 4px 0;
-      font-size: 13px;
-      color: #172b4d;
+      font-size: 11px;
+      padding: 3px 0;
+      color: #333333;
     }
 
-    .meta-table td.label-cell {
-      font-weight: 600;
-      padding-right: 15px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .meta-table td.label-cell i {
-      width: 15px;
-      height: 15px;
-      color: #0052cc;
-    }
-
-    .meta-table td.separator {
-      padding-right: 10px;
-    }
-
-    .meta-table td.value-cell {
-      font-weight: 500;
-      text-align: left;
-    }
-
-    /* Bill To Card */
-    .bill-to-box {
-      border: 1px solid #dcdfe6;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-top: 15px;
-      margin-bottom: 25px;
-    }
-
-    .bill-to-header {
-      background-color: #0052cc;
-      color: white;
+    .meta-table .lbl {
       font-weight: 700;
-      font-size: 14px;
-      padding: 8px 24px;
+      text-align: right;
+      padding-right: 8px;
+    }
+
+    .meta-table .lbl span {
+      color: #0b57d0;
+      margin-right: 4px;
+    }
+
+    .meta-table .val {
+      text-align: left;
+      width: 150px;
+      font-weight: 500;
+    }
+
+    /* BILL TO CARD */
+    .bill-box {
+      border: 1px solid #dcdfe6;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .bill-header {
+      background-color: #0b57d0;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 6px 18px;
       display: inline-block;
-      border-bottom-right-radius: 12px;
+      border-bottom-right-radius: 10px;
     }
 
-    .bill-to-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      padding: 10px 0;
+    .bill-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2px;
     }
 
-    .bill-row {
-      display: flex;
-      padding: 8px 20px;
-      font-size: 13.5px;
-      border-bottom: 1px solid #f0f2f5;
+    .bill-table td {
+      padding: 6px 18px;
+      font-size: 11px;
+      border-bottom: 1px solid #f2f4f8;
     }
 
-    .bill-row:last-child {
+    .bill-table tr:last-child td {
       border-bottom: none;
     }
 
-    .bill-label {
-      width: 140px;
-      font-weight: 600;
-      color: #172b4d;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .bill-lbl {
+      width: 110px;
+      font-weight: 700;
+      color: #333333;
     }
 
-    .bill-label i {
-      width: 15px;
-      height: 15px;
-      color: #0052cc;
+    .bill-lbl span {
+      color: #0b57d0;
+      margin-right: 5px;
     }
 
-    .bill-value {
-      color: #172b4d;
+    .bill-val {
+      color: #1a1a1a;
       font-weight: 500;
     }
 
-    /* Items Table */
-    .items-table-container {
+    /* ITEMS TABLE */
+    .items-container {
       border: 1px solid #dcdfe6;
-      border-radius: 12px;
+      border-radius: 10px;
       overflow: hidden;
       margin-bottom: 25px;
     }
@@ -254,328 +228,250 @@
     .items-table {
       width: 100%;
       border-collapse: collapse;
-      text-align: left;
     }
 
     .items-table th {
-      background-color: #0052cc;
-      color: white;
-      font-size: 12px;
-      font-weight: 700;
+      background-color: #0b57d0;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: bold;
       text-transform: uppercase;
-      padding: 12px 16px;
-    }
-
-    .items-table th.center, .items-table td.center {
-      text-align: center;
-    }
-
-    .items-table th.right, .items-table td.right {
-      text-align: right;
+      padding: 10px 14px;
+      text-align: left;
     }
 
     .items-table td {
-      padding: 16px;
-      font-size: 14px;
-      color: #172b4d;
-      border-bottom: 1px solid #f0f2f5;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #1a1a1a;
     }
 
-    /* Total Paid Banner */
-    .total-banner {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
+    .center { text-align: center; }
+    .right { text-align: right; }
+
+    /* TOTAL BAR */
+    .total-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-top: 1px solid #dcdfe6;
     }
 
-    .total-label-cell {
-      padding: 12px 24px;
-      font-size: 14px;
+    .total-lbl-td {
+      text-align: right;
+      padding: 10px 16px;
+      font-size: 12px;
       font-weight: 700;
-      color: #0052cc;
-      text-align: right;
+      color: #0b57d0;
     }
 
-    .total-amount-cell {
+    .total-val-td {
       background-color: #28a745;
-      color: white;
-      font-size: 24px;
+      color: #ffffff;
+      font-size: 18px;
       font-weight: 800;
-      padding: 12px 40px;
-      min-width: 200px;
+      padding: 10px 24px;
+      width: 180px;
       text-align: right;
     }
 
-    /* Footer Cards */
+    /* FOOTER CARD */
     .footer-card {
       border: 1px solid #dcdfe6;
-      border-radius: 12px;
-      padding: 18px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      border-radius: 10px;
+      padding: 15px 20px;
       margin-bottom: 20px;
+      width: 100%;
     }
 
-    .thank-you-section {
-      display: flex;
-      align-items: center;
-      gap: 15px;
+    .thank-td {
+      vertical-align: middle;
     }
 
-    .shield-icon {
-      width: 60px;
-      height: 60px;
-      background: #e6f0ff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #0052cc;
-      position: relative;
+    .thank-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #1a1a1a;
+      line-height: 1.2;
     }
 
-    .thank-you-text {
-      font-size: 20px;
-      font-weight: 700;
-      color: #172b4d;
-    }
+    .thank-title span.blue { color: #0b57d0; }
+    .thank-title span.green { color: #38b92d; }
 
-    .thank-you-text span {
-      color: #0052cc;
-    }
-
-    .thank-you-text span.green {
-      color: #2fb12d;
-    }
-
-    .help-section {
+    .help-td {
+      vertical-align: middle;
       border-left: 1px solid #e2e8f0;
-      padding-left: 25px;
+      padding-left: 20px;
+      width: 250px;
     }
 
-    .help-title {
-      font-size: 13px;
+    .help-head {
+      font-size: 11px;
       font-weight: 700;
-      color: #0052cc;
-      margin-bottom: 8px;
+      color: #0b57d0;
+      margin-bottom: 6px;
     }
 
-    .help-contact-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: #172b4d;
-      margin-bottom: 4px;
+    .help-line {
+      font-size: 10px;
+      color: #333333;
+      margin-bottom: 3px;
     }
 
-    .help-contact-item i {
-      width: 13px;
-      height: 13px;
-      color: #0052cc;
+    .help-line span {
+      color: #0b57d0;
+      font-weight: bold;
     }
 
-    /* Bottom Note */
-    .bottom-note {
+    /* BOTTOM NOTE */
+    .computer-note {
       border: 1px dashed #b3bac5;
-      border-radius: 8px;
-      padding: 10px;
+      border-radius: 6px;
+      padding: 8px;
       text-align: center;
-      font-size: 12px;
-      color: #5e6c84;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      font-size: 10px;
+      color: #555555;
     }
 
-    .bottom-note i {
-      width: 14px;
-      height: 14px;
-      color: #0052cc;
-    }
-
-    /* Blue Bottom Bar */
-    .bottom-accent-bar {
-      height: 10px;
-      background: linear-gradient(90deg, #0052cc 80%, #2fb12d 80%);
+    /* BLUE BOTTOM STRIP */
+    .bottom-bar {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      border-bottom-left-radius: 8px;
-      border-bottom-right-radius: 8px;
+      height: 8px;
+      background: #0b57d0;
     }
   </style>
 </head>
 <body>
 
-  <div class="invoice-card">
-    
-    <!-- Header -->
-    <div class="header">
-      <div class="company-info">
+  <!-- Header -->
+  <table class="header-table">
+    <tr>
+      <td class="logo-td">
         <div class="logo-box">
-          <div style="font-size: 12px;">RECROOT<span>EARN</span></div>
+          RECROOT<span>EARN</span>
         </div>
-        <div class="company-details">
-          <div>
-            <div class="brand-title">RECROOT<span>EARN</span></div>
-            <div class="brand-subtitle">A Product of <span>KR INVESTMENTS</span></div>
-          </div>
-          <div class="contact-list">
-            <div class="contact-item">
-              <i data-lucide="map-pin"></i>
-              <span>203, New Anjani Nagar, Vijay Nagar, Indore (M.P.) - 452010</span>
-            </div>
-            <div class="contact-item">
-              <i data-lucide="globe"></i>
-              <span>www.recrootearn.com</span>
-            </div>
-            <div class="contact-item">
-              <i data-lucide="mail"></i>
-              <span>info@recrootearn.com</span>
-            </div>
-            <div class="contact-item">
-              <i data-lucide="phone"></i>
-              <span>+91 95846 42181</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="invoice-meta-container">
-        <div class="invoice-title-row">
-          <div class="invoice-title">INVOICE</div>
-          <div class="paid-badge">
-            <i data-lucide="check-circle-2"></i> PAID
-          </div>
+      </td>
+      <td class="company-td">
+        <div class="brand-title">RECROOT<span>EARN</span></div>
+        <div class="brand-sub">A Product of <span>KR INVESTMENTS</span></div>
+        <div class="contact-line"><span>📍</span> 203, New Anjani Nagar, Vijay Nagar, Indore (M.P.) - 452010</div>
+        <div class="contact-line"><span>🌐</span> www.recrootearn.com</div>
+        <div class="contact-line"><span>✉</span> info@recrootearn.com</div>
+        <div class="contact-line"><span>☎</span> +91 95846 42181</div>
+      </td>
+      <td class="meta-td">
+        <div class="invoice-head">
+          <span class="invoice-title">INVOICE</span>
+          <span class="paid-badge">✔ PAID</span>
         </div>
         <table class="meta-table">
           <tr>
-            <td class="label-cell"><i data-lucide="file-text"></i> Invoice No.</td>
-            <td class="separator">:</td>
-            <td class="value-cell">{{ invoice_no }}</td>
+            <td class="lbl"><span>📄</span> Invoice No.</td>
+            <td style="width: 10px;">:</td>
+            <td class="val">{{ invoice_no }}</td>
           </tr>
           <tr>
-            <td class="label-cell"><i data-lucide="calendar"></i> Invoice Date</td>
-            <td class="separator">:</td>
-            <td class="value-cell">{{ invoice_date }}</td>
+            <td class="lbl"><span>📅</span> Invoice Date</td>
+            <td>:</td>
+            <td class="val">{{ invoice_date }}</td>
           </tr>
           <tr>
-            <td class="label-cell"><i data-lucide="credit-card"></i> Payment ID</td>
-            <td class="separator">:</td>
-            <td class="value-cell">{{ payment_id }}</td>
+            <td class="lbl"><span>💳</span> Payment ID</td>
+            <td>:</td>
+            <td class="val">{{ payment_id }}</td>
           </tr>
           <tr>
-            <td class="label-cell"><i data-lucide="credit-card"></i> Payment Method</td>
-            <td class="separator">:</td>
-            <td class="value-cell">{{ payment_method }}</td>
+            <td class="lbl"><span>💳</span> Payment Method</td>
+            <td>:</td>
+            <td class="val">{{ payment_method }}</td>
           </tr>
           <tr>
-            <td class="label-cell"><i data-lucide="check-circle"></i> Status</td>
-            <td class="separator">:</td>
-            <td class="value-cell" style="font-weight: 600;">{{ status }}</td>
+            <td class="lbl"><span>✔</span> Status</td>
+            <td>:</td>
+            <td class="val" style="color: #28a745; font-weight: bold;">{{ status }}</td>
           </tr>
         </table>
-      </div>
-    </div>
+      </td>
+    </tr>
+  </table>
 
-    <!-- Bill To Section -->
-    <div class="bill-to-box">
-      <div class="bill-to-header">BILL TO</div>
-      <div class="bill-to-grid">
-        <div class="bill-row">
-          <div class="bill-label"><i data-lucide="user"></i> Name</div>
-          <div class="bill-value">: {{ customer_name }}</div>
-        </div>
-        <div class="bill-row">
-          <div class="bill-label"><i data-lucide="building-2"></i> Company</div>
-          <div class="bill-value">: {{ company_name }}</div>
-        </div>
-        <div class="bill-row">
-          <div class="bill-label"><i data-lucide="mail"></i> Email</div>
-          <div class="bill-value">: {{ customer_email }}</div>
-        </div>
-        <div class="bill-row">
-          <div class="bill-label"><i data-lucide="phone"></i> Mobile</div>
-          <div class="bill-value">: {{ customer_mobile }}</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Line Items Table -->
-    <div class="items-table-container">
-      <table class="items-table">
-        <thead>
-          <tr>
-            <th class="center" style="width: 50px;">#</th>
-            <th>DESCRIPTION</th>
-            <th class="center" style="width: 120px;">CREDITS</th>
-            <th class="right" style="width: 150px;">AMOUNT (₹)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Dynamic Row Loop Starts -->
-          <tr>
-            <td class="center">1</td>
-            <td>{{ item_description }}</td>
-            <td class="center">{{ credits }}</td>
-            <td class="right">₹{{ amount }}</td>
-          </tr>
-          <!-- Dynamic Row Loop Ends -->
-        </tbody>
-      </table>
-
-      <!-- Total Paid Row -->
-      <div class="total-banner">
-        <div class="total-label-cell">TOTAL PAID</div>
-        <div class="total-amount-cell">₹{{ amount }}</div>
-      </div>
-    </div>
-
-    <!-- Bottom Thank You Card -->
-    <div class="footer-card">
-      <div class="thank-you-section">
-        <div class="shield-icon">
-          <i data-lucide="shield-check" style="width:32px; height:32px;"></i>
-        </div>
-        <div class="thank-you-text">
-          Thank you for<br>choosing <span>Recroot</span><span class="green">Earn</span>.
-        </div>
-      </div>
-      <div class="help-section">
-        <div class="help-title">We're here to help!</div>
-        <div class="help-contact-item">
-          <i data-lucide="globe"></i>
-          <span><b>Website</b> : www.recrootearn.com</span>
-        </div>
-        <div class="help-contact-item">
-          <i data-lucide="mail"></i>
-          <span><b>Email</b> : info@recrootearn.com</span>
-        </div>
-        <div class="help-contact-item">
-          <i data-lucide="phone"></i>
-          <span><b>Phone</b> : +91 95846 42181</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Computer Generated Note -->
-    <div class="bottom-note">
-      <i data-lucide="file-check"></i>
-      This is a computer generated invoice and does not require any signature.
-    </div>
-
-    <!-- Bottom Color Accent Bar -->
-    <div class="bottom-accent-bar"></div>
-
+  <!-- Bill To Box -->
+  <div class="bill-box">
+    <div class="bill-header">BILL TO</div>
+    <table class="bill-table">
+      <tr>
+        <td class="bill-lbl"><span>👤</span> Name</td>
+        <td class="bill-val">: {{ customer_name }}</td>
+      </tr>
+      <tr>
+        <td class="bill-lbl"><span>🏢</span> Company</td>
+        <td class="bill-val">: {{ company_name }}</td>
+      </tr>
+      <tr>
+        <td class="bill-lbl"><span>✉</span> Email</td>
+        <td class="bill-val">: {{ customer_email }}</td>
+      </tr>
+      <tr>
+        <td class="bill-lbl"><span>📞</span> Mobile</td>
+        <td class="bill-val">: {{ customer_mobile }}</td>
+      </tr>
+    </table>
   </div>
 
-  <script>
-    // Initialize Lucide Icons
-    lucide.createIcons();
-  </script>
+  <!-- Items Table -->
+  <div class="items-container">
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th class="center" style="width: 40px;">#</th>
+          <th>DESCRIPTION</th>
+          <th class="center" style="width: 100px;">CREDITS</th>
+          <th class="right" style="width: 130px;">AMOUNT (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="center">1</td>
+          <td>{{ item_description }}</td>
+          <td class="center">{{ credits }}</td>
+          <td class="right">₹{{ amount }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="total-table">
+      <tr>
+        <td class="total-lbl-td">TOTAL PAID</td>
+        <td class="total-val-td">₹{{ amount }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Footer Help Card -->
+  <table class="footer-card">
+    <tr>
+      <td class="thank-td">
+        <div class="thank-title">
+          Thank you for<br>choosing <span class="blue">Recroot</span><span class="green">Earn</span>.
+        </div>
+      </td>
+      <td class="help-td">
+        <div class="help-head">We're here to help!</div>
+        <div class="help-line"><span>🌐</span> <b>Website</b> : www.recrootearn.com</div>
+        <div class="help-line"><span>✉</span> <b>Email</b> : info@recrootearn.com</div>
+        <div class="help-line"><span>☎</span> <b>Phone</b> : +91 95846 42181</div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Computer Generated Note -->
+  <div class="computer-note">
+    📄 This is a computer generated invoice and does not require any signature.
+  </div>
+
+  <div class="bottom-bar"></div>
+
 </body>
 </html>
