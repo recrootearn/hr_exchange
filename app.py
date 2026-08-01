@@ -30,7 +30,7 @@ from datetime import datetime, timedelta, date
 from sqlalchemy import case
 from flask_mail import Mail, Message
 from flask import render_template
-from xhtml2pdf import pisa
+from weasyprint import HTML, CSS
 from io import BytesIO
 
 IST = ZoneInfo("Asia/Kolkata")
@@ -1901,7 +1901,7 @@ def generate_invoice_pdf(user, purchase, payment_id):
     html = render_template(
         "invoice.html",
 
-        logo_path=os.path.abspath("static/images/invoice_logo.png"),
+        logo_path="static/images/invoice_logo.png",
 
         invoice_no=f"INV-{purchase.created_at.strftime('%Y%m%d')}-{purchase.id:06d}",
 
@@ -1926,9 +1926,11 @@ def generate_invoice_pdf(user, purchase, payment_id):
 
     pdf = BytesIO()
 
-    pisa.CreatePDF(
-        src=html,
-        dest=pdf
+    HTML(
+        string=html,
+        base_url=app.root_path
+    ).write_pdf(
+        target=pdf
     )
 
     invoice_no = f"INV-{purchase.created_at.strftime('%Y%m%d')}-{purchase.id:06d}"
