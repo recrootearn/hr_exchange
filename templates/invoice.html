@@ -1,1386 +1,891 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Invoice</title>
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-<link rel="stylesheet" href="style.css">
-
-</head>
 
 <style>
-
-/*==========================
-      BILL TO
-==========================*/
-
-.bill-card{
-
-    border:2px solid #d6e3ff;
-
-    border-radius:18px;
-
-    overflow:hidden;
-
-    background:#fff;
-
-    margin-bottom:35px;
-
-}
-
-.bill-header{
-
-    width:170px;
-
-    height:58px;
-
-    background:#0b55d9;
-
-    color:#fff;
-
-    font-size:18px;
-
-    font-weight:700;
-
-    display:flex;
-
-    align-items:center;
-
-    padding-left:22px;
-
-    border-radius:0 0 18px 0;
-
-    letter-spacing:.5px;
-
-}
-
-.bill-table{
-
-    margin:0;
-
-}
-
-.bill-table tr{
-
-    height:68px;
-
-}
-
-.bill-table td{
-
-    vertical-align:middle;
-
-    font-size:23px;
-
-    color:#222;
-
-    border-bottom:1px dashed #e9eef8;
-
-}
-
-.bill-table tr:last-child td{
-
-    border-bottom:none;
-
-}
-
-.icon-col{
-
-    width:60px;
-
-    text-align:center;
-
-    color:#0b55d9;
-
-    font-size:24px;
-
-}
-
-.label-col{
-
-    width:180px;
-
-    font-weight:600;
-
-}
-
-.colon-col{
-
-    width:30px;
-
-    font-weight:600;
-
-}
-
-/*==========================
-      ITEMS TABLE
-==========================*/
-
-.items-card{
-
-    border-radius:18px;
-
-    overflow:hidden;
-
-    border:2px solid #d6e3ff;
-
-    background:white;
-
-}
-
-.items-table{
-
-    margin:0;
-
-}
-
-.items-table thead{
-
-    background:#0b55d9;
-
-}
-
-.items-table thead th{
-
-    color:white;
-
-    font-size:20px;
-
-    font-weight:700;
-
-    text-align:center;
-
-    padding:20px;
-
-    border-right:1px solid rgba(255,255,255,.3);
-
-}
-
-.items-table thead th:last-child{
-
-    border-right:none;
-
-}
-
-.items-table tbody td{
-
-    height:95px;
-
-    vertical-align:middle;
-
-    font-size:22px;
-
-    border:1px solid #edf2fb;
-
-}
-
-.items-table tbody td:first-child{
-
-    text-align:center;
-
-}
-
-.total-row td{
-
-    height:95px;
-
-}
-
-.total-text{
-
-    background:white;
-
-    color:#0b55d9;
-
-    font-size:24px;
-
-    font-weight:700;
-
-    padding-right:40px !important;
-
-}
-
-.total-price{
-
-    background:#37c337 !important;
-
-    color:white;
-
-    font-size:48px;
-
-    font-weight:800;
-
-    text-align:center;
-
-    vertical-align:middle;
-
-}
-
-/* Rounded Corners */
-
-.items-table thead th:first-child{
-
-    border-top-left-radius:18px;
-
-}
-
-.items-table thead th:last-child{
-
-    border-top-right-radius:18px;
-
-}
-
-.total-price{
-
-    border-bottom-right-radius:18px;
-
-}
-
-/*==========================
-      THANK YOU
-==========================*/
-
-.thank-card{
-
-    border:2px solid #d8e6ff;
-
-    border-radius:18px;
-
-    padding:35px;
-
-    background:white;
-
-}
-
-.thank-left{
-
-    display:flex;
-
-    align-items:center;
-
-}
-
-.shield-circle{
-
-    width:130px;
-
-    height:130px;
-
-    border-radius:50%;
-
-    background:#eef5ff;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-size:58px;
-
-    color:#0b55d9;
-
-    margin-right:30px;
-
-}
-
-.thank-text{
-
-    font-size:26px;
-
-    font-weight:700;
-
-    line-height:1.4;
-
-}
-
-.blue-text{
-
-    color:#0b55d9;
-
-}
-
-.green-text{
-
-    color:#39c63d;
-
-}
-
-.support-box{
-
-    border-left:2px solid #e5ecfb;
-
-    padding-left:45px;
-
-}
-
-.support-box h3{
-
-    color:#0b55d9;
-
-    font-size:28px;
-
-    font-weight:700;
-
-    margin-bottom:20px;
-
-}
-
-.support-item{
-
-    font-size:20px;
-
-    margin-bottom:18px;
-
-}
-
-.support-item i{
-
-    color:#0b55d9;
-
-    width:30px;
-
-}
-
-.dots{
-
-    display:inline-block;
-
-    width:18px;
-
-    text-align:center;
-
-}
-
-/*==========================
-      FOOTER
-==========================*/
-
-.footer-box{
-
-    border:2px dashed #d6d6d6;
-
-    border-radius:12px;
-
-    text-align:center;
-
-    padding:22px;
-
-    font-size:19px;
-
-    color:#444;
-
-    margin-bottom:40px;
-
-}
-
-.footer-box i{
-
-    color:#0b55d9;
-
-    margin-right:10px;
-
-    font-size:22px;
-
-}
-
-/*==========================
-      BOTTOM DESIGN
-==========================*/
-
-.bottom-design{
-
-    display:flex;
-
-    height:34px;
-
-    margin-top:20px;
-
-}
-
-.blue-strip{
-
-    flex:3;
-
-    background:#0b55d9;
-
-    clip-path:polygon(0 0,100% 0,96% 100%,0 100%);
-
-}
-
-.green-strip{
-
-    flex:1.2;
-
-    background:#39c63d;
-
-    clip-path:polygon(4% 0,100% 0,100% 100%,0 100%);
-
-}
 
 @page{
     size:A4;
     margin:12mm;
 }
 
-.invoice-page{
-    page-break-inside:avoid;
-}
-
-.bill-card,
-.items-card,
-.thank-card,
-.footer-box{
-    page-break-inside:avoid;
-}
-
-/*=========================================
-        GOOGLE FONT
-=========================================*/
-
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
 }
 
 body{
 
-    background:#edf3fb;
+    font-family:Arial,Helvetica,sans-serif;
 
-    padding:40px;
+    color:#333;
 
-}
-
-/*=========================================
-        PAGE
-=========================================*/
-
-.invoice-page{
-
-    max-width:1200px;
-
-    margin:auto;
-
-    background:white;
-
-    border-radius:22px;
-
-    overflow:hidden;
-
-    box-shadow:
-    0 15px 45px rgba(0,0,0,.08);
-
-    padding:45px;
+    font-size:13px;
 
 }
 
-/*=========================================
-        TOP BORDER
-=========================================*/
+.container{
 
-.top-line{
-
-    height:14px;
-
-    background:
-    linear-gradient(90deg,
-    #0b55d9 72%,
-    #39c63d 72%);
-
-    margin:-45px -45px 40px;
+    width:100%;
 
 }
 
-/*=========================================
-            HEADER
-=========================================*/
+table{
 
-.logo-box{
+    width:100%;
 
-    width:110px;
+    border-collapse:collapse;
 
-    height:110px;
+    page-break-inside:avoid;
+
+}
+
+tr{
+
+    page-break-inside:avoid;
+
+}
+
+td{
+
+    vertical-align:top;
+
+}
+
+.header{
+
+    margin-bottom:20px;
+
+    border-bottom:3px solid #0B55D9;
+
+    padding-bottom:18px;
+
+}
+
+.logo{
+
+    width:55px;
+
+    height:55px;
 
     object-fit:contain;
 
 }
 
-.brand-name{
+.company-name{
 
-    font-size:46px;
+    font-size:30px;
 
-    font-weight:800;
+    font-weight:bold;
 
-    margin:0;
+    color:#0B55D9;
 
-    letter-spacing:.5px;
-
-}
-
-.blue{
-
-    color:#0b55d9;
+    line-height:34px;
 
 }
 
-.green{
+.company-name span{
 
-    color:#39c63d;
+    color:#39C63D;
 
 }
 
-.sub-text{
+.tagline{
 
-    margin-top:8px;
+    font-size:13px;
 
     color:#555;
-
-    font-size:18px;
-
-    font-weight:500;
-
-}
-
-.company{
-
-    color:#0b55d9;
-
-    font-weight:700;
-
-}
-
-.invoice-title{
-
-    font-size:62px;
-
-    font-weight:800;
-
-    color:#0b55d9;
-
-    margin-bottom:20px;
-
-    letter-spacing:2px;
-
-}
-
-.paid-badge{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    background:#39c63d;
-
-    color:white;
-
-    padding:12px 28px;
-
-    border-radius:50px;
-
-    font-size:22px;
-
-    font-weight:700;
-
-}
-
-.paid-badge i{
-
-    font-size:24px;
-
-}
-
-/*=========================================
-      COMPANY DETAILS
-=========================================*/
-
-.info-item{
-
-    display:flex;
-
-    align-items:flex-start;
-
-    margin-bottom:18px;
-
-    font-size:20px;
-
-    color:#444;
-
-}
-
-.info-item i{
-
-    width:40px;
-
-    color:#0b55d9;
-
-    font-size:22px;
-
-    margin-top:4px;
-
-}
-
-/*=========================================
-        INVOICE DETAILS
-=========================================*/
-
-.invoice-info{
 
     margin-top:5px;
 
 }
 
-.invoice-info td{
-
-    border:none;
-
-    padding:12px 8px;
-
-    font-size:19px;
-
-}
-
-.invoice-info td:first-child{
-
-    font-weight:600;
-
-    color:#333;
-
-}
-
-.invoice-info i{
-
-    color:#0b55d9;
-
-    width:30px;
-
-}
-
-/*=========================================
-        TABLES
-=========================================*/
-
-.table{
-
-    margin-bottom:0;
-
-}
-
-.table td,
-.table th{
-
-    vertical-align:middle;
-
-}
-
-/*=========================================
-        PRINT
-=========================================*/
-
-@media print{
-
-body{
-
-background:white;
-
-padding:0;
-
-}
-
-.invoice-page{
-
-box-shadow:none;
-
-border-radius:0;
-
-max-width:100%;
-
-width:100%;
-
-padding:30px;
-
-}
-
-}
-
-/*=========================================
-        MOBILE
-=========================================*/
-
-@media(max-width:992px){
-
 .invoice-title{
 
-font-size:42px;
+    font-size:40px;
 
-text-align:left;
+    font-weight:bold;
 
-margin-top:25px;
+    color:#0B55D9;
 
-}
+    text-align:right;
 
-.brand-name{
-
-font-size:34px;
+    letter-spacing:2px;
 
 }
 
-.logo-box{
+.paid{
 
-width:80px;
+    display:inline-block;
 
-height:80px;
+    margin-top:10px;
 
-}
+    background:#39C63D;
 
-.support-box{
+    color:white;
 
-border-left:none;
+    padding:8px 22px;
 
-border-top:2px solid #e6ecfb;
+    font-size:15px;
 
-margin-top:35px;
+    font-weight:bold;
 
-padding-top:35px;
-
-padding-left:0;
+    border-radius:20px;
 
 }
 
-.thank-left{
+.small{
 
-flex-direction:column;
+    font-size:12px;
 
-text-align:center;
-
-}
-
-.shield-circle{
-
-margin-right:0;
-
-margin-bottom:25px;
+    color:#666;
 
 }
 
-.info-item{
+.info-table td{
 
-font-size:17px;
+    padding:5px 0;
 
-}
-
-.bill-table td{
-
-font-size:18px;
+    font-size:13px;
 
 }
 
-.items-table td{
+.left{
 
-font-size:18px;
-
-}
-
-.total-price{
-
-font-size:32px;
+    width:55%;
 
 }
 
+.right{
+
+    width:45%;
+
 }
 
-/*=========================================
-        A4 SIZE
-=========================================*/
+.section-title{
 
-@page{
+    background:#0B55D9;
 
-size:A4;
+    color:white;
 
-margin:10mm;
+    font-weight:bold;
+
+    padding:8px 14px;
+
+    font-size:15px;
+
+}
+
+.card{
+
+    border:1px solid #d7e4ff;
+
+    background:#ffffff;
+
+    padding:12px;
+
+    margin-bottom:16px;
+
+    border-radius:8px;
+
+}
+
+.address{
+
+    line-height:22px;
+
+}
+
+.invoice-details td{
+
+    padding:5px 0;
+
+}
+
+.invoice-details td:first-child{
+
+    width:42%;
+
+    font-weight:bold;
+
+}
+
+.invoice-details td:last-child{
+
+    width:58%;
 
 }
 
 </style>
 
+</head>
+
 <body>
 
-<div class="invoice-page">
+<div class="container">
 
-    <!-- TOP BORDER -->
+<table class="header">
 
-    <div class="top-line"></div>
+<tr>
 
-    <!-- HEADER -->
+<td width="65%">
 
-    <div class="container-fluid">
+<table>
 
-        <div class="row align-items-center">
+<tr>
 
-            <!-- LEFT -->
+<td width="80">
 
-            <div class="col-lg-7">
+<img src="{{ logo_path }}" class="logo">
 
-                <div class="d-flex align-items-center">
+</td>
 
-                    <img src="{{ logo_path }}">
+<td>
 
-                    <div class="ms-4">
+<div class="company-name">
 
-                        <h1 class="brand-name">
+RECROOT<span>EARN</span>
 
-                            <span class="blue">RECROOT</span><span class="green">EARN</span>
+</div>
 
-                        </h1>
+<div class="tagline">
 
-                        <h5 class="sub-text">
+Powered by <b>KR INVESTMENTS</b>
 
-                            A Product of
+</div>
 
-                            <span class="company">
+</td>
 
-                                KR INVESTMENTS
+</tr>
 
-                            </span>
+</table>
 
-                        </h5>
+</td>
 
-                    </div>
+<td width="35%" align="right">
 
-                </div>
+<div class="invoice-title">
 
-            </div>
+INVOICE
 
-            <!-- RIGHT -->
+</div>
 
-            <div class="col-lg-5 text-end">
+<div class="paid">
 
-                <h1 class="invoice-title">
+PAID
 
-                    INVOICE
+</div>
 
-                </h1>
+</td>
 
-                <div class="paid-badge">
+</tr>
 
-                    <i class="fa-solid fa-circle-check"></i>
+</table>
 
-                    PAID
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- DETAILS -->
-
-    <div class="container-fluid mt-5">
-
-        <div class="row">
-
-            <!-- LEFT DETAILS -->
-
-            <div class="col-lg-6">
-
-                <div class="info-item">
-
-                    <i class="fa-solid fa-location-dot"></i>
-
-                    <div>
-
-                        203, New Anjani Nagar<br>
-
-                        Vijay Nagar, Indore (M.P.) - 452010
-
-                    </div>
-
-                </div>
-
-                <div class="info-item">
-
-                    <i class="fa-solid fa-globe"></i>
-
-                    www.recrootearn.com
-
-                </div>
-
-                <div class="info-item">
-
-                    <i class="fa-solid fa-envelope"></i>
-
-                    info@recrootearn.com
-
-                </div>
-
-                <div class="info-item">
-
-                    <i class="fa-solid fa-phone"></i>
-
-                    +91 95846 42181
-
-                </div>
-
-            </div>
-
-            <!-- RIGHT DETAILS -->
-
-            <div class="col-lg-6">
-
-                <table class="table invoice-info">
-
-                    <tr>
-
-                        <td>
-
-                            <i class="fa-solid fa-file-lines"></i>
-
-                            Invoice No.
-
-                        </td>
-
-                        <td>:</td>
-
-                        <td>
-
-                            {{ invoice_no }}
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>
-
-                            <i class="fa-solid fa-calendar"></i>
-
-                            Invoice Date
-
-                        </td>
-
-                        <td>:</td>
-
-                        <td>
-
-                            {{ invoice_date }}
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>
-
-                            <i class="fa-solid fa-credit-card"></i>
-
-                            Payment ID
-
-                        </td>
-
-                        <td>:</td>
-
-                        <td>
-
-                            {{ payment_id }}
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>
-
-                            <i class="fa-solid fa-wallet"></i>
-
-                            Payment Method
-
-                        </td>
-
-                        <td>:</td>
-
-                        <td>
-
-                            Online Payment
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>
-
-                            <i class="fa-solid fa-circle-check"></i>
-
-                            Status
-
-                        </td>
-
-                        <td>:</td>
-
-                        <td>
-
-                            Paid
-
-                        </td>
-
-                    </tr>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- BILL TO STARTS HERE -->
-
-<!-- =========================
-        BILL TO SECTION
+<!-- ==========================
+        COMPANY DETAILS
 ========================== -->
 
-<div class="container-fluid mt-5">
+<table style="margin-bottom:25px;">
 
-    <div class="bill-card">
+<tr>
 
-        <!-- BLUE TITLE -->
+<td class="left">
 
-        <div class="bill-header">
+<div class="card">
 
-            BILL TO
+<div class="address">
 
-        </div>
+<b style="color:#0B55D9;font-size:16px;">
 
-        <!-- CUSTOMER DETAILS -->
+RecrootEarn
 
-        <table class="table bill-table">
+</b>
 
-            <tbody>
+<br><br>
 
-                <tr>
+203, New Anjani Nagar
 
-                    <td class="icon-col">
+<br>
 
-                        <i class="fa-regular fa-user"></i>
+Vijay Nagar
 
-                    </td>
+<br>
 
-                    <td class="label-col">
+Indore (M.P.) - 452010
 
-                        Name
+<br><br>
 
-                    </td>
+<b>Website :</b>
 
-                    <td class="colon-col">
+www.recrootearn.com
 
-                        :
+<br>
 
-                    </td>
+<b>Email :</b>
 
-                    <td>
+info@recrootearn.com
 
-                        {{ customer_name }}
+<br>
 
-                    </td>
+<b>Phone :</b>
 
-                </tr>
-
-                <tr>
-
-                    <td>
-
-                        <i class="fa-regular fa-building"></i>
-
-                    </td>
-
-                    <td>
-
-                        Company
-
-                    </td>
-
-                    <td>
-
-                        :
-
-                    </td>
-
-                    <td>
-
-                        {{ company }}
-
-                    </td>
-
-                </tr>
-
-                <tr>
-
-                    <td>
-
-                        <i class="fa-regular fa-envelope"></i>
-
-                    </td>
-
-                    <td>
-
-                        Email
-
-                    </td>
-
-                    <td>
-
-                        :
-
-                    </td>
-
-                    <td>
-
-                        {{ email }}
-
-                    </td>
-
-                </tr>
-
-                <tr>
-
-                    <td>
-
-                        <i class="fa-solid fa-phone"></i>
-
-                    </td>
-
-                    <td>
-
-                        Mobile
-
-                    </td>
-
-                    <td>
-
-                        :
-
-                    </td>
-
-                    <td>
-
-                        {{ mobile }}
-
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
++91 9584642181
 
 </div>
 
-<!-- =========================
-        ITEMS TABLE START
+</div>
+
+</td>
+
+<td class="right">
+
+<div class="card">
+
+<table class="invoice-details">
+
+<tr>
+
+<td>
+
+Invoice No
+
+</td>
+
+<td>
+
+: {{ invoice_no }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+Invoice Date
+
+</td>
+
+<td>
+
+: {{ invoice_date }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+Payment ID
+
+</td>
+
+<td>
+
+: {{ payment_id }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+Payment Method
+
+</td>
+
+<td>
+
+: Online Payment
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+Status
+
+</td>
+
+<td style="color:#28a745;font-weight:bold;">
+
+: PAID
+
+</td>
+
+</tr>
+
+</table>
+
+</div>
+
+</td>
+
+</tr>
+
+</table>
+
+<!-- ==========================
+        BILL TO
 ========================== -->
 
-<div class="container-fluid">
+<div class="section-title">
 
-    <div class="items-card">
-
-        <table class="table items-table">
-
-            <thead>
-
-                <tr>
-
-                    <th width="10%">#</th>
-
-                    <th width="40%">DESCRIPTION</th>
-
-                    <th width="20%">CREDITS</th>
-
-                    <th width="30%">AMOUNT (₹)</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                <tr>
-
-                    <td>1</td>
-
-                    <td>{{ package }}</td>
-
-                    <td class="text-center">{{ credits }}</td>
-
-                    <td class="text-center">₹{{ amount }}</td>
-
-                </tr>
-
-                <tr class="total-row">
-
-                    <td colspan="3" class="text-end total-text">
-
-                        TOTAL PAID
-
-                    </td>
-
-                    <td class="total-price">
-
-                        ₹{{ amount }}
-
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
+BILL TO
 
 </div>
 
-<!-- =========================
-      THANK YOU SECTION
+<div class="card">
+
+<table class="info-table">
+
+<tr>
+
+<td width="25%">
+
+<b>Name</b>
+
+</td>
+
+<td>
+
+{{ customer_name }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<b>Company</b>
+
+</td>
+
+<td>
+
+{{ company }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<b>Email</b>
+
+</td>
+
+<td>
+
+{{ email }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+<b>Mobile</b>
+
+</td>
+
+<td>
+
+{{ mobile }}
+
+</td>
+
+</tr>
+
+</table>
+
+</div>
+
+<!-- ==========================
+        ITEMS TABLE
 ========================== -->
 
-<div class="container-fluid mt-5">
+<table
+border="1"
+cellspacing="0"
+cellpadding="10"
+style="
+margin-top:20px;
+border:1px solid #d7e4ff;
+">
 
-    <div class="thank-card">
+<thead>
 
-        <div class="row align-items-center">
+<tr
+style="
+background:#0B55D9;
+color:white;
+">
 
-            <!-- LEFT -->
+<th
+width="8%"
+align="center">
 
-            <div class="col-lg-6">
+#
 
-                <div class="thank-left">
+</th>
 
-                    <div class="shield-circle">
+<th>
 
-                        <i class="fa-solid fa-shield-halved"></i>
+DESCRIPTION
 
-                    </div>
+</th>
 
-                    <div class="thank-text">
+<th
+width="20%"
+align="center">
 
-                        Thank you for
+CREDITS
 
-                        <br>
+</th>
 
-                        choosing
+<th
+width="22%"
+align="center">
 
-                        <span class="blue-text">
+AMOUNT
 
-                            Recroot
+</th>
 
-                        </span><span class="green-text">
+</tr>
 
-                            Earn.
+</thead>
 
-                        </span>
+<tbody>
 
-                    </div>
+<tr>
 
-                </div>
+<td align="center">
 
-            </div>
+1
 
-            <!-- RIGHT -->
+</td>
 
-            <div class="col-lg-6 support-box">
+<td>
 
-                <h3>
+{{ package }}
 
-                    We're here to help!
+</td>
 
-                </h3>
+<td align="center">
 
-                <div class="support-item">
+{{ credits }}
 
-                    <i class="fa-solid fa-globe"></i>
+</td>
 
-                    Website
+<td align="center">
 
-                    <span class="dots">:</span>
+₹{{ amount }}
 
-                    www.recrootearn.com
+</td>
 
-                </div>
+</tr>
 
-                <div class="support-item">
+<!-- ==========================
+        TOTAL ROW
+========================== -->
 
-                    <i class="fa-solid fa-envelope"></i>
+<tr>
 
-                    Email
+<td
+colspan="3"
+align="right"
+style="
+font-size:16px;
+font-weight:bold;
+background:#f7fbff;
+padding:14px;
+">
 
-                    <span class="dots">:</span>
+TOTAL PAID
 
-                    info@recrootearn.com
+</td>
 
-                </div>
+<td
+align="center"
+style="
+background:#39C63D;
+color:white;
+font-size:22px;
+font-weight:bold;
+">
 
-                <div class="support-item">
+₹{{ amount }}
 
-                    <i class="fa-solid fa-phone"></i>
+</td>
 
-                    Phone
+</tr>
 
-                    <span class="dots">:</span>
+</tbody>
 
-                    +91 95846 42181
+</table>
 
-                </div>
+<br><br>
 
-            </div>
+<!-- ==========================
+        THANK YOU
+========================== -->
 
-        </div>
+<table
+style="
+border:1px solid #d7e4ff;
+margin-top:10px;
+">
 
-    </div>
+<tr>
+
+<td
+width="55%"
+style="
+padding:20px;
+">
+
+<div
+style="
+font-size:24px;
+font-weight:bold;
+color:#0B55D9;
+margin-bottom:10px;
+">
+
+Thank You!
 
 </div>
 
-<!-- FOOTER -->
+<div
+style="
+font-size:14px;
+line-height:24px;
+">
 
-<div class="container-fluid mt-5">
+Thank you for choosing
 
-    <div class="footer-box">
+<b>
 
-        <i class="fa-regular fa-file-lines"></i>
+<span style="color:#0B55D9;">
 
-        This is a computer generated invoice and does not require any signature.
+Recroot
 
-    </div>
+</span>
+
+<span style="color:#39C63D;">
+
+Earn
+
+</span>
+
+</b>
+
+for your recruitment needs.
+
+<br><br>
+
+We appreciate your trust in our platform.
+
+Your payment has been received successfully and your purchased credits have already been added to your account.
+
+We look forward to helping you hire the right talent.
 
 </div>
 
-<!-- BOTTOM DESIGN -->
+</td>
 
-<div class="bottom-design">
+<td
+width="45%"
+style="
+padding:20px;
+border-left:1px solid #d7e4ff;
+">
 
-    <div class="blue-strip"></div>
+<div
+style="
+font-size:18px;
+font-weight:bold;
+color:#0B55D9;
+margin-bottom:15px;
+">
 
-    <div class="green-strip"></div>
+Customer Support
 
 </div>
+
+<table
+style="
+font-size:13px;
+">
+
+<tr>
+
+<td
+width="35%"
+style="padding:6px 0;">
+
+Website
+
+</td>
+
+<td>
+
+www.recrootearn.com
+
+</td>
+
+</tr>
+
+<tr>
+
+<td
+style="padding:6px 0;">
+
+Email
+
+</td>
+
+<td>
+
+info@recrootearn.com
+
+</td>
+
+</tr>
+
+<tr>
+
+<td
+style="padding:6px 0;">
+
+Phone
+
+</td>
+
+<td>
+
++91 9584642181
+
+</td>
+
+</tr>
+
+<tr>
+
+<td
+style="padding:6px 0;">
+
+Address
+
+</td>
+
+<td>
+
+203, New Anjani Nagar,
+Vijay Nagar,
+Indore (M.P.) - 452010
+
+</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+<br><br>
+
+<!-- ==========================
+        FOOTER
+========================== -->
+
+<table
+style="
+width:100%;
+border-top:2px solid #0B55D9;
+margin-top:15px;
+padding-top:15px;
+">
+
+<tr>
+
+<td
+align="center"
+style="
+font-size:11px;
+line-height:18px;
+color:#666;
+">
+
+<b>
+
+This is a computer generated invoice and does not require any signature.
+
+</b>
+
+<br><br>
+
+Powered by <b>KR INVESTMENTS</b>
+
+|
+
+RecrootEarn Hiring Platform
+
+<br>
+
+203, New Anjani Nagar,
+Vijay Nagar,
+Indore (M.P.) - 452010
+
+<br>
+
+Website :
+<b>www.recrootearn.com</b>
+
+&nbsp;&nbsp;&nbsp;
+
+Email :
+<b>info@recrootearn.com</b>
+
+&nbsp;&nbsp;&nbsp;
+
+Phone :
+<b>+91 9584642181</b>
+
+<br><br>
+
+© {{ invoice_date[-4:] if invoice_date else "2026" }}
+RecrootEarn. All Rights Reserved.
+
+</td>
+
+</tr>
+
+</table>
 
 </div>
 
