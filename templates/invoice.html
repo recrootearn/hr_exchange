@@ -820,8 +820,7 @@ margin:10mm;
 
                 <div class="d-flex align-items-center">
 
-                    <img src="logo.png"
-                    class="logo-box">
+                    <img src="{{ logo_path }}" class="logo-box">
 
                     <div class="ms-4">
 
@@ -943,7 +942,7 @@ margin:10mm;
 
                         <td>
 
-                            INV-20260731-000002
+                            {{ invoice_no }}
 
                         </td>
 
@@ -963,7 +962,7 @@ margin:10mm;
 
                         <td>
 
-                            31 Jul 2026
+                            {{ invoice_date }}
 
                         </td>
 
@@ -983,7 +982,7 @@ margin:10mm;
 
                         <td>
 
-                            pay_TKCtKFh0DZNsbD
+                            {{ payment_id }}
 
                         </td>
 
@@ -1083,7 +1082,7 @@ margin:10mm;
 
                     <td>
 
-                        Harshit Soni
+                        {{ customer_name }}
 
                     </td>
 
@@ -1111,7 +1110,7 @@ margin:10mm;
 
                     <td>
 
-                        RECROOTEARN
+                        {{ company }}
 
                     </td>
 
@@ -1139,7 +1138,7 @@ margin:10mm;
 
                     <td>
 
-                        harshitsoni264@gmail.com
+                        {{ email }}
 
                     </td>
 
@@ -1167,7 +1166,7 @@ margin:10mm;
 
                     <td>
 
-                        6261566334
+                        {{ mobile }}
 
                     </td>
 
@@ -1213,11 +1212,11 @@ margin:10mm;
 
                     <td>1</td>
 
-                    <td>1 Credit Pack</td>
+                    <td>{{ package }}</td>
 
-                    <td class="text-center">1</td>
+                    <td class="text-center">{{ credits }}</td>
 
-                    <td class="text-center">₹20.00</td>
+                    <td class="text-center">₹{{ amount }}</td>
 
                 </tr>
 
@@ -1231,7 +1230,7 @@ margin:10mm;
 
                     <td class="total-price">
 
-                        ₹20.00
+                        ₹{{ amount }}
 
                     </td>
 
