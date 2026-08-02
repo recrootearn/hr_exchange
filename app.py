@@ -1702,14 +1702,9 @@ def send_notification(
         user = None
 
     # Automatically use RecrootEarn logo for system notifications
-    if not image and type in [
-        "general",
-        "credit",
-        "automation",
-        "daily_reward",
-        "announcement"
-    ]:
-        image = "images/recrootearn_logo.png"   # Place this file in static/uploads/
+    # Use app logo whenever no image is provided
+    if not image:
+        image = "../images/recrootearn_logo.png"   # Place this file in static/uploads/
 
     db.session.add(
         Notification(
