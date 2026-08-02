@@ -78,6 +78,11 @@
                             <source src="/static/uploads/{{ img }}" type="video/mp4">
                         </video>
                         <button class="mute-btn" onclick="toggleMute(event,this)">🔇</button>
+                        {% if job.hr_id == current_user.id %}
+                        <a href="/boost-post/{{ job.id }}" class="video-boost-btn">
+                        🚀 Boost Post
+                        </a>
+                        {% endif %}
                     </div>
                     {% else %}
                     <div class="feed-media post-media">
@@ -90,21 +95,6 @@
             <div class="swiper-pagination"></div>
         </div>
         {% endif %}
-
-        {% if job.hr_id == current_user.id %}
-<div class="owner-actions-bar">
-
-    <a href="/boost-post/{{ job.id }}" class="insta-boost-btn">
-        <i class="fas fa-bullhorn"></i>
-        {% if active_boost %}
-            Manage Boost
-        {% else %}
-            Boost Post
-        {% endif %}
-    </a>
-
-</div>
-{% endif %}
 
         <!-- BUTTONS -->
         <div class="feed-buttons">
@@ -859,41 +849,28 @@ animation:commentIn .25s ease;
 
 }
 
-.owner-actions-bar{
-    display:flex;
-    justify-content:flex-end;
-    align-items:center;
-    padding:10px 16px 8px;
-}
+.video-boost-btn{
+    position:absolute;
+    left:12px;
+    bottom:12px;
 
-.insta-boost-btn{
-    display:flex;
-    align-items:center;
-    gap:6px;
-
-    padding:8px 18px;
-
-    background:#ffffff;
-    color:#1877F2;
-
-    border:1.5px solid #1877F2;
-    border-radius:10px;
-
-    font-size:14px;
-    font-weight:600;
-
-    text-decoration:none;
-    transition:.2s ease;
-}
-
-.insta-boost-btn:hover{
-    background:#1877F2;
+    background:rgba(37,99,235,.95);
     color:#fff;
     text-decoration:none;
+
+    padding:8px 14px;
+    border-radius:999px;
+
+    font-size:13px;
+    font-weight:600;
+
+    z-index:100;
+    box-shadow:0 4px 12px rgba(0,0,0,.25);
 }
 
-.insta-boost-btn i{
-    font-size:13px;
+.video-boost-btn:hover{
+    color:#fff;
+    text-decoration:none;
 }
 
 @keyframes pop {
