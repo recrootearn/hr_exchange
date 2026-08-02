@@ -1686,7 +1686,6 @@ def send_notification(
 ):
 
     try:
-
         if user_type == "hr":
             user = User.query.get(user_id)
         else:
@@ -1699,40 +1698,40 @@ def send_notification(
         )
 
     except Exception as e:
-
         print("Variable replacement error:", e)
+        user = None
+
+    # Automatically use RecrootEarn logo for system notifications
+    if not image and type in [
+        "general",
+        "credit",
+        "automation",
+        "daily_reward",
+        "announcement"
+    ]:
+        image = "images/recrootearn_logo.png"   # Place this file in static/uploads/
 
     db.session.add(
-
         Notification(
-
             user_id=user_id,
             user_type=user_type,
             message=message,
             link=link,
             image=image,
             type=type
-
         )
-
     )
 
+    db.session.commit()
+
     try:
-
         if user and user.fcm_token:
-
             send_push_notification(
-
                 user.fcm_token,
-
                 "",
-
                 message
-
             )
-
     except Exception as e:
-
         print("Push notification error:", e)
 
 def replace_notification_variables(message, user=None, extra=None):
