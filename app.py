@@ -1482,6 +1482,92 @@ class CommentReport(db.Model):
         default=india_time
     )
 
+class ProductCategory(db.Model):
+    __tablename__ = "product_categories"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    name = db.Column(db.String(100), nullable=False, unique=True)
+
+    image = db.Column(db.String(255))
+
+    is_active = db.Column(db.Boolean, default=True)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+class Product(db.Model):
+    __tablename__ = "products"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    seller_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    category_id = db.Column(
+        db.Integer,
+        db.ForeignKey("product_categories.id")
+    )
+
+    name = db.Column(db.String(200), nullable=False)
+
+    slug = db.Column(db.String(255), unique=True)
+
+    description = db.Column(db.Text)
+
+    price = db.Column(db.Float, nullable=False)
+
+    sale_price = db.Column(db.Float)
+
+    stock = db.Column(db.Integer, default=0)
+
+    status = db.Column(
+        db.String(20),
+        default="active"
+    )
+
+    is_promoted = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    promotion_end = db.Column(db.DateTime)
+
+    views = db.Column(db.Integer, default=0)
+
+    sold = db.Column(db.Integer, default=0)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+class ProductImage(db.Model):
+    __tablename__ = "product_images"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id"),
+        nullable=False
+    )
+
+    image = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    sort_order = db.Column(
+        db.Integer,
+        default=0
+    )
+
 # =========================
 # LOGIN MANAGER
 # =========================
