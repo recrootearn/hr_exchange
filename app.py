@@ -176,10 +176,59 @@ class User(UserMixin, db.Model):
     app_token = db.Column(db.String(128), unique=True, nullable=True)
     last_streak_reset = db.Column(db.Date, nullable=True)
     welcome_email_sent = db.Column(db.Boolean, default=False)
+    is_shop_promoted = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    is_verified_seller = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    is_shop_active = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    verification_status = db.Column(
+        db.String(30),
+        default="Pending"
+    )
+
+    verification_date = db.Column(
+        db.DateTime
+    )
+
+    verification_remarks = db.Column(
+        db.Text
+    )
+
+    shop_promotion_expires_at = db.Column(
+        db.DateTime
+    )
+
+    shop_promotion_priority = db.Column(
+        db.Integer,
+        default=0
+    )
     boost_posts = db.relationship(
         "BoostPost",
         backref="hr",
         lazy=True
+    )
+
+    seller_coupons = db.relationship(
+        "Coupon",
+        foreign_keys="Coupon.seller_id",
+        lazy=True
+    )
+
+    wishlist = db.relationship(
+        "Wishlist",
+        backref="user",
+        lazy=True,
+        cascade="all, delete-orphan"
     )
 
     account_holder_name = db.Column(db.String(200))
@@ -209,6 +258,13 @@ class User(UserMixin, db.Model):
 
     about_company = db.Column(db.Text)
 
+    product_reviews = db.relationship(
+        "ProductReview",
+        foreign_keys="ProductReview.customer_id",
+        backref="customer",
+        lazy=True
+    )
+
     company_logo = db.Column(db.String(300))
 
     company_city = db.Column(db.String(100))
@@ -234,6 +290,53 @@ class User(UserMixin, db.Model):
 
     referral_earnings = db.Column(db.Float, default=0)
 
+    pending_marketplace_balance = db.Column(db.Float, default=0)
+
+    marketplace_earnings = db.Column(db.Float, default=0)
+
+    marketplace_withdrawn = db.Column(db.Float, default=0)
+
+    orders = db.relationship(
+        "Order",
+        foreign_keys=[Order.user_id],
+        backref="customer",
+        lazy=True
+    )
+
+    seller_orders = db.relationship(
+        "Order",
+        foreign_keys=[Order.seller_id],
+        backref="seller",
+        lazy=True
+    )
+
+    shipping_addresses = db.relationship(
+        "ShippingAddress",
+        backref="user",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+    reviews = db.relationship(
+        "ProductReview",
+        backref="customer",
+        lazy=True
+    )
+
+    products = db.relationship(
+        "Product",
+        backref="seller",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+    cart = db.relationship(
+        "Cart",
+        foreign_keys=[Cart.user_id],
+        backref="customer",
+        lazy=True
+    )
+
     profile_completion = db.Column(
         db.Integer,
         default=0
@@ -248,10 +351,85 @@ class User(UserMixin, db.Model):
         default=0
     )
 
+    pickup_address = db.relationship(
+        "SellerPickupAddress",
+        backref="seller",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+
     referral_purchase_reward_given = db.Column(
        db.Boolean,
        default=False
 )
+
+class SellerVerification(db.Model):
+
+    __tablename__ = "seller_verification"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    seller_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    gst_number = db.Column(db.String(30))
+
+    pan_number = db.Column(db.String(20))
+
+    aadhaar_number = db.Column(db.String(20))
+
+    business_name = db.Column(db.String(200))
+
+    gst_certificate = db.Column(db.String(255))
+
+    pan_image = db.Column(db.String(255))
+
+    aadhaar_front = db.Column(db.String(255))
+
+    aadhaar_back = db.Column(db.String(255))
+
+    status = db.Column(
+        db.String(20),
+        default="Pending"
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+class ShopFollower(db.Model):
+    __tablename__ = "shop_followers"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    seller_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    follower_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "seller_id",
+            "follower_id",
+            name="unique_shop_follow"
+        ),
+    )
 
 class CandidateUser(UserMixin, db.Model):
 
@@ -786,6 +964,78 @@ class BusinessSettings(db.Model):
     hr_to_candidate_reward = db.Column(db.Integer, default=25)
     candidate_to_candidate_reward = db.Column(db.Integer, default=25)
 
+    product_promotion_price = db.Column(
+        db.Integer,
+        default=100
+    )
+
+    shop_promotion_price = db.Column(
+        db.Integer,
+        default=500
+    )
+
+    # Marketplace
+
+    marketplace_enabled = db.Column(db.Boolean, default=True)
+
+    marketplace_commission = db.Column(db.Float, default=10)
+
+    seller_payment_hold_days = db.Column(db.Integer, default=7)
+
+    minimum_order_amount = db.Column(db.Float, default=0)
+
+    maximum_order_amount = db.Column(db.Float, default=100000)
+
+    # Shipping
+
+    free_shipping_amount = db.Column(db.Float, default=999)
+
+    shipping_tax_percent = db.Column(db.Float, default=0)
+
+    cod_enabled = db.Column(db.Boolean, default=True)
+
+    # Returns
+
+    return_window_days = db.Column(db.Integer, default=7)
+
+    exchange_window_days = db.Column(db.Integer, default=7)
+
+    # Wallet
+
+    minimum_withdrawal = db.Column(db.Float, default=500)
+
+    maximum_daily_withdrawal = db.Column(db.Float, default=50000)
+
+    # Promotions
+
+    product_promotion_price = db.Column(db.Integer, default=100)
+
+    shop_promotion_price = db.Column(db.Integer, default=500)
+
+    homepage_banner_price = db.Column(db.Integer, default=1000)
+
+    promotion_duration_days = db.Column(db.Integer, default=7)
+
+    # Search
+
+    maximum_products_per_page = db.Column(db.Integer, default=20)
+
+    enable_related_products = db.Column(db.Boolean, default=True)
+
+    # Maintenance
+
+    marketplace_maintenance = db.Column(db.Boolean, default=False)
+
+    homepage_banner_price = db.Column(
+        db.Integer,
+        default=1000
+    )
+
+    promotion_duration_days = db.Column(
+        db.Integer,
+        default=7
+    )
+
     daily_candidate_upload_limit = db.Column(
         db.Integer,
         default=100
@@ -909,6 +1159,31 @@ class BusinessSettings(db.Model):
 
     boost_credits_per_day = db.Column(db.Integer, default=5)
 
+    shiprocket_email = db.Column(db.String(120))
+    shiprocket_password = db.Column(db.String(255))
+
+    shiprocket_pickup_location = db.Column(db.String(100))
+
+    marketplace_commission = db.Column(
+        db.Float,
+        default=10
+    )
+
+    seller_payment_hold_days = db.Column(
+        db.Integer,
+        default=7
+    )
+
+    platform_commission = db.Column(
+        db.Float,
+        default=10
+    )
+
+    seller_payment_hold_days = db.Column(
+        db.Integer,
+        default=7
+    )
+
 class BoostCity(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -919,6 +1194,252 @@ class BoostCity(db.Model):
     )
 
     city = db.Column(db.String(100))
+
+class MarketplaceFee(db.Model):
+
+    category_id
+
+    commission_percent
+
+    shipping_fee
+
+    return_fee
+
+    cod_fee
+
+    promotion_discount
+
+class HomepageBanner(db.Model):
+    __tablename__ = "homepage_banners"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(200))
+
+    subtitle = db.Column(db.String(255))
+
+    image = db.Column(db.String(255))
+
+    button_text = db.Column(db.String(50))
+
+    button_link = db.Column(db.String(255))
+
+    display_order = db.Column(
+        db.Integer,
+        default=1
+    )
+
+    is_active = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+class HomepageSection(db.Model):
+
+    __tablename__="homepage_sections"
+
+    id=db.Column(db.Integer,primary_key=True)
+
+    section_name=db.Column(db.String(100))
+
+    title=db.Column(db.String(200))
+
+    is_enabled=db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    display_order=db.Column(
+        db.Integer,
+        default=1
+    )
+
+class CategoryBanner(db.Model):
+
+    id=db.Column(db.Integer,primary_key=True)
+
+    category_id=db.Column(
+
+        db.Integer,
+
+        db.ForeignKey("categories.id")
+
+    )
+
+    image=db.Column(db.String(255))
+
+    active=db.Column(
+
+        db.Boolean,
+
+        default=True
+
+    )
+
+    icon = db.Column(db.String(255))
+
+    banner_image = db.Column(db.String(255))
+
+    mobile_banner = db.Column(db.String(255))
+
+    seo_title = db.Column(db.String(255))
+
+    seo_description = db.Column(db.Text)
+
+    display_order = db.Column(db.Integer, default=0)
+
+    show_on_homepage = db.Column(db.Boolean, default=False)
+
+    is_trending = db.Column(db.Boolean, default=False)
+
+class Coupon(db.Model):
+
+    __tablename__ = "coupons"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    code = db.Column(db.String(50), unique=True)
+
+    title = db.Column(db.String(150))
+
+    description = db.Column(db.Text)
+
+    discount_type = db.Column(db.String(20))
+
+    discount_value = db.Column(db.Float)
+
+    minimum_order = db.Column(db.Float, default=0)
+
+    maximum_discount = db.Column(db.Float)
+
+    usage_limit = db.Column(db.Integer)
+
+    used_count = db.Column(db.Integer, default=0)
+
+    start_date = db.Column(db.DateTime)
+
+    expiry_date = db.Column(db.DateTime)
+
+    active = db.Column(db.Boolean, default=True)
+
+    seller_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+class CMSPage(db.Model):
+
+    __tablename__ = "cms_pages"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(200))
+
+    slug = db.Column(
+        db.String(100),
+        unique=True
+    )
+
+    content = db.Column(db.Text)
+
+    meta_title = db.Column(db.String(255))
+
+    meta_description = db.Column(db.Text)
+
+    is_published = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    updated_at = db.Column(
+        db.DateTime,
+        default=india_time,
+        onupdate=india_time
+    )
+
+class SocialLink(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    platform = db.Column(db.String(50))
+
+    url = db.Column(db.String(255))
+
+    icon = db.Column(db.String(100))
+
+    active = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+class SEOSettings(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    site_title = db.Column(db.String(255))
+
+    meta_description = db.Column(db.Text)
+
+    meta_keywords = db.Column(db.Text)
+
+    favicon = db.Column(db.String(255))
+
+    logo = db.Column(db.String(255))
+
+    og_image = db.Column(db.String(255))
+
+class ContactSettings(db.Model):
+
+    __tablename__ = "contact_settings"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    company_name = db.Column(db.String(255))
+
+    email = db.Column(db.String(255))
+
+    support_email = db.Column(db.String(255))
+
+    phone = db.Column(db.String(50))
+
+    whatsapp = db.Column(db.String(50))
+
+    address = db.Column(db.Text)
+
+    business_hours = db.Column(db.String(255))
+
+    google_map = db.Column(db.Text)
+
+class Brand(db.Model):
+
+    __tablename__="brands"
+
+    id=db.Column(db.Integer,primary_key=True)
+
+    name=db.Column(db.String(120))
+
+    logo=db.Column(db.String(255))
+
+    active=db.Column(db.Boolean,default=True)
+
+    created_at=db.Column(
+
+        db.DateTime,
+
+        default=india_time
+
+    )
 
 class BoostPost(db.Model):
 
@@ -963,6 +1484,65 @@ class BoostPost(db.Model):
     days_completed = db.Column(db.Integer, default=0)
 
     last_credit_deduction = db.Column(db.Date)
+
+class ShopPromotion(db.Model):
+    __tablename__ = "shop_promotions"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    seller_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    credits_used = db.Column(db.Integer)
+
+    amount = db.Column(db.Float)
+
+    start_date = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+    end_date = db.Column(db.DateTime)
+
+    status = db.Column(
+        db.String(20),
+        default="Active"
+    )
+
+class ProductPromotion(db.Model):
+
+    __tablename__ = "product_promotions"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id")
+    )
+
+    seller_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id")
+    )
+
+    credits_used = db.Column(db.Integer)
+
+    amount = db.Column(db.Float)
+
+    start_date = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+    end_date = db.Column(db.DateTime)
+
+    status = db.Column(
+        db.String(20),
+        default="Active"
+    )
 
 class BroadcastNotification(db.Model):
 
@@ -1163,6 +1743,75 @@ class CandidateReview(db.Model):
     review = db.Column(db.Text)
 
     created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+class ProductReport(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id")
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id")
+    )
+
+    reason = db.Column(db.String(200))
+
+    description = db.Column(db.Text)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+class ProductAnalytics(db.Model):
+    __tablename__ = "product_analytics"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id"),
+        nullable=False
+    )
+
+    total_views = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    unique_views = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    wishlist_count = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    cart_count = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    purchase_count = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    revenue = db.Column(
+        db.Float,
+        default=0
+    )
+
+    last_updated = db.Column(
         db.DateTime,
         default=india_time
     )
@@ -1371,6 +2020,16 @@ class Withdrawal(db.Model):
         default=india_time
     )
 
+    withdrawal_type = db.Column(
+        db.String(30),
+        default="marketplace"
+    )
+
+    order_id = db.Column(
+        db.Integer,
+        nullable=True
+    )
+
     user = db.relationship(
         "User",
         backref=db.backref(
@@ -1493,6 +2152,12 @@ class ProductCategory(db.Model):
 
     is_active = db.Column(db.Boolean, default=True)
 
+    coupons = db.relationship(
+        "Coupon",
+        backref="category",
+        lazy=True
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
@@ -1515,6 +2180,67 @@ class Product(db.Model):
     )
 
     name = db.Column(db.String(200), nullable=False)
+
+    is_promoted = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    is_active = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    promotion_expires_at = db.Column(
+        db.DateTime
+    )
+
+    promotion_type = db.Column(
+        db.String(30)
+    )
+
+    promotion_priority = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    promotion_amount = db.Column(
+        db.Float,
+        default=0
+    )
+
+    # Analytics
+    total_views = db.Column(db.Integer, default=0)
+
+    unique_views = db.Column(db.Integer, default=0)
+
+    wishlist_count = db.Column(db.Integer, default=0)
+
+    cart_count = db.Column(db.Integer, default=0)
+
+    purchase_count = db.Column(db.Integer, default=0)
+
+    revenue = db.Column(db.Float, default=0)
+
+    conversion_rate = db.Column(db.Float, default=0)
+
+    last_viewed_at = db.Column(db.DateTime)
+
+    last_purchased_at = db.Column(db.DateTime)
+
+    analytics = db.relationship(
+        "ProductAnalytics",
+        backref="product",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+
+    wishlist_users = db.relationship(
+        "Wishlist",
+        backref="product",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
 
     slug = db.Column(db.String(255), unique=True)
 
@@ -1542,10 +2268,118 @@ class Product(db.Model):
 
     sold = db.Column(db.Integer, default=0)
 
+    order_items = db.relationship(
+        "OrderItem",
+        backref="product",
+        lazy=True
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
     )
+
+    images = db.relationship(
+        "ProductImage",
+        backref="product",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+    category = db.relationship(
+        "ProductCategory",
+        backref="products",
+        lazy=True
+    )
+
+    average_rating = db.Column(
+        db.Float,
+        default=0
+    )
+
+    total_reviews = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    cart_items = db.relationship(
+        "CartItem",
+        backref="product",
+        lazy=True
+    )
+
+    variants = db.relationship(
+        "ProductVariant",
+        backref="product",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+    reviews = db.relationship(
+        "ProductReview",
+        backref="product",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+    cart_items = db.relationship(
+        "CartItem",
+        backref="product",
+        lazy=True
+    )
+
+    average_rating = db.Column(
+        db.Float,
+        default=0
+    )
+
+    total_reviews = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    sold = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    views = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    product_type = db.Column(
+        db.String(20),
+        default="simple"
+    )
+
+    badge = db.Column(
+        db.String(50)
+    )
+
+    average_rating = db.Column(
+        db.Float,
+        default=0
+    )
+
+    total_reviews = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    reviews = db.relationship(
+        "ProductReview",
+        backref="product",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+    weight = db.Column(db.Float)        # in kg
+    length = db.Column(db.Float)        # cm
+    width = db.Column(db.Float)         # cm
+    height = db.Column(db.Float)        # cm
+    hsn_code = db.Column(db.String(20))
+    gst_percentage = db.Column(db.Float, default=0)
 
 class ProductImage(db.Model):
     __tablename__ = "product_images"
@@ -1566,6 +2400,1018 @@ class ProductImage(db.Model):
     sort_order = db.Column(
         db.Integer,
         default=0
+    )
+
+class ProductReview(db.Model):
+    __tablename__ = "product_reviews"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id"),
+        nullable=False
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    rating = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
+    review = db.Column(
+        db.Text
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+class Cart(db.Model):
+    __tablename__ = "cart"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    seller_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    items = db.relationship(
+        "CartItem",
+        backref="cart",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+class CartItem(db.Model):
+    __tablename__ = "cart_items"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    cart_id = db.Column(
+        db.Integer,
+        db.ForeignKey("cart.id"),
+        nullable=False
+    )
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id"),
+        nullable=False
+    )
+
+    variant_option_id = db.Column(
+        db.Integer,
+        db.ForeignKey("product_variant_options.id")
+    )
+
+    quantity = db.Column(
+        db.Integer,
+        default=1
+    )
+
+    price = db.Column(
+        db.Float,
+        nullable=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    variant_option = db.relationship(
+        "ProductVariantOption",
+        backref="cart_items"
+    )
+
+class ProductVariant(db.Model):
+    __tablename__ = "product_variants"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id"),
+        nullable=False
+    )
+
+    name = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    options = db.relationship(
+        "ProductVariantOption",
+        backref="variant",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+class ProductVariantOption(db.Model):
+    __tablename__ = "product_variant_options"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    variant_id = db.Column(
+        db.Integer,
+        db.ForeignKey("product_variants.id"),
+        nullable=False
+    )
+
+    value = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    extra_price = db.Column(
+        db.Float,
+        default=0
+    )
+
+    stock = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    sku = db.Column(
+        db.String(100)
+    )
+
+    cart_items = db.relationship(
+        "CartItem",
+        backref="variant",
+        lazy=True
+    )
+
+    order_items = db.relationship(
+        "OrderItem",
+        backref="variant_option",
+        lazy=True
+    )
+
+class ShippingAddress(db.Model):
+    __tablename__ = "shipping_addresses"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    full_name = db.Column(
+        db.String(120),
+        nullable=False
+    )
+
+    mobile = db.Column(
+        db.String(20),
+        nullable=False
+    )
+
+    alternate_mobile = db.Column(
+        db.String(20)
+    )
+
+    address_line1 = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    address_line2 = db.Column(
+        db.String(255)
+    )
+
+    landmark = db.Column(
+        db.String(255)
+    )
+
+    city = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    state = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    pincode = db.Column(
+        db.String(10),
+        nullable=False
+    )
+
+    country = db.Column(
+        db.String(50),
+        default="India"
+    )
+
+    is_default = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    orders = db.relationship(
+        "Order",
+        backref="shipping_address",
+        lazy=True
+    )
+
+class OrderStatusHistory(db.Model):
+    __tablename__ = "order_status_history"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    order_id = db.Column(
+        db.Integer,
+        db.ForeignKey("orders.id"),
+        nullable=False
+    )
+
+    status = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    remarks = db.Column(db.Text)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+class OrderItem(db.Model):
+    __tablename__ = "order_items"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    order_id = db.Column(
+        db.Integer,
+        db.ForeignKey("orders.id"),
+        nullable=False
+    )
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id"),
+        nullable=False
+    )
+
+    variant_option_id = db.Column(
+        db.Integer,
+        db.ForeignKey("product_variant_options.id")
+    )
+
+    quantity = db.Column(
+        db.Integer,
+        default=1
+    )
+
+    price = db.Column(
+        db.Float,
+        nullable=False
+    )
+
+    total = db.Column(
+        db.Float,
+        nullable=False
+    )
+
+    product_name = db.Column(
+        db.String(255)
+    )
+
+    product_image = db.Column(
+        db.String(255)
+    )
+
+    variant_name = db.Column(
+        db.String(100)
+    )
+
+    return_request = db.relationship(
+        "ReturnRequest",
+        backref="order_item",
+        uselist=False
+    )
+
+class Order(db.Model):
+    __tablename__ = "orders"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    order_number = db.Column(
+        db.String(30),
+        unique=True,
+        nullable=False
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    seller_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    address_id = db.Column(
+        db.Integer,
+        db.ForeignKey("shipping_addresses.id"),
+        nullable=False
+    )
+
+    payment_method = db.Column(
+        db.String(50)
+    )
+
+    payment_status = db.Column(
+        db.String(30),
+        default="Pending"
+    )
+
+    order_status = db.Column(
+        db.String(30),
+        default="Pending"
+    )
+
+    razorpay_order_id = db.Column(db.String(120))
+
+    razorpay_payment_id = db.Column(db.String(120))
+
+    platform_commission = db.Column(
+        db.Float,
+        default=0
+    )
+
+    seller_amount = db.Column(
+        db.Float,
+        default=0
+    )
+
+    wallet_released = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    delivered_at = db.Column(
+        db.DateTime
+    )
+
+    shipping_charge = db.Column(
+        db.Float,
+        default=0
+    )
+
+    subtotal = db.Column(
+        db.Float,
+        default=0
+    )
+
+    total_amount = db.Column(
+        db.Float,
+        default=0
+    )
+
+    platform_commission = db.Column(
+        db.Float,
+        default=0
+    )
+
+    seller_amount = db.Column(
+        db.Float,
+        default=0
+    )
+
+    tracking_id = db.Column(db.String(100))
+
+    courier_name = db.Column(db.String(100))
+
+    estimated_delivery = db.Column(db.String(100))
+
+    delivered_at = db.Column(db.DateTime)
+
+    wallet_released = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    items = db.relationship(
+        "OrderItem",
+        backref="order",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+import requests
+
+BASE_URL = "https://apiv2.shiprocket.in/v1/external"
+
+class ShiprocketService:
+
+    def __init__(self,email,password):
+
+        self.email=email
+
+        self.password=password
+
+        self.token=None
+
+    def login(self):
+
+        response=requests.post(
+
+            BASE_URL+"/auth/login",
+
+            json={
+
+                "email":self.email,
+
+                "password":self.password
+
+            }
+
+        )
+
+        data=response.json()
+
+        self.token=data["token"]
+
+        return self.token
+
+    def headers(self):
+
+        return {
+
+            "Authorization": f"Bearer {self.token}",
+
+            "Content-Type": "application/json"
+
+        }
+
+    def get_shiprocket():
+
+    settings = get_business_settings()
+
+    shiprocket = ShiprocketService(
+
+        settings.shiprocket_email,
+
+        settings.shiprocket_password
+
+    )
+
+    shiprocket.login()
+
+    return shiprocket
+
+    def create_shipment(self, order):
+
+    pickup = order.seller.pickup_address
+
+    address = order.shipping_address
+
+    items = []
+
+    for item in order.items:
+
+        items.append({
+
+            "name": item.product_name,
+
+            "sku": item.product_id,
+
+            "units": item.quantity,
+
+            "selling_price": item.price,
+
+            "discount": "",
+
+            "tax": "",
+
+            "hsn": item.product.hsn_code or ""
+
+        })
+
+    payload = {
+
+        "order_id": order.order_number,
+
+        "order_date": order.created_at.strftime("%Y-%m-%d %H:%M"),
+
+        "pickup_location": pickup.pickup_name,
+
+        "billing_customer_name": address.full_name,
+
+        "billing_last_name": "",
+
+        "billing_address": address.address_line1,
+
+        "billing_address_2": address.address_line2 or "",
+
+        "billing_city": address.city,
+
+        "billing_pincode": address.pincode,
+
+        "billing_state": address.state,
+
+        "billing_country": address.country,
+
+        "billing_email": current_user.email,
+
+        "billing_phone": address.mobile,
+
+        "shipping_is_billing": True,
+
+        "order_items": items,
+
+        "payment_method": "Prepaid",
+
+        "sub_total": order.subtotal,
+
+        "length": max((item.product.length or 0) for item in order.items),
+        "breadth": max((item.product.width or 0) for item in order.items),
+        "height": sum((item.product.height or 0) for item in order.items),
+        "weight": sum((item.product.weight or 0) * item.quantity for item in order.items)
+
+    }
+
+    response = requests.post(
+
+        BASE_URL + "/orders/create/adhoc",
+
+        headers=self.headers(),
+
+        json=payload
+
+    )
+
+    response.raise_for_status()
+
+    return response.json()
+
+    def check_serviceability(
+        self,
+        pickup_pincode,
+        delivery_pincode,
+        weight
+    ):
+
+        response = requests.get(
+
+            BASE_URL + "/courier/serviceability",
+
+            headers=self.headers(),
+
+            params={
+
+                "pickup_postcode": pickup_pincode,
+
+                "delivery_postcode": delivery_pincode,
+
+                "weight": weight,
+
+                "cod": 0
+
+            }
+
+        )
+
+        response.raise_for_status()
+
+        return response.json()
+
+    def track_shipment(self, awb):
+
+    response = requests.get(
+
+        BASE_URL + f"/courier/track/awb/{awb}",
+
+        headers=self.headers()
+
+    )
+
+    response.raise_for_status()
+
+    return response.json()
+
+class SellerPickupAddress(db.Model):
+    __tablename__ = "seller_pickup_addresses"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    seller_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False,
+        unique=True
+    )
+
+    pickup_name = db.Column(
+        db.String(120),
+        nullable=False
+    )
+
+    contact_person = db.Column(
+        db.String(120),
+        nullable=False
+    )
+
+    mobile = db.Column(
+        db.String(20),
+        nullable=False
+    )
+
+    email = db.Column(
+        db.String(120)
+    )
+
+    address_line1 = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    address_line2 = db.Column(
+        db.String(255)
+    )
+
+    city = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    state = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    pincode = db.Column(
+        db.String(10),
+        nullable=False
+    )
+
+    country = db.Column(
+        db.String(50),
+        default="India"
+    )
+
+    gst_number = db.Column(
+        db.String(30)
+    )
+
+    is_verified = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+class MarketplaceWalletHistory(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    seller_id = db.Column(db.Integer)
+
+    order_id = db.Column(db.Integer)
+
+    amount = db.Column(db.Float)
+
+    action = db.Column(db.String(50))
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+class ProductReview(db.Model):
+    __tablename__ = "product_reviews"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id"),
+        nullable=False
+    )
+
+    seller_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    customer_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    order_id = db.Column(
+        db.Integer,
+        db.ForeignKey("orders.id"),
+        nullable=False
+    )
+
+    rating = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
+    title = db.Column(
+        db.String(150)
+    )
+
+    review = db.Column(
+        db.Text
+    )
+
+    images = db.Column(
+        db.Text
+    )
+
+    is_verified_purchase = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    is_approved = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+class CouponUsage(db.Model):
+    __tablename__ = "coupon_usage"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    coupon_id = db.Column(
+        db.Integer,
+        db.ForeignKey("coupons.id")
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id")
+    )
+
+    order_id = db.Column(
+        db.Integer,
+        db.ForeignKey("orders.id")
+    )
+
+    discount_amount = db.Column(db.Float)
+
+    used_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+class Coupon(db.Model):
+    __tablename__ = "coupons"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    code = db.Column(db.String(50), unique=True, nullable=False)
+
+    title = db.Column(db.String(120))
+
+    description = db.Column(db.Text)
+
+    discount_type = db.Column(
+        db.String(20),
+        default="percentage"
+    )
+
+    discount_value = db.Column(db.Float, default=0)
+
+    minimum_order_amount = db.Column(db.Float, default=0)
+
+    maximum_discount = db.Column(db.Float)
+
+    usage_limit = db.Column(db.Integer)
+
+    used_count = db.Column(db.Integer, default=0)
+
+    seller_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True
+    )
+
+    category_id = db.Column(
+        db.Integer,
+        db.ForeignKey("categories.id"),
+        nullable=True
+    )
+
+    start_date = db.Column(db.DateTime)
+
+    expiry_date = db.Column(db.DateTime)
+
+    first_order_only = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    active = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+class Wishlist(db.Model):
+    __tablename__ = "wishlist"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id"),
+        nullable=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "user_id",
+            "product_id",
+            name="unique_wishlist_product"
+        ),
+    )
+
+class ReturnRequest(db.Model):
+    __tablename__ = "return_requests"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    order_id = db.Column(
+        db.Integer,
+        db.ForeignKey("orders.id"),
+        nullable=False
+    )
+
+    order_item_id = db.Column(
+        db.Integer,
+        db.ForeignKey("order_items.id"),
+        nullable=False
+    )
+
+    product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id"),
+        nullable=False
+    )
+
+    customer_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    seller_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    reason = db.Column(db.String(255))
+
+    description = db.Column(db.Text)
+
+    status = db.Column(
+        db.String(30),
+        default="Pending"
+    )
+
+    refund_amount = db.Column(
+        db.Float,
+        default=0
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+    approved_at = db.Column(db.DateTime)
+
+    completed_at = db.Column(db.DateTime)
+
+    pickup_awb = db.Column(db.String(100))
+
+    pickup_status = db.Column(
+        db.String(50),
+        default="Pending"
+    )
+
+    pickup_scheduled_at = db.Column(db.DateTime)
+
+    exchange_requested = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    exchange_product_id = db.Column(
+        db.Integer,
+        db.ForeignKey("products.id")
+    )
+
+    refund_mode = db.Column(
+        db.String(30),
+        default="Original Payment"
+    )
+
+    images = db.relationship(
+        "ReturnImage",
+        backref="return_request",
+        cascade="all, delete-orphan"
+    )
+
+class ReturnImage(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    return_id = db.Column(
+        db.Integer,
+        db.ForeignKey("return_requests.id")
+    )
+
+    image = db.Column(
+        db.String(255)
+    )
+
+class ReturnHistory(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    return_id = db.Column(
+        db.Integer,
+        db.ForeignKey("return_requests.id")
+    )
+
+    status = db.Column(db.String(50))
+
+    remarks = db.Column(db.Text)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
     )
 
 # =========================
@@ -2344,6 +4190,163 @@ def update_last_login():
             ):
                 candidate.last_login = today
                 db.session.commit()
+
+    def allowed_product_file(filename):
+
+        return (
+            "." in filename
+            and filename.rsplit(".", 1)[1].lower()
+            in ALLOWED_PRODUCT_EXTENSIONS
+        )
+
+def get_cart_count(user_id):
+
+    cart = Cart.query.filter_by(
+        user_id=user_id
+    ).first()
+
+    if not cart:
+        return 0
+
+    total = 0
+
+    for item in cart.items:
+        total += item.quantity
+
+    return total
+
+@app.context_processor
+def inject_cart():
+
+    if current_user.is_authenticated:
+
+        return dict(
+            cart_count=get_cart_count(current_user.id)
+        )
+
+    return dict(cart_count=0)
+
+def headers(self):
+
+    return{
+
+        "Authorization":"Bearer "+self.token,
+
+        "Content-Type":"application/json"
+
+    }
+
+def check_serviceability(
+
+        self,
+
+        pickup_pincode,
+
+        delivery_pincode,
+
+        weight
+
+):
+
+    response=requests.get(
+
+        BASE_URL+"/courier/serviceability/",
+
+        headers=self.headers(),
+
+        params={
+
+            "pickup_postcode":pickup_pincode,
+
+            "delivery_postcode":delivery_pincode,
+
+            "weight":weight
+
+        }
+
+    )
+
+    return response.json()
+
+def create_order(self,data):
+
+    response=requests.post(
+
+        BASE_URL+"/orders/create/adhoc",
+
+        headers=self.headers(),
+
+        json=data
+
+    )
+
+    return response.json()
+
+def track(self,awb):
+
+    response=requests.get(
+
+        BASE_URL+
+
+        f"/courier/track/awb/{awb}",
+
+        headers=self.headers()
+
+    )
+
+    return response.json()
+
+def label(self,shipment_id):
+
+    response=requests.post(
+
+        BASE_URL+"/courier/generate/label",
+
+        headers=self.headers(),
+
+        json={
+
+            "shipment_id":[shipment_id]
+
+        }
+
+    )
+
+    return response.json()
+
+from datetime import datetime, timedelta
+
+def release_wallet_amount():
+
+    settings = get_business_settings()
+
+orders = Order.query.filter_by(
+
+    wallet_released=False,
+
+    order_status="Delivered"
+
+).all()
+
+for order in orders:
+
+    if not order.delivered_at:
+        continue
+
+    days = (
+        datetime.utcnow() -
+        order.delivered_at
+    ).days
+
+    if days >= settings.seller_payment_hold_days:
+
+        seller = User.query.get(order.seller_id)
+
+        seller.wallet_balance += order.seller_amount
+
+        order.wallet_released = True
+
+db.session.commit()
 
 # =========================
 # USER ROUTES
@@ -11043,6 +13046,13 @@ def profile():
         JobPost.created_at.desc()
     ).all()
 
+    products = Product.query.filter_by(
+        seller_id=current_user.id,
+        status="active"
+    ).order_by(
+        Product.created_at.desc()
+    ).all()
+
     followers_count = Follow.query.filter_by(
         followed_hr_id=current_user.id
     ).count()
@@ -11054,7 +13064,9 @@ def profile():
     return render_template(
         'profile.html',
         jobs=jobs,
+        products=products,
         posts_count=len(jobs),
+        products_count=len(products),
         followers_count=followers_count,
         following_count=following_count
     )
@@ -12272,6 +14284,3674 @@ def admin_reported_comments():
     return render_template(
         "admin_reported_comments.html",
         reported_comments=reported_comments
+    )
+
+@app.route("/shop/add-product", methods=["GET","POST"])
+@login_required
+def add_product():
+
+    categories = ProductCategory.query.filter_by(
+        is_active=True
+    ).all()
+
+    if request.method == "POST":
+
+        name = request.form["name"].strip()
+
+        category_id = request.form["category_id"]
+
+        description = request.form["description"].strip()
+
+        price = float(request.form["price"])
+
+        sale_price = request.form.get("sale_price") or None
+
+        stock = int(request.form["stock"])
+
+        product = Product(
+
+            seller_id=current_user.id,
+
+            category_id=category_id,
+
+            name=name,
+
+            description=description,
+
+            price=price,
+
+            sale_price=sale_price,
+
+            stock=stock
+
+        )
+
+        db.session.add(product)
+
+        db.session.commit()
+
+        files = request.files.getlist("images")
+
+        if len(files) > 5:
+
+            flash(
+                "Maximum 5 images allowed.",
+                "danger"
+            )
+
+            return redirect(request.url)
+
+        order = 1
+
+        for file in files:
+
+            if file.filename == "":
+                continue
+
+            if allowed_product_file(file.filename):
+
+                ext = file.filename.rsplit(".",1)[1].lower()
+
+                filename = (
+                    str(uuid.uuid4())
+                    + "."
+                    + ext
+                )
+
+                file.save(
+                    os.path.join(
+                        PRODUCT_UPLOAD_FOLDER,
+                        filename
+                    )
+                )
+
+                img = ProductImage(
+
+                    product_id=product.id,
+
+                    image=filename,
+
+                    sort_order=order
+
+                )
+
+                db.session.add(img)
+
+                order += 1
+
+        db.session.commit()
+
+        if product.product_type == "variable":
+
+            variant_names = request.form.getlist("variant_name[]")
+
+            option_values = request.form.getlist("option_value[]")
+
+            option_prices = request.form.getlist("option_price[]")
+
+            option_stocks = request.form.getlist("option_stock[]")
+
+        flash(
+            "Product added successfully.",
+            "success"
+        )
+
+        return redirect("/shop/products")
+
+    return render_template(
+        "add_product.html",
+        categories=categories
+    )
+
+@app.route("/shop/products")
+@login_required
+def shop_products():
+
+    products = Product.query.filter_by(
+        seller_id=current_user.id
+    ).order_by(
+        Product.created_at.desc()
+    ).all()
+
+    return render_template(
+        "shop_products.html",
+        products=products
+    )
+
+@app.route("/shop/edit-product/<int:id>", methods=["GET", "POST"])
+@login_required
+def edit_product(id):
+
+    product = Product.query.filter_by(
+        id=id,
+        seller_id=current_user.id
+    ).first_or_404()
+
+    categories = ProductCategory.query.filter_by(
+        is_active=True
+    ).all()
+
+    if request.method == "POST":
+
+        product.name = request.form["name"].strip()
+        product.category_id = request.form["category_id"]
+        product.description = request.form["description"].strip()
+        product.price = float(request.form["price"])
+        product.sale_price = request.form.get("sale_price") or None
+        product.stock = int(request.form["stock"])
+
+        db.session.commit()
+
+        flash(
+            "Product updated successfully.",
+            "success"
+        )
+
+        return redirect("/shop/products")
+
+    return render_template(
+        "edit_product.html",
+        product=product,
+        categories=categories
+    )
+
+@app.route("/shop/delete-product/<int:id>")
+@login_required
+def delete_product(id):
+
+    product = Product.query.filter_by(
+        id=id,
+        seller_id=current_user.id
+    ).first_or_404()
+
+    for img in product.images:
+
+        path = os.path.join(
+            PRODUCT_UPLOAD_FOLDER,
+            img.image
+        )
+
+        if os.path.exists(path):
+            os.remove(path)
+
+    db.session.delete(product)
+
+    db.session.commit()
+
+    flash(
+        "Product deleted successfully.",
+        "success"
+    )
+
+    return redirect("/shop/products")
+
+@app.route("/shop/<int:seller_id>")
+def company_shop(seller_id):
+
+    seller = User.query.get_or_404(seller_id)
+
+    products = Product.query.filter_by(
+        seller_id=seller.id,
+        status="active"
+    ).order_by(
+        Product.created_at.desc()
+    ).all()
+
+    return render_template(
+        "company_shop.html",
+        seller=seller,
+        products=products
+    )
+
+@app.route("/shop")
+@login_required
+def shop_home():
+
+    categories = ProductCategory.query.filter_by(
+        is_active=True
+    ).all()
+
+    promoted_products = Product.query.filter_by(
+        is_promoted=True,
+        status="active"
+    ).limit(10).all()
+
+    latest_products = Product.query.filter_by(
+        status="active"
+    ).order_by(
+        Product.created_at.desc()
+    ).limit(20).all()
+
+    return render_template(
+        "shop_home.html",
+        categories=categories,
+        promoted_products=promoted_products,
+        latest_products=latest_products
+    )
+
+@app.route("/shop/category/<int:id>")
+@login_required
+def shop_category(id):
+
+    category = ProductCategory.query.get_or_404(id)
+
+    promoted_products = Product.query.filter_by(
+        category_id=id,
+        status="active",
+        is_promoted=True
+    ).order_by(
+        Product.created_at.desc()
+    ).all()
+
+    products = Product.query.filter_by(
+        category_id=id,
+        status="active"
+    ).order_by(
+        Product.created_at.desc()
+    ).all()
+
+    return render_template(
+        "shop_category.html",
+        category=category,
+        promoted_products=promoted_products,
+        products=products
+    )
+
+@app.route("/product/<int:id>")
+@login_required
+def product_details(id):
+
+    product = Product.query.get_or_404(id)
+
+    related_products = Product.query.filter(
+        Product.category_id == product.category_id,
+        Product.id != product.id,
+        Product.status == "active"
+    ).limit(8).all()
+
+    product.views += 1
+
+    db.session.commit()
+
+    return render_template(
+        "product_details.html",
+        product=product,
+        related_products=related_products
+    )
+
+@app.route("/cart/add/<int:product_id>", methods=["POST"])
+@login_required
+def add_to_cart(product_id):
+
+    product = Product.query.get_or_404(product_id)
+
+    selected_variant = request.form.get("selected_variant")
+
+    cart = Cart.query.filter_by(
+        user_id=current_user.id
+    ).first()
+
+    if not cart:
+
+        cart = Cart(
+            user_id=current_user.id,
+            seller_id=product.seller_id
+        )
+
+        db.session.add(cart)
+
+        db.session.commit()
+
+    elif cart.seller_id != product.seller_id:
+
+        flash(
+            "Your cart already contains products from another shop.",
+            "warning"
+        )
+
+        return redirect(request.referrer)
+
+    price = product.sale_price or product.price
+
+    if selected_variant:
+
+        option = ProductVariantOption.query.get(selected_variant)
+
+        price += option.extra_price
+
+    item = CartItem.query.filter_by(
+        cart_id=cart.id,
+        product_id=product.id,
+        variant_option_id=selected_variant
+    ).first()
+
+    if item:
+
+        item.quantity += 1
+
+    else:
+
+        item = CartItem(
+            cart_id=cart.id,
+            product_id=product.id,
+            variant_option_id=selected_variant,
+            quantity=1,
+            price=price
+        )
+
+        db.session.add(item)
+
+    db.session.commit()
+
+    flash(
+        "Product added to cart.",
+        "success"
+    )
+
+    return redirect("/cart")
+
+@app.route("/cart/increase/<int:id>")
+@login_required
+def increase_cart(id):
+
+    item = CartItem.query.get_or_404(id)
+
+    item.quantity += 1
+
+    db.session.commit()
+
+    return redirect("/cart")
+
+@app.route("/cart/decrease/<int:id>")
+@login_required
+def decrease_cart(id):
+
+    item = CartItem.query.get_or_404(id)
+
+    if item.quantity > 1:
+
+        item.quantity -= 1
+
+        db.session.commit()
+
+    return redirect("/cart")
+
+@app.route("/cart/remove/<int:id>")
+@login_required
+def remove_cart(id):
+
+    item = CartItem.query.get_or_404(id)
+
+    cart = item.cart
+
+    db.session.delete(item)
+
+    db.session.commit()
+
+    if len(cart.items) == 0:
+
+        db.session.delete(cart)
+
+        db.session.commit()
+
+    flash(
+        "Item removed.",
+        "success"
+    )
+
+    return redirect("/cart")
+
+@app.route("/cart")
+@login_required
+def cart():
+
+    cart = Cart.query.filter_by(
+        user_id=current_user.id
+    ).first()
+
+    subtotal = 0
+
+    total_items = 0
+
+    if cart:
+
+        for item in cart.items:
+
+            subtotal += item.price * item.quantity
+
+            total_items += item.quantity
+
+    return render_template(
+        "cart.html",
+        cart=cart,
+        subtotal=subtotal,
+        total=subtotal,
+        total_items=total_items
+    )
+
+@app.route("/checkout")
+@login_required
+def checkout():
+
+    cart = Cart.query.filter_by(
+        user_id=current_user.id
+    ).first_or_404()
+
+    addresses = ShippingAddress.query.filter_by(
+        user_id=current_user.id
+    ).order_by(
+        ShippingAddress.is_default.desc()
+    ).all()
+
+    subtotal = 0
+
+    total_items = 0
+
+    for item in cart.items:
+
+        subtotal += item.price * item.quantity
+
+        total_items += item.quantity
+
+    shipping_charge = 0
+
+    total = subtotal + shipping_charge
+
+    return render_template(
+        "checkout.html",
+        cart=cart,
+        addresses=addresses,
+        subtotal=subtotal,
+        shipping_charge=shipping_charge,
+        total=total,
+        total_items=total_items
+    )
+
+@app.route("/create-marketplace-order", methods=["POST"])
+@login_required
+def create_marketplace_order():
+
+    cart = Cart.query.filter_by(
+        user_id=current_user.id
+    ).first_or_404()
+
+    subtotal = sum(
+        item.price * item.quantity
+        for item in cart.items
+    )
+
+    shipping = 0
+
+    total = subtotal + shipping
+
+    order = client.order.create({
+
+        "amount": int(total * 100),
+
+        "currency": "INR"
+
+    })
+
+    return jsonify(order)
+
+@app.route("/marketplace-payment-success")
+@login_required
+def marketplace_payment_success():
+
+    razorpay_payment_id = request.args.get("payment_id")
+    razorpay_order_id = request.args.get("order_id")
+    razorpay_signature = request.args.get("signature")
+
+    try:
+
+        client.utility.verify_payment_signature({
+
+            "razorpay_order_id": razorpay_order_id,
+
+            "razorpay_payment_id": razorpay_payment_id,
+
+            "razorpay_signature": razorpay_signature
+
+        })
+
+    except Exception:
+
+        flash("Payment verification failed.","danger")
+
+        return redirect("/cart")
+
+    cart = Cart.query.filter_by(
+        user_id=current_user.id
+    ).first_or_404()
+
+    address = ShippingAddress.query.filter_by(
+        user_id=current_user.id,
+        is_default=True
+    ).first()
+
+    if not address:
+
+        flash("Please add a delivery address.","warning")
+
+        return redirect("/checkout")
+
+    subtotal = 0
+
+    for item in cart.items:
+
+        subtotal += item.price * item.quantity
+
+    shipping = 0
+
+    total = subtotal + shipping
+
+    order_number = (
+        "RE"
+        + datetime.now().strftime("%Y%m%d")
+        + str(random.randint(100000,999999))
+    )
+
+    order = Order(
+
+        order_number=order_number,
+
+        user_id=current_user.id,
+
+        seller_id=cart.seller_id,
+
+        address_id=address.id,
+
+        payment_method="Online",
+
+        payment_status="Paid",
+
+        order_status="Pending",
+
+        razorpay_order_id=razorpay_order_id,
+
+        razorpay_payment_id=razorpay_payment_id,
+
+        subtotal=subtotal,
+
+        shipping_charge=shipping,
+
+        total_amount=total
+
+    )
+
+    db.session.add(order)
+
+    db.session.flush()
+
+    for item in cart.items:
+
+        db.session.add(
+
+            OrderItem(
+
+                order_id=order.id,
+
+                product_id=item.product_id,
+
+                variant_option_id=item.variant_option_id,
+
+                quantity=item.quantity,
+
+                price=item.price,
+
+                total=item.price * item.quantity,
+
+                product_name=item.product.name,
+
+                product_image=item.product.images[0].image if item.product.images else None,
+
+                variant_name=item.variant_option.value if item.variant_option else None
+
+            )
+
+        )
+
+        item.product.stock -= item.quantity
+
+        if item.variant_option:
+
+            item.variant_option.stock -= item.quantity
+
+        item.product.sold += item.quantity
+
+    db.session.delete(cart)
+
+    settings = get_business_settings()
+
+    commission = (
+        order.total_amount *
+        settings.marketplace_commission
+    ) / 100
+
+    seller_amount = order.total_amount - commission
+
+    order.platform_commission = commission
+    order.seller_amount = seller_amount
+    order.wallet_released = False
+
+    db.session.commit()
+
+    flash(
+
+        "Order placed successfully.",
+
+        "success"
+
+    )
+
+    return redirect(f"/order/{order.id}")
+
+@app.route("/my-orders")
+@login_required
+def my_orders():
+
+    orders = Order.query.filter_by(
+        user_id=current_user.id
+    ).order_by(
+        Order.created_at.desc()
+    ).all()
+
+    return render_template(
+        "my_orders.html",
+        orders=orders
+    )
+
+@app.route("/seller/orders")
+@login_required
+def seller_orders():
+
+    status = request.args.get("status")
+
+    query = Order.query.filter_by(
+        seller_id=current_user.id
+    )
+
+    if status:
+        query = query.filter_by(
+            order_status=status
+        )
+
+    orders = query.order_by(
+        Order.created_at.desc()
+    ).all()
+
+    return render_template(
+        "seller_orders.html",
+        orders=orders,
+        status=status
+    )
+
+@app.route("/order/<int:order_id>")
+@login_required
+def order_details(order_id):
+
+    order = Order.query.get_or_404(order_id)
+
+    if order.user_id != current_user.id and order.seller_id != current_user.id:
+
+        abort(403)
+
+    history = OrderStatusHistory.query.filter_by(
+        order_id=order.id
+    ).order_by(
+        OrderStatusHistory.created_at.desc()
+    ).all()
+
+    return render_template(
+        "order_details.html",
+        order=order,
+        history=history
+    )
+
+@app.route("/seller/order/<int:order_id>/accept")
+@login_required
+def accept_order(order_id):
+
+    order = Order.query.filter_by(
+        id=order_id,
+        seller_id=current_user.id
+    ).first_or_404()
+
+    order.order_status = "Accepted"
+
+    db.session.add(
+        OrderStatusHistory(
+            order_id=order.id,
+            status="Accepted",
+            remarks="Accepted by seller"
+        )
+    )
+
+    db.session.commit()
+
+    flash(
+        "Order accepted.",
+        "success"
+    )
+
+    return redirect(
+        f"/order/{order.id}"
+    )
+
+@app.route("/seller/order/<int:order_id>/reject")
+@login_required
+def reject_order(order_id):
+
+    order = Order.query.filter_by(
+        id=order_id,
+        seller_id=current_user.id
+    ).first_or_404()
+
+    order.order_status = "Rejected"
+
+    db.session.add(
+        OrderStatusHistory(
+            order_id=order.id,
+            status="Rejected",
+            remarks="Rejected by seller"
+        )
+    )
+
+    db.session.commit()
+
+    flash(
+        "Order rejected.",
+        "success"
+    )
+
+    return redirect(
+        "/seller/orders"
+    )
+
+@app.route("/cancel-order/<int:order_id>")
+@login_required
+def cancel_order(order_id):
+
+    order = Order.query.filter_by(
+        id=order_id,
+        user_id=current_user.id
+    ).first_or_404()
+
+    if order.order_status not in [
+        "Pending",
+        "Accepted"
+    ]:
+
+        flash(
+            "Order cannot be cancelled.",
+            "danger"
+        )
+
+        return redirect(
+            f"/order/{order.id}"
+        )
+
+    order.order_status = "Cancelled"
+
+    db.session.add(
+        OrderStatusHistory(
+            order_id=order.id,
+            status="Cancelled",
+            remarks="Cancelled by customer"
+        )
+    )
+
+    db.session.commit()
+
+    flash(
+        "Order cancelled.",
+        "success"
+    )
+
+    return redirect("/my-orders")
+
+@app.route("/create-shipment/<int:order_id>")
+@login_required
+def create_shipment(order_id):
+
+    order = Order.query.filter_by(
+
+        id=order_id,
+
+        seller_id=current_user.id
+
+    ).first_or_404()
+
+    pickup = SellerPickupAddress.query.filter_by(
+
+        seller_id=current_user.id
+
+    ).first()
+
+    if not pickup:
+
+        flash("Pickup address missing.","danger")
+
+        return redirect(f"/order/{order.id}")
+
+    if not pickup.is_verified:
+
+        flash("Pickup address not verified.","warning")
+
+        return redirect(f"/order/{order.id}")
+
+    ship = get_shiprocket()
+
+    data = ship.create_shipment(order)
+
+    shipment = data.get("shipment_id")
+
+    awb = data.get("awb_code")
+
+    courier = data.get("courier_name")
+
+    order.tracking_id = awb
+
+    order.courier_name = courier
+
+    order.order_status = "Packed"
+
+    db.session.add(
+
+        OrderStatusHistory(
+
+            order_id=order.id,
+
+            status="Packed",
+
+            remarks="Shipment Created"
+
+        )
+
+    )
+
+    db.session.commit()
+
+    flash(
+
+        "Shipment created successfully.",
+
+        "success"
+
+    )
+
+    return redirect(f"/order/{order.id}")
+
+from flask import render_template, request, redirect, flash
+from flask_login import login_required, current_user
+
+# ==========================================
+# SELLER PICKUP ADDRESS
+# ==========================================
+
+@app.route("/seller/pickup")
+@login_required
+def seller_pickup():
+
+    pickup = SellerPickupAddress.query.filter_by(
+        seller_id=current_user.id
+    ).first()
+
+    return render_template(
+        "seller_pickup.html",
+        pickup=pickup
+    )
+
+
+# ==========================================
+# SAVE PICKUP ADDRESS
+# ==========================================
+
+@app.route("/seller/pickup/save", methods=["POST"])
+@login_required
+def save_seller_pickup():
+
+    pickup = SellerPickupAddress.query.filter_by(
+        seller_id=current_user.id
+    ).first()
+
+    if not pickup:
+
+        pickup = SellerPickupAddress(
+            seller_id=current_user.id
+        )
+
+        db.session.add(pickup)
+
+    pickup.pickup_name = request.form.get("pickup_name")
+    pickup.contact_person = request.form.get("contact_person")
+    pickup.mobile = request.form.get("mobile")
+    pickup.email = request.form.get("email")
+
+    pickup.address_line1 = request.form.get("address_line1")
+    pickup.address_line2 = request.form.get("address_line2")
+
+    pickup.city = request.form.get("city")
+    pickup.state = request.form.get("state")
+    pickup.pincode = request.form.get("pincode")
+    pickup.country = request.form.get("country")
+
+    pickup.gst_number = request.form.get("gst_number")
+
+    db.session.commit()
+
+    flash(
+        "Pickup address saved successfully.",
+        "success"
+    )
+
+    return redirect("/seller/pickup")
+
+
+# ==========================================
+# EDIT PICKUP ADDRESS
+# ==========================================
+
+@app.route("/seller/pickup/edit", methods=["GET", "POST"])
+@login_required
+def edit_seller_pickup():
+
+    pickup = SellerPickupAddress.query.filter_by(
+        seller_id=current_user.id
+    ).first_or_404()
+
+    if request.method == "POST":
+
+        pickup.pickup_name = request.form.get("pickup_name")
+        pickup.contact_person = request.form.get("contact_person")
+        pickup.mobile = request.form.get("mobile")
+        pickup.email = request.form.get("email")
+
+        pickup.address_line1 = request.form.get("address_line1")
+        pickup.address_line2 = request.form.get("address_line2")
+
+        pickup.city = request.form.get("city")
+        pickup.state = request.form.get("state")
+        pickup.pincode = request.form.get("pincode")
+        pickup.country = request.form.get("country")
+
+        pickup.gst_number = request.form.get("gst_number")
+
+        db.session.commit()
+
+        flash(
+            "Pickup address updated successfully.",
+            "success"
+        )
+
+        return redirect("/seller/pickup")
+
+    return render_template(
+        "seller_pickup.html",
+        pickup=pickup
+    )
+
+@app.route("/admin/pickup-addresses")
+@admin_required
+def admin_pickup_addresses():
+
+    pickups = SellerPickupAddress.query.order_by(
+        SellerPickupAddress.created_at.desc()
+    ).all()
+
+    return render_template(
+        "admin_pickup_addresses.html",
+        pickups=pickups
+    )
+
+@app.route("/admin/pickup/<int:id>/verify")
+@admin_required
+def verify_pickup(id):
+
+    pickup = SellerPickupAddress.query.get_or_404(id)
+
+    pickup.is_verified = True
+
+    db.session.commit()
+
+    flash(
+        "Pickup Address Verified.",
+        "success"
+    )
+
+    return redirect("/admin/pickup-addresses")
+
+@app.route("/admin/pickup/<int:id>/reject")
+@admin_required
+def reject_pickup(id):
+
+    pickup = SellerPickupAddress.query.get_or_404(id)
+
+    pickup.is_verified = False
+
+    db.session.commit()
+
+    flash(
+        "Pickup verification removed.",
+        "warning"
+    )
+
+    return redirect("/admin/pickup-addresses")
+
+@app.route("/test-shiprocket")
+@admin_required
+def test_shiprocket():
+
+    try:
+
+        ship = get_shiprocket()
+
+        return "Shiprocket Connected Successfully"
+
+    except Exception as e:
+
+        return str(e)
+
+@app.route("/check-delivery", methods=["POST"])
+@login_required
+def check_delivery():
+
+    address_id = request.form.get("address_id")
+
+    address = ShippingAddress.query.get_or_404(address_id)
+
+    cart = Cart.query.filter_by(
+        user_id=current_user.id
+    ).first_or_404()
+
+    pickup = SellerPickupAddress.query.filter_by(
+        seller_id=cart.seller_id
+    ).first()
+
+    ship = get_shiprocket()
+
+    weight = sum(
+        (item.product.weight or 0) * item.quantity
+        for item in cart.items
+    )
+
+    response = ship.check_serviceability(
+        pickup.pincode,
+        address.pincode,
+        weight
+    )
+
+    return jsonify(response)
+
+@app.route("/update-tracking/<int:order_id>")
+@login_required
+def update_tracking(order_id):
+
+    order = Order.query.get_or_404(order_id)
+
+    if not order.tracking_id:
+
+        flash(
+            "Tracking ID not available.",
+            "warning"
+        )
+
+        return redirect(f"/order/{order.id}")
+
+    ship = get_shiprocket()
+
+    tracking = ship.track_shipment(order.tracking_id)
+
+    shipment = tracking["tracking_data"]["shipment_track"][0]
+
+    status = shipment["current_status"]
+
+    order.order_status = status
+
+    db.session.add(
+
+        OrderStatusHistory(
+
+            order_id=order.id,
+
+            status=status,
+
+            remarks="Updated from Shiprocket"
+
+        )
+
+    )
+
+    if status.lower() == "delivered":
+
+        order.delivered_at = datetime.utcnow()
+
+    db.session.commit()
+
+    flash(
+        "Tracking updated successfully.",
+        "success"
+    )
+
+    return redirect(f"/order/{order.id}")
+
+@app.route("/seller/dashboard")
+@login_required
+def seller_dashboard():
+
+    total_products = Product.query.filter_by(
+        seller_id=current_user.id
+    ).count()
+
+    total_orders = Order.query.filter_by(
+        seller_id=current_user.id
+    ).count()
+
+    pending_orders = Order.query.filter_by(
+        seller_id=current_user.id,
+        order_status="Pending"
+    ).count()
+
+    delivered_orders = Order.query.filter_by(
+        seller_id=current_user.id,
+        order_status="Delivered"
+    ).count()
+
+    total_sales = db.session.query(
+        db.func.sum(Order.total_amount)
+    ).filter(
+        Order.seller_id == current_user.id,
+        Order.payment_status == "Paid"
+    ).scalar() or 0
+
+    recent_orders = Order.query.filter_by(
+        seller_id=current_user.id
+    ).order_by(
+        Order.created_at.desc()
+    ).limit(10).all()
+
+    return render_template(
+        "seller_dashboard.html",
+        total_products=total_products,
+        total_orders=total_orders,
+        pending_orders=pending_orders,
+        delivered_orders=delivered_orders,
+        total_sales=total_sales,
+        recent_orders=recent_orders
+    )
+
+@app.route("/seller/sales-chart")
+@login_required
+def seller_sales_chart():
+
+    data = []
+
+    for i in range(30):
+
+        day = date.today() - timedelta(days=i)
+
+        amount = db.session.query(
+            db.func.sum(Order.total_amount)
+        ).filter(
+            db.func.date(Order.created_at) == day,
+            Order.seller_id == current_user.id
+        ).scalar() or 0
+
+        data.append({
+
+            "date": day.strftime("%d %b"),
+
+            "sales": amount
+
+        })
+
+    return jsonify(data[::-1])
+
+@app.route("/product/<int:product_id>/review", methods=["POST"])
+@login_required
+def add_review(product_id):
+
+    product = Product.query.get_or_404(product_id)
+
+    order_item = db.session.query(OrderItem).join(Order).filter(
+        Order.user_id == current_user.id,
+        Order.order_status == "Delivered",
+        OrderItem.product_id == product.id
+    ).first()
+
+    if not order_item:
+
+        flash(
+            "Only customers who purchased this product can review it.",
+            "warning"
+        )
+
+        return redirect(f"/product/{product.id}")
+
+    existing = ProductReview.query.filter_by(
+        product_id=product.id,
+        customer_id=current_user.id,
+        order_id=order_item.order_id
+    ).first()
+
+    if existing:
+
+        flash(
+            "You have already reviewed this product.",
+            "warning"
+        )
+
+        return redirect(f"/product/{product.id}")
+
+    review = ProductReview(
+
+        product_id=product.id,
+
+        seller_id=product.seller_id,
+
+        customer_id=current_user.id,
+
+        order_id=order_item.order_id,
+
+        rating=int(request.form["rating"]),
+
+        title=request.form.get("title"),
+
+        review=request.form.get("review")
+
+    )
+
+    db.session.add(review)
+
+    reviews = ProductReview.query.filter_by(
+        product_id=product.id
+    ).all()
+
+    product.total_reviews = len(reviews) + 1
+
+    total = sum(r.rating for r in reviews)
+
+    product.average_rating = (
+        total + review.rating
+    ) / product.total_reviews
+
+    db.session.commit()
+
+@app.route("/wishlist/add/<int:product_id>")
+@login_required
+def add_to_wishlist(product_id):
+
+    product = Product.query.get_or_404(product_id)
+
+    exists = Wishlist.query.filter_by(
+        user_id=current_user.id,
+        product_id=product.id
+    ).first()
+
+    if not exists:
+
+        db.session.add(
+            Wishlist(
+                user_id=current_user.id,
+                product_id=product.id
+            )
+        )
+
+        db.session.commit()
+
+    return redirect(request.referrer or f"/product/{product.id}")
+
+@app.route("/wishlist/remove/<int:product_id>")
+@login_required
+def remove_from_wishlist(product_id):
+
+    item = Wishlist.query.filter_by(
+        user_id=current_user.id,
+        product_id=product_id
+    ).first_or_404()
+
+    db.session.delete(item)
+
+    db.session.commit()
+
+    return redirect(request.referrer or "/wishlist")
+
+@app.route("/wishlist")
+@login_required
+def wishlist():
+
+    items = Wishlist.query.filter_by(
+        user_id=current_user.id
+    ).order_by(
+        Wishlist.created_at.desc()
+    ).all()
+
+    return render_template(
+        "wishlist.html",
+        items=items
+    )
+
+@app.route("/return/<int:order_item_id>", methods=["POST"])
+@login_required
+def submit_return(order_item_id):
+
+    item = OrderItem.query.get_or_404(order_item_id)
+
+    request_return = ReturnRequest(
+
+        order_id=item.order_id,
+
+        order_item_id=item.id,
+
+        product_id=item.product_id,
+
+        customer_id=current_user.id,
+
+        seller_id=item.product.seller_id,
+
+        reason=request.form.get("reason"),
+
+        description=request.form.get("description"),
+
+        refund_amount=item.total_price
+
+    )
+
+    db.session.add(request_return)
+
+    db.session.flush()
+
+@app.route("/return/<int:order_item_id>")
+@login_required
+def return_product(order_item_id):
+
+    item = OrderItem.query.get_or_404(order_item_id)
+
+    if item.order.user_id != current_user.id:
+        abort(403)
+
+    if item.order.order_status != "Delivered":
+
+        flash(
+            "Return can only be requested after delivery.",
+            "warning"
+        )
+
+        return redirect(f"/order/{item.order_id}")
+
+    existing = ReturnRequest.query.filter_by(
+        order_item_id=item.id
+    ).first()
+
+    if existing:
+
+        flash(
+            "Return request already submitted.",
+            "warning"
+        )
+
+        return redirect(f"/order/{item.order_id}")
+
+    return render_template(
+        "return_product.html",
+        item=item
+    )
+
+    images = request.files.getlist("images")
+
+    for image in images:
+
+        if image.filename:
+
+            filename = secure_filename(image.filename)
+
+            filename = (
+                str(uuid.uuid4())
+                + "_"
+                + filename
+            )
+
+            image.save(
+                os.path.join(
+                    app.config["RETURN_UPLOAD_FOLDER"],
+                    filename
+                )
+            )
+
+            db.session.add(
+
+                ReturnImage(
+
+                    return_id=request_return.id,
+
+                    image=filename
+
+                )
+
+            )
+
+    send_notification(
+
+        user_id=item.product.seller_id,
+
+        user_type="hr",
+
+        message=f"New return request for Order #{item.order.order_number}",
+
+        link=f"/seller/returns/{request_return.id}",
+
+        type="return"
+
+    )
+
+    db.session.commit()
+
+    flash(
+
+        "Return request submitted successfully.",
+
+        "success"
+
+    )
+
+    return redirect(f"/order/{item.order_id}")
+
+@app.route("/admin/returns")
+@admin_required
+def admin_returns():
+
+    returns = ReturnRequest.query.order_by(
+        ReturnRequest.created_at.desc()
+    ).all()
+
+    return render_template(
+        "admin_returns.html",
+        returns=returns
+    )
+
+@app.route("/admin/returns/<int:return_id>")
+@admin_required
+def admin_return_details(return_id):
+
+    return_request = ReturnRequest.query.get_or_404(return_id)
+
+    return render_template(
+        "admin_return_details.html",
+        return_request=return_request
+    )
+
+@app.route("/admin/returns/<int:return_id>/approve", methods=["POST"])
+@admin_required
+def admin_approve_return(return_id):
+
+    return_request = ReturnRequest.query.get_or_404(return_id)
+
+    if return_request.status == "Refunded":
+
+        flash(
+            "Refund already completed.",
+            "warning"
+        )
+
+        return redirect(f"/admin/returns/{return_request.id}")
+
+    return_request.status = "Approved"
+
+    return_request.admin_remarks = request.form.get(
+        "admin_remarks"
+    )
+
+    return_request.approved_at = india_time()
+
+    order = Order.query.get(return_request.order_id)
+
+    order.refund_status = "Approved"
+
+    db.session.commit()
+
+    send_notification(
+
+        user_id=return_request.customer_id,
+
+        user_type="candidate",
+
+        message="Your refund request has been approved.",
+
+        link=f"/return-status/{return_request.id}",
+
+        type="refund"
+
+    )
+
+    flash(
+        "Return approved successfully.",
+        "success"
+    )
+
+    return redirect("/admin/returns")
+
+@app.route("/admin/returns/<int:return_id>/reject", methods=["POST"])
+@admin_required
+def admin_reject_return(return_id):
+
+    return_request = ReturnRequest.query.get_or_404(return_id)
+
+    return_request.status = "Rejected"
+
+    return_request.admin_remarks = request.form.get(
+        "admin_remarks"
+    )
+
+    db.session.commit()
+
+    send_notification(
+
+        user_id=return_request.customer_id,
+
+        user_type="candidate",
+
+        message="Your refund request has been rejected.",
+
+        link=f"/return-status/{return_request.id}",
+
+        type="refund"
+
+    )
+
+    flash(
+        "Return rejected.",
+        "success"
+    )
+
+    return redirect("/admin/returns")
+
+@app.route("/admin/returns/<int:return_id>/complete")
+@admin_required
+def complete_refund(return_id):
+
+    return_request = ReturnRequest.query.get_or_404(return_id)
+
+    return_request.status = "Refunded"
+
+    return_request.completed_at = india_time()
+
+    order = Order.query.get(return_request.order_id)
+
+    order.refund_status = "Refunded"
+
+    db.session.commit()
+
+    send_notification(
+
+        user_id=return_request.customer_id,
+
+        user_type="candidate",
+
+        message="Refund has been processed successfully.",
+
+        link=f"/order/{order.id}",
+
+        type="refund"
+
+    )
+
+    flash(
+        "Refund completed.",
+        "success"
+    )
+
+    return redirect("/admin/returns")
+
+@app.route("/seller/returns")
+@login_required
+def seller_returns():
+
+    returns = ReturnRequest.query.filter_by(
+        seller_id=current_user.id
+    ).order_by(
+        ReturnRequest.created_at.desc()
+    ).all()
+
+    return render_template(
+        "seller_returns.html",
+        returns=returns
+    )
+
+@app.route("/seller/returns/<int:return_id>")
+@login_required
+def seller_return_details(return_id):
+
+    return_request = ReturnRequest.query.filter_by(
+        id=return_id,
+        seller_id=current_user.id
+    ).first_or_404()
+
+    return render_template(
+        "seller_return_details.html",
+        return_request=return_request
+    )
+
+@app.route("/seller/returns/<int:return_id>/approve", methods=["POST"])
+@login_required
+def approve_return(return_id):
+
+    return_request = ReturnRequest.query.filter_by(
+        id=return_id,
+        seller_id=current_user.id
+    ).first_or_404()
+
+    if return_request.status != "Pending":
+
+        flash("Return request already processed.", "warning")
+
+        return redirect(f"/seller/returns/{return_request.id}")
+
+    return_request.status = "Seller Approved"
+
+    return_request.seller_remarks = request.form.get(
+        "seller_remarks"
+    )
+
+    return_request.approved_at = india_time()
+
+    send_notification(
+
+        user_id=return_request.customer_id,
+
+        user_type="candidate",
+
+        message="Your return request has been approved by the seller.",
+
+        link=f"/return-status/{return_request.id}",
+
+        type="return"
+
+    )
+
+    db.session.commit()
+
+    flash("Return request approved.", "success")
+
+    return redirect("/seller/returns")
+
+@app.route("/seller/returns/<int:return_id>/reject", methods=["POST"])
+@login_required
+def reject_return(return_id):
+
+    return_request = ReturnRequest.query.filter_by(
+        id=return_id,
+        seller_id=current_user.id
+    ).first_or_404()
+
+    if return_request.status != "Pending":
+
+        flash("Return request already processed.", "warning")
+
+        return redirect(f"/seller/returns/{return_request.id}")
+
+    return_request.status = "Seller Rejected"
+
+    return_request.seller_remarks = request.form.get(
+        "seller_remarks"
+    )
+
+    send_notification(
+
+        user_id=return_request.customer_id,
+
+        user_type="candidate",
+
+        message="Your return request has been rejected by the seller.",
+
+        link=f"/return-status/{return_request.id}",
+
+        type="return"
+
+    )
+
+    db.session.commit()
+
+    flash("Return request rejected.", "success")
+
+    return redirect("/seller/returns")
+
+@app.route("/seller/returns/<int:return_id>/more-info", methods=["POST"])
+@login_required
+def return_more_info(return_id):
+
+    return_request = ReturnRequest.query.filter_by(
+        id=return_id,
+        seller_id=current_user.id
+    ).first_or_404()
+
+    return_request.status = "More Information Required"
+
+    return_request.seller_remarks = request.form.get(
+        "seller_remarks"
+    )
+
+    send_notification(
+
+        user_id=return_request.customer_id,
+
+        user_type="candidate",
+
+        message="Seller has requested more information for your return request.",
+
+        link=f"/return-status/{return_request.id}",
+
+        type="return"
+
+    )
+
+    db.session.commit()
+
+    flash("Customer notified.", "success")
+
+    return redirect(f"/seller/returns/{return_request.id}")
+
+@app.route("/admin/returns/<int:return_id>/pickup")
+@admin_required
+def schedule_return_pickup(return_id):
+
+    return_request = ReturnRequest.query.get_or_404(return_id)
+
+    ship = get_shiprocket()
+
+    response = ship.create_return_pickup(return_request)
+
+    return_request.pickup_awb = response["awb_code"]
+
+    return_request.pickup_status = "Scheduled"
+
+    return_request.pickup_scheduled_at = india_time()
+
+    db.session.commit()
+
+    send_notification(
+
+        user_id=return_request.customer_id,
+
+        user_type="candidate",
+
+        message="Return pickup has been scheduled.",
+
+        link=f"/return-status/{return_request.id}",
+
+        type="return"
+
+    )
+
+    flash("Pickup scheduled successfully.","success")
+
+    return redirect(f"/admin/returns/{return_request.id}")
+
+@app.route("/seller/product/<int:id>/promote")
+@login_required
+def promote_product(id):
+
+    product = Product.query.filter_by(
+
+        id=id,
+
+        seller_id=current_user.id
+
+    ).first_or_404()
+
+    settings = get_business_settings()
+
+    if current_user.credits < settings.product_promotion_price:
+
+        flash(
+
+            "Not enough credits.",
+
+            "danger"
+
+        )
+
+        return redirect("/seller/products")
+
+    current_user.credits -= settings.product_promotion_price
+
+    product.is_promoted = True
+
+    product.promotion_priority = 1
+
+    product.promotion_amount = settings.product_promotion_price
+
+    product.promotion_type = "Product"
+
+    product.promotion_expires_at = (
+
+        india_time() +
+
+        timedelta(
+
+            days=settings.promotion_duration_days
+
+        )
+
+    )
+
+    db.session.add(
+
+        ProductPromotion(
+
+            product_id=product.id,
+
+            seller_id=current_user.id,
+
+            credits_used=settings.product_promotion_price,
+
+            amount=settings.product_promotion_price,
+
+            end_date=product.promotion_expires_at
+
+        )
+
+    )
+
+    db.session.commit()
+
+send_notification(
+
+    user_id=current_user.id,
+
+    user_type="hr",
+
+    message=f"{product.name} is now promoted.",
+
+    link=f"/product/{product.id}",
+
+    type="promotion"
+
+)
+
+@app.route("/admin/seller/<int:id>/verify")
+@admin_required
+def verify_seller(id):
+
+    seller = User.query.get_or_404(id)
+
+    seller.is_verified_seller = True
+
+    seller.verification_status = "Verified"
+
+    seller.verification_date = india_time()
+
+    db.session.commit()
+
+    send_notification(
+
+        user_id=seller.id,
+
+        user_type="hr",
+
+        message="🎉 Your shop has been verified.",
+
+        link="/profile",
+
+        type="verification"
+
+    )
+
+    flash("Seller verified.","success")
+
+    return redirect("/admin/seller-verifications")
+
+@app.route("/shop/search")
+def shop_search():
+
+    keyword = request.args.get("q","")
+
+    category = request.args.get("category")
+
+    min_price = request.args.get("min_price")
+
+    max_price = request.args.get("max_price")
+
+    rating = request.args.get("rating")
+
+    sort = request.args.get("sort")
+
+products = Product.query.filter(
+    Product.is_active == True
+)
+
+if keyword:
+
+    products = products.filter(
+
+        Product.name.ilike(f"%{keyword}%")
+
+    )
+
+if category:
+
+    products = products.filter(
+
+        Product.category_id == category
+
+    )
+
+if min_price:
+
+    products = products.filter(
+
+        Product.price >= float(min_price)
+
+    )
+
+if max_price:
+
+    products = products.filter(
+
+        Product.price <= float(max_price)
+
+    )
+
+if rating:
+
+    products = products.filter(
+
+        Product.average_rating >= float(rating)
+
+    )
+
+verified = request.args.get("verified")
+
+if verified:
+
+    products = products.join(User).filter(
+
+        User.is_verified_seller == True
+
+    )
+
+products = products.order_by(
+
+    Product.is_promoted.desc(),
+
+    Product.promotion_priority.desc()
+)
+
+if sort == "price_low":
+
+    products = products.order_by(Product.price.asc())
+
+elif sort == "price_high":
+
+    products = products.order_by(Product.price.desc())
+
+elif sort == "rating":
+
+    products = products.order_by(
+
+        Product.average_rating.desc()
+
+    )
+
+elif sort == "latest":
+
+    products = products.order_by(
+
+        Product.created_at.desc()
+
+    )
+
+products = products.paginate(
+
+    page=request.args.get("page",1,type=int),
+
+    per_page=20
+
+)
+
+@app.route("/seller/analytics")
+@login_required
+def seller_analytics():
+
+    seller_id = current_user.id
+
+    total_sales = db.session.query(
+        db.func.sum(Order.total_amount)
+    ).filter(
+        Order.seller_id == seller_id,
+        Order.payment_status == "Paid"
+    ).scalar() or 0
+
+    total_orders = Order.query.filter_by(
+        seller_id=seller_id
+    ).count()
+
+    total_products = Product.query.filter_by(
+        seller_id=seller_id
+    ).count()
+
+    total_customers = db.session.query(
+        db.func.count(
+            db.distinct(Order.user_id)
+        )
+    ).filter(
+        Order.seller_id == seller_id
+    ).scalar()
+
+    return render_template(
+        "seller_analytics.html",
+        total_sales=total_sales,
+        total_orders=total_orders,
+        total_products=total_products,
+        total_customers=total_customers
+    )
+
+@app.route("/seller/monthly-sales")
+@login_required
+def monthly_sales():
+
+    data=[]
+
+    for month in range(1,13):
+
+        amount=db.session.query(
+
+            db.func.sum(Order.total_amount)
+
+        ).filter(
+
+            db.extract("month",Order.created_at)==month,
+
+            Order.seller_id==current_user.id
+
+        ).scalar() or 0
+
+        data.append(amount)
+
+    return jsonify(data)
+
+return render_template(
+    "seller_analytics.html",
+    total_sales=total_sales,
+    total_orders=total_orders,
+    total_products=total_products,
+    total_customers=total_customers,
+    top_products=top_products
+)
+
+@app.route("/admin/seller/<int:id>/verify")
+@admin_required
+def verify_seller(id):
+
+    seller = User.query.get_or_404(id)
+
+    seller.is_verified_seller = True
+
+    seller.verification_status = "Verified"
+
+    seller.verification_date = india_time()
+
+    db.session.commit()
+
+    send_notification(
+
+        user_id=seller.id,
+
+        user_type="hr",
+
+        message="🎉 Your shop has been verified.",
+
+        link="/profile",
+
+        type="verification"
+
+    )
+
+    flash("Seller verified.","success")
+
+    return redirect("/admin/seller-verifications")
+
+@app.route("/shop/search")
+def shop_search():
+
+    keyword = request.args.get("q","")
+
+    category = request.args.get("category")
+
+    min_price = request.args.get("min_price")
+
+    max_price = request.args.get("max_price")
+
+    rating = request.args.get("rating")
+
+    sort = request.args.get("sort")
+
+products = Product.query.filter(
+    Product.is_active == True
+)
+
+if keyword:
+
+    products = products.filter(
+
+        Product.name.ilike(f"%{keyword}%")
+
+    )
+
+if category:
+
+    products = products.filter(
+
+        Product.category_id == category
+
+    )
+
+if min_price:
+
+    products = products.filter(
+
+        Product.price >= float(min_price)
+
+    )
+
+if max_price:
+
+    products = products.filter(
+
+        Product.price <= float(max_price)
+
+    )
+
+if rating:
+
+    products = products.filter(
+
+        Product.average_rating >= float(rating)
+
+    )
+
+verified = request.args.get("verified")
+
+if verified:
+
+    products = products.join(User).filter(
+
+        User.is_verified_seller == True
+
+    )
+
+products = products.order_by(
+
+    Product.is_promoted.desc(),
+
+    Product.promotion_priority.desc()
+)
+
+if sort == "price_low":
+
+    products = products.order_by(Product.price.asc())
+
+elif sort == "price_high":
+
+    products = products.order_by(Product.price.desc())
+
+elif sort == "rating":
+
+    products = products.order_by(
+
+        Product.average_rating.desc()
+
+    )
+
+elif sort == "latest":
+
+    products = products.order_by(
+
+        Product.created_at.desc()
+
+    )
+
+products = products.paginate(
+
+    page=request.args.get("page",1,type=int),
+
+    per_page=20
+
+)
+
+@app.route("/seller/analytics")
+@login_required
+def seller_analytics():
+
+    seller_id = current_user.id
+
+    total_sales = db.session.query(
+        db.func.sum(Order.total_amount)
+    ).filter(
+        Order.seller_id == seller_id,
+        Order.payment_status == "Paid"
+    ).scalar() or 0
+
+    total_orders = Order.query.filter_by(
+        seller_id=seller_id
+    ).count()
+
+    total_products = Product.query.filter_by(
+        seller_id=seller_id
+    ).count()
+
+    total_customers = db.session.query(
+        db.func.count(
+            db.distinct(Order.user_id)
+        )
+    ).filter(
+        Order.seller_id == seller_id
+    ).scalar()
+
+    return render_template(
+        "seller_analytics.html",
+        total_sales=total_sales,
+        total_orders=total_orders,
+        total_products=total_products,
+        total_customers=total_customers
+    )
+
+@app.route("/seller/monthly-sales")
+@login_required
+def monthly_sales():
+
+    data=[]
+
+    for month in range(1,13):
+
+        amount=db.session.query(
+
+            db.func.sum(Order.total_amount)
+
+        ).filter(
+
+            db.extract("month",Order.created_at)==month,
+
+            Order.seller_id==current_user.id
+
+        ).scalar() or 0
+
+        data.append(amount)
+
+    return jsonify(data)
+
+return render_template(
+    "seller_analytics.html",
+    total_sales=total_sales,
+    total_orders=total_orders,
+    total_products=total_products,
+    total_customers=total_customers,
+    top_products=top_products
+)
+
+@app.route("/admin/marketplace")
+@admin_required
+def admin_marketplace():
+
+    total_shops = User.query.filter_by(
+        is_shop_owner=True
+    ).count()
+
+    total_products = Product.query.count()
+
+    total_orders = Order.query.count()
+
+    total_sales = db.session.query(
+        db.func.sum(Order.total_amount)
+    ).filter(
+        Order.payment_status == "Paid"
+    ).scalar() or 0
+
+    total_commission = db.session.query(
+        db.func.sum(Order.platform_commission)
+    ).scalar() or 0
+
+    pending_returns = ReturnRequest.query.filter(
+        ReturnRequest.status.in_([
+            "Pending",
+            "Seller Approved",
+            "Approved"
+        ])
+    ).count()
+
+    pending_withdrawals = Withdrawal.query.filter_by(
+        status="Pending"
+    ).count()
+
+    pending_shipments = Order.query.filter(
+        Order.order_status.in_([
+            "Pending",
+            "Packed",
+            "Shipped"
+        ])
+    ).count()
+
+    latest_orders = Order.query.order_by(
+        Order.created_at.desc()
+    ).limit(10).all()
+
+    return render_template(
+        "admin_marketplace/dashboard.html",
+
+        total_shops=total_shops,
+        total_products=total_products,
+        total_orders=total_orders,
+        total_sales=total_sales,
+        total_commission=total_commission,
+        pending_returns=pending_returns,
+        pending_withdrawals=pending_withdrawals,
+        pending_shipments=pending_shipments,
+        latest_orders=latest_orders
+    )
+
+@app.route("/admin/marketplace/sellers")
+@admin_required
+def marketplace_sellers():
+
+    sellers = User.query.filter_by(
+        is_shop_owner=True
+    ).order_by(
+        User.created_at.desc()
+    ).all()
+
+    return render_template(
+        "admin_marketplace/sellers.html",
+        sellers=sellers
+    )
+
+@app.route("/admin/marketplace/seller/<int:id>")
+@admin_required
+def marketplace_seller(id):
+
+    seller = User.query.get_or_404(id)
+
+    total_products = Product.query.filter_by(
+        seller_id=id
+    ).count()
+
+    total_orders = Order.query.filter_by(
+        seller_id=id
+    ).count()
+
+    total_sales = db.session.query(
+        db.func.sum(Order.total_amount)
+    ).filter(
+        Order.seller_id == id
+    ).scalar() or 0
+
+    return render_template(
+
+        "admin_marketplace/seller_details.html",
+
+        seller=seller,
+
+        total_products=total_products,
+
+        total_orders=total_orders,
+
+        total_sales=total_sales
+
+    )
+
+@app.route("/admin/marketplace/seller/<int:id>/verify")
+@admin_required
+def verify_marketplace_seller(id):
+
+    seller = User.query.get_or_404(id)
+
+    seller.is_verified_seller = True
+
+    seller.verification_status = "Verified"
+
+    seller.verification_date = india_time()
+
+    db.session.commit()
+
+    send_notification(
+
+        user_id=seller.id,
+
+        user_type="hr",
+
+        message="🎉 Congratulations! Your shop has been verified.",
+
+        link="/profile",
+
+        type="verification"
+
+    )
+
+    flash(
+
+        "Seller verified successfully.",
+
+        "success"
+
+    )
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/seller/<int:id>/toggle")
+@admin_required
+def toggle_shop(id):
+
+    seller = User.query.get_or_404(id)
+
+    seller.is_shop_active = not seller.is_shop_active
+
+    db.session.commit()
+
+    flash(
+
+        "Seller status updated.",
+
+        "success"
+
+    )
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/seller/<int:id>/promotion")
+@admin_required
+def seller_promotions(id):
+
+    promotions = ShopPromotion.query.filter_by(
+
+        seller_id=id
+
+    ).order_by(
+
+        ShopPromotion.start_date.desc()
+
+    ).all()
+
+    return render_template(
+
+        "admin_marketplace/seller_promotions.html",
+
+        promotions=promotions
+
+    )
+
+@app.route("/admin/marketplace/seller/<int:id>/analytics")
+@admin_required
+def seller_admin_analytics(id):
+
+    seller = User.query.get_or_404(id)
+
+    products = Product.query.filter_by(
+
+        seller_id=id
+
+    ).all()
+
+    return render_template(
+
+        "admin_marketplace/seller_analytics.html",
+
+        seller=seller,
+
+        products=products
+
+    )
+
+@app.route("/admin/marketplace/products")
+@admin_required
+def marketplace_products():
+
+    products = Product.query.order_by(
+        Product.created_at.desc()
+    ).all()
+
+    return render_template(
+        "admin_marketplace/products.html",
+        products=products
+    )
+
+@app.route("/admin/marketplace/product/<int:id>")
+@admin_required
+def marketplace_product(id):
+
+    product = Product.query.get_or_404(id)
+
+    return render_template(
+        "admin_marketplace/product_details.html",
+        product=product
+    )
+
+@app.route("/admin/marketplace/product/<int:id>/toggle")
+@admin_required
+def toggle_product(id):
+
+    product = Product.query.get_or_404(id)
+
+    product.is_active = not product.is_active
+
+    db.session.commit()
+
+    flash(
+        "Product status updated.",
+        "success"
+    )
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/product/<int:id>/delete")
+@admin_required
+def delete_product_admin(id):
+
+    product = Product.query.get_or_404(id)
+
+    db.session.delete(product)
+
+    db.session.commit()
+
+    flash(
+        "Product deleted successfully.",
+        "success"
+    )
+
+    return redirect("/admin/marketplace/products")
+
+@app.route("/admin/marketplace/product/<int:id>/feature")
+@admin_required
+def feature_product(id):
+
+    product = Product.query.get_or_404(id)
+
+    product.is_promoted = True
+
+    product.promotion_priority = 999
+
+    db.session.commit()
+
+    flash(
+        "Product marked as featured.",
+        "success"
+    )
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/product-reports")
+@admin_required
+def product_reports():
+
+    reports = ProductReport.query.order_by(
+        ProductReport.created_at.desc()
+    ).all()
+
+    return render_template(
+        "admin_marketplace/product_reports.html",
+        reports=reports
+    )
+
+@app.route("/admin/marketplace/orders")
+@admin_required
+def marketplace_orders():
+
+    orders = Order.query.order_by(
+        Order.created_at.desc()
+    ).all()
+
+    return render_template(
+        "admin_marketplace/orders.html",
+        orders=orders
+    )
+
+@app.route("/admin/marketplace/order/<int:id>")
+@admin_required
+def marketplace_order(id):
+
+    order = Order.query.get_or_404(id)
+
+    return render_template(
+        "admin_marketplace/order_details.html",
+        order=order
+    )
+
+@app.route(
+    "/admin/marketplace/order/<int:id>/status",
+    methods=["POST"]
+)
+@admin_required
+def update_order_status(id):
+
+    order = Order.query.get_or_404(id)
+
+    status = request.form.get("status")
+
+    order.order_status = status
+
+    db.session.commit()
+
+    send_notification(
+
+        user_id=order.user_id,
+
+        user_type="candidate",
+
+        message=f"Your order {order.order_number} is now {status}.",
+
+        link=f"/order/{order.id}",
+
+        type="order"
+
+    )
+
+    flash(
+        "Order updated successfully.",
+        "success"
+    )
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/order/<int:id>/cancel")
+@admin_required
+def cancel_marketplace_order(id):
+
+    order = Order.query.get_or_404(id)
+
+    order.order_status = "Cancelled"
+
+    db.session.commit()
+
+    send_notification(
+
+        user_id=order.user_id,
+
+        user_type="candidate",
+
+        message="Your order has been cancelled by the admin.",
+
+        link=f"/order/{order.id}",
+
+        type="order"
+
+    )
+
+    flash(
+        "Order cancelled.",
+        "success"
+    )
+
+    return redirect(request.referrer)
+
+@app.route(
+    "/admin/marketplace/order/<int:id>/payment",
+    methods=["POST"]
+)
+@admin_required
+def update_payment_status(id):
+
+    order = Order.query.get_or_404(id)
+
+    order.payment_status = request.form.get(
+        "payment_status"
+    )
+
+    db.session.commit()
+
+    flash(
+        "Payment updated.",
+        "success"
+    )
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/finance")
+@admin_required
+def marketplace_finance():
+
+    total_sales = db.session.query(
+        db.func.sum(Order.total_amount)
+    ).filter(
+        Order.payment_status == "Paid"
+    ).scalar() or 0
+
+    total_commission = db.session.query(
+        db.func.sum(Order.platform_commission)
+    ).scalar() or 0
+
+    seller_payout = db.session.query(
+        db.func.sum(Order.seller_amount)
+    ).filter(
+        Order.wallet_released == True
+    ).scalar() or 0
+
+    pending_payout = db.session.query(
+        db.func.sum(Order.seller_amount)
+    ).filter(
+        Order.wallet_released == False
+    ).scalar() or 0
+
+    total_refunds = db.session.query(
+        db.func.sum(ReturnRequest.refund_amount)
+    ).filter(
+        ReturnRequest.status == "Refunded"
+    ).scalar() or 0
+
+    return render_template(
+
+        "admin_marketplace/finance.html",
+
+        total_sales=total_sales,
+
+        total_commission=total_commission,
+
+        seller_payout=seller_payout,
+
+        pending_payout=pending_payout,
+
+        total_refunds=total_refunds
+
+    )
+
+@app.route("/admin/marketplace/withdrawals")
+@admin_required
+def marketplace_withdrawals():
+
+    withdrawals = Withdrawal.query.order_by(
+        Withdrawal.created_at.desc()
+    ).all()
+
+    return render_template(
+
+        "admin_marketplace/withdrawals.html",
+
+        withdrawals=withdrawals
+
+    )
+
+@app.route("/admin/marketplace/withdrawal/<int:id>/approve")
+@admin_required
+def approve_marketplace_withdrawal(id):
+
+    withdrawal = Withdrawal.query.get_or_404(id)
+
+    withdrawal.status = "Approved"
+
+    withdrawal.processed_at = india_time()
+
+    db.session.commit()
+
+    send_notification(
+
+        user_id=withdrawal.user_id,
+
+        user_type="hr",
+
+        message="Your withdrawal has been approved.",
+
+        link="/wallet",
+
+        type="withdrawal"
+
+    )
+
+    flash(
+
+        "Withdrawal approved.",
+
+        "success"
+
+    )
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/withdrawal/<int:id>/reject")
+@admin_required
+def reject_marketplace_withdrawal(id):
+
+    withdrawal = Withdrawal.query.get_or_404(id)
+
+    withdrawal.status = "Rejected"
+
+    db.session.commit()
+
+    flash(
+
+        "Withdrawal rejected.",
+
+        "success"
+
+    )
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/commission")
+@admin_required
+def commission_report():
+
+    orders = Order.query.filter(
+
+        Order.payment_status == "Paid"
+
+    ).all()
+
+    return render_template(
+
+        "admin_marketplace/commission.html",
+
+        orders=orders
+
+    )
+
+@app.route("/admin/marketplace/settings",
+methods=["GET","POST"])
+@admin_required
+def marketplace_settings():
+
+    settings = get_business_settings()
+
+    if request.method == "POST":
+
+        settings.marketplace_enabled = bool(request.form.get("marketplace_enabled"))
+
+        settings.marketplace_commission = float(request.form["marketplace_commission"])
+
+        settings.seller_payment_hold_days = int(request.form["seller_payment_hold_days"])
+
+        settings.free_shipping_amount = float(request.form["free_shipping_amount"])
+
+        settings.return_window_days = int(request.form["return_window_days"])
+
+        settings.product_promotion_price = int(request.form["product_promotion_price"])
+
+        settings.shop_promotion_price = int(request.form["shop_promotion_price"])
+
+        settings.marketplace_maintenance = bool(request.form.get("marketplace_maintenance"))
+
+        db.session.commit()
+
+        flash("Settings updated.","success")
+
+        return redirect(request.url)
+
+    return render_template(
+        "admin_marketplace/settings.html",
+        settings=settings
+    )
+
+class HomepageBanner(db.Model):
+    __tablename__ = "homepage_banners"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(200))
+
+    subtitle = db.Column(db.String(255))
+
+    image = db.Column(db.String(255))
+
+    button_text = db.Column(db.String(50))
+
+    button_link = db.Column(db.String(255))
+
+    display_order = db.Column(
+        db.Integer,
+        default=1
+    )
+
+    is_active = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+@app.route("/admin/marketplace/banners")
+@admin_required
+def marketplace_banners():
+
+    banners=HomepageBanner.query.order_by(
+
+        HomepageBanner.display_order
+
+    ).all()
+
+    return render_template(
+
+        "admin_marketplace/banners.html",
+
+        banners=banners
+
+    )
+
+@app.route("/admin/marketplace/banner/add",
+methods=["GET","POST"])
+@admin_required
+def add_banner():
+
+    if request.method=="POST":
+
+        image=request.files["image"]
+
+        filename=save_image(image,"homepage_banners")
+
+        banner=HomepageBanner(
+
+            title=request.form["title"],
+
+            subtitle=request.form["subtitle"],
+
+            image=filename,
+
+            button_text=request.form["button_text"],
+
+            button_link=request.form["button_link"],
+
+            display_order=int(request.form["display_order"]),
+
+            is_active="is_active" in request.form
+
+        )
+
+        db.session.add(banner)
+
+        db.session.commit()
+
+        flash("Banner added successfully.","success")
+
+        return redirect("/admin/marketplace/banners")
+
+    return render_template("admin_marketplace/add_banner.html")
+
+@app.route("/admin/marketplace/banner/<int:id>/edit",
+methods=["GET","POST"])
+@admin_required
+def edit_banner(id):
+
+    banner=HomepageBanner.query.get_or_404(id)
+
+    if request.method=="POST":
+
+        banner.title=request.form["title"]
+
+        banner.subtitle=request.form["subtitle"]
+
+        banner.button_text=request.form["button_text"]
+
+        banner.button_link=request.form["button_link"]
+
+        banner.display_order=int(request.form["display_order"])
+
+        banner.is_active="is_active" in request.form
+
+        if request.files.get("image"):
+
+            banner.image=save_image(
+
+                request.files["image"],
+
+                "homepage_banners"
+
+            )
+
+        db.session.commit()
+
+        flash("Banner updated.","success")
+
+        return redirect("/admin/marketplace/banners")
+
+    return render_template(
+
+        "admin_marketplace/edit_banner.html",
+
+        banner=banner
+
+    )
+
+@app.route("/admin/marketplace/banner/<int:id>/toggle")
+@admin_required
+def toggle_banner(id):
+
+    banner=HomepageBanner.query.get_or_404(id)
+
+    banner.is_active=not banner.is_active
+
+    db.session.commit()
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/banner/<int:id>/delete")
+@admin_required
+def delete_banner(id):
+
+    banner=HomepageBanner.query.get_or_404(id)
+
+    db.session.delete(banner)
+
+    db.session.commit()
+
+    flash("Banner deleted.","success")
+
+    return redirect("/admin/marketplace/banners")
+
+@app.route("/admin/marketplace/categories")
+@admin_required
+def marketplace_categories():
+
+    categories = Category.query.order_by(
+        Category.name
+    ).all()
+
+    return render_template(
+        "admin_marketplace/categories.html",
+        categories=categories
+    )
+
+@app.route("/admin/marketplace/category/add",
+methods=["GET","POST"])
+@admin_required
+def add_marketplace_category():
+
+    if request.method=="POST":
+
+        image=None
+
+        if request.files.get("image"):
+
+            image=save_image(
+
+                request.files["image"],
+
+                "category_images"
+
+            )
+
+        category=Category(
+
+            name=request.form["name"],
+
+            description=request.form["description"],
+
+            image=image,
+
+            is_featured="is_featured" in request.form,
+
+            active="active" in request.form
+
+        )
+
+        db.session.add(category)
+
+        db.session.commit()
+
+        flash("Category created.","success")
+
+        return redirect("/admin/marketplace/categories")
+
+    return render_template(
+        "admin_marketplace/add_category.html"
+    )
+
+@app.route("/admin/marketplace/category/<int:id>/edit",
+methods=["GET","POST"])
+@admin_required
+def edit_marketplace_category(id):
+
+    category=Category.query.get_or_404(id)
+
+    if request.method=="POST":
+
+        category.name=request.form["name"]
+
+        category.description=request.form["description"]
+
+        category.is_featured="is_featured" in request.form
+
+        category.active="active" in request.form
+
+        if request.files.get("image"):
+
+            category.image=save_image(
+
+                request.files["image"],
+
+                "category_images"
+
+            )
+
+        db.session.commit()
+
+        flash("Category updated.","success")
+
+        return redirect("/admin/marketplace/categories")
+
+    return render_template(
+
+        "admin_marketplace/edit_category.html",
+
+        category=category
+
+    )
+
+@app.route("/admin/marketplace/category/<int:id>/delete")
+@admin_required
+def delete_marketplace_category(id):
+
+    category=Category.query.get_or_404(id)
+
+    db.session.delete(category)
+
+    db.session.commit()
+
+    flash("Category deleted.","success")
+
+    return redirect("/admin/marketplace/categories")
+
+@app.route("/admin/marketplace/category/<int:id>/toggle")
+@admin_required
+def toggle_category(id):
+
+    category = Category.query.get_or_404(id)
+
+    category.active = not category.active
+
+    db.session.commit()
+
+    flash(
+        "Category status updated.",
+        "success"
+    )
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/category/<int:id>")
+@admin_required
+def marketplace_category(id):
+
+    category = Category.query.get_or_404(id)
+
+    total_products = Product.query.filter_by(
+        category_id=id
+    ).count()
+
+    total_sales = db.session.query(
+        db.func.sum(Product.revenue)
+    ).filter(
+        Product.category_id == id
+    ).scalar() or 0
+
+    return render_template(
+
+        "admin_marketplace/category_details.html",
+
+        category=category,
+
+        total_products=total_products,
+
+        total_sales=total_sales
+
+    )
+
+@app.route("/admin/marketplace/coupons")
+@admin_required
+def marketplace_coupons():
+
+    coupons = Coupon.query.order_by(
+        Coupon.created_at.desc()
+    ).all()
+
+    return render_template(
+        "admin_marketplace/coupons.html",
+        coupons=coupons
+    )
+
+@app.route("/admin/marketplace/coupon/add",
+methods=["GET","POST"])
+@admin_required
+def add_coupon():
+
+    if request.method=="POST":
+
+        coupon = Coupon(
+
+            code=request.form["code"].upper(),
+
+            title=request.form["title"],
+
+            description=request.form["description"],
+
+            discount_type=request.form["discount_type"],
+
+            discount_value=float(request.form["discount_value"]),
+
+            minimum_order=float(request.form["minimum_order"]),
+
+            maximum_discount=float(request.form["maximum_discount"]),
+
+            usage_limit=int(request.form["usage_limit"]),
+
+            start_date=parse_datetime(
+                request.form["start_date"]
+            ),
+
+            expiry_date=parse_datetime(
+                request.form["expiry_date"]
+            ),
+
+            active="active" in request.form
+
+        )
+
+        db.session.add(coupon)
+
+        db.session.commit()
+
+        flash("Coupon created.","success")
+
+        return redirect("/admin/marketplace/coupons")
+
+    return render_template(
+        "admin_marketplace/add_coupon.html"
+    )
+
+@app.route("/admin/marketplace/coupon/<int:id>/toggle")
+@admin_required
+def toggle_coupon(id):
+
+    coupon = Coupon.query.get_or_404(id)
+
+    coupon.active = not coupon.active
+
+    db.session.commit()
+
+    flash(
+        "Coupon updated.",
+        "success"
+    )
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/coupon/<int:id>/delete")
+@admin_required
+def delete_coupon(id):
+
+    coupon = Coupon.query.get_or_404(id)
+
+    db.session.delete(coupon)
+
+    db.session.commit()
+
+    flash(
+        "Coupon deleted.",
+        "success"
+    )
+
+    return redirect("/admin/marketplace/coupons")
+
+@app.route("/admin/marketplace/coupon/<int:id>")
+@admin_required
+def coupon_details(id):
+
+    coupon = Coupon.query.get_or_404(id)
+
+    return render_template(
+
+        "admin_marketplace/coupon_details.html",
+
+        coupon=coupon
+
+    )
+
+@app.route("/admin/marketplace/coupon/<int:id>/edit",
+methods=["GET","POST"])
+@admin_required
+def edit_coupon(id):
+
+    coupon = Coupon.query.get_or_404(id)
+
+    if request.method=="POST":
+
+        coupon.code = request.form["code"].upper()
+
+        coupon.title = request.form["title"]
+
+        coupon.description = request.form["description"]
+
+        coupon.discount_type = request.form["discount_type"]
+
+        coupon.discount_value = float(request.form["discount_value"])
+
+        coupon.minimum_order = float(request.form["minimum_order"])
+
+        coupon.maximum_discount = float(request.form["maximum_discount"])
+
+        coupon.usage_limit = int(request.form["usage_limit"])
+
+        coupon.start_date = parse_datetime(
+            request.form["start_date"]
+        )
+
+        coupon.expiry_date = parse_datetime(
+            request.form["expiry_date"]
+        )
+
+        coupon.active = "active" in request.form
+
+        db.session.commit()
+
+        flash(
+            "Coupon updated.",
+            "success"
+        )
+
+        return redirect("/admin/marketplace/coupons")
+
+    return render_template(
+
+        "admin_marketplace/edit_coupon.html",
+
+        coupon=coupon
+
+    )
+
+@app.route("/admin/marketplace/coupons/analytics")
+@admin_required
+def coupon_analytics():
+
+    total = Coupon.query.count()
+
+    active = Coupon.query.filter_by(
+        active=True
+    ).count()
+
+    expired = Coupon.query.filter(
+        Coupon.expiry_date < india_time()
+    ).count()
+
+    most_used = Coupon.query.order_by(
+        Coupon.used_count.desc()
+    ).first()
+
+    return render_template(
+
+        "admin_marketplace/coupon_analytics.html",
+
+        total=total,
+
+        active=active,
+
+        expired=expired,
+
+        most_used=most_used
+
+    )
+
+@app.route("/admin/marketplace/cms")
+@admin_required
+def cms_pages():
+
+    pages = CMSPage.query.order_by(
+        CMSPage.title
+    ).all()
+
+    return render_template(
+
+        "admin_marketplace/cms.html",
+
+        pages=pages
+
+    )
+
+@app.route("/admin/marketplace/cms/add",
+methods=["GET","POST"])
+@admin_required
+def add_cms_page():
+
+    if request.method=="POST":
+
+        page = CMSPage(
+
+            title=request.form["title"],
+
+            slug=request.form["slug"],
+
+            content=request.form["content"],
+
+            meta_title=request.form["meta_title"],
+
+            meta_description=request.form["meta_description"],
+
+            is_published="is_published" in request.form
+
+        )
+
+        db.session.add(page)
+
+        db.session.commit()
+
+        flash(
+            "Page created.",
+            "success"
+        )
+
+        return redirect("/admin/marketplace/cms")
+
+    return render_template(
+        "admin_marketplace/add_cms.html"
+    )
+
+@app.route("/admin/marketplace/cms/<int:id>/edit",
+methods=["GET","POST"])
+@admin_required
+def edit_cms_page(id):
+
+    page = CMSPage.query.get_or_404(id)
+
+    if request.method=="POST":
+
+        page.title = request.form["title"]
+
+        page.slug = request.form["slug"]
+
+        page.content = request.form["content"]
+
+        page.meta_title = request.form["meta_title"]
+
+        page.meta_description = request.form["meta_description"]
+
+        page.is_published = "is_published" in request.form
+
+        db.session.commit()
+
+        flash(
+            "Page updated.",
+            "success"
+        )
+
+        return redirect("/admin/marketplace/cms")
+
+    return render_template(
+
+        "admin_marketplace/edit_cms.html",
+
+        page=page
+
+    )
+
+@app.route("/page/<slug>")
+def cms_page(slug):
+
+    page = CMSPage.query.filter_by(
+
+        slug=slug,
+
+        is_published=True
+
+    ).first_or_404()
+
+    return render_template(
+
+        "cms_page.html",
+
+        page=page
+
+    )
+
+@app.route("/admin/marketplace/cms/<int:id>/toggle")
+@admin_required
+def toggle_cms_page(id):
+
+    page = CMSPage.query.get_or_404(id)
+
+    page.is_published = not page.is_published
+
+    db.session.commit()
+
+    flash(
+        "Page status updated.",
+        "success"
+    )
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/cms/<int:id>/toggle")
+@admin_required
+def toggle_cms_page(id):
+
+    page = CMSPage.query.get_or_404(id)
+
+    page.is_published = not page.is_published
+
+    db.session.commit()
+
+    flash(
+        "Page status updated.",
+        "success"
+    )
+
+    return redirect(request.referrer)
+
+@app.route("/admin/marketplace/cms/<int:id>/delete")
+@admin_required
+def delete_cms_page(id):
+
+    page = CMSPage.query.get_or_404(id)
+
+    db.session.delete(page)
+
+    db.session.commit()
+
+    flash(
+        "Page deleted successfully.",
+        "success"
+    )
+
+    return redirect("/admin/marketplace/cms")
+
+@app.route("/admin/marketplace/social-links")
+@admin_required
+def social_links():
+
+    links = SocialLink.query.order_by(
+        SocialLink.platform
+    ).all()
+
+    return render_template(
+
+        "admin_marketplace/social_links.html",
+
+        links=links
+
+    )
+
+@app.route("/admin/marketplace/contact-settings",
+methods=["GET","POST"])
+@admin_required
+def contact_settings():
+
+    settings = ContactSettings.query.first()
+
+    if not settings:
+
+        settings = ContactSettings()
+
+        db.session.add(settings)
+
+        db.session.commit()
+
+    if request.method == "POST":
+
+        settings.company_name = request.form["company_name"]
+
+        settings.email = request.form["email"]
+
+        settings.support_email = request.form["support_email"]
+
+        settings.phone = request.form["phone"]
+
+        settings.whatsapp = request.form["whatsapp"]
+
+        settings.address = request.form["address"]
+
+        settings.business_hours = request.form["business_hours"]
+
+        settings.google_map = request.form["google_map"]
+
+        db.session.commit()
+
+        flash(
+            "Contact settings updated.",
+            "success"
+        )
+
+        return redirect(request.url)
+
+    return render_template(
+
+        "admin_marketplace/contact_settings.html",
+
+        settings=settings
+
+    )
+
+@app.route("/admin/marketplace/seo",
+methods=["GET","POST"])
+@admin_required
+def seo_settings():
+
+    seo = SEOSettings.query.first()
+
+    if not seo:
+
+        seo = SEOSettings()
+
+        db.session.add(seo)
+
+        db.session.commit()
+
+    if request.method == "POST":
+
+        seo.site_title = request.form["site_title"]
+
+        seo.meta_description = request.form["meta_description"]
+
+        seo.meta_keywords = request.form["meta_keywords"]
+
+        db.session.commit()
+
+        flash(
+            "SEO settings updated.",
+            "success"
+        )
+
+        return redirect(request.url)
+
+    return render_template(
+
+        "admin_marketplace/seo.html",
+
+        seo=seo
+
     )
 
 # =========================
