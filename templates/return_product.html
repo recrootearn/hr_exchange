@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Return Product{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-8">
+
+<div class="card shadow">
+
+<div class="card-header bg-danger text-white">
+
+<h4 class="mb-0">
+
+<i class="fas fa-undo"></i>
+
+Return Product
+
+</h4>
+
+</div>
+
+<div class="card-body">
+
+<div class="row mb-4">
+
+<div class="col-md-3">
+
+<img
+src="{{ item.product.cover_image }}"
+class="img-fluid rounded">
+
+</div>
+
+<div class="col-md-9">
+
+<h5>
+
+{{ item.product.name }}
+
+</h5>
+
+<p class="text-muted">
+
+Order #
+
+{{ item.order.order_number }}
+
+</p>
+
+<h5 class="text-success">
+
+₹{{ item.total_price }}
+
+</h5>
+
+</div>
+
+</div>
+
+<form
+method="POST"
+enctype="multipart/form-data">
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Reason
+
+</label>
+
+<select
+name="reason"
+class="form-select"
+required>
+
+<option value="">
+
+Select Reason
+
+</option>
+
+<option>
+
+Damaged Product
+
+</option>
+
+<option>
+
+Wrong Product
+
+</option>
+
+<option>
+
+Missing Item
+
+</option>
+
+<option>
+
+Quality Issue
+
+</option>
+
+<option>
+
+Changed Mind
+
+</option>
+
+<option>
+
+Other
+
+</option>
+
+</select>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Description
+
+</label>
+
+<textarea
+
+name="description"
+
+rows="5"
+
+class="form-control"
+
+placeholder="Describe the issue..."
+
+required>
+
+</textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Upload Images
+
+(Max 5)
+
+</label>
+
+<input
+
+type="file"
+
+name="images"
+
+class="form-control"
+
+multiple
+
+accept="image/*"
+
+id="images">
+
+</div>
+
+<div
+id="preview"
+class="row">
+
+</div>
+
+<hr>
+
+<div class="d-grid">
+
+<button
+class="btn btn-danger btn-lg">
+
+Submit Return Request
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const input=document.getElementById("images");
+
+const preview=document.getElementById("preview");
+
+input.onchange=function(){
+
+preview.innerHTML="";
+
+const files=[...this.files];
+
+if(files.length>5){
+
+alert("Maximum 5 images allowed.");
+
+this.value="";
+
+return;
+
+}
+
+files.forEach(file=>{
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+
+preview.innerHTML+=`
+
+<div class="col-4 mb-3">
+
+<img
+
+src="${e.target.result}"
+
+class="img-fluid rounded shadow">
+
+</div>
+
+`;
+
+}
+
+reader.readAsDataURL(file);
+
+});
+
+}
+
+</script>
+
+{% endblock %}

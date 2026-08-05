@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Seller Analytics{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <h2 class="mb-4">
+        <i class="fas fa-chart-line"></i>
+        Seller Analytics
+    </h2>
+
+    <!-- Top Cards -->
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6>Total Revenue</h6>
+                    <h3 class="text-success">
+                        ₹{{ "{:,.2f}".format(total_sales) }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6>Total Orders</h6>
+                    <h3>{{ total_orders }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6>Total Products</h6>
+                    <h3>{{ total_products }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6>Total Customers</h6>
+                    <h3>{{ total_customers }}</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Sales Chart -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Monthly Sales
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <canvas id="salesChart"></canvas>
+
+        </div>
+
+    </div>
+
+    <!-- Top Products -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Top Selling Products
+            </h5>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover mb-0">
+
+                <thead>
+
+                <tr>
+
+                    <th>Product</th>
+
+                    <th>Sold Qty</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for product, qty in top_products %}
+
+                <tr>
+
+                    <td>{{ product.name }}</td>
+
+                    <td>{{ qty }}</td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td colspan="2" class="text-center">
+
+                        No sales yet.
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Export -->
+
+    <div class="text-end">
+
+        <a href="/seller/export/excel"
+           class="btn btn-success">
+
+            <i class="fas fa-file-excel"></i>
+
+            Excel
+
+        </a>
+
+        <a href="/seller/export/pdf"
+           class="btn btn-danger">
+
+            <i class="fas fa-file-pdf"></i>
+
+            PDF
+
+        </a>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+fetch("/seller/monthly-sales")
+
+.then(res=>res.json())
+
+.then(data=>{
+
+new Chart(
+
+document.getElementById("salesChart"),
+
+{
+
+type:"line",
+
+data:{
+
+labels:[
+
+"Jan","Feb","Mar","Apr","May","Jun",
+
+"Jul","Aug","Sep","Oct","Nov","Dec"
+
+],
+
+datasets:[{
+
+label:"Sales",
+
+data:data,
+
+fill:false,
+
+tension:.3
+
+}]
+
+}
+
+});
+
+});
+
+</script>
+
+{% endblock %}

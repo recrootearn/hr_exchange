@@ -165,26 +165,64 @@ class="notification-card {% if not n.is_read %}unread{% endif %}">
 <div class="notif-icon">
 
     {% if n.type == "follow" %}
-        <i class="fas fa-user-plus"></i>
+    <i class="fas fa-user-plus"></i>
 
-    {% elif n.type == "job_apply" %}
-        <i class="fas fa-file-signature"></i>
+{% elif n.type == "job_apply" %}
+    <i class="fas fa-file-signature"></i>
 
-    {% elif n.type == "job_post" %}
-        <i class="fas fa-briefcase"></i>
+{% elif n.type == "job_post" %}
+    <i class="fas fa-briefcase"></i>
 
-    {% elif n.type == "message" %}
-        <i class="fas fa-comment"></i>
+{% elif n.type == "message" %}
+    <i class="fas fa-comment"></i>
 
-    {% elif n.type == "support" %}
-        <i class="fas fa-headset"></i>
+{% elif n.type == "support" %}
+    <i class="fas fa-headset"></i>
 
-    {% elif n.type == "credit" %}
-        <i class="fas fa-coins"></i>
+{% elif n.type == "credit" %}
+    <i class="fas fa-coins"></i>
 
-    {% else %}
-        <i class="fas fa-bell"></i>
-    {% endif %}
+<!-- Marketplace -->
+
+{% elif n.type == "order" %}
+    <i class="fas fa-shopping-bag"></i>
+
+{% elif n.type == "payment" %}
+    <i class="fas fa-credit-card"></i>
+
+{% elif n.type == "shipment" %}
+    <i class="fas fa-box"></i>
+
+{% elif n.type == "delivery" %}
+    <i class="fas fa-truck"></i>
+
+{% elif n.type == "return" %}
+    <i class="fas fa-undo"></i>
+
+{% elif n.type == "refund" %}
+    <i class="fas fa-money-bill-wave"></i>
+
+{% elif n.type == "wallet" %}
+    <i class="fas fa-wallet"></i>
+
+{% elif n.type == "withdrawal" %}
+    <i class="fas fa-landmark"></i>
+
+{% elif n.type == "review" %}
+    <i class="fas fa-star"></i>
+
+{% elif n.type == "wishlist" %}
+    <i class="fas fa-heart"></i>
+
+{% elif n.type == "promotion" %}
+    <i class="fas fa-bullhorn"></i>
+
+{% elif n.type == "seller_order" %}
+    <i class="fas fa-store"></i>
+
+{% else %}
+    <i class="fas fa-bell"></i>
+{% endif %}
 
 </div>
 

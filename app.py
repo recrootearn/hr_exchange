@@ -14286,7 +14286,7 @@ def admin_reported_comments():
         reported_comments=reported_comments
     )
 
-@app.route("/shop/add-product", methods=["GET","POST"])
+@app.route("/shop/add-product", methods=["GET", "POST"])
 @login_required
 def add_product():
 
@@ -14294,35 +14294,70 @@ def add_product():
         is_active=True
     ).all()
 
+    brands = Brand.query.filter_by(
+        active=True
+    ).all()
+
     if request.method == "POST":
-
-        name = request.form["name"].strip()
-
-        category_id = request.form["category_id"]
-
-        description = request.form["description"].strip()
-
-        price = float(request.form["price"])
-
-        sale_price = request.form.get("sale_price") or None
-
-        stock = int(request.form["stock"])
 
         product = Product(
 
             seller_id=current_user.id,
 
-            category_id=category_id,
+            category_id=int(request.form["category_id"]),
 
-            name=name,
+            brand_id=request.form.get("brand_id") or None,
 
-            description=description,
+            name=request.form["name"].strip(),
 
-            price=price,
+            description=request.form["description"].strip(),
 
-            sale_price=sale_price,
+            short_description=request.form.get(
+                "short_description"
+            ),
 
-            stock=stock
+            sku=request.form.get("sku"),
+
+            hsn_code=request.form.get("hsn_code"),
+
+            price=float(request.form["price"]),
+
+            sale_price=float(request.form["sale_price"])
+            if request.form.get("sale_price")
+            else None,
+
+            stock=int(request.form["stock"]),
+
+            gst_percent=float(
+                request.form.get("gst_percent", 0)
+            ),
+
+            weight=float(
+                request.form.get("weight", 0)
+            ),
+
+            length=float(
+                request.form.get("length", 0)
+            ),
+
+            width=float(
+                request.form.get("width", 0)
+            ),
+
+            height=float(
+                request.form.get("height", 0)
+            ),
+
+            product_type=request.form.get(
+                "product_type",
+                "simple"
+            ),
+
+            return_allowed="return_allowed" in request.form,
+
+            exchange_allowed="exchange_allowed" in request.form,
+
+            is_active=True
 
         )
 
@@ -14330,66 +14365,103 @@ def add_product():
 
         db.session.commit()
 
-        files = request.files.getlist("images")
+        # Upload Images
 
-        if len(files) > 5:
+        images = request.files.getlist("images")
+
+        if len(images) > 5:
 
             flash(
                 "Maximum 5 images allowed.",
                 "danger"
             )
 
+            db.session.delete(product)
+
+            db.session.commit()
+
             return redirect(request.url)
 
         order = 1
 
-        for file in files:
+        for image in images:
 
-            if file.filename == "":
+            if image.filename == "":
                 continue
 
-            if allowed_product_file(file.filename):
+            if allowed_product_file(image.filename):
 
-                ext = file.filename.rsplit(".",1)[1].lower()
+                ext = image.filename.rsplit(".", 1)[1].lower()
 
-                filename = (
-                    str(uuid.uuid4())
-                    + "."
-                    + ext
-                )
+                filename = f"{uuid.uuid4()}.{ext}"
 
-                file.save(
+                image.save(
                     os.path.join(
                         PRODUCT_UPLOAD_FOLDER,
                         filename
                     )
                 )
 
-                img = ProductImage(
+                db.session.add(
 
-                    product_id=product.id,
+                    ProductImage(
 
-                    image=filename,
+                        product_id=product.id,
 
-                    sort_order=order
+                        image=filename,
+
+                        sort_order=order
+
+                    )
 
                 )
 
-                db.session.add(img)
-
                 order += 1
 
-        db.session.commit()
+        # Save Variants
 
         if product.product_type == "variable":
 
-            variant_names = request.form.getlist("variant_name[]")
+            names = request.form.getlist(
+                "variant_name[]"
+            )
 
-            option_values = request.form.getlist("option_value[]")
+            values = request.form.getlist(
+                "option_value[]"
+            )
 
-            option_prices = request.form.getlist("option_price[]")
+            prices = request.form.getlist(
+                "option_price[]"
+            )
 
-            option_stocks = request.form.getlist("option_stock[]")
+            stocks = request.form.getlist(
+                "option_stock[]"
+            )
+
+            for i in range(len(values)):
+
+                if values[i].strip() == "":
+                    continue
+
+                db.session.add(
+
+                    ProductVariant(
+
+                        product_id=product.id,
+
+                        variant_name=names[i],
+
+                        option_value=values[i],
+
+                        price=float(prices[i]),
+
+                        stock=int(stocks[i])
+
+                    )
+
+                )
+
+        db.session.commit()
 
         flash(
             "Product added successfully.",
@@ -14399,8 +14471,13 @@ def add_product():
         return redirect("/shop/products")
 
     return render_template(
-        "add_product.html",
-        categories=categories
+
+        "shop/add_product.html",
+
+        categories=categories,
+
+        brands=brands
+
     )
 
 @app.route("/shop/products")
@@ -17814,22 +17891,6 @@ def toggle_cms_page(id):
 
     return redirect(request.referrer)
 
-@app.route("/admin/marketplace/cms/<int:id>/toggle")
-@admin_required
-def toggle_cms_page(id):
-
-    page = CMSPage.query.get_or_404(id)
-
-    page.is_published = not page.is_published
-
-    db.session.commit()
-
-    flash(
-        "Page status updated.",
-        "success"
-    )
-
-    return redirect(request.referrer)
 
 @app.route("/admin/marketplace/cms/<int:id>/delete")
 @admin_required

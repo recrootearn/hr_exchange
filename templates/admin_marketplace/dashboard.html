@@ -1,0 +1,711 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Marketplace Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            <i class="fas fa-store"></i>
+            Marketplace Dashboard
+        </h2>
+
+        <a href="/admin/marketplace/settings"
+           class="btn btn-primary">
+
+            <i class="fas fa-cog"></i>
+
+            Marketplace Settings
+
+        </a>
+
+    </div>
+
+    <div class="row g-3">
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+
+                        Shops
+
+                    </h6>
+
+                    <h2>
+
+                        {{ total_shops }}
+
+                    </h2>
+
+                    <i class="fas fa-store fa-2x text-primary float-end"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+
+                        Products
+
+                    </h6>
+
+                    <h2>
+
+                        {{ total_products }}
+
+                    </h2>
+
+                    <i class="fas fa-box fa-2x text-success float-end"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+
+                        Orders
+
+                    </h6>
+
+                    <h2>
+
+                        {{ total_orders }}
+
+                    </h2>
+
+                    <i class="fas fa-shopping-cart fa-2x text-warning float-end"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+
+                        Revenue
+
+                    </h6>
+
+                    <h2>
+
+                        ₹{{ "{:,.0f}".format(total_sales) }}
+
+                    </h2>
+
+                    <i class="fas fa-rupee-sign fa-2x text-danger float-end"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row g-3 mt-1">
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+
+                        Platform Commission
+
+                    </h6>
+
+                    <h2>
+
+                        ₹{{ "{:,.0f}".format(total_commission) }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+
+                        Pending Withdrawals
+
+                    </h6>
+
+                    <h2>
+
+                        {{ pending_withdrawals }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+
+                        Pending Returns
+
+                    </h6>
+
+                    <h2>
+
+                        {{ pending_returns }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card shadow border-0">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+
+                        Pending Shipments
+
+                    </h6>
+
+                    <h2>
+
+                        {{ pending_shipments }}
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow border-0 mt-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="mb-0">
+
+                Revenue Overview
+
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <canvas id="revenueChart" height="110"></canvas>
+
+        </div>
+
+    </div>
+
+<div class="row mt-4">
+
+    <!-- Latest Orders -->
+
+    <div class="col-lg-8">
+
+        <div class="card shadow border-0">
+
+            <div class="card-header d-flex justify-content-between">
+
+                <h5 class="mb-0">
+
+                    Latest Orders
+
+                </h5>
+
+                <a href="/admin/marketplace/orders">
+
+                    View All
+
+                </a>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>Order</th>
+
+                        <th>Customer</th>
+
+                        <th>Seller</th>
+
+                        <th>Amount</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for order in latest_orders %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ order.order_number }}
+
+                        </td>
+
+                        <td>
+
+                            {{ order.customer.name }}
+
+                        </td>
+
+                        <td>
+
+                            {{ order.seller.company_name }}
+
+                        </td>
+
+                        <td>
+
+                            ₹{{ order.total_amount }}
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-primary">
+
+                                {{ order.order_status }}
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+
+    <div class="col-lg-4">
+
+        <div class="card shadow border-0">
+
+            <div class="card-header">
+
+                <h5>
+
+                    Quick Actions
+
+                </h5>
+
+            </div>
+
+            <div class="card-body d-grid gap-2">
+
+                <a href="/admin/marketplace/orders"
+
+                   class="btn btn-primary">
+
+                    📦 Orders
+
+                </a>
+
+                <a href="/admin/marketplace/products"
+
+                   class="btn btn-success">
+
+                    🛍 Products
+
+                </a>
+
+                <a href="/admin/marketplace/sellers"
+
+                   class="btn btn-warning">
+
+                    🏪 Sellers
+
+                </a>
+
+                <a href="/admin/marketplace/returns"
+
+                   class="btn btn-danger">
+
+                    🔄 Returns
+
+                </a>
+
+                <a href="/admin/marketplace/withdrawals"
+
+                   class="btn btn-dark">
+
+                    💰 Withdrawals
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Top Sellers -->
+
+<div class="card shadow border-0 mt-4">
+
+    <div class="card-header d-flex justify-content-between">
+
+        <h5 class="mb-0">
+
+            Top Sellers
+
+        </h5>
+
+        <a href="/admin/marketplace/sellers">
+
+            View All
+
+        </a>
+
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table table-striped mb-0">
+
+            <thead>
+
+            <tr>
+
+                <th>Seller</th>
+
+                <th>Orders</th>
+
+                <th>Revenue</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for seller, revenue, orders in top_sellers %}
+
+            <tr>
+
+                <td>
+
+                    {{ seller.company_name }}
+
+                </td>
+
+                <td>
+
+                    {{ orders }}
+
+                </td>
+
+                <td>
+
+                    ₹{{ revenue }}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- Top Products -->
+
+<div class="card shadow border-0 mt-4">
+
+    <div class="card-header d-flex justify-content-between">
+
+        <h5>
+
+            Top Products
+
+        </h5>
+
+        <a href="/admin/marketplace/products">
+
+            View All
+
+        </a>
+
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table table-hover mb-0">
+
+            <thead>
+
+            <tr>
+
+                <th>Product</th>
+
+                <th>Views</th>
+
+                <th>Sold</th>
+
+                <th>Revenue</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for product in top_products %}
+
+            <tr>
+
+                <td>
+
+                    {{ product.name }}
+
+                </td>
+
+                <td>
+
+                    {{ product.total_views }}
+
+                </td>
+
+                <td>
+
+                    {{ product.purchase_count }}
+
+                </td>
+
+                <td>
+
+                    ₹{{ product.revenue }}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- Low Stock -->
+
+<div class="card shadow border-0 mt-4 mb-5">
+
+    <div class="card-header">
+
+        <h5>
+
+            Low Stock Products
+
+        </h5>
+
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table table-bordered mb-0">
+
+            <thead>
+
+            <tr>
+
+                <th>Product</th>
+
+                <th>Seller</th>
+
+                <th>Stock</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for product in low_stock %}
+
+            <tr>
+
+                <td>
+
+                    {{ product.name }}
+
+                </td>
+
+                <td>
+
+                    {{ product.seller.company_name }}
+
+                </td>
+
+                <td>
+
+                    <span class="badge bg-danger">
+
+                        {{ product.stock }}
+
+                    </span>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+fetch("/admin/marketplace/chart")
+
+.then(r=>r.json())
+
+.then(data=>{
+
+new Chart(
+
+document.getElementById("revenueChart"),
+
+{
+
+type:"line",
+
+data:{
+
+labels:[
+
+"Jan","Feb","Mar","Apr","May","Jun",
+
+"Jul","Aug","Sep","Oct","Nov","Dec"
+
+],
+
+datasets:[{
+
+label:"Revenue",
+
+data:data,
+
+fill:false,
+
+tension:.35,
+
+borderWidth:3
+
+}]
+
+},
+
+options:{
+
+responsive:true,
+
+maintainAspectRatio:false
+
+}
+
+});
+
+});
+
+</script>
+
+{% endblock %}

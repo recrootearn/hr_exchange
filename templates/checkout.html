@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<h2 class="mb-4">
+
+Checkout
+
+</h2>
+
+<div class="row">
+
+<div class="col-lg-8">
+
+<div class="card mb-4">
+
+<div class="card-header">
+
+<h5>
+
+Select Delivery Address
+
+</h5>
+
+</div>
+
+<div class="card-body">
+
+{% for address in addresses %}
+
+<div class="form-check mb-3">
+
+<input
+class="form-check-input"
+type="radio"
+name="address"
+value="{{ address.id }}"
+{% if loop.first %}
+checked
+{% endif %}>
+
+<label class="form-check-label">
+
+<b>
+
+{{ address.full_name }}
+
+</b>
+
+<br>
+
+{{ address.address_line1 }}
+
+{{ address.address_line2 }}
+
+<br>
+
+{{ address.city }}
+
+{{ address.state }}
+
+{{ address.pincode }}
+
+<br>
+
+{{ address.mobile }}
+
+</label>
+
+</div>
+
+{% endfor %}
+
+<a
+href="/address/add"
+class="btn btn-outline-primary">
+
+Add New Address
+
+</a>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-header">
+
+Order Summary
+
+</div>
+
+<div class="card-body">
+
+{% for item in cart.items %}
+
+<div class="d-flex justify-content-between mb-3">
+
+<div>
+
+<b>
+
+{{ item.product.name }}
+
+</b>
+
+<br>
+
+Qty : {{ item.quantity }}
+
+{% if item.variant_option %}
+
+<br>
+
+{{ item.variant_option.value }}
+
+{% endif %}
+
+</div>
+
+<div>
+
+₹{{ item.price * item.quantity }}
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-4">
+
+<div class="card">
+
+<div class="card-body">
+
+<h5>
+
+Price Details
+
+</h5>
+
+<hr>
+
+<p>
+
+Subtotal
+
+<span class="float-end">
+
+₹{{ subtotal }}
+
+</span>
+
+</p>
+
+<p>
+
+Delivery
+
+<span class="float-end">
+
+₹{{ shipping_charge }}
+
+</span>
+
+</p>
+
+<hr>
+
+<h4>
+
+Total
+
+<span class="float-end">
+
+₹{{ total }}
+
+</span>
+
+</h4>
+
+<button
+id="payButton"
+class="btn btn-success w-100 mt-3">
+
+Continue To Payment
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+document
+.getElementById("payButton")
+.onclick=function(){
+
+fetch("/create-marketplace-order",{
+
+method:"POST"
+
+})
+
+.then(r=>r.json())
+
+.then(function(order){
+
+var options={
+
+key:"YOUR_KEY",
+
+amount:order.amount,
+
+currency:"INR",
+
+name:"RecrootEarn",
+
+description:"Marketplace Order",
+
+order_id:order.id,
+
+handler:function(response){
+
+window.location="/marketplace-payment-success?payment_id="+response.razorpay_payment_id+"&order_id="+response.razorpay_order_id+"&signature="+response.razorpay_signature;
+
+}
+
+};
+
+new Razorpay(options).open();
+
+});
+
+};
+
+{% endblock %}

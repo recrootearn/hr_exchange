@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+Seller Orders
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<h2>
+
+Orders
+
+</h2>
+
+<div class="mb-4">
+
+<a href="?status=Pending" class="btn btn-outline-warning">
+
+Pending
+
+</a>
+
+<a href="?status=Accepted" class="btn btn-outline-primary">
+
+Accepted
+
+</a>
+
+<a href="?status=Packed" class="btn btn-outline-info">
+
+Packed
+
+</a>
+
+<a href="?status=Shipped" class="btn btn-outline-secondary">
+
+Shipped
+
+</a>
+
+<a href="?status=Delivered" class="btn btn-outline-success">
+
+Delivered
+
+</a>
+
+</div>
+
+{% for order in orders %}
+
+<div class="card mb-3">
+
+<div class="card-body">
+
+<div class="row">
+
+<div class="col-md-3">
+
+{{ order.order_number }}
+
+</div>
+
+<div class="col-md-3">
+
+₹{{ order.total_amount }}
+
+</div>
+
+<div class="col-md-3">
+
+{{ order.order_status }}
+
+</div>
+
+<div class="col-md-3 text-end">
+
+<a
+href="/order/{{ order.id }}"
+class="btn btn-primary">
+
+Open
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

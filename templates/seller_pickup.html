@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}Pickup Address{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-8">
+
+<div class="card shadow">
+
+<div class="card-header bg-primary text-white">
+
+<h4 class="mb-0">
+
+<i class="fa-solid fa-warehouse me-2"></i>
+
+Seller Pickup Address
+
+</h4>
+
+</div>
+
+<div class="card-body">
+
+<form
+method="POST"
+action="{% if pickup %}/seller/pickup/edit{% else %}/seller/pickup/save{% endif %}">
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Warehouse Name
+
+</label>
+
+<input
+type="text"
+class="form-control"
+name="pickup_name"
+value="{{ pickup.pickup_name if pickup else '' }}"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Contact Person
+
+</label>
+
+<input
+type="text"
+class="form-control"
+name="contact_person"
+value="{{ pickup.contact_person if pickup else '' }}"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Mobile Number
+
+</label>
+
+<input
+type="text"
+class="form-control"
+name="mobile"
+value="{{ pickup.mobile if pickup else '' }}"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Email
+
+</label>
+
+<input
+type="email"
+class="form-control"
+name="email"
+value="{{ pickup.email if pickup else '' }}">
+
+</div>
+
+<div class="col-12 mb-3">
+
+<label class="form-label">
+
+Address Line 1
+
+</label>
+
+<input
+type="text"
+class="form-control"
+name="address_line1"
+value="{{ pickup.address_line1 if pickup else '' }}"
+required>
+
+</div>
+
+<div class="col-12 mb-3">
+
+<label class="form-label">
+
+Address Line 2
+
+</label>
+
+<input
+type="text"
+class="form-control"
+name="address_line2"
+value="{{ pickup.address_line2 if pickup else '' }}">
+
+</div>
+
+<div class="col-md-4 mb-3">
+
+<label class="form-label">
+
+City
+
+</label>
+
+<input
+type="text"
+class="form-control"
+name="city"
+value="{{ pickup.city if pickup else '' }}"
+required>
+
+</div>
+
+<div class="col-md-4 mb-3">
+
+<label class="form-label">
+
+State
+
+</label>
+
+<input
+type="text"
+class="form-control"
+name="state"
+value="{{ pickup.state if pickup else '' }}"
+required>
+
+</div>
+
+<div class="col-md-4 mb-3">
+
+<label class="form-label">
+
+Pincode
+
+</label>
+
+<input
+type="text"
+class="form-control"
+name="pincode"
+value="{{ pickup.pincode if pickup else '' }}"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Country
+
+</label>
+
+<input
+type="text"
+class="form-control"
+name="country"
+value="{{ pickup.country if pickup else 'India' }}"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+GST Number (Optional)
+
+</label>
+
+<input
+type="text"
+class="form-control"
+name="gst_number"
+value="{{ pickup.gst_number if pickup else '' }}">
+
+</div>
+
+</div>
+
+<hr>
+
+<div class="d-flex justify-content-between">
+
+<a
+href="/profile"
+class="btn btn-secondary">
+
+Back
+
+</a>
+
+<button
+type="submit"
+class="btn btn-primary">
+
+{% if pickup %}
+
+Update Pickup Address
+
+{% else %}
+
+Save Pickup Address
+
+{% endif %}
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+{% if pickup %}
+
+<div class="alert alert-info mt-3">
+
+<strong>Status :</strong>
+
+{% if pickup.is_verified %}
+
+<span class="text-success">
+
+✔ Verified by Admin
+
+</span>
+
+{% else %}
+
+<span class="text-warning">
+
+Pending Admin Verification
+
+</span>
+
+{% endif %}
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

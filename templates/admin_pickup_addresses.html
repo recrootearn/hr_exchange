@@ -1,0 +1,131 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<h3 class="mb-4">
+
+Seller Pickup Addresses
+
+</h3>
+
+<table class="table table-bordered table-hover">
+
+<thead>
+
+<tr>
+
+<th>Seller</th>
+
+<th>Warehouse</th>
+
+<th>City</th>
+
+<th>State</th>
+
+<th>Pincode</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for pickup in pickups %}
+
+<tr>
+
+<td>
+
+{{ pickup.seller.company_name }}
+
+</td>
+
+<td>
+
+{{ pickup.pickup_name }}
+
+</td>
+
+<td>
+
+{{ pickup.city }}
+
+</td>
+
+<td>
+
+{{ pickup.state }}
+
+</td>
+
+<td>
+
+{{ pickup.pincode }}
+
+</td>
+
+<td>
+
+{% if pickup.is_verified %}
+
+<span class="badge bg-success">
+
+Verified
+
+</span>
+
+{% else %}
+
+<span class="badge bg-warning">
+
+Pending
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if not pickup.is_verified %}
+
+<a
+href="/admin/pickup/{{ pickup.id }}/verify"
+class="btn btn-success btn-sm">
+
+Verify
+
+</a>
+
+{% else %}
+
+<a
+href="/admin/pickup/{{ pickup.id }}/reject"
+class="btn btn-danger btn-sm">
+
+Reject
+
+</a>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="d-flex align-items-center mb-4">
+
+<img src="{{ seller.profile_photo }}"
+width="70"
+height="70"
+class="rounded-circle me-3">
+
+<div>
+
+<h3>{{ seller.company_name }}</h3>
+
+<p class="text-muted mb-0">
+
+{{ products|length }} Products
+
+</p>
+
+</div>
+
+</div>
+
+<div class="row">
+
+{% for product in products %}
+
+<div class="col-md-6 col-6 mb-4">
+
+<div class="card h-100 shadow-sm">
+
+{% if product.images %}
+
+<img
+src="{{ url_for('static',
+filename='product_images/' + product.images[0].image) }}"
+class="card-img-top"
+style="height:180px;object-fit:cover;">
+
+{% endif %}
+
+<div class="card-body">
+
+<h6>
+
+{{ product.name }}
+
+</h6>
+
+<h5 class="text-success">
+
+₹{{ product.sale_price or product.price }}
+
+</h5>
+
+<a
+href="/product/{{ product.id }}"
+class="btn btn-primary w-100">
+
+Buy Now
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% else %}
+
+<div class="col-12">
+
+<div class="alert alert-info">
+
+This shop hasn't added any products yet.
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+{% endblock %}

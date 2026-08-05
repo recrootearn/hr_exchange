@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<h2 class="mb-4">
+
+My Orders
+
+</h2>
+
+{% if orders %}
+
+{% for order in orders %}
+
+<div class="card shadow-sm mb-3">
+
+<div class="card-body">
+
+<div class="row align-items-center">
+
+<div class="col-md-3">
+
+<h6>
+
+{{ order.order_number }}
+
+</h6>
+
+<small>
+
+{{ order.created_at.strftime("%d %b %Y %I:%M %p") }}
+
+</small>
+
+</div>
+
+<div class="col-md-3">
+
+<b>
+
+₹{{ order.total_amount }}
+
+</b>
+
+</div>
+
+<div class="col-md-3">
+
+<span class="badge bg-primary">
+
+{{ order.order_status }}
+
+</span>
+
+</div>
+
+<div class="col-md-3 text-end">
+
+<a
+href="/order/{{ order.id }}"
+class="btn btn-primary">
+
+View
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<div class="alert alert-info">
+
+No Orders Found.
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

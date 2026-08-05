@@ -1,0 +1,85 @@
+<h3>My Products</h3>
+
+<a href="/shop/add-product"
+class="btn btn-primary mb-3">
+
++ Add Product
+
+</a>
+
+<table class="table">
+
+<tr>
+
+<th>Image</th>
+
+<th>Name</th>
+
+<th>Price</th>
+
+<th>Stock</th>
+
+<th>Actions</th>
+
+</tr>
+
+{% for p in products %}
+
+<tr>
+
+<td>
+
+{% if p.images %}
+
+<img
+src="{{ url_for('static',
+filename='product_images/' + p.images[0].image) }}"
+width="70">
+
+{% endif %}
+
+</td>
+
+<td>
+
+{{ p.name }}
+
+</td>
+
+<td>
+
+₹{{ p.sale_price or p.price }}
+
+</td>
+
+<td>
+
+{{ p.stock }}
+
+</td>
+
+<td>
+
+<a
+href="/shop/edit-product/{{ p.id }}"
+class="btn btn-warning btn-sm">
+
+Edit
+
+</a>
+
+<a
+href="/shop/delete-product/{{ p.id }}"
+class="btn btn-danger btn-sm">
+
+Delete
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>

@@ -1122,6 +1122,31 @@ body{
     Wallet
 </a>
 
+    <a href="/seller/pickup"
+       class="nav-link">
+
+        <i class="fa-solid fa-warehouse"></i>
+
+        Pickup Address
+
+    </a>
+
+<a href="/cart" class="nav-link">
+
+🛒 Cart
+
+{% if cart_count %}
+
+<span class="badge bg-danger">
+
+{{ cart_count }}
+
+</span>
+
+{% endif %}
+
+</a>
+
 <a href="/profile" class="mobile-hide-hr">
     <i class="fas fa-user"></i>
     My Profile

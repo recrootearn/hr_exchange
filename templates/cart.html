@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+My Cart
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<h2 class="mb-4">
+
+🛒 My Cart
+
+</h2>
+
+{% if cart and cart.items %}
+
+<div class="row">
+
+<div class="col-lg-8">
+
+{% for item in cart.items %}
+
+<div class="card mb-3 shadow-sm">
+
+<div class="row g-0">
+
+<div class="col-3">
+
+{% if item.product.images %}
+
+<img
+src="{{ url_for('static',
+filename='product_images/' + item.product.images[0].image) }}"
+class="img-fluid rounded-start"
+style="height:140px;object-fit:cover;">
+
+{% endif %}
+
+</div>
+
+<div class="col-9">
+
+<div class="card-body">
+
+<h5>
+
+{{ item.product.name }}
+
+</h5>
+
+{% if item.variant_option %}
+
+<p class="text-muted">
+
+Variant :
+
+<b>
+
+{{ item.variant_option.value }}
+
+</b>
+
+</p>
+
+{% endif %}
+
+<h4 class="text-success">
+
+₹{{ item.price }}
+
+</h4>
+
+<div class="d-flex align-items-center mt-3">
+
+<a
+href="/cart/decrease/{{ item.id }}"
+class="btn btn-outline-secondary">
+
+−
+
+</a>
+
+<span
+class="mx-3 fw-bold">
+
+{{ item.quantity }}
+
+</span>
+
+<a
+href="/cart/increase/{{ item.id }}"
+class="btn btn-outline-secondary">
+
++
+
+</a>
+
+<a
+href="/cart/remove/{{ item.id }}"
+class="btn btn-danger ms-4">
+
+Remove
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<div class="col-lg-4">
+
+<div class="card shadow">
+
+<div class="card-body">
+
+<h4>
+
+Price Details
+
+</h4>
+
+<hr>
+
+<p>
+
+Subtotal
+
+<span class="float-end">
+
+₹{{ total }}
+
+</span>
+
+</p>
+
+<p>
+
+Delivery
+
+<span class="float-end">
+
+Calculated at Checkout
+
+</span>
+
+</p>
+
+<hr>
+
+<h4>
+
+Total
+
+<span class="float-end">
+
+₹{{ total }}
+
+</span>
+
+</h4>
+
+<a
+href="/checkout"
+class="btn btn-success w-100 mt-4">
+
+Proceed To Checkout
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% else %}
+
+<div class="text-center py-5">
+
+<h3>
+
+Your Cart Is Empty
+
+</h3>
+
+<p>
+
+Add products to continue shopping.
+
+</p>
+
+<a
+href="/shop"
+class="btn btn-primary">
+
+Continue Shopping
+
+</a>
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% endblock %}

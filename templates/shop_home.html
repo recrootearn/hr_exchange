@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Shop{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- Search -->
+
+    <div class="mb-4">
+
+        <input
+            type="text"
+            class="form-control form-control-lg"
+            placeholder="🔍 Search Products or Shops">
+
+    </div>
+
+    <!-- Categories -->
+
+    <h4 class="mb-3">
+        Shop Categories
+    </h4>
+
+    <div class="row">
+
+        {% for category in categories %}
+
+        <div class="col-4 col-md-3 col-lg-2 mb-3">
+
+            <a href="/shop/category/{{ category.id }}"
+               class="text-decoration-none">
+
+                <div class="card shadow-sm text-center h-100">
+
+                    <div class="card-body">
+
+                        {% if category.image %}
+
+                        <img
+                            src="{{ url_for('static', filename='category_images/' + category.image) }}"
+                            class="img-fluid mb-2"
+                            style="height:60px;object-fit:contain;">
+
+                        {% endif %}
+
+                        <h6 class="mb-0">
+
+                            {{ category.name }}
+
+                        </h6>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- Promoted Products -->
+
+    {% if promoted_products %}
+
+    <h4 class="mt-5 mb-3">
+
+        ⭐ Promoted Products
+
+    </h4>
+
+    <div class="row">
+
+        {% for product in promoted_products %}
+
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+
+            <div class="card shadow-sm h-100">
+
+                {% if product.images %}
+
+                <img
+                    src="{{ url_for('static', filename='product_images/' + product.images[0].image) }}"
+                    class="card-img-top"
+                    style="height:200px;object-fit:cover;">
+
+                {% endif %}
+
+                <div class="card-body">
+
+                    <span class="badge bg-warning text-dark mb-2">
+
+                        Promoted
+
+                    </span>
+
+                    <h6>
+
+                        {{ product.name }}
+
+                    </h6>
+
+                    <h5 class="text-success">
+
+                        ₹{{ product.sale_price or product.price }}
+
+                    </h5>
+
+                    <p class="text-muted small">
+
+                        {{ product.seller.company_name }}
+
+                    </p>
+
+                    <a href="/product/{{ product.id }}"
+                       class="btn btn-primary w-100">
+
+                        Buy Now
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+    <!-- Latest Products -->
+
+    <h4 class="mt-5 mb-3">
+
+        🔥 Latest Products
+
+    </h4>
+
+    <div class="row">
+
+        {% for product in latest_products %}
+
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+
+            <div class="card shadow-sm h-100">
+
+                {% if product.images %}
+
+                <img
+                    src="{{ url_for('static', filename='product_images/' + product.images[0].image) }}"
+                    class="card-img-top"
+                    style="height:200px;object-fit:cover;">
+
+                {% endif %}
+
+                <div class="card-body">
+
+                    <h6>
+
+                        {{ product.name }}
+
+                    </h6>
+
+                    <h5 class="text-success">
+
+                        ₹{{ product.sale_price or product.price }}
+
+                    </h5>
+
+                    <p class="text-muted small">
+
+                        {{ product.seller.company_name }}
+
+                    </p>
+
+                    <a href="/product/{{ product.id }}"
+                       class="btn btn-primary w-100">
+
+                        Buy Now
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <div class="col-12">
+
+            <div class="alert alert-info">
+
+                No products available.
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
