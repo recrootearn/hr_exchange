@@ -1,0 +1,852 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+<div class="row">
+
+<!-- Product Images -->
+
+<div class="col-lg-6 mb-4">
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            {% if product.images %}
+
+            <img id="mainImage"
+
+                 src="{{ url_for('static', filename='product_images/' + product.images[0].image) }}"
+
+                 class="img-fluid rounded w-100"
+
+                 style="height:500px;object-fit:cover;">
+
+            {% else %}
+
+            <img id="mainImage"
+
+                 src="{{ url_for('static', filename='images/no-image.png') }}"
+
+                 class="img-fluid rounded w-100"
+
+                 style="height:500px;object-fit:cover;">
+
+            {% endif %}
+
+            <div class="row mt-3">
+
+                {% for image in product.images %}
+
+                <div class="col-3 mb-2">
+
+                    <img src="{{ url_for('static', filename='product_images/' + image.image) }}"
+
+                         class="img-thumbnail"
+
+                         style="height:90px;width:100%;object-fit:cover;cursor:pointer;"
+
+                         onclick="changeImage(this.src)">
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Product Details -->
+
+<div class="col-lg-6">
+
+    <h2 class="fw-bold">
+
+        {{ product.name }}
+
+    </h2>
+
+    <p class="text-muted">
+
+        {{ product.category.name }}
+
+    </p>
+
+    <div class="mb-2">
+
+        {% for i in range(5) %}
+
+            {% if i < product.average_rating|int %}
+
+            <i class="fas fa-star text-warning"></i>
+
+            {% else %}
+
+            <i class="far fa-star text-warning"></i>
+
+            {% endif %}
+
+        {% endfor %}
+
+        <span>
+
+            {{ product.average_rating }}
+
+            ({{ product.review_count }} Reviews)
+
+        </span>
+
+    </div>
+
+    {% if product.sale_price %}
+
+    <h3 class="text-success">
+
+        ₹{{ product.sale_price }}
+
+        <small>
+
+            <del class="text-muted">
+
+                ₹{{ product.price }}
+
+            </del>
+
+        </small>
+
+    </h3>
+
+    {% else %}
+
+    <h3>
+
+        ₹{{ product.price }}
+
+    </h3>
+
+    {% endif %}
+
+    {% if product.stock > 0 %}
+
+    <span class="badge bg-success">
+
+        In Stock
+
+    </span>
+
+    {% else %}
+
+    <span class="badge bg-danger">
+
+        Out of Stock
+
+    </span>
+
+    {% endif %}
+
+    <hr>
+
+    <p>
+
+        {{ product.short_description }}
+
+    </p>
+
+    <div class="row mb-3">
+
+        <div class="col-6">
+
+            <strong>SKU</strong>
+
+            <br>
+
+            {{ product.sku }}
+
+        </div>
+
+        <div class="col-6">
+
+            <strong>Brand</strong>
+
+            <br>
+
+            {{ product.brand.name if product.brand else "-" }}
+
+        </div>
+
+    </div>
+
+    {% if product.product_type=="variable" %}
+
+    <div class="mb-3">
+
+        <label class="form-label">
+
+            Select Variant
+
+        </label>
+
+        <select class="form-select"
+
+                id="variantSelect">
+
+            {% for variant in variants %}
+
+            <option
+
+                value="{{ variant.id }}"
+
+                data-price="{{ variant.price }}">
+
+                {{ variant.variant_name }}
+
+                -
+
+                {{ variant.option_value }}
+
+                (₹{{ variant.price }})
+
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    {% endif %}
+
+    <form action="{{ url_for('add_to_cart',
+
+    product_id=product.id) }}"
+
+          method="POST">
+
+        <div class="row">
+
+            <div class="col-4">
+
+                <input type="number"
+
+                       class="form-control"
+
+                       value="1"
+
+                       min="1"
+
+                       max="{{ product.stock }}"
+
+                       name="quantity">
+
+            </div>
+
+            <div class="col-8 d-grid">
+
+                {% if product.stock > 0 %}
+
+                <button class="btn btn-primary btn-lg">
+
+                    <i class="fas fa-shopping-cart"></i>
+
+                    Add To Cart
+
+                </button>
+
+                {% else %}
+
+                <button class="btn btn-secondary btn-lg"
+
+                        disabled>
+
+                    Out of Stock
+
+                </button>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </form>
+
+    <div class="d-grid mt-3">
+
+        <a href="{{ url_for('toggle_wishlist',
+
+        product_id=product.id) }}"
+
+           class="btn btn-outline-danger">
+
+            <i class="far fa-heart"></i>
+
+            Add To Wishlist
+
+        </a>
+
+    </div>
+
+</div>
+
+</div>
+
+<hr class="my-5">
+
+<div class="row">
+
+    <!-- Product Description -->
+
+    <div class="col-lg-8">
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-white">
+
+                <h5 class="mb-0">
+
+                    Product Description
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                {{ product.description|safe }}
+
+            </div>
+
+        </div>
+
+        <!-- Specifications -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-white">
+
+                <h5 class="mb-0">
+
+                    Specifications
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <table class="table table-bordered">
+
+                    <tr>
+
+                        <th width="35%">
+
+                            Brand
+
+                        </th>
+
+                        <td>
+
+                            {{ product.brand.name if product.brand else "-" }}
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>
+
+                            SKU
+
+                        </th>
+
+                        <td>
+
+                            {{ product.sku }}
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>
+
+                            Weight
+
+                        </th>
+
+                        <td>
+
+                            {{ product.weight }} kg
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>
+
+                            Dimensions
+
+                        </th>
+
+                        <td>
+
+                            {{ product.length }}
+
+                            ×
+
+                            {{ product.width }}
+
+                            ×
+
+                            {{ product.height }}
+
+                            cm
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>
+
+                            GST
+
+                        </th>
+
+                        <td>
+
+                            {{ product.gst_percent }}%
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>
+
+                            HSN Code
+
+                        </th>
+
+                        <td>
+
+                            {{ product.hsn_code }}
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- Reviews -->
+
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-white">
+
+                <h5>
+
+                    Customer Reviews
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                {% if reviews %}
+
+                {% for review in reviews %}
+
+                <div class="border-bottom mb-3 pb-3">
+
+                    <div class="d-flex justify-content-between">
+
+                        <strong>
+
+                            {{ review.user.name }}
+
+                        </strong>
+
+                        <small>
+
+                            {{ review.created_at.strftime("%d %b %Y") }}
+
+                        </small>
+
+                    </div>
+
+                    <div class="mb-2">
+
+                        {% for i in range(5) %}
+
+                            {% if i < review.rating %}
+
+                            <i class="fas fa-star text-warning"></i>
+
+                            {% else %}
+
+                            <i class="far fa-star text-warning"></i>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    </div>
+
+                    <p>
+
+                        {{ review.review }}
+
+                    </p>
+
+                </div>
+
+                {% endfor %}
+
+                {% else %}
+
+                <div class="alert alert-light">
+
+                    No reviews yet.
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Seller Information -->
+
+    <div class="col-lg-4">
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-white">
+
+                <h5>
+
+                    Sold By
+
+                </h5>
+
+            </div>
+
+            <div class="card-body text-center">
+
+                {% if product.seller.profile_photo %}
+
+                <img src="{{ url_for('static',
+                filename='profile/' + product.seller.profile_photo) }}"
+
+                     class="rounded-circle mb-3"
+
+                     width="90"
+
+                     height="90">
+
+                {% endif %}
+
+                <h5>
+
+                    {{ product.seller.shop_name }}
+
+                </h5>
+
+                <p>
+
+                    ⭐ {{ product.seller.seller_rating }}
+
+                    ({{ product.seller.total_reviews }} Reviews)
+
+                </p>
+
+                <a href="{{ url_for('seller_profile',
+                seller_id=product.seller.id) }}"
+
+                   class="btn btn-outline-primary w-100">
+
+                    Visit Shop
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- Shipping -->
+
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-white">
+
+                <h5>
+
+                    Shipping Information
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <p>
+
+                    🚚 Fast Delivery Available
+
+                </p>
+
+                <p>
+
+                    🔄 Easy Returns
+
+                </p>
+
+                <p>
+
+                    🔒 Secure Payment
+
+                </p>
+
+                <p>
+
+                    ✅ Quality Assured
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<hr class="my-5">
+
+<!-- Related Products -->
+
+<div class="container-fluid">
+
+    <h3 class="fw-bold mb-4">
+
+        Related Products
+
+    </h3>
+
+    <div class="row">
+
+        {% for item in related_products %}
+
+        <div class="col-6 col-md-3 col-lg-2 mb-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <a href="{{ url_for('product_details',
+                product_id=item.id) }}">
+
+                    {% if item.images %}
+
+                    <img src="{{ url_for('static',
+                    filename='product_images/' + item.images[0].image) }}"
+                         class="card-img-top"
+                         style="height:180px;object-fit:cover;">
+
+                    {% else %}
+
+                    <img src="{{ url_for('static',
+                    filename='images/no-image.png') }}"
+                         class="card-img-top"
+                         style="height:180px;object-fit:cover;">
+
+                    {% endif %}
+
+                </a>
+
+                <div class="card-body">
+
+                    <h6 class="fw-bold">
+
+                        {{ item.name }}
+
+                    </h6>
+
+                    {% if item.sale_price %}
+
+                    <span class="text-success fw-bold">
+
+                        ₹{{ item.sale_price }}
+
+                    </span>
+
+                    <del class="small text-muted">
+
+                        ₹{{ item.price }}
+
+                    </del>
+
+                    {% else %}
+
+                    <span class="fw-bold">
+
+                        ₹{{ item.price }}
+
+                    </span>
+
+                    {% endif %}
+
+                    <a href="{{ url_for('product_details',
+                    product_id=item.id) }}"
+                       class="btn btn-outline-primary btn-sm w-100 mt-3">
+
+                        View
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+<hr>
+
+<!-- Share -->
+
+<div class="text-center mb-4">
+
+    <h5>
+
+        Share this Product
+
+    </h5>
+
+    <a href="https://wa.me/?text={{ request.url }}"
+       target="_blank"
+       class="btn btn-success">
+
+        <i class="fab fa-whatsapp"></i>
+
+    </a>
+
+    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}"
+       target="_blank"
+       class="btn btn-primary">
+
+        <i class="fab fa-facebook-f"></i>
+
+    </a>
+
+    <button
+        class="btn btn-dark"
+        onclick="copyLink()">
+
+        <i class="fas fa-link"></i>
+
+    </button>
+
+</div>
+
+</div>
+
+<script>
+
+function changeImage(src){
+
+    document.getElementById(
+
+        "mainImage"
+
+    ).src = src;
+
+}
+
+function copyLink(){
+
+    navigator.clipboard.writeText(
+
+        window.location.href
+
+    );
+
+    alert(
+
+        "Product link copied."
+
+    );
+
+}
+
+const variant=document.getElementById(
+
+    "variantSelect"
+
+);
+
+if(variant){
+
+variant.addEventListener(
+
+"change",
+
+function(){
+
+let option=this.options[
+
+this.selectedIndex
+
+];
+
+let price=option.dataset.price;
+
+let priceElement=document.querySelector(
+
+"h3"
+
+);
+
+if(priceElement){
+
+priceElement.innerHTML=
+
+"₹"+price;
+
+}
+
+}
+
+);
+
+}
+
+</script>
+
+{% endblock %}

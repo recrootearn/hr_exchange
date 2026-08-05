@@ -1,0 +1,1104 @@
+{% extends "base.html" %}
+
+{% block title %}Seller Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+<!-- Header -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h2 class="fw-bold">
+
+            Seller Dashboard
+
+        </h2>
+
+        <p class="text-muted">
+
+            Welcome back, {{ current_user.shop_name }}
+
+        </p>
+
+    </div>
+
+    <div>
+
+        <a href="{{ url_for('add_product') }}"
+           class="btn btn-success">
+
+            <i class="fas fa-plus"></i>
+
+            Add Product
+
+        </a>
+
+    </div>
+
+</div>
+
+<!-- Dashboard Cards -->
+
+<div class="row">
+
+    <div class="col-lg-3 col-md-6 mb-4">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+
+                            Total Sales
+
+                        </small>
+
+                        <h3 class="fw-bold">
+
+                            ₹{{ "{:,.2f}".format(total_sales) }}
+
+                        </h3>
+
+                    </div>
+
+                    <i class="fas fa-rupee-sign fa-2x text-success"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+
+                            Orders
+
+                        </small>
+
+                        <h3 class="fw-bold">
+
+                            {{ total_orders }}
+
+                        </h3>
+
+                    </div>
+
+                    <i class="fas fa-shopping-bag fa-2x text-primary"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+
+                            Products
+
+                        </small>
+
+                        <h3 class="fw-bold">
+
+                            {{ total_products }}
+
+                        </h3>
+
+                    </div>
+
+                    <i class="fas fa-box fa-2x text-warning"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+
+        <div class="card shadow-sm border-0">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <small class="text-muted">
+
+                            Wallet Balance
+
+                        </small>
+
+                        <h3 class="fw-bold">
+
+                            ₹{{ "{:,.2f}".format(wallet.balance) }}
+
+                        </h3>
+
+                    </div>
+
+                    <i class="fas fa-wallet fa-2x text-info"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Second Row -->
+
+<div class="row">
+
+    <div class="col-lg-3 col-md-6 mb-4">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body">
+
+                <small class="text-muted">
+
+                    Pending Orders
+
+                </small>
+
+                <h3 class="fw-bold">
+
+                    {{ pending_orders }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body">
+
+                <small class="text-muted">
+
+                    Delivered
+
+                </small>
+
+                <h3 class="fw-bold">
+
+                    {{ delivered_orders }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body">
+
+                <small class="text-muted">
+
+                    Followers
+
+                </small>
+
+                <h3 class="fw-bold">
+
+                    {{ followers }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body">
+
+                <small class="text-muted">
+
+                    Shop Rating
+
+                </small>
+
+                <h3 class="fw-bold text-warning">
+
+                    ⭐ {{ seller_rating }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Quick Actions -->
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header">
+
+        <h5 class="mb-0">
+
+            Quick Actions
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row text-center">
+
+            <div class="col-md-2 col-6 mb-3">
+
+                <a href="{{ url_for('add_product') }}"
+                   class="btn btn-outline-primary w-100">
+
+                    <i class="fas fa-plus"></i><br>
+
+                    Add Product
+
+                </a>
+
+            </div>
+
+            <div class="col-md-2 col-6 mb-3">
+
+                <a href="{{ url_for('seller_products') }}"
+                   class="btn btn-outline-success w-100">
+
+                    <i class="fas fa-box"></i><br>
+
+                    Products
+
+                </a>
+
+            </div>
+
+            <div class="col-md-2 col-6 mb-3">
+
+                <a href="{{ url_for('seller_orders') }}"
+                   class="btn btn-outline-warning w-100">
+
+                    <i class="fas fa-shopping-cart"></i><br>
+
+                    Orders
+
+                </a>
+
+            </div>
+
+            <div class="col-md-2 col-6 mb-3">
+
+                <a href="{{ url_for('seller_wallet') }}"
+                   class="btn btn-outline-info w-100">
+
+                    <i class="fas fa-wallet"></i><br>
+
+                    Wallet
+
+                </a>
+
+            </div>
+
+            <div class="col-md-2 col-6 mb-3">
+
+                <a href="{{ url_for('seller_reviews') }}"
+                   class="btn btn-outline-danger w-100">
+
+                    <i class="fas fa-star"></i><br>
+
+                    Reviews
+
+                </a>
+
+            </div>
+
+            <div class="col-md-2 col-6 mb-3">
+
+                <a href="{{ url_for('seller_analytics') }}"
+                   class="btn btn-outline-dark w-100">
+
+                    <i class="fas fa-chart-line"></i><br>
+
+                    Analytics
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Sales Chart -->
+
+<div class="row">
+
+<div class="col-lg-8 mb-4">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-header d-flex justify-content-between">
+
+<h5 class="mb-0">
+
+Sales Overview
+
+</h5>
+
+<select class="form-select w-auto">
+
+<option>This Month</option>
+
+<option>Last 3 Months</option>
+
+<option>This Year</option>
+
+</select>
+
+</div>
+
+<div class="card-body">
+
+<canvas id="salesChart"
+
+height="120"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Revenue Summary -->
+
+<div class="col-lg-4 mb-4">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-header">
+
+<h5>
+
+Revenue Summary
+
+</h5>
+
+</div>
+
+<div class="card-body">
+
+<div class="mb-3">
+
+<strong>Today's Sales</strong>
+
+<h4 class="text-success">
+
+₹{{ today_sales }}
+
+</h4>
+
+</div>
+
+<div class="mb-3">
+
+<strong>This Week</strong>
+
+<h4>
+
+₹{{ week_sales }}
+
+</h4>
+
+</div>
+
+<div class="mb-3">
+
+<strong>This Month</strong>
+
+<h4>
+
+₹{{ month_sales }}
+
+</h4>
+
+</div>
+
+<div>
+
+<strong>Total Earnings</strong>
+
+<h4 class="text-primary">
+
+₹{{ seller_earnings }}
+
+</h4>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Recent Orders -->
+
+<div class="card shadow-sm border-0 mb-4">
+
+<div class="card-header">
+
+<h5>
+
+Recent Orders
+
+</h5>
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table table-hover align-middle">
+
+<thead>
+
+<tr>
+
+<th>#</th>
+
+<th>Customer</th>
+
+<th>Amount</th>
+
+<th>Status</th>
+
+<th>Date</th>
+
+<th></th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for order in recent_orders %}
+
+<tr>
+
+<td>
+
+#{{ order.id }}
+
+</td>
+
+<td>
+
+{{ order.customer.name }}
+
+</td>
+
+<td>
+
+₹{{ order.total_amount }}
+
+</td>
+
+<td>
+
+<span class="badge bg-primary">
+
+{{ order.order_status }}
+
+</span>
+
+</td>
+
+<td>
+
+{{ order.created_at.strftime("%d-%m-%Y") }}
+
+</td>
+
+<td>
+
+<a href="{{ url_for('seller_order_details',
+
+order_id=order.id) }}"
+
+class="btn btn-sm btn-outline-primary">
+
+View
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- Best Selling Products -->
+
+<div class="card shadow-sm border-0">
+
+<div class="card-header">
+
+<h5>
+
+Best Selling Products
+
+</h5>
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table align-middle">
+
+<thead>
+
+<tr>
+
+<th>Product</th>
+
+<th>Sold</th>
+
+<th>Revenue</th>
+
+<th>Stock</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for product in best_products %}
+
+<tr>
+
+<td>
+
+<div class="d-flex align-items-center">
+
+{% if product.images %}
+
+<img src="{{ url_for('static',
+
+filename='product_images/' + product.images[0].image) }}"
+
+width="60"
+
+height="60"
+
+class="rounded me-3"
+
+style="object-fit:cover;">
+
+{% endif %}
+
+<div>
+
+<strong>
+
+{{ product.name }}
+
+</strong>
+
+</div>
+
+</div>
+
+</td>
+
+<td>
+
+{{ product.total_sales }}
+
+</td>
+
+<td>
+
+₹{{ product.total_sales * (product.sale_price or product.price) }}
+
+</td>
+
+<td>
+
+{{ product.stock }}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+new Chart(
+
+document.getElementById(
+
+"salesChart"
+
+),
+
+{
+
+type:"line",
+
+data:{
+
+labels:{{ chart_labels|tojson }},
+
+datasets:[{
+
+label:"Sales",
+
+data:{{ chart_values|tojson }},
+
+borderWidth:3,
+
+fill:false,
+
+tension:0.4
+
+}]
+
+},
+
+options:{
+
+responsive:true,
+
+plugins:{
+
+legend:{
+
+display:true
+
+}
+
+}
+
+}
+
+}
+
+);
+
+</script>
+
+<!-- Bottom Section -->
+
+<div class="row mt-4">
+
+<!-- Latest Reviews -->
+
+<div class="col-lg-6 mb-4">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-header">
+
+<h5>
+
+Latest Reviews
+
+</h5>
+
+</div>
+
+<div class="card-body">
+
+{% if latest_reviews %}
+
+{% for review in latest_reviews %}
+
+<div class="border-bottom pb-3 mb-3">
+
+<div class="d-flex justify-content-between">
+
+<strong>
+
+{{ review.user.name }}
+
+</strong>
+
+<small>
+
+{{ review.created_at.strftime("%d %b %Y") }}
+
+</small>
+
+</div>
+
+<div class="text-warning mb-2">
+
+{% for i in range(review.rating) %}
+
+<i class="fas fa-star"></i>
+
+{% endfor %}
+
+</div>
+
+<p class="mb-0">
+
+{{ review.review }}
+
+</p>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p class="text-muted">
+
+No reviews yet.
+
+</p>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Low Stock -->
+
+<div class="col-lg-6 mb-4">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-header">
+
+<h5>
+
+Low Stock Products
+
+</h5>
+
+</div>
+
+<div class="card-body">
+
+{% if low_stock_products %}
+
+<div class="table-responsive">
+
+<table class="table table-sm">
+
+<thead>
+
+<tr>
+
+<th>Product</th>
+
+<th>Stock</th>
+
+<th></th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for product in low_stock_products %}
+
+<tr>
+
+<td>
+
+{{ product.name }}
+
+</td>
+
+<td>
+
+<span class="badge bg-danger">
+
+{{ product.stock }}
+
+</span>
+
+</td>
+
+<td>
+
+<a href="{{ url_for('edit_product',
+
+product_id=product.id) }}"
+
+class="btn btn-warning btn-sm">
+
+Update
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% else %}
+
+<p class="text-success">
+
+All products have sufficient stock.
+
+</p>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Notifications & Withdrawals -->
+
+<div class="row">
+
+<div class="col-lg-6 mb-4">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-header">
+
+<h5>
+
+Recent Notifications
+
+</h5>
+
+</div>
+
+<div class="card-body">
+
+{% for notification in notifications[:5] %}
+
+<div class="border-bottom pb-2 mb-2">
+
+<strong>
+
+{{ notification.title }}
+
+</strong>
+
+<p class="mb-1">
+
+{{ notification.message }}
+
+</p>
+
+<small class="text-muted">
+
+{{ notification.created_at.strftime("%d %b %Y %I:%M %p") }}
+
+</small>
+
+</div>
+
+{% else %}
+
+<p>
+
+No notifications.
+
+</p>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-6 mb-4">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-header">
+
+<h5>
+
+Recent Withdrawals
+
+</h5>
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table">
+
+<thead>
+
+<tr>
+
+<th>Date</th>
+
+<th>Amount</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for withdrawal in withdrawals[:5] %}
+
+<tr>
+
+<td>
+
+{{ withdrawal.created_at.strftime("%d-%m-%Y") }}
+
+</td>
+
+<td>
+
+₹{{ withdrawal.amount }}
+
+</td>
+
+<td>
+
+<span class="badge bg-info">
+
+{{ withdrawal.status }}
+
+</span>
+
+</td>
+
+</tr>
+
+{% else %}
+
+<tr>
+
+<td colspan="3"
+
+class="text-center">
+
+No withdrawals.
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

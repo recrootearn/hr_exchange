@@ -1,0 +1,632 @@
+{% extends "base.html" %}
+
+{% block title %}Marketplace{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid px-0">
+
+    <!-- Hero Slider -->
+
+    <div id="shopCarousel"
+         class="carousel slide mb-4"
+         data-bs-ride="carousel">
+
+        <div class="carousel-inner">
+
+            {% for banner in banners %}
+
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+
+                <img src="{{ url_for('static',
+                filename='homepage_banners/' + banner.image) }}"
+                     class="d-block w-100 rounded"
+                     style="height:350px;object-fit:cover;">
+
+                <div class="carousel-caption text-start">
+
+                    <h2>{{ banner.title }}</h2>
+
+                    <p>{{ banner.subtitle }}</p>
+
+                    {% if banner.button_text %}
+
+                    <a href="{{ banner.button_link }}"
+                       class="btn btn-warning">
+
+                        {{ banner.button_text }}
+
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <button class="carousel-control-prev"
+                type="button"
+                data-bs-target="#shopCarousel"
+                data-bs-slide="prev">
+
+            <span class="carousel-control-prev-icon"></span>
+
+        </button>
+
+        <button class="carousel-control-next"
+                type="button"
+                data-bs-target="#shopCarousel"
+                data-bs-slide="next">
+
+            <span class="carousel-control-next-icon"></span>
+
+        </button>
+
+    </div>
+
+    <!-- Categories -->
+
+    <div class="container mb-4">
+
+        <h3 class="fw-bold mb-3">
+
+            Shop by Category
+
+        </h3>
+
+        <div class="row">
+
+            {% for category in categories %}
+
+            <div class="col-6 col-md-3 col-lg-2 mb-3">
+
+                <a href="{{ url_for('shop_products',
+                category=category.id) }}"
+                   class="text-decoration-none">
+
+                    <div class="card shadow-sm border-0 text-center h-100">
+
+                        {% if category.image %}
+
+                        <img src="{{ url_for('static',
+                        filename='category_images/' + category.image) }}"
+                             class="card-img-top"
+                             style="height:120px;object-fit:cover;">
+
+                        {% endif %}
+
+                        <div class="card-body">
+
+                            <strong>
+
+                                {{ category.name }}
+
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <!-- Search & Filters -->
+
+    <div class="container mb-4">
+
+        <div class="card shadow-sm">
+
+            <div class="card-body">
+
+                <form method="GET"
+                      action="{{ url_for('shop_products') }}">
+
+                    <div class="row g-3">
+
+                        <div class="col-md-4">
+
+                            <input type="text"
+                                   name="q"
+                                   class="form-control"
+                                   placeholder="Search products..."
+                                   value="{{ request.args.get('q','') }}">
+
+                        </div>
+
+                        <div class="col-md-2">
+
+                            <select class="form-select"
+                                    name="category">
+
+                                <option value="">
+
+                                    All Categories
+
+                                </option>
+
+                                {% for category in categories %}
+
+                                <option value="{{ category.id }}">
+
+                                    {{ category.name }}
+
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-2">
+
+                            <select class="form-select"
+                                    name="sort">
+
+                                <option value="latest">
+
+                                    Latest
+
+                                </option>
+
+                                <option value="price_low">
+
+                                    Price Low → High
+
+                                </option>
+
+                                <option value="price_high">
+
+                                    Price High → Low
+
+                                </option>
+
+                                <option value="popular">
+
+                                    Popular
+
+                                </option>
+
+                                <option value="bestselling">
+
+                                    Best Selling
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-2">
+
+                            <input type="number"
+                                   name="min_price"
+                                   class="form-control"
+                                   placeholder="Min Price">
+
+                        </div>
+
+                        <div class="col-md-2">
+
+                            <button class="btn btn-primary w-100">
+
+                                <i class="fas fa-search"></i>
+
+                                Search
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+<!-- Products -->
+
+<div class="container mb-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h3 class="fw-bold">
+
+            Products
+
+        </h3>
+
+        <span class="text-muted">
+
+            {{ products.total }} Products Found
+
+        </span>
+
+    </div>
+
+    <div class="row">
+
+        {% for product in products.items %}
+
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+
+            <div class="card shadow-sm border-0 h-100 position-relative">
+
+                {% if product.sale_price %}
+
+                <span class="badge bg-danger position-absolute top-0 start-0 m-2">
+
+                    SALE
+
+                </span>
+
+                {% endif %}
+
+                {% if product.stock <= 0 %}
+
+                <span class="badge bg-dark position-absolute top-0 end-0 m-2">
+
+                    OUT OF STOCK
+
+                </span>
+
+                {% endif %}
+
+                <a href="{{ url_for('product_details',
+                product_id=product.id) }}">
+
+                    {% if product.images %}
+
+                    <img src="{{ url_for('static',
+                    filename='product_images/' + product.images[0].image) }}"
+                         class="card-img-top"
+                         style="height:250px;object-fit:cover;">
+
+                    {% else %}
+
+                    <img src="{{ url_for('static',
+                    filename='images/no-image.png') }}"
+                         class="card-img-top"
+                         style="height:250px;object-fit:cover;">
+
+                    {% endif %}
+
+                </a>
+
+                <div class="card-body d-flex flex-column">
+
+                    <small class="text-muted">
+
+                        {{ product.category.name }}
+
+                    </small>
+
+                    <h6 class="fw-bold mt-2">
+
+                        {{ product.name }}
+
+                    </h6>
+
+                    <div class="mb-2">
+
+                        {% for i in range(5) %}
+
+                            {% if i < product.average_rating|int %}
+
+                            <i class="fas fa-star text-warning"></i>
+
+                            {% else %}
+
+                            <i class="far fa-star text-warning"></i>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                        <small>
+
+                            ({{ product.review_count }})
+
+                        </small>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        {% if product.sale_price %}
+
+                        <span class="fw-bold text-success">
+
+                            ₹{{ product.sale_price }}
+
+                        </span>
+
+                        <del class="text-muted ms-2">
+
+                            ₹{{ product.price }}
+
+                        </del>
+
+                        {% else %}
+
+                        <span class="fw-bold">
+
+                            ₹{{ product.price }}
+
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="mt-auto">
+
+                        <div class="d-grid gap-2">
+
+                            <a href="{{ url_for('product_details',
+                            product_id=product.id) }}"
+                               class="btn btn-outline-primary">
+
+                                <i class="fas fa-eye"></i>
+
+                                View Details
+
+                            </a>
+
+                            {% if product.stock > 0 %}
+
+                            <form action="{{ url_for('add_to_cart',
+                            product_id=product.id) }}"
+                                  method="POST">
+
+                                <button class="btn btn-primary w-100">
+
+                                    <i class="fas fa-shopping-cart"></i>
+
+                                    Add to Cart
+
+                                </button>
+
+                            </form>
+
+                            {% else %}
+
+                            <button class="btn btn-secondary w-100"
+                                    disabled>
+
+                                Out of Stock
+
+                            </button>
+
+                            {% endif %}
+
+                            <a href="{{ url_for('toggle_wishlist',
+                            product_id=product.id) }}"
+                               class="btn btn-light border">
+
+                                <i class="far fa-heart text-danger"></i>
+
+                                Wishlist
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <div class="col-12">
+
+            <div class="alert alert-info text-center">
+
+                No products found.
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+<!-- Pagination -->
+
+<div class="container mb-5">
+
+    {% if products.pages > 1 %}
+
+    <nav>
+
+        <ul class="pagination justify-content-center">
+
+            {% if products.has_prev %}
+
+            <li class="page-item">
+
+                <a class="page-link"
+
+                   href="{{ url_for('shop_products',
+
+                        page=products.prev_num,
+
+                        q=request.args.get('q'),
+
+                        category=request.args.get('category'),
+
+                        brand=request.args.get('brand'),
+
+                        sort=request.args.get('sort'),
+
+                        min_price=request.args.get('min_price'),
+
+                        max_price=request.args.get('max_price')
+
+                   ) }}">
+
+                    Previous
+
+                </a>
+
+            </li>
+
+            {% endif %}
+
+            {% for page in products.iter_pages() %}
+
+                {% if page %}
+
+                <li class="page-item {% if page==products.page %}active{% endif %}">
+
+                    <a class="page-link"
+
+                       href="{{ url_for('shop_products',
+
+                            page=page,
+
+                            q=request.args.get('q'),
+
+                            category=request.args.get('category'),
+
+                            brand=request.args.get('brand'),
+
+                            sort=request.args.get('sort'),
+
+                            min_price=request.args.get('min_price'),
+
+                            max_price=request.args.get('max_price')
+
+                       ) }}">
+
+                        {{ page }}
+
+                    </a>
+
+                </li>
+
+                {% else %}
+
+                <li class="page-item disabled">
+
+                    <span class="page-link">...</span>
+
+                </li>
+
+                {% endif %}
+
+            {% endfor %}
+
+            {% if products.has_next %}
+
+            <li class="page-item">
+
+                <a class="page-link"
+
+                   href="{{ url_for('shop_products',
+
+                        page=products.next_num,
+
+                        q=request.args.get('q'),
+
+                        category=request.args.get('category'),
+
+                        brand=request.args.get('brand'),
+
+                        sort=request.args.get('sort'),
+
+                        min_price=request.args.get('min_price'),
+
+                        max_price=request.args.get('max_price')
+
+                   ) }}">
+
+                    Next
+
+                </a>
+
+            </li>
+
+            {% endif %}
+
+        </ul>
+
+    </nav>
+
+    {% endif %}
+
+</div>
+
+<!-- Back To Top -->
+
+<button id="topBtn"
+
+        class="btn btn-primary rounded-circle shadow"
+
+        style="position:fixed;
+               bottom:20px;
+               right:20px;
+               display:none;
+               z-index:999;">
+
+    <i class="fas fa-arrow-up"></i>
+
+</button>
+
+<script>
+
+window.addEventListener("scroll",function(){
+
+    let btn=document.getElementById("topBtn");
+
+    if(window.scrollY>300){
+
+        btn.style.display="block";
+
+    }else{
+
+        btn.style.display="none";
+
+    }
+
+});
+
+document.getElementById("topBtn").onclick=function(){
+
+    window.scrollTo({
+
+        top:0,
+
+        behavior:"smooth"
+
+    });
+
+};
+
+</script>
+
+</div>
+
+{% endblock %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Add Product{% endblock %}
+{% block title %}Edit Product{% endblock %}
 
 {% block content %}
 
@@ -11,7 +11,7 @@
 
 <div class="row">
 
-<!-- Product Information -->
+<!-- Product Details -->
 
 <div class="col-lg-8">
 
@@ -21,9 +21,9 @@
 
 <h4>
 
-<i class="fas fa-box"></i>
+<i class="fas fa-edit"></i>
 
-Product Information
+Edit Product
 
 </h4>
 
@@ -45,13 +45,15 @@ class="form-control"
 
 name="name"
 
+value="{{ product.name }}"
+
 required>
 
 </div>
 
 <div class="mb-3">
 
-<label class="form-label">
+<label>
 
 Short Description
 
@@ -63,13 +65,13 @@ class="form-control"
 
 rows="2"
 
-name="short_description"></textarea>
+name="short_description">{{ product.short_description }}</textarea>
 
 </div>
 
 <div class="mb-3">
 
-<label class="form-label">
+<label>
 
 Description
 
@@ -83,7 +85,7 @@ rows="7"
 
 name="description"
 
-required></textarea>
+required>{{ product.description }}</textarea>
 
 </div>
 
@@ -105,15 +107,15 @@ name="category_id"
 
 required>
 
-<option value="">
-
-Select Category
-
-</option>
-
 {% for category in categories %}
 
-<option value="{{ category.id }}">
+<option value="{{ category.id }}"
+
+{% if category.id==product.category_id %}
+
+selected
+
+{% endif %}>
 
 {{ category.name }}
 
@@ -147,7 +149,13 @@ Select Brand
 
 {% for brand in brands %}
 
-<option value="{{ brand.id }}">
+<option value="{{ brand.id }}"
+
+{% if product.brand_id==brand.id %}
+
+selected
+
+{% endif %}>
 
 {{ brand.name }}
 
@@ -201,6 +209,8 @@ name="price"
 
 class="form-control"
 
+value="{{ product.price }}"
+
 required>
 
 </div>
@@ -221,7 +231,9 @@ step="0.01"
 
 name="sale_price"
 
-class="form-control">
+class="form-control"
+
+value="{{ product.sale_price }}">
 
 </div>
 
@@ -243,7 +255,7 @@ name="gst_percent"
 
 class="form-control"
 
-value="0">
+value="{{ product.gst_percent }}">
 
 </div>
 
@@ -287,6 +299,8 @@ name="stock"
 
 class="form-control"
 
+value="{{ product.stock }}"
+
 required>
 
 </div>
@@ -305,7 +319,9 @@ type="text"
 
 name="sku"
 
-class="form-control">
+class="form-control"
+
+value="{{ product.sku }}">
 
 </div>
 
@@ -323,7 +339,9 @@ type="text"
 
 name="hsn_code"
 
-class="form-control">
+class="form-control"
+
+value="{{ product.hsn_code }}">
 
 </div>
 
@@ -345,7 +363,7 @@ class="form-control">
 
 <h5>
 
-Product Status
+Product Settings
 
 </h5>
 
@@ -369,13 +387,25 @@ id="product_type"
 
 class="form-select">
 
-<option value="simple">
+<option value="simple"
+
+{% if product.product_type=="simple" %}
+
+selected
+
+{% endif %}>
 
 Simple Product
 
 </option>
 
-<option value="variable">
+<option value="variable"
+
+{% if product.product_type=="variable" %}
+
+selected
+
+{% endif %}>
 
 Variable Product
 
@@ -395,9 +425,13 @@ class="form-check-input"
 
 name="return_allowed"
 
-checked>
+{% if product.return_allowed %}
 
-<label class="form-check-label">
+checked
+
+{% endif %}>
+
+<label>
 
 Return Available
 
@@ -415,9 +449,13 @@ class="form-check-input"
 
 name="exchange_allowed"
 
-checked>
+{% if product.exchange_allowed %}
 
-<label class="form-check-label">
+checked
+
+{% endif %}>
+
+<label>
 
 Exchange Available
 
@@ -425,11 +463,9 @@ Exchange Available
 
 </div>
 
-<div class="alert alert-info mt-3">
+<div class="alert alert-warning mt-3">
 
-Your product will be sent for admin approval before becoming visible in the marketplace.
-
-</div>
+Editing important fields may require admin re-approval depending on your marketplace policy.
 
 </div>
 
@@ -439,7 +475,9 @@ Your product will be sent for admin approval before becoming visible in the mark
 
 </div>
 
-<!-- Product Images -->
+</div>
+
+<!-- Existing Images -->
 
 <div class="card shadow-sm mt-4">
 
@@ -455,27 +493,76 @@ Your product will be sent for admin approval before becoming visible in the mark
 
     <div class="card-body">
 
+        <div class="row">
+
+            {% for image in images %}
+
+            <div class="col-md-3 mb-3">
+
+                <div class="card">
+
+                    <img src="{{ url_for('static',
+                    filename='product_images/' + image.image) }}"
+                         class="card-img-top"
+                         style="height:150px;object-fit:cover;">
+
+                    <div class="card-body text-center">
+
+                        <div class="form-check">
+
+                            <input
+
+                                class="form-check-input"
+
+                                type="checkbox"
+
+                                name="remove_images"
+
+                                value="{{ image.id }}">
+
+                            <label class="form-check-label">
+
+                                Remove
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <hr>
+
         <label class="form-label">
 
-            Upload Images
+            Upload New Images
 
         </label>
 
-        <input type="file"
+        <input
 
-               class="form-control"
+            type="file"
 
-               name="images"
+            name="images"
 
-               id="images"
+            id="images"
 
-               accept="image/*"
+            class="form-control"
 
-               multiple>
+            multiple
+
+            accept="image/*">
 
         <small class="text-muted">
 
-            Maximum 5 images
+            Maximum 5 images in total.
 
         </small>
 
@@ -489,7 +576,7 @@ Your product will be sent for admin approval before becoming visible in the mark
 
 </div>
 
-<!-- Shipping Information -->
+<!-- Shipping -->
 
 <div class="card shadow-sm mt-4">
 
@@ -497,7 +584,7 @@ Your product will be sent for admin approval before becoming visible in the mark
 
         <h5>
 
-            Shipping Information
+            Shipping Details
 
         </h5>
 
@@ -525,7 +612,7 @@ Your product will be sent for admin approval before becoming visible in the mark
 
                     name="weight"
 
-                    required>
+                    value="{{ product.weight }}">
 
             </div>
 
@@ -547,7 +634,7 @@ Your product will be sent for admin approval before becoming visible in the mark
 
                     name="length"
 
-                    required>
+                    value="{{ product.length }}">
 
             </div>
 
@@ -569,7 +656,7 @@ Your product will be sent for admin approval before becoming visible in the mark
 
                     name="width"
 
-                    required>
+                    value="{{ product.width }}">
 
             </div>
 
@@ -591,7 +678,7 @@ Your product will be sent for admin approval before becoming visible in the mark
 
                     name="height"
 
-                    required>
+                    value="{{ product.height }}">
 
             </div>
 
@@ -601,13 +688,17 @@ Your product will be sent for admin approval before becoming visible in the mark
 
 </div>
 
-<!-- Product Variants -->
+<!-- Variants -->
 
 <div class="card shadow-sm mt-4"
 
      id="variantCard"
 
-     style="display:none;">
+     {% if product.product_type!="variable" %}
+
+     style="display:none;"
+
+     {% endif %}>
 
     <div class="card-header d-flex justify-content-between">
 
@@ -617,11 +708,13 @@ Your product will be sent for admin approval before becoming visible in the mark
 
         </h5>
 
-        <button type="button"
+        <button
 
-                class="btn btn-primary btn-sm"
+            type="button"
 
-                onclick="addVariant()">
+            class="btn btn-primary btn-sm"
+
+            onclick="addVariant()">
 
             <i class="fas fa-plus"></i>
 
@@ -634,6 +727,92 @@ Your product will be sent for admin approval before becoming visible in the mark
     <div class="card-body">
 
         <div id="variantContainer">
+
+            {% for variant in variants %}
+
+            <div class="border rounded p-3 mb-3">
+
+                <div class="row">
+
+                    <div class="col-md-3">
+
+                        <input
+
+                            type="text"
+
+                            name="variant_name[]"
+
+                            value="{{ variant.variant_name }}"
+
+                            class="form-control">
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <input
+
+                            type="text"
+
+                            name="option_value[]"
+
+                            value="{{ variant.option_value }}"
+
+                            class="form-control">
+
+                    </div>
+
+                    <div class="col-md-2">
+
+                        <input
+
+                            type="number"
+
+                            step="0.01"
+
+                            name="option_price[]"
+
+                            value="{{ variant.price }}"
+
+                            class="form-control">
+
+                    </div>
+
+                    <div class="col-md-2">
+
+                        <input
+
+                            type="number"
+
+                            name="option_stock[]"
+
+                            value="{{ variant.stock }}"
+
+                            class="form-control">
+
+                    </div>
+
+                    <div class="col-md-2">
+
+                        <button
+
+                            type="button"
+
+                            class="btn btn-danger w-100"
+
+                            onclick="this.closest('.border').remove()">
+
+                            Remove
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
 
         </div>
 
@@ -649,59 +828,51 @@ Your product will be sent for admin approval before becoming visible in the mark
 
         <div class="col-md-3">
 
-            <input
+            <input type="text"
 
-                type="text"
+                   name="variant_name[]"
 
-                name="variant_name[]"
+                   class="form-control"
 
-                class="form-control"
-
-                placeholder="Variant Name">
+                   placeholder="Variant">
 
         </div>
 
         <div class="col-md-3">
 
-            <input
+            <input type="text"
 
-                type="text"
+                   name="option_value[]"
 
-                name="option_value[]"
+                   class="form-control"
 
-                class="form-control"
-
-                placeholder="Value">
+                   placeholder="Value">
 
         </div>
 
         <div class="col-md-2">
 
-            <input
+            <input type="number"
 
-                type="number"
+                   step="0.01"
 
-                step="0.01"
+                   name="option_price[]"
 
-                name="option_price[]"
+                   class="form-control"
 
-                class="form-control"
-
-                placeholder="Price">
+                   placeholder="Price">
 
         </div>
 
         <div class="col-md-2">
 
-            <input
+            <input type="number"
 
-                type="number"
+                   name="option_stock[]"
 
-                name="option_stock[]"
+                   class="form-control"
 
-                class="form-control"
-
-                placeholder="Stock">
+                   placeholder="Stock">
 
         </div>
 
@@ -727,7 +898,7 @@ Your product will be sent for admin approval before becoming visible in the mark
 
 </template>
 
-<!-- SEO -->
+<!-- SEO Settings -->
 
 <div class="card shadow-sm mt-4">
 
@@ -757,7 +928,9 @@ Your product will be sent for admin approval before becoming visible in the mark
 
                 class="form-control"
 
-                name="meta_title">
+                name="meta_title"
+
+                value="{{ product.meta_title }}">
 
         </div>
 
@@ -775,7 +948,7 @@ Your product will be sent for admin approval before becoming visible in the mark
 
                 rows="3"
 
-                name="meta_description"></textarea>
+                name="meta_description">{{ product.meta_description }}</textarea>
 
         </div>
 
@@ -795,7 +968,7 @@ Your product will be sent for admin approval before becoming visible in the mark
 
                 name="search_keywords"
 
-                placeholder="gift, flower, bouquet">
+                value="{{ product.search_keywords }}">
 
         </div>
 
@@ -813,7 +986,9 @@ Your product will be sent for admin approval before becoming visible in the mark
 
                 class="form-control"
 
-                name="youtube_video">
+                name="youtube_video"
+
+                value="{{ product.youtube_video }}">
 
         </div>
 
@@ -833,7 +1008,7 @@ Your product will be sent for admin approval before becoming visible in the mark
 
                 name="tags"
 
-                placeholder="love,birthday,anniversary">
+                value="{{ product.tags }}">
 
         </div>
 
@@ -843,13 +1018,23 @@ Your product will be sent for admin approval before becoming visible in the mark
 
 <div class="text-end mt-4 mb-5">
 
+    <a href="{{ url_for('seller_products') }}"
+
+       class="btn btn-secondary">
+
+        Cancel
+
+    </a>
+
     <button
 
-        class="btn btn-success btn-lg">
+        type="submit"
+
+        class="btn btn-success">
 
         <i class="fas fa-save"></i>
 
-        Add Product
+        Save Changes
 
     </button>
 
@@ -861,25 +1046,13 @@ Your product will be sent for admin approval before becoming visible in the mark
 
 <script>
 
-const imageInput = document.getElementById(
-
-    "images"
-
-);
+const imageInput=document.getElementById("images");
 
 if(imageInput){
 
-imageInput.addEventListener(
+imageInput.addEventListener("change",function(){
 
-"change",
-
-function(){
-
-let preview=document.getElementById(
-
-"preview"
-
-);
+let preview=document.getElementById("preview");
 
 preview.innerHTML="";
 
@@ -919,31 +1092,17 @@ reader.readAsDataURL(file);
 
 });
 
-}
-
-);
+});
 
 }
 
-const productType=document.getElementById(
-
-"product_type"
-
-);
+const productType=document.getElementById("product_type");
 
 if(productType){
 
-productType.addEventListener(
+productType.addEventListener("change",function(){
 
-"change",
-
-function(){
-
-document.getElementById(
-
-"variantCard"
-
-).style.display=
+document.getElementById("variantCard").style.display=
 
 this.value==="variable"
 
@@ -955,9 +1114,7 @@ this.value==="variable"
 
 "none";
 
-}
-
-);
+});
 
 }
 

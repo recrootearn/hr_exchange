@@ -1,0 +1,759 @@
+{% extends "base.html" %}
+
+{% block title %}Returns & Refunds{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<div>
+
+<h2 class="fw-bold">
+
+Returns & Refunds
+
+</h2>
+
+<p class="text-muted">
+
+Manage return requests from customers
+
+</p>
+
+</div>
+
+</div>
+
+<!-- Summary Cards -->
+
+<div class="row mb-4">
+
+<div class="col-md-3">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-body">
+
+<h6 class="text-muted">
+
+Pending
+
+</h6>
+
+<h2 class="text-warning">
+
+{{ pending_returns }}
+
+</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-body">
+
+<h6 class="text-muted">
+
+Approved
+
+</h6>
+
+<h2 class="text-primary">
+
+{{ approved_returns }}
+
+</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-body">
+
+<h6 class="text-muted">
+
+Rejected
+
+</h6>
+
+<h2 class="text-danger">
+
+{{ rejected_returns }}
+
+</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-body">
+
+<h6 class="text-muted">
+
+Completed
+
+</h6>
+
+<h2 class="text-success">
+
+{{ completed_returns }}
+
+</h2>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Return Requests -->
+
+<div class="card shadow-sm">
+
+<div class="card-header">
+
+<h5>
+
+Return Requests
+
+</h5>
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table table-hover align-middle">
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Customer</th>
+
+<th>Product</th>
+
+<th>Reason</th>
+
+<th>Amount</th>
+
+<th>Status</th>
+
+<th>Date</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for request in return_requests %}
+
+<tr>
+
+<td>
+
+#{{ request.id }}
+
+</td>
+
+<td>
+
+{{ request.customer.name }}
+
+</td>
+
+<td>
+
+{{ request.order_item.product.name }}
+
+</td>
+
+<td>
+
+{{ request.reason }}
+
+</td>
+
+<td>
+
+₹{{ request.refund_amount }}
+
+</td>
+
+<td>
+
+<span class="badge
+{% if request.status=='Pending' %}
+bg-warning
+{% elif request.status=='Approved' %}
+bg-primary
+{% elif request.status=='Rejected' %}
+bg-danger
+{% else %}
+bg-success
+{% endif %}">
+
+{{ request.status }}
+
+</span>
+
+</td>
+
+<td>
+
+{{ request.created_at.strftime("%d-%m-%Y") }}
+
+</td>
+
+<td>
+
+<button
+class="btn btn-sm btn-primary"
+data-bs-toggle="modal"
+data-bs-target="#return{{ request.id }}">
+
+View
+
+</button>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+{% for request in return_requests %}
+
+<div class="modal fade"
+
+id="return{{ request.id }}"
+
+tabindex="-1">
+
+<div class="modal-dialog modal-lg">
+
+<div class="modal-content">
+
+<div class="modal-header">
+
+<h5>
+
+Return Request #{{ request.id }}
+
+</h5>
+
+<button
+
+type="button"
+
+class="btn-close"
+
+data-bs-dismiss="modal">
+
+</button>
+
+</div>
+
+<div class="modal-body">
+
+<div class="row">
+
+<div class="col-md-6">
+
+<h6>
+
+Customer Details
+
+</h6>
+
+<hr>
+
+<p>
+
+<strong>Name:</strong>
+
+{{ request.customer.name }}
+
+</p>
+
+<p>
+
+<strong>Email:</strong>
+
+{{ request.customer.email }}
+
+</p>
+
+<p>
+
+<strong>Mobile:</strong>
+
+{{ request.customer.mobile }}
+
+</p>
+
+<p>
+
+<strong>Order ID:</strong>
+
+#{{ request.order.id }}
+
+</p>
+
+</div>
+
+<div class="col-md-6">
+
+<h6>
+
+Product Details
+
+</h6>
+
+<hr>
+
+<p>
+
+<strong>Product:</strong>
+
+{{ request.order_item.product.name }}
+
+</p>
+
+<p>
+
+<strong>Quantity:</strong>
+
+{{ request.order_item.quantity }}
+
+</p>
+
+<p>
+
+<strong>Refund Amount:</strong>
+
+₹{{ request.refund_amount }}
+
+</p>
+
+<p>
+
+<strong>Reason:</strong>
+
+{{ request.reason }}
+
+</p>
+
+</div>
+
+</div>
+
+<hr>
+
+<h6>
+
+Customer Description
+
+</h6>
+
+<div class="alert alert-light">
+
+{{ request.description }}
+
+</div>
+
+{% if request.images %}
+
+<h6>
+
+Uploaded Images
+
+</h6>
+
+<div class="row">
+
+{% for image in request.images %}
+
+<div class="col-md-3 mb-3">
+
+<a href="{{ url_for('static',
+
+filename='return_images/' + image.image) }}"
+
+target="_blank">
+
+<img src="{{ url_for('static',
+
+filename='return_images/' + image.image) }}"
+
+class="img-fluid rounded border"
+
+style="height:150px;width:100%;object-fit:cover;">
+
+</a>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+<form method="POST"
+
+action="{{ url_for('seller_return_action',
+
+return_id=request.id) }}">
+
+<div class="mb-3">
+
+<label>
+
+Seller Remarks
+
+</label>
+
+<textarea
+
+class="form-control"
+
+rows="4"
+
+name="seller_remark">{{ request.seller_remark }}</textarea>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6 d-grid">
+
+<button
+
+name="action"
+
+value="approve"
+
+class="btn btn-success">
+
+<i class="fas fa-check"></i>
+
+Approve Return
+
+</button>
+
+</div>
+
+<div class="col-md-6 d-grid">
+
+<button
+
+name="action"
+
+value="reject"
+
+class="btn btn-danger">
+
+<i class="fas fa-times"></i>
+
+Reject Return
+
+</button>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+<!-- Return Timeline -->
+
+<div class="card shadow-sm mt-4">
+
+<div class="card-header">
+
+<h5>
+
+Return Status Timeline
+
+</h5>
+
+</div>
+
+<div class="card-body">
+
+<ul class="list-group list-group-flush">
+
+<li class="list-group-item">
+
+✅ Request Submitted
+
+<span class="float-end">
+
+{{ request.created_at.strftime("%d %b %Y %I:%M %p") }}
+
+</span>
+
+</li>
+
+{% if request.status in ["Approved","Completed"] %}
+
+<li class="list-group-item">
+
+✅ Return Approved
+
+<span class="float-end">
+
+{{ request.approved_at.strftime("%d %b %Y %I:%M %p") if request.approved_at else "-" }}
+
+</span>
+
+</li>
+
+{% endif %}
+
+{% if request.reverse_pickup_status %}
+
+<li class="list-group-item">
+
+🚚 Reverse Pickup
+
+<span class="badge bg-info">
+
+{{ request.reverse_pickup_status }}
+
+</span>
+
+</li>
+
+{% endif %}
+
+{% if request.refund_status %}
+
+<li class="list-group-item">
+
+💳 Refund
+
+<span class="badge bg-success">
+
+{{ request.refund_status }}
+
+</span>
+
+</li>
+
+{% endif %}
+
+{% if request.completed_at %}
+
+<li class="list-group-item">
+
+🎉 Completed
+
+<span class="float-end">
+
+{{ request.completed_at.strftime("%d %b %Y %I:%M %p") }}
+
+</span>
+
+</li>
+
+{% endif %}
+
+</ul>
+
+</div>
+
+</div>
+
+<!-- Refund Details -->
+
+<div class="card shadow-sm mt-4">
+
+<div class="card-header">
+
+<h5>
+
+Refund Details
+
+</h5>
+
+</div>
+
+<div class="card-body">
+
+<div class="row">
+
+<div class="col-md-4">
+
+<strong>Refund Amount</strong>
+
+<h4 class="text-success">
+
+₹{{ request.refund_amount }}
+
+</h4>
+
+</div>
+
+<div class="col-md-4">
+
+<strong>Refund Status</strong>
+
+<p>
+
+<span class="badge bg-primary">
+
+{{ request.refund_status or "Pending" }}
+
+</span>
+
+</p>
+
+</div>
+
+<div class="col-md-4">
+
+<strong>Refund Mode</strong>
+
+<p>
+
+{{ request.refund_mode or "Original Payment Method" }}
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Pagination -->
+
+{% if return_requests.pages > 1 %}
+
+<nav class="mt-4">
+
+<ul class="pagination justify-content-center">
+
+{% if return_requests.has_prev %}
+
+<li class="page-item">
+
+<a class="page-link"
+
+href="{{ url_for('seller_returns',
+
+page=return_requests.prev_num) }}">
+
+Previous
+
+</a>
+
+</li>
+
+{% endif %}
+
+{% for page in return_requests.iter_pages() %}
+
+{% if page %}
+
+<li class="page-item {% if page==return_requests.page %}active{% endif %}">
+
+<a class="page-link"
+
+href="{{ url_for('seller_returns',
+
+page=page) }}">
+
+{{ page }}
+
+</a>
+
+</li>
+
+{% else %}
+
+<li class="page-item disabled">
+
+<span class="page-link">...</span>
+
+</li>
+
+{% endif %}
+
+{% endfor %}
+
+{% if return_requests.has_next %}
+
+<li class="page-item">
+
+<a class="page-link"
+
+href="{{ url_for('seller_returns',
+
+page=return_requests.next_num) }}">
+
+Next
+
+</a>
+
+</li>
+
+{% endif %}
+
+</ul>
+
+</nav>
+
+{% endif %}
+
+</div>
+
+{% endblock %}
