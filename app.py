@@ -2729,7 +2729,10 @@ class OrderItem(db.Model):
 class Order(db.Model):
     __tablename__ = "orders"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
     order_number = db.Column(
         db.String(30),
@@ -2769,35 +2772,20 @@ class Order(db.Model):
         default="Pending"
     )
 
-    razorpay_order_id = db.Column(db.String(120))
-
-    razorpay_payment_id = db.Column(db.String(120))
-
-    platform_commission = db.Column(
-        db.Float,
-        default=0
+    razorpay_order_id = db.Column(
+        db.String(120)
     )
 
-    seller_amount = db.Column(
-        db.Float,
-        default=0
-    )
-
-    wallet_released = db.Column(
-        db.Boolean,
-        default=False
-    )
-
-    delivered_at = db.Column(
-        db.DateTime
-    )
-
-    shipping_charge = db.Column(
-        db.Float,
-        default=0
+    razorpay_payment_id = db.Column(
+        db.String(120)
     )
 
     subtotal = db.Column(
+        db.Float,
+        default=0
+    )
+
+    shipping_charge = db.Column(
         db.Float,
         default=0
     )
@@ -2817,22 +2805,117 @@ class Order(db.Model):
         default=0
     )
 
-    tracking_id = db.Column(db.String(100))
-
-    courier_name = db.Column(db.String(100))
-
-    estimated_delivery = db.Column(db.String(100))
-
-    delivered_at = db.Column(db.DateTime)
-
     wallet_released = db.Column(
         db.Boolean,
         default=False
     )
 
+    # ==================================
+    # SHIPPING
+    # ==================================
+
+    shipping_provider = db.Column(
+        db.String(30),
+        default="shiprocket"
+    )
+
+    shipment_id = db.Column(
+        db.String(120)
+    )
+
+    shipment_reference = db.Column(
+        db.String(120)
+    )
+
+    tracking_id = db.Column(
+        db.String(100)
+    )
+
+    awb_code = db.Column(
+        db.String(100)
+    )
+
+    courier_name = db.Column(
+        db.String(100)
+    )
+
+    shipping_status = db.Column(
+        db.String(50),
+        default="Pending"
+    )
+
+    estimated_delivery = db.Column(
+        db.DateTime
+    )
+
+    shipped_at = db.Column(
+        db.DateTime
+    )
+
+    out_for_delivery_at = db.Column(
+        db.DateTime
+    )
+
+    delivered_at = db.Column(
+        db.DateTime
+    )
+
+    cancelled_at = db.Column(
+        db.DateTime
+    )
+
+    returned_at = db.Column(
+        db.DateTime
+    )
+
+    pickup_request_id = db.Column(
+        db.String(120)
+    )
+
+    label_url = db.Column(
+        db.Text
+    )
+
+    manifest_url = db.Column(
+        db.Text
+    )
+
+    tracking_url = db.Column(
+        db.Text
+    )
+
+    tracking_json = db.Column(
+        db.Text
+    )
+
+    last_tracking_sync = db.Column(
+        db.DateTime
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=datetime.utcnow
+    )
+
+    seller = db.relationship(
+        "User",
+        foreign_keys=[seller_id],
+        backref="seller_orders"
+    )
+
+    customer = db.relationship(
+        "User",
+        foreign_keys=[user_id],
+        backref="customer_orders"
+    )
+
+    # ==================================
+    # RELATIONSHIPS
+    # ==================================
+
+    shipping_address = db.relationship(
+        "ShippingAddress",
+        backref="orders"
     )
 
     items = db.relationship(
@@ -2842,158 +2925,255 @@ class Order(db.Model):
         cascade="all, delete-orphan"
     )
 
+    seller_remarks = db.Column(db.Text)
+
+    customer_notes = db.Column(db.Text)
+
+    invoice_number = db.Column(db.String(100))
+
 import requests
 
 BASE_URL = "https://apiv2.shiprocket.in/v1/external"
 
+
 class ShiprocketService:
 
-    def __init__(self,email,password):
+    def __init__(self, email, password):
+        self.email = email
+        self.password = password
+        self.token = None
 
-        self.email=email
-
-        self.password=password
-
-        self.token=None
+    # ==========================================
+    # LOGIN
+    # ==========================================
 
     def login(self):
 
-        response=requests.post(
-
-            BASE_URL+"/auth/login",
-
+        response = requests.post(
+            BASE_URL + "/auth/login",
             json={
-
-                "email":self.email,
-
-                "password":self.password
-
-            }
-
+                "email": self.email,
+                "password": self.password
+            },
+            timeout=30
         )
 
-        data=response.json()
+        response.raise_for_status()
 
-        self.token=data["token"]
+        data = response.json()
+
+        if not data.get("token"):
+            raise Exception(
+                f"Shiprocket login failed: {data}"
+            )
+
+        self.token = data["token"]
 
         return self.token
 
+    # ==========================================
+    # HEADERS
+    # ==========================================
+
     def headers(self):
 
+        if not self.token:
+            self.login()
+
         return {
-
             "Authorization": f"Bearer {self.token}",
-
             "Content-Type": "application/json"
-
         }
 
-    def get_shiprocket():
-
-    settings = get_business_settings()
-
-    shiprocket = ShiprocketService(
-
-        settings.shiprocket_email,
-
-        settings.shiprocket_password
-
-    )
-
-    shiprocket.login()
-
-    return shiprocket
+    # ==========================================
+    # CREATE SHIPMENT / ORDER
+    # ==========================================
 
     def create_shipment(self, order):
 
-    pickup = order.seller.pickup_address
+        pickup = order.seller.pickup_address
+        address = order.shipping_address
 
-    address = order.shipping_address
+        if not pickup:
+            raise Exception(
+                "Seller pickup address is not configured."
+            )
 
-    items = []
+        if not address:
+            raise Exception(
+                "Customer shipping address is missing."
+            )
 
-    for item in order.items:
+        items = []
 
-        items.append({
+        for item in order.items:
 
-            "name": item.product_name,
+            items.append({
+                "name": item.product_name,
+                "sku": str(item.product_id),
+                "units": item.quantity,
+                "selling_price": item.price,
+                "discount": "",
+                "tax": "",
+                "hsn": (
+                    item.product.hsn_code
+                    if item.product and item.product.hsn_code
+                    else ""
+                )
+            })
 
-            "sku": item.product_id,
+        # ------------------------------------------
+        # PACKAGE DIMENSIONS
+        # ------------------------------------------
 
-            "units": item.quantity,
+        lengths = []
+        widths = []
+        heights = []
 
-            "selling_price": item.price,
+        total_weight = 0
 
-            "discount": "",
+        for item in order.items:
 
-            "tax": "",
+            product = item.product
 
-            "hsn": item.product.hsn_code or ""
+            if not product:
+                continue
 
-        })
+            lengths.append(product.length or 1)
+            widths.append(product.width or 1)
 
-    payload = {
+            heights.append(
+                (product.height or 1) * item.quantity
+            )
 
-        "order_id": order.order_number,
+            total_weight += (
+                (product.weight or 0.1)
+                * item.quantity
+            )
 
-        "order_date": order.created_at.strftime("%Y-%m-%d %H:%M"),
+        package_length = max(lengths) if lengths else 1
+        package_width = max(widths) if widths else 1
+        package_height = sum(heights) if heights else 1
 
-        "pickup_location": pickup.pickup_name,
+        if total_weight <= 0:
+            total_weight = 0.1
 
-        "billing_customer_name": address.full_name,
+        # ------------------------------------------
+        # PAYMENT METHOD
+        # ------------------------------------------
 
-        "billing_last_name": "",
+        payment_method = "Prepaid"
 
-        "billing_address": address.address_line1,
+        if getattr(order, "payment_method", "").lower() == "cod":
+            payment_method = "COD"
 
-        "billing_address_2": address.address_line2 or "",
+        # ------------------------------------------
+        # PAYLOAD
+        # ------------------------------------------
 
-        "billing_city": address.city,
+        payload = {
 
-        "billing_pincode": address.pincode,
+            "order_id": order.order_number,
 
-        "billing_state": address.state,
+            "order_date":
+                order.created_at.strftime(
+                    "%Y-%m-%d %H:%M"
+                ),
 
-        "billing_country": address.country,
+            "pickup_location":
+                pickup.pickup_name,
 
-        "billing_email": current_user.email,
+            "billing_customer_name":
+                address.full_name,
 
-        "billing_phone": address.mobile,
+            "billing_last_name": "",
 
-        "shipping_is_billing": True,
+            "billing_address":
+                address.address_line1,
 
-        "order_items": items,
+            "billing_address_2":
+                address.address_line2 or "",
 
-        "payment_method": "Prepaid",
+            "billing_city":
+                address.city,
 
-        "sub_total": order.subtotal,
+            "billing_pincode":
+                str(address.pincode),
 
-        "length": max((item.product.length or 0) for item in order.items),
-        "breadth": max((item.product.width or 0) for item in order.items),
-        "height": sum((item.product.height or 0) for item in order.items),
-        "weight": sum((item.product.weight or 0) * item.quantity for item in order.items)
+            "billing_state":
+                address.state,
 
-    }
+            "billing_country":
+                address.country or "India",
 
-    response = requests.post(
+            "billing_email":
+                order.customer.email or "",
 
-        BASE_URL + "/orders/create/adhoc",
+            "billing_phone":
+                address.mobile,
 
-        headers=self.headers(),
+            "shipping_is_billing":
+                True,
 
-        json=payload
+            "order_items":
+                items,
 
-    )
+            "payment_method":
+                payment_method,
 
-    response.raise_for_status()
+            "sub_total":
+                order.subtotal,
 
-    return response.json()
+            "length":
+                package_length,
+
+            "breadth":
+                package_width,
+
+            "height":
+                package_height,
+
+            "weight":
+                total_weight
+        }
+
+        # ------------------------------------------
+        # API REQUEST
+        # ------------------------------------------
+
+        response = requests.post(
+
+            BASE_URL + "/orders/create/adhoc",
+
+            headers=self.headers(),
+
+            json=payload,
+
+            timeout=30
+        )
+
+        try:
+            response.raise_for_status()
+
+        except requests.HTTPError:
+
+            raise Exception(
+                "Shiprocket shipment creation failed: "
+                + response.text
+            )
+
+        return response.json()
+
+    # ==========================================
+    # CHECK SERVICEABILITY
+    # ==========================================
 
     def check_serviceability(
         self,
         pickup_pincode,
         delivery_pincode,
-        weight
+        weight,
+        cod=False
     ):
 
         response = requests.get(
@@ -3004,35 +3184,79 @@ class ShiprocketService:
 
             params={
 
-                "pickup_postcode": pickup_pincode,
+                "pickup_postcode":
+                    pickup_pincode,
 
-                "delivery_postcode": delivery_pincode,
+                "delivery_postcode":
+                    delivery_pincode,
 
-                "weight": weight,
+                "weight":
+                    weight,
 
-                "cod": 0
+                "cod":
+                    1 if cod else 0
+            },
 
-            }
-
+            timeout=30
         )
 
         response.raise_for_status()
 
         return response.json()
 
+    # ==========================================
+    # TRACK SHIPMENT
+    # ==========================================
+
     def track_shipment(self, awb):
 
-    response = requests.get(
+        response = requests.get(
 
-        BASE_URL + f"/courier/track/awb/{awb}",
+            BASE_URL
+            + f"/courier/track/awb/{awb}",
 
-        headers=self.headers()
+            headers=self.headers(),
 
+            timeout=30
+        )
+
+        response.raise_for_status()
+
+        return response.json()
+
+
+# ==================================================
+# GET SHIPROCKET INSTANCE
+# IMPORTANT: OUTSIDE ShiprocketService CLASS
+# ==================================================
+
+def get_shiprocket():
+
+    settings = get_business_settings()
+
+    if not settings:
+        raise Exception(
+            "Business settings not configured."
+        )
+
+    if not settings.shiprocket_email:
+        raise Exception(
+            "Shiprocket email is not configured."
+        )
+
+    if not settings.shiprocket_password:
+        raise Exception(
+            "Shiprocket password is not configured."
+        )
+
+    shiprocket = ShiprocketService(
+        settings.shiprocket_email,
+        settings.shiprocket_password
     )
 
-    response.raise_for_status()
+    shiprocket.login()
 
-    return response.json()
+    return shiprocket
 
 class SellerPickupAddress(db.Model):
     __tablename__ = "seller_pickup_addresses"
@@ -3096,6 +3320,34 @@ class SellerPickupAddress(db.Model):
 
     gst_number = db.Column(
         db.String(30)
+    )
+
+    company_name = db.Column(
+        db.String(150)
+    )
+
+    alternate_mobile = db.Column(
+        db.String(20)
+    )
+
+    landmark = db.Column(
+        db.String(255)
+    )
+
+    pickup_location_code = db.Column(
+        db.String(120),
+        unique=True
+    )
+
+    is_default = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
     )
 
     is_verified = db.Column(
