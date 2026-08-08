@@ -1324,7 +1324,7 @@ class CategoryBanner(db.Model):
 
         db.Integer,
 
-        db.ForeignKey("categories.id")
+        db.ForeignKey("product_categories.id")
 
     )
 
