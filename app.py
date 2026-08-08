@@ -13405,8 +13405,7 @@ def profile():
     ).all()
 
     products = Product.query.filter_by(
-        seller_id=current_user.id,
-        status="active"
+        seller_id=current_user.id
     ).order_by(
         Product.created_at.desc()
     ).all()
@@ -14965,7 +14964,10 @@ def edit_product(id):
         categories=categories
     )
 
-@app.route("/shop/delete-product/<int:id>")
+@app.route(
+    "/shop/delete-product/<int:id>",
+    methods=["POST"]
+)
 @login_required
 def delete_product(id):
 
@@ -18167,6 +18169,61 @@ def seo_settings():
 
         seo=seo
 
+    )
+
+@app.route("/shop/manage-product/<int:id>")
+@login_required
+def manage_product(id):
+
+    product = Product.query.filter_by(
+        id=id,
+        seller_id=current_user.id
+    ).first_or_404()
+
+    return render_template(
+        "manage_product.html",
+        product=product
+    )
+
+@app.route(
+    "/shop/toggle-product/<int:id>",
+    methods=["POST"]
+)
+@login_required
+def toggle_product(id):
+
+    product = Product.query.filter_by(
+        id=id,
+        seller_id=current_user.id
+    ).first_or_404()
+
+    if product.status == "active":
+
+        product.status = "inactive"
+        product.is_active = False
+
+        flash(
+            "Product deactivated successfully.",
+            "success"
+        )
+
+    else:
+
+        product.status = "active"
+        product.is_active = True
+
+        flash(
+            "Product activated successfully.",
+            "success"
+        )
+
+    db.session.commit()
+
+    return redirect(
+        url_for(
+            "manage_product",
+            id=product.id
+        )
     )
 
 # =========================
