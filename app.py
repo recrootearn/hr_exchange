@@ -362,12 +362,6 @@ class User(UserMixin, db.Model):
         cascade="all, delete-orphan"
     )
 
-    reviews = db.relationship(
-        "ProductReview",
-        backref="customer",
-        lazy=True
-    )
-
     products = db.relationship(
         "Product",
         backref="seller",
