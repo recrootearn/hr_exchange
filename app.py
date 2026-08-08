@@ -148,6 +148,7 @@ db = SQLAlchemy(app)
 # =========================
 class User(UserMixin, db.Model):
     __table_args__ = {'sqlite_autoincrement': True}
+
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
@@ -176,6 +177,7 @@ class User(UserMixin, db.Model):
     app_token = db.Column(db.String(128), unique=True, nullable=True)
     last_streak_reset = db.Column(db.Date, nullable=True)
     welcome_email_sent = db.Column(db.Boolean, default=False)
+
     is_shop_promoted = db.Column(
         db.Boolean,
         default=False
@@ -212,6 +214,7 @@ class User(UserMixin, db.Model):
         db.Integer,
         default=0
     )
+
     boost_posts = db.relationship(
         "BoostPost",
         backref="hr",
@@ -237,11 +240,17 @@ class User(UserMixin, db.Model):
     is_approved = db.Column(db.Boolean, default=False)
     failed_logins = db.Column(db.Integer, default=0)
     last_login = db.Column(db.DateTime)
+
     is_deleted = db.Column(
         db.Boolean,
         default=False
     )
-    referral_code = db.Column(db.String(20), unique=True)
+
+    referral_code = db.Column(
+        db.String(20),
+        unique=True
+    )
+
     created_at = db.Column(
         db.DateTime,
         default=india_time
@@ -265,49 +274,74 @@ class User(UserMixin, db.Model):
         lazy=True
     )
 
-    company_logo = db.Column(db.String(300))
-
-    company_city = db.Column(db.String(100))
-
-    company_website = db.Column(db.String(300))
-
-    company_photos = db.Column(db.Text)
-
-    company_city = db.Column(db.String(100))
-
-    full_company_address = db.Column(db.Text)
-
-    company_website = db.Column(db.String(200))
-
-    referred_by = db.Column(db.String(20))
-
-    total_referrals = db.Column(db.Integer, default=0)
-
-    msme_certificate = db.Column(db.String(255))
-    gumasta_certificate = db.Column(db.String(255))
-
-    successful_referrals = db.Column(db.Integer, default=0)
-
-    referral_earnings = db.Column(db.Float, default=0)
-
-    pending_marketplace_balance = db.Column(db.Float, default=0)
-
-    marketplace_earnings = db.Column(db.Float, default=0)
-
-    marketplace_withdrawn = db.Column(db.Float, default=0)
-
-    orders = db.relationship(
-        "Order",
-        foreign_keys=[Order.user_id],
-        backref="customer",
-        lazy=True
+    company_logo = db.Column(
+        db.String(300)
     )
 
-    seller_orders = db.relationship(
-        "Order",
-        foreign_keys=[Order.seller_id],
-        backref="seller",
-        lazy=True
+    company_city = db.Column(
+        db.String(100)
+    )
+
+    company_website = db.Column(
+        db.String(300)
+    )
+
+    company_photos = db.Column(
+        db.Text
+    )
+
+    company_city = db.Column(
+        db.String(100)
+    )
+
+    full_company_address = db.Column(
+        db.Text
+    )
+
+    company_website = db.Column(
+        db.String(200)
+    )
+
+    referred_by = db.Column(
+        db.String(20)
+    )
+
+    total_referrals = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    msme_certificate = db.Column(
+        db.String(255)
+    )
+
+    gumasta_certificate = db.Column(
+        db.String(255)
+    )
+
+    successful_referrals = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    referral_earnings = db.Column(
+        db.Float,
+        default=0
+    )
+
+    pending_marketplace_balance = db.Column(
+        db.Float,
+        default=0
+    )
+
+    marketplace_earnings = db.Column(
+        db.Float,
+        default=0
+    )
+
+    marketplace_withdrawn = db.Column(
+        db.Float,
+        default=0
     )
 
     shipping_addresses = db.relationship(
@@ -359,9 +393,9 @@ class User(UserMixin, db.Model):
     )
 
     referral_purchase_reward_given = db.Column(
-       db.Boolean,
-       default=False
-)
+        db.Boolean,
+        default=False
+    )
 
 class SellerVerification(db.Model):
 
