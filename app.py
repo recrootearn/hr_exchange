@@ -2628,7 +2628,6 @@ class ShippingAddress(db.Model):
 
     orders = db.relationship(
         "Order",
-        backref="shipping_address",
         lazy=True
     )
 
