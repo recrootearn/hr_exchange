@@ -16690,38 +16690,6 @@ def monthly_sales():
 
     return jsonify(data)
 
-@app.route("/admin/seller/<int:id>/verify")
-@admin_required
-def verify_seller(id):
-
-    seller = User.query.get_or_404(id)
-
-    seller.is_verified_seller = True
-
-    seller.verification_status = "Verified"
-
-    seller.verification_date = india_time()
-
-    db.session.commit()
-
-    send_notification(
-
-        user_id=seller.id,
-
-        user_type="hr",
-
-        message="🎉 Your shop has been verified.",
-
-        link="/profile",
-
-        type="verification"
-
-    )
-
-    flash("Seller verified.","success")
-
-    return redirect("/admin/seller-verifications")
-
 @app.route("/seller/analytics")
 @login_required
 def seller_analytics():
