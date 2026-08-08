@@ -54,6 +54,15 @@ import secrets
 
 app = Flask(__name__)
 
+def admin_required(f):
+    @login_required
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_admin:
+            return "Access Denied", 403
+        return f(*args, **kwargs)
+
+    return decorated_function
+
 app.config["MAIL_SERVER"] = "smtp.hostinger.com"
 app.config["MAIL_PORT"] = 465
 app.config["MAIL_USE_SSL"] = True
