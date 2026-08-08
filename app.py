@@ -4587,37 +4587,30 @@ def label(self,shipment_id):
 from datetime import datetime, timedelta
 
 def release_wallet_amount():
-
     settings = get_business_settings()
 
-orders = Order.query.filter_by(
+    orders = Order.query.filter_by(
+        wallet_released=False,
+        order_status="Delivered"
+    ).all()
 
-    wallet_released=False,
+    for order in orders:
+        if not order.delivered_at:
+            continue
 
-    order_status="Delivered"
+        days = (
+            datetime.utcnow() -
+            order.delivered_at
+        ).days
 
-).all()
+        if days >= settings.seller_payment_hold_days:
+            seller = User.query.get(order.seller_id)
 
-for order in orders:
+            if seller:
+                seller.wallet_balance += order.seller_amount
+                order.wallet_released = True
 
-    if not order.delivered_at:
-        continue
-
-    days = (
-        datetime.utcnow() -
-        order.delivered_at
-    ).days
-
-    if days >= settings.seller_payment_hold_days:
-
-        seller = User.query.get(order.seller_id)
-
-        seller.wallet_balance += order.seller_amount
-
-        order.wallet_released = True
-
-db.session.commit()
-
+    db.session.commit()
 # =========================
 # USER ROUTES
 # =========================
