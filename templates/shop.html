@@ -1,632 +1,1879 @@
 {% extends "base.html" %}
 
-{% block title %}Marketplace{% endblock %}
+{% block title %}Shop{% endblock %}
 
 {% block content %}
 
-<div class="container-fluid px-0">
+<style>
+/* =========================================================
+   SHOP HOME — MODERN SHOPPING APP UI
+   Intentionally overrides base.html spacing on mobile.
+   ========================================================= */
 
-    <!-- Hero Slider -->
+:root{
+    --shop-blue:#2874f0;
+    --shop-blue-dark:#1557c0;
+    --shop-bg:#f5f7fb;
+    --shop-card:#ffffff;
+    --shop-text:#172033;
+    --shop-muted:#737b8c;
+    --shop-border:#e7ebf2;
+    --shop-green:#16a34a;
+    --shop-orange:#ff8a00;
+}
 
-    <div id="shopCarousel"
-         class="carousel slide mb-4"
-         data-bs-ride="carousel">
+html,body{
+    margin:0!important;
+    padding:0!important;
+    background:var(--shop-bg)!important;
+}
 
-        <div class="carousel-inner">
+body{
+    overflow-x:hidden;
+}
 
-            {% for banner in banners %}
+/* Remove common Bootstrap/base wrappers' side gaps */
+main,
+.content,
+.main-content,
+.container-fluid{
+    margin:0!important;
+}
 
-            <div class="carousel-item {% if loop.first %}active{% endif %}">
+.shop-page{
+    width:100%;
+    min-height:100vh;
+    background:var(--shop-bg);
+    color:var(--shop-text);
+    padding-bottom:35px;
+}
 
-                <img src="{{ url_for('static',
-                filename='homepage_banners/' + banner.image) }}"
-                     class="d-block w-100 rounded"
-                     style="height:350px;object-fit:cover;">
+.shop-inner{
+    width:100%;
+    max-width:1440px;
+    margin:0 auto;
+}
 
-                <div class="carousel-caption text-start">
+/* =========================
+   TOP SHOP HEADER
+   ========================= */
 
-                    <h2>{{ banner.title }}</h2>
+.shop-topbar{
+    background:#fff;
+    position:sticky;
+    top:0;
+    z-index:1000;
+    border-bottom:1px solid var(--shop-border);
+    transition:transform .28s ease,box-shadow .28s ease;
+}
 
-                    <p>{{ banner.subtitle }}</p>
+.shop-topbar.hide-on-scroll{
+    transform:translateY(-100%);
+}
 
-                    {% if banner.button_text %}
+.shop-topbar-inner{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    min-height:66px;
+    padding:10px 22px;
+}
 
-                    <a href="{{ banner.button_link }}"
-                       class="btn btn-warning">
+.shop-brand{
+    font-weight:950;
+    font-size:24px;
+    color:var(--shop-blue);
+    text-decoration:none;
+    white-space:nowrap;
+    letter-spacing:-.7px;
+}
 
-                        {{ banner.button_text }}
+.shop-search{
+    flex:1;
+    max-width:720px;
+    height:48px;
+    display:flex;
+    align-items:center;
+    background:#f1f4f9;
+    border:1px solid transparent;
+    border-radius:14px;
+    padding:0 15px;
+    transition:.2s;
+}
 
+.shop-search:focus-within{
+    background:#fff;
+    border-color:#c8d9f8;
+    box-shadow:0 0 0 4px #edf4ff;
+}
+
+.shop-search i{
+    color:#697386;
+    font-size:17px;
+    margin-right:10px;
+}
+
+.shop-search input{
+    border:0!important;
+    outline:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    width:100%;
+    height:100%;
+    font-size:14px;
+}
+
+.shop-header-actions{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    margin-left:auto;
+}
+
+.shop-head-btn{
+    width:44px;
+    height:44px;
+    border-radius:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#394255;
+    background:#f5f7fb;
+    text-decoration:none;
+    position:relative;
+}
+
+.shop-head-btn:hover{
+    color:var(--shop-blue);
+    background:#edf4ff;
+}
+
+.shop-cart-count{
+    position:absolute;
+    top:-3px;
+    right:-2px;
+    min-width:19px;
+    height:19px;
+    padding:0 5px;
+    border-radius:20px;
+    background:#ef4444;
+    color:#fff;
+    font-size:10px;
+    font-weight:900;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* =========================
+   MOBILE SEARCH
+   ========================= */
+
+.mobile-search{
+    display:none;
+}
+
+/* =========================
+   CATEGORY STRIP
+   ========================= */
+
+.category-strip{
+    background:#fff;
+    border-bottom:1px solid var(--shop-border);
+    overflow:hidden;
+}
+
+.category-scroll{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    padding:10px 18px;
+    scrollbar-width:none;
+}
+
+.category-scroll::-webkit-scrollbar{
+    display:none;
+}
+
+.category-pill{
+    flex:0 0 auto;
+    min-width:82px;
+    max-width:110px;
+    padding:7px 10px;
+    border-radius:12px;
+    color:#4b5565;
+    text-decoration:none;
+    text-align:center;
+    font-size:11px;
+    font-weight:750;
+}
+
+.category-pill:hover{
+    color:var(--shop-blue);
+    background:#f1f6ff;
+}
+
+.category-icon{
+    width:52px;
+    height:52px;
+    margin:0 auto 5px;
+    border-radius:14px;
+    overflow:hidden;
+    background:#f3f5f9;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.category-icon img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* =========================
+   HERO
+   ========================= */
+
+.hero-wrap{
+    padding:16px 18px 4px;
+}
+
+.shop-hero{
+    position:relative;
+    overflow:hidden;
+    border-radius:22px;
+    background:#dcecff;
+    box-shadow:0 9px 30px rgba(27,56,100,.09);
+}
+
+.shop-hero .carousel-item{
+    position:relative;
+}
+
+.shop-hero img{
+    width:100%;
+    height:390px;
+    object-fit:cover;
+    display:block;
+}
+
+.hero-overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg,rgba(0,0,0,.62),rgba(0,0,0,.08) 65%,transparent);
+}
+
+.hero-caption{
+    position:absolute;
+    z-index:2;
+    left:7%;
+    top:50%;
+    transform:translateY(-50%);
+    color:#fff;
+    max-width:510px;
+}
+
+.hero-caption .eyebrow{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1.4px;
+    font-weight:900;
+    opacity:.88;
+    margin-bottom:8px;
+}
+
+.hero-caption h2{
+    font-size:clamp(25px,4vw,48px);
+    line-height:1.05;
+    font-weight:950;
+    margin:0 0 9px;
+}
+
+.hero-caption p{
+    font-size:14px;
+    margin:0 0 18px;
+    opacity:.9;
+}
+
+.hero-btn{
+    border:0;
+    border-radius:12px;
+    background:#fff;
+    color:#174ea6;
+    padding:11px 18px;
+    font-size:13px;
+    font-weight:900;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+}
+
+.hero-dots{
+    position:absolute;
+    z-index:5;
+    left:50%;
+    bottom:13px;
+    transform:translateX(-50%);
+}
+
+/* =========================
+   CONTENT
+   ========================= */
+
+.shop-section{
+    padding:20px 18px 0;
+}
+
+.section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+}
+
+.section-title{
+    font-size:21px;
+    font-weight:950;
+    margin:0;
+    letter-spacing:-.35px;
+}
+
+.section-link{
+    color:var(--shop-blue);
+    font-size:12px;
+    font-weight:850;
+    text-decoration:none;
+    white-space:nowrap;
+}
+
+/* =========================
+   CATEGORY LARGE CARDS
+   ========================= */
+
+.category-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:12px;
+}
+
+.category-card{
+    background:#fff;
+    border:1px solid var(--shop-border);
+    border-radius:17px;
+    padding:10px;
+    text-decoration:none;
+    color:var(--shop-text);
+    transition:transform .18s,box-shadow .18s;
+}
+
+.category-card:hover{
+    color:var(--shop-text);
+    transform:translateY(-3px);
+    box-shadow:0 10px 24px rgba(31,50,90,.09);
+}
+
+.category-card-img{
+    height:135px;
+    border-radius:13px;
+    overflow:hidden;
+    background:#f4f6fa;
+}
+
+.category-card-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.category-card-name{
+    font-size:13px;
+    font-weight:850;
+    margin:9px 3px 2px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+
+.category-card-sub{
+    font-size:10px;
+    color:var(--shop-muted);
+    margin:0 3px 2px;
+}
+
+/* =========================
+   DEAL PRODUCT RAILS
+   ========================= */
+
+.deal-box{
+    border-radius:21px;
+    padding:16px;
+    overflow:hidden;
+    margin-bottom:17px;
+    background:linear-gradient(135deg,#eaffef,#d7ffe2);
+}
+
+.deal-box.blue{
+    background:linear-gradient(135deg,#edf5ff,#dceaff);
+}
+
+.deal-box.orange{
+    background:linear-gradient(135deg,#fff0df,#ffe0c2);
+}
+
+.deal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+}
+
+.deal-title{
+    font-size:22px;
+    font-weight:950;
+    margin:0;
+}
+
+.deal-link{
+    color:#1d4ed8;
+    font-size:12px;
+    font-weight:900;
+    text-decoration:none;
+}
+
+.product-rail{
+    display:grid;
+    grid-auto-flow:column;
+    grid-auto-columns:minmax(190px,1fr);
+    grid-template-rows:1fr;
+    gap:12px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    padding-bottom:3px;
+}
+
+.product-rail::-webkit-scrollbar{
+    display:none;
+}
+
+/* =========================
+   PRODUCT CARD
+   ========================= */
+
+.product-card{
+    background:#fff;
+    border:1px solid rgba(220,225,235,.85);
+    border-radius:17px;
+    overflow:hidden;
+    min-width:0;
+    box-shadow:0 4px 13px rgba(25,40,70,.05);
+    position:relative;
+}
+
+.product-card-img-wrap{
+    display:block;
+    position:relative;
+    aspect-ratio:1/1;
+    background:#f2f4f8;
+    overflow:hidden;
+}
+
+.product-card-img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform .35s ease;
+}
+
+.product-card:hover .product-card-img{
+    transform:scale(1.04);
+}
+
+.sale-badge{
+    position:absolute;
+    left:8px;
+    top:8px;
+    background:#ef4444;
+    color:#fff;
+    padding:5px 8px;
+    border-radius:8px;
+    font-size:9px;
+    font-weight:950;
+}
+
+.stock-badge{
+    position:absolute;
+    right:8px;
+    top:8px;
+    background:#111827;
+    color:#fff;
+    padding:5px 8px;
+    border-radius:8px;
+    font-size:8px;
+    font-weight:900;
+}
+
+.wishlist-btn{
+    position:absolute;
+    right:8px;
+    bottom:8px;
+    width:34px;
+    height:34px;
+    border:0;
+    border-radius:50%;
+    background:rgba(255,255,255,.94);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#ef4444;
+    box-shadow:0 4px 12px rgba(0,0,0,.12);
+    z-index:2;
+}
+
+.product-card-body{
+    padding:11px;
+}
+
+.product-category{
+    font-size:9px;
+    color:#8a92a2;
+    text-transform:uppercase;
+    font-weight:850;
+    letter-spacing:.35px;
+}
+
+.product-name{
+    display:block;
+    color:#172033;
+    font-size:13px;
+    font-weight:850;
+    line-height:1.3;
+    margin-top:4px;
+    text-decoration:none;
+    min-height:34px;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+.product-name:hover{
+    color:var(--shop-blue);
+}
+
+.rating{
+    margin-top:7px;
+    font-size:10px;
+    color:#f59e0b;
+}
+
+.rating span{
+    color:#8a92a2;
+    margin-left:3px;
+}
+
+.price-row{
+    display:flex;
+    align-items:baseline;
+    gap:7px;
+    margin-top:7px;
+}
+
+.sale-price{
+    color:#15803d;
+    font-size:16px;
+    font-weight:950;
+}
+
+.old-price{
+    color:#969dab;
+    font-size:10px;
+}
+
+.add-btn{
+    width:100%;
+    margin-top:9px;
+    border:0;
+    border-radius:10px;
+    min-height:38px;
+    background:var(--shop-blue);
+    color:#fff;
+    font-size:11px;
+    font-weight:900;
+}
+
+.add-btn:hover{
+    background:var(--shop-blue-dark);
+}
+
+.add-btn:disabled{
+    background:#cbd5e1;
+}
+
+/* =========================
+   ALL PRODUCTS
+   ========================= */
+
+.product-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:13px;
+}
+
+.all-products-card{
+    min-width:0;
+}
+
+/* =========================
+   EMPTY STATE
+   ========================= */
+
+.empty-shop{
+    background:#fff;
+    border-radius:20px;
+    padding:45px 20px;
+    text-align:center;
+    color:#788294;
+}
+
+.empty-shop i{
+    font-size:38px;
+    color:#b7c0ce;
+    margin-bottom:10px;
+}
+
+/* =========================
+   PAGINATION
+   ========================= */
+
+.shop-pagination{
+    display:flex;
+    justify-content:center;
+    margin:25px 0;
+}
+
+.shop-pagination .page-link{
+    border:0;
+    border-radius:10px!important;
+    margin:0 3px;
+    color:#455064;
+    font-weight:750;
+}
+
+.shop-pagination .active .page-link{
+    background:var(--shop-blue);
+    color:#fff;
+}
+
+/* =========================
+   MOBILE BOTTOM NAV
+   ========================= */
+
+.mobile-shop-nav{
+    display:none;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media(max-width:1100px){
+    .category-grid{
+        grid-template-columns:repeat(4,1fr);
+    }
+
+    .product-grid{
+        grid-template-columns:repeat(4,1fr);
+    }
+}
+
+@media(max-width:768px){
+
+    .shop-page{
+        padding-bottom:82px;
+    }
+
+    .shop-topbar{
+        position:sticky;
+        top:0;
+    }
+
+    .shop-topbar-inner{
+        min-height:58px;
+        padding:7px 10px;
+        gap:9px;
+    }
+
+    .shop-brand{
+        font-size:20px;
+    }
+
+    .desktop-search{
+        display:none;
+    }
+
+    .mobile-search{
+        display:flex;
+        margin:8px 10px 9px;
+        height:47px;
+    }
+
+    .shop-header-actions{
+        gap:3px;
+    }
+
+    .shop-head-btn{
+        width:40px;
+        height:40px;
+        border-radius:12px;
+        background:#f5f7fb;
+    }
+
+    .category-scroll{
+        padding:8px 9px 10px;
+        gap:6px;
+    }
+
+    .category-pill{
+        min-width:72px;
+        font-size:10px;
+    }
+
+    .category-icon{
+        width:47px;
+        height:47px;
+    }
+
+    .hero-wrap{
+        padding:9px 8px 1px;
+    }
+
+    .shop-hero{
+        border-radius:17px;
+    }
+
+    .shop-hero img{
+        height:210px;
+    }
+
+    .hero-caption{
+        left:6%;
+        max-width:65%;
+    }
+
+    .hero-caption h2{
+        font-size:24px;
+    }
+
+    .hero-caption p{
+        font-size:11px;
+        margin-bottom:10px;
+    }
+
+    .hero-btn{
+        padding:8px 12px;
+        font-size:10px;
+        border-radius:9px;
+    }
+
+    .shop-section{
+        padding:15px 8px 0;
+    }
+
+    .section-title{
+        font-size:18px;
+    }
+
+    .category-grid{
+        display:flex;
+        overflow-x:auto;
+        gap:9px;
+        scrollbar-width:none;
+    }
+
+    .category-grid::-webkit-scrollbar{
+        display:none;
+    }
+
+    .category-card{
+        min-width:105px;
+        max-width:105px;
+        padding:7px;
+        border-radius:14px;
+    }
+
+    .category-card-img{
+        height:92px;
+    }
+
+    .category-card-name{
+        font-size:11px;
+    }
+
+    .category-card-sub{
+        font-size:9px;
+    }
+
+    .deal-box{
+        padding:12px;
+        border-radius:18px;
+        margin-bottom:12px;
+    }
+
+    .deal-title{
+        font-size:18px;
+    }
+
+    .product-rail{
+        grid-auto-columns:145px;
+        gap:8px;
+    }
+
+    .product-card-body{
+        padding:9px;
+    }
+
+    .product-name{
+        font-size:11px;
+        min-height:29px;
+    }
+
+    .sale-price{
+        font-size:14px;
+    }
+
+    .add-btn{
+        min-height:34px;
+        font-size:10px;
+    }
+
+    .product-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
+    }
+
+    .all-products-card .product-card-body{
+        padding:9px;
+    }
+
+    .mobile-shop-nav{
+        position:fixed;
+        left:0;
+        right:0;
+        bottom:0;
+        height:67px;
+        background:rgba(255,255,255,.97);
+        backdrop-filter:blur(16px);
+        -webkit-backdrop-filter:blur(16px);
+        border-top:1px solid #e6e9ef;
+        z-index:1500;
+        display:flex;
+        justify-content:space-around;
+        align-items:center;
+        padding-bottom:env(safe-area-inset-bottom);
+        transition:transform .28s ease;
+    }
+
+    .mobile-shop-nav.hide-on-scroll{
+        transform:translateY(110%);
+    }
+
+    .mobile-shop-link{
+        min-width:58px;
+        color:#737b88;
+        text-decoration:none;
+        text-align:center;
+        font-size:10px;
+        font-weight:700;
+        position:relative;
+    }
+
+    .mobile-shop-link i{
+        display:block;
+        font-size:20px;
+        margin-bottom:4px;
+    }
+
+    .mobile-shop-link.active{
+        color:var(--shop-blue);
+    }
+
+    .mobile-shop-cart{
+        position:absolute;
+        top:-3px;
+        right:12px;
+        min-width:17px;
+        height:17px;
+        border-radius:50%;
+        background:#ef4444;
+        color:#fff;
+        font-size:9px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+}
+
+@media(max-width:380px){
+    .product-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .product-rail{
+        grid-auto-columns:138px;
+    }
+
+    .shop-brand{
+        font-size:18px;
+    }
+}
+</style>
+
+
+<div class="shop-page">
+
+    <div class="shop-inner">
+
+        <!-- SHOP HEADER -->
+        <header class="shop-topbar" id="shopTopbar">
+
+            <div class="shop-topbar-inner">
+
+                <a href="{{ url_for('shop_products') }}" class="shop-brand">
+                    Shop
+                </a>
+
+                <form
+                    class="shop-search desktop-search"
+                    method="GET"
+                    action="{{ url_for('shop_products') }}">
+
+                    <i class="fas fa-search"></i>
+
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ request.args.get('q','') }}"
+                        placeholder="Search for products, brands and more...">
+
+                </form>
+
+                <div class="shop-header-actions">
+
+                    <a href="/wishlist" class="shop-head-btn" aria-label="Wishlist">
+                        <i class="far fa-heart"></i>
                     </a>
 
-                    {% endif %}
+                    <a href="/cart" class="shop-head-btn" aria-label="Cart">
+                        <i class="fas fa-shopping-cart"></i>
+
+                        {% if cart_count is defined and cart_count %}
+                        <span class="shop-cart-count">{{ cart_count }}</span>
+                        {% endif %}
+
+                    </a>
 
                 </div>
 
             </div>
 
-            {% endfor %}
+            <form
+                class="shop-search mobile-search"
+                method="GET"
+                action="{{ url_for('shop_products') }}">
 
-        </div>
+                <i class="fas fa-search"></i>
 
-        <button class="carousel-control-prev"
-                type="button"
-                data-bs-target="#shopCarousel"
-                data-bs-slide="prev">
+                <input
+                    type="search"
+                    name="q"
+                    value="{{ request.args.get('q','') }}"
+                    placeholder="Search products...">
 
-            <span class="carousel-control-prev-icon"></span>
+                <button
+                    type="submit"
+                    style="border:0;background:none;color:#667085;padding:0 4px;">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
 
-        </button>
+            </form>
 
-        <button class="carousel-control-next"
-                type="button"
-                data-bs-target="#shopCarousel"
-                data-bs-slide="next">
+        </header>
 
-            <span class="carousel-control-next-icon"></span>
 
-        </button>
+        <!-- HORIZONTAL CATEGORIES -->
+        {% if categories %}
 
-    </div>
+        <div class="category-strip">
 
-    <!-- Categories -->
+            <div class="category-scroll">
 
-    <div class="container mb-4">
+                {% for category in categories %}
 
-        <h3 class="fw-bold mb-3">
+                <a
+                    href="{{ url_for('shop_products', category=category.id) }}"
+                    class="category-pill">
 
-            Shop by Category
-
-        </h3>
-
-        <div class="row">
-
-            {% for category in categories %}
-
-            <div class="col-6 col-md-3 col-lg-2 mb-3">
-
-                <a href="{{ url_for('shop_products',
-                category=category.id) }}"
-                   class="text-decoration-none">
-
-                    <div class="card shadow-sm border-0 text-center h-100">
+                    <div class="category-icon">
 
                         {% if category.image %}
 
-                        <img src="{{ url_for('static',
-                        filename='category_images/' + category.image) }}"
-                             class="card-img-top"
-                             style="height:120px;object-fit:cover;">
-
-                        {% endif %}
-
-                        <div class="card-body">
-
-                            <strong>
-
-                                {{ category.name }}
-
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-            {% endfor %}
-
-        </div>
-
-    </div>
-
-    <!-- Search & Filters -->
-
-    <div class="container mb-4">
-
-        <div class="card shadow-sm">
-
-            <div class="card-body">
-
-                <form method="GET"
-                      action="{{ url_for('shop_products') }}">
-
-                    <div class="row g-3">
-
-                        <div class="col-md-4">
-
-                            <input type="text"
-                                   name="q"
-                                   class="form-control"
-                                   placeholder="Search products..."
-                                   value="{{ request.args.get('q','') }}">
-
-                        </div>
-
-                        <div class="col-md-2">
-
-                            <select class="form-select"
-                                    name="category">
-
-                                <option value="">
-
-                                    All Categories
-
-                                </option>
-
-                                {% for category in categories %}
-
-                                <option value="{{ category.id }}">
-
-                                    {{ category.name }}
-
-                                </option>
-
-                                {% endfor %}
-
-                            </select>
-
-                        </div>
-
-                        <div class="col-md-2">
-
-                            <select class="form-select"
-                                    name="sort">
-
-                                <option value="latest">
-
-                                    Latest
-
-                                </option>
-
-                                <option value="price_low">
-
-                                    Price Low → High
-
-                                </option>
-
-                                <option value="price_high">
-
-                                    Price High → Low
-
-                                </option>
-
-                                <option value="popular">
-
-                                    Popular
-
-                                </option>
-
-                                <option value="bestselling">
-
-                                    Best Selling
-
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <div class="col-md-2">
-
-                            <input type="number"
-                                   name="min_price"
-                                   class="form-control"
-                                   placeholder="Min Price">
-
-                        </div>
-
-                        <div class="col-md-2">
-
-                            <button class="btn btn-primary w-100">
-
-                                <i class="fas fa-search"></i>
-
-                                Search
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-        </div>
-
-    </div>
-
-<!-- Products -->
-
-<div class="container mb-5">
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-
-        <h3 class="fw-bold">
-
-            Products
-
-        </h3>
-
-        <span class="text-muted">
-
-            {{ products.total }} Products Found
-
-        </span>
-
-    </div>
-
-    <div class="row">
-
-        {% for product in products.items %}
-
-        <div class="col-6 col-md-4 col-lg-3 mb-4">
-
-            <div class="card shadow-sm border-0 h-100 position-relative">
-
-                {% if product.sale_price %}
-
-                <span class="badge bg-danger position-absolute top-0 start-0 m-2">
-
-                    SALE
-
-                </span>
-
-                {% endif %}
-
-                {% if product.stock <= 0 %}
-
-                <span class="badge bg-dark position-absolute top-0 end-0 m-2">
-
-                    OUT OF STOCK
-
-                </span>
-
-                {% endif %}
-
-                <a href="{{ url_for('product_details',
-                product_id=product.id) }}">
-
-                    {% if product.images %}
-
-                    <img src="{{ url_for('static',
-                    filename='product_images/' + product.images[0].image) }}"
-                         class="card-img-top"
-                         style="height:250px;object-fit:cover;">
-
-                    {% else %}
-
-                    <img src="{{ url_for('static',
-                    filename='images/no-image.png') }}"
-                         class="card-img-top"
-                         style="height:250px;object-fit:cover;">
-
-                    {% endif %}
-
-                </a>
-
-                <div class="card-body d-flex flex-column">
-
-                    <small class="text-muted">
-
-                        {{ product.category.name }}
-
-                    </small>
-
-                    <h6 class="fw-bold mt-2">
-
-                        {{ product.name }}
-
-                    </h6>
-
-                    <div class="mb-2">
-
-                        {% for i in range(5) %}
-
-                            {% if i < product.average_rating|int %}
-
-                            <i class="fas fa-star text-warning"></i>
-
-                            {% else %}
-
-                            <i class="far fa-star text-warning"></i>
-
-                            {% endif %}
-
-                        {% endfor %}
-
-                        <small>
-
-                            ({{ product.review_count }})
-
-                        </small>
-
-                    </div>
-
-                    <div class="mb-3">
-
-                        {% if product.sale_price %}
-
-                        <span class="fw-bold text-success">
-
-                            ₹{{ product.sale_price }}
-
-                        </span>
-
-                        <del class="text-muted ms-2">
-
-                            ₹{{ product.price }}
-
-                        </del>
+                        <img
+                            src="{{ url_for('static', filename='category_images/' + category.image) }}"
+                            alt="{{ category.name }}"
+                            loading="lazy"
+                            onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/no-image.png') }}';">
 
                         {% else %}
 
-                        <span class="fw-bold">
-
-                            ₹{{ product.price }}
-
-                        </span>
+                        <i class="fas fa-tags"></i>
 
                         {% endif %}
 
                     </div>
 
-                    <div class="mt-auto">
+                    {{ category.name }}
 
-                        <div class="d-grid gap-2">
+                </a>
 
-                            <a href="{{ url_for('product_details',
-                            product_id=product.id) }}"
-                               class="btn btn-outline-primary">
+                {% endfor %}
 
-                                <i class="fas fa-eye"></i>
+            </div>
 
-                                View Details
+        </div>
+
+        {% endif %}
+
+
+        <!-- HERO BANNER -->
+        {% if banners %}
+
+        <section class="hero-wrap">
+
+            <div
+                id="shopCarousel"
+                class="carousel slide shop-hero"
+                data-bs-ride="carousel"
+                data-bs-interval="4500">
+
+                <div class="carousel-inner">
+
+                    {% for banner in banners %}
+
+                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+
+                        <img
+                            src="{{ url_for('static', filename='homepage_banners/' + banner.image) }}"
+                            alt="{{ banner.title or 'Shop banner' }}"
+                            loading="{% if loop.first %}eager{% else %}lazy{% endif %}"
+                            onerror="this.style.display='none';">
+
+                        <div class="hero-overlay"></div>
+
+                        <div class="hero-caption">
+
+                            {% if banner.subtitle %}
+                            <div class="eyebrow">
+                                Featured
+                            </div>
+                            {% endif %}
+
+                            {% if banner.title %}
+                            <h2>{{ banner.title }}</h2>
+                            {% endif %}
+
+                            {% if banner.subtitle %}
+                            <p>{{ banner.subtitle }}</p>
+                            {% endif %}
+
+                            {% if banner.button_text and banner.button_link %}
+
+                            <a
+                                href="{{ banner.button_link }}"
+                                class="hero-btn">
+
+                                {{ banner.button_text }}
+                                <i class="fas fa-arrow-right"></i>
 
                             </a>
 
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                {% if banners|length > 1 %}
+
+                <button
+                    class="carousel-control-prev"
+                    type="button"
+                    data-bs-target="#shopCarousel"
+                    data-bs-slide="prev">
+
+                    <span class="carousel-control-prev-icon"></span>
+
+                </button>
+
+                <button
+                    class="carousel-control-next"
+                    type="button"
+                    data-bs-target="#shopCarousel"
+                    data-bs-slide="next">
+
+                    <span class="carousel-control-next-icon"></span>
+
+                </button>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+
+        <!-- SHOP BY CATEGORY -->
+        {% if categories %}
+
+        <section class="shop-section">
+
+            <div class="section-head">
+
+                <h2 class="section-title">
+                    Shop by Category
+                </h2>
+
+                <a
+                    href="{{ url_for('shop_products') }}"
+                    class="section-link">
+                    View All <i class="fas fa-chevron-right"></i>
+                </a>
+
+            </div>
+
+            <div class="category-grid">
+
+                {% for category in categories[:12] %}
+
+                <a
+                    href="{{ url_for('shop_products', category=category.id) }}"
+                    class="category-card">
+
+                    <div class="category-card-img">
+
+                        {% if category.image %}
+
+                        <img
+                            src="{{ url_for('static', filename='category_images/' + category.image) }}"
+                            alt="{{ category.name }}"
+                            loading="lazy"
+                            onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/no-image.png') }}';">
+
+                        {% else %}
+
+                        <div style="height:100%;display:flex;align-items:center;justify-content:center;color:#a5afbf;">
+                            <i class="fas fa-image fa-2x"></i>
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="category-card-name">
+                        {{ category.name }}
+                    </div>
+
+                    <div class="category-card-sub">
+                        Explore now
+                    </div>
+
+                </a>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+
+        <!-- DEALS / PRODUCTS -->
+        {% if products.items %}
+
+        <section class="shop-section">
+
+            <div class="deal-box">
+
+                <div class="deal-head">
+
+                    <h2 class="deal-title">
+                        Top Deals
+                    </h2>
+
+                    <a
+                        href="{{ url_for('shop_products', sort='popular') }}"
+                        class="deal-link">
+                        See all <i class="fas fa-chevron-right"></i>
+                    </a>
+
+                </div>
+
+                <div class="product-rail">
+
+                    {% for product in products.items[:8] %}
+
+                    <article class="product-card">
+
+                        <a
+                            href="{{ url_for('product_details', product_id=product.id) }}"
+                            class="product-card-img-wrap">
+
+                            {% if product.sale_price %}
+                            <span class="sale-badge">SALE</span>
+                            {% endif %}
+
+                            {% if product.stock <= 0 %}
+                            <span class="stock-badge">SOLD OUT</span>
+                            {% endif %}
+
+                            {% if product.images %}
+
+                            <img
+                                class="product-card-img"
+                                src="{{ url_for('static', filename='product_images/' + product.images[0].image) }}"
+                                alt="{{ product.name }}"
+                                loading="lazy"
+                                onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/no-image.png') }}';">
+
+                            {% else %}
+
+                            <img
+                                class="product-card-img"
+                                src="{{ url_for('static', filename='images/no-image.png') }}"
+                                alt="No image">
+
+                            {% endif %}
+
+                        </a>
+
+                        <a
+                            href="{{ url_for('toggle_wishlist', product_id=product.id) }}"
+                            class="wishlist-btn"
+                            aria-label="Wishlist">
+
+                            <i class="far fa-heart"></i>
+
+                        </a>
+
+                        <div class="product-card-body">
+
+                            {% if product.category %}
+                            <div class="product-category">
+                                {{ product.category.name }}
+                            </div>
+                            {% endif %}
+
+                            <a
+                                href="{{ url_for('product_details', product_id=product.id) }}"
+                                class="product-name">
+
+                                {{ product.name }}
+
+                            </a>
+
+                            <div class="rating">
+
+                                {% for i in range(5) %}
+                                    {% if i < product.average_rating|int %}
+                                    <i class="fas fa-star"></i>
+                                    {% else %}
+                                    <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <span>
+                                    ({{ product.review_count }})
+                                </span>
+
+                            </div>
+
+                            <div class="price-row">
+
+                                {% if product.sale_price %}
+
+                                <span class="sale-price">
+                                    ₹{{ product.sale_price }}
+                                </span>
+
+                                <del class="old-price">
+                                    ₹{{ product.price }}
+                                </del>
+
+                                {% else %}
+
+                                <span class="sale-price">
+                                    ₹{{ product.price }}
+                                </span>
+
+                                {% endif %}
+
+                            </div>
+
                             {% if product.stock > 0 %}
 
-                            <form action="{{ url_for('add_to_cart',
-                            product_id=product.id) }}"
-                                  method="POST">
+                            <form
+                                action="{{ url_for('add_to_cart', product_id=product.id) }}"
+                                method="POST">
 
-                                <button class="btn btn-primary w-100">
-
-                                    <i class="fas fa-shopping-cart"></i>
-
+                                <button class="add-btn" type="submit">
+                                    <i class="fas fa-cart-plus"></i>
                                     Add to Cart
-
                                 </button>
 
                             </form>
 
                             {% else %}
 
-                            <button class="btn btn-secondary w-100"
-                                    disabled>
-
+                            <button class="add-btn" disabled>
                                 Out of Stock
-
                             </button>
 
                             {% endif %}
 
-                            <a href="{{ url_for('toggle_wishlist',
-                            product_id=product.id) }}"
-                               class="btn btn-light border">
-
-                                <i class="far fa-heart text-danger"></i>
-
-                                Wishlist
-
-                            </a>
-
                         </div>
 
-                    </div>
+                    </article>
+
+                    {% endfor %}
 
                 </div>
 
             </div>
 
-        </div>
 
-        {% else %}
+            <!-- SECOND PRODUCT RAIL -->
+            {% if products.items|length > 3 %}
 
-        <div class="col-12">
+            <div class="deal-box blue">
 
-            <div class="alert alert-info text-center">
+                <div class="deal-head">
 
-                No products found.
+                    <h2 class="deal-title">
+                        Recommended For You
+                    </h2>
+
+                    <a
+                        href="{{ url_for('shop_products', sort='latest') }}"
+                        class="deal-link">
+                        Explore <i class="fas fa-chevron-right"></i>
+                    </a>
+
+                </div>
+
+                <div class="product-rail">
+
+                    {% for product in products.items[3:11] %}
+
+                    <article class="product-card">
+
+                        <a
+                            href="{{ url_for('product_details', product_id=product.id) }}"
+                            class="product-card-img-wrap">
+
+                            {% if product.sale_price %}
+                            <span class="sale-badge">DEAL</span>
+                            {% endif %}
+
+                            {% if product.images %}
+
+                            <img
+                                class="product-card-img"
+                                src="{{ url_for('static', filename='product_images/' + product.images[0].image) }}"
+                                alt="{{ product.name }}"
+                                loading="lazy"
+                                onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/no-image.png') }}';">
+
+                            {% else %}
+
+                            <img
+                                class="product-card-img"
+                                src="{{ url_for('static', filename='images/no-image.png') }}"
+                                alt="No image">
+
+                            {% endif %}
+
+                        </a>
+
+                        <div class="product-card-body">
+
+                            {% if product.category %}
+                            <div class="product-category">
+                                {{ product.category.name }}
+                            </div>
+                            {% endif %}
+
+                            <a
+                                href="{{ url_for('product_details', product_id=product.id) }}"
+                                class="product-name">
+                                {{ product.name }}
+                            </a>
+
+                            <div class="rating">
+
+                                {% for i in range(5) %}
+                                    {% if i < product.average_rating|int %}
+                                    <i class="fas fa-star"></i>
+                                    {% else %}
+                                    <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <span>({{ product.review_count }})</span>
+
+                            </div>
+
+                            <div class="price-row">
+
+                                {% if product.sale_price %}
+                                <span class="sale-price">
+                                    ₹{{ product.sale_price }}
+                                </span>
+                                <del class="old-price">
+                                    ₹{{ product.price }}
+                                </del>
+                                {% else %}
+                                <span class="sale-price">
+                                    ₹{{ product.price }}
+                                </span>
+                                {% endif %}
+
+                            </div>
+
+                            {% if product.stock > 0 %}
+
+                            <form
+                                action="{{ url_for('add_to_cart', product_id=product.id) }}"
+                                method="POST">
+
+                                <button class="add-btn">
+                                    <i class="fas fa-cart-plus"></i>
+                                    Add to Cart
+                                </button>
+
+                            </form>
+
+                            {% else %}
+
+                            <button class="add-btn" disabled>
+                                Out of Stock
+                            </button>
+
+                            {% endif %}
+
+                        </div>
+
+                    </article>
+
+                    {% endfor %}
+
+                </div>
 
             </div>
 
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-</div>
-
-<!-- Pagination -->
-
-<div class="container mb-5">
-
-    {% if products.pages > 1 %}
-
-    <nav>
-
-        <ul class="pagination justify-content-center">
-
-            {% if products.has_prev %}
-
-            <li class="page-item">
-
-                <a class="page-link"
-
-                   href="{{ url_for('shop_products',
-
-                        page=products.prev_num,
-
-                        q=request.args.get('q'),
-
-                        category=request.args.get('category'),
-
-                        brand=request.args.get('brand'),
-
-                        sort=request.args.get('sort'),
-
-                        min_price=request.args.get('min_price'),
-
-                        max_price=request.args.get('max_price')
-
-                   ) }}">
-
-                    Previous
-
-                </a>
-
-            </li>
-
             {% endif %}
 
-            {% for page in products.iter_pages() %}
+        </section>
 
-                {% if page %}
 
-                <li class="page-item {% if page==products.page %}active{% endif %}">
+        <!-- ALL PRODUCTS -->
+        <section class="shop-section">
 
-                    <a class="page-link"
+            <div class="section-head">
 
-                       href="{{ url_for('shop_products',
+                <h2 class="section-title">
+                    All Products
+                </h2>
 
-                            page=page,
+                <span style="font-size:11px;color:#7c8595;">
+                    {{ products.total }} products
+                </span>
 
-                            q=request.args.get('q'),
+            </div>
 
-                            category=request.args.get('category'),
+            <div class="product-grid">
 
-                            brand=request.args.get('brand'),
+                {% for product in products.items %}
 
-                            sort=request.args.get('sort'),
+                <article class="product-card all-products-card">
 
-                            min_price=request.args.get('min_price'),
+                    <a
+                        href="{{ url_for('product_details', product_id=product.id) }}"
+                        class="product-card-img-wrap">
 
-                            max_price=request.args.get('max_price')
+                        {% if product.sale_price %}
+                        <span class="sale-badge">SALE</span>
+                        {% endif %}
 
-                       ) }}">
+                        {% if product.stock <= 0 %}
+                        <span class="stock-badge">SOLD OUT</span>
+                        {% endif %}
 
-                        {{ page }}
+                        {% if product.images %}
+
+                        <img
+                            class="product-card-img"
+                            src="{{ url_for('static', filename='product_images/' + product.images[0].image) }}"
+                            alt="{{ product.name }}"
+                            loading="lazy"
+                            onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/no-image.png') }}';">
+
+                        {% else %}
+
+                        <img
+                            class="product-card-img"
+                            src="{{ url_for('static', filename='images/no-image.png') }}"
+                            alt="No image">
+
+                        {% endif %}
 
                     </a>
 
-                </li>
+                    <a
+                        href="{{ url_for('toggle_wishlist', product_id=product.id) }}"
+                        class="wishlist-btn">
 
-                {% else %}
+                        <i class="far fa-heart"></i>
 
-                <li class="page-item disabled">
+                    </a>
 
-                    <span class="page-link">...</span>
+                    <div class="product-card-body">
 
-                </li>
+                        {% if product.category %}
+                        <div class="product-category">
+                            {{ product.category.name }}
+                        </div>
+                        {% endif %}
 
-                {% endif %}
+                        <a
+                            href="{{ url_for('product_details', product_id=product.id) }}"
+                            class="product-name">
+                            {{ product.name }}
+                        </a>
 
-            {% endfor %}
+                        <div class="rating">
 
-            {% if products.has_next %}
+                            {% for i in range(5) %}
 
-            <li class="page-item">
+                                {% if i < product.average_rating|int %}
+                                <i class="fas fa-star"></i>
+                                {% else %}
+                                <i class="far fa-star"></i>
+                                {% endif %}
 
-                <a class="page-link"
+                            {% endfor %}
 
-                   href="{{ url_for('shop_products',
+                            <span>
+                                ({{ product.review_count }})
+                            </span>
 
-                        page=products.next_num,
+                        </div>
 
-                        q=request.args.get('q'),
+                        <div class="price-row">
 
-                        category=request.args.get('category'),
+                            {% if product.sale_price %}
 
-                        brand=request.args.get('brand'),
+                            <span class="sale-price">
+                                ₹{{ product.sale_price }}
+                            </span>
 
-                        sort=request.args.get('sort'),
+                            <del class="old-price">
+                                ₹{{ product.price }}
+                            </del>
 
-                        min_price=request.args.get('min_price'),
+                            {% else %}
 
-                        max_price=request.args.get('max_price')
+                            <span class="sale-price">
+                                ₹{{ product.price }}
+                            </span>
 
-                   ) }}">
+                            {% endif %}
 
-                    Next
+                        </div>
 
+                        {% if product.stock > 0 %}
+
+                        <form
+                            action="{{ url_for('add_to_cart', product_id=product.id) }}"
+                            method="POST">
+
+                            <button
+                                type="submit"
+                                class="add-btn">
+
+                                <i class="fas fa-cart-plus"></i>
+                                Add to Cart
+
+                            </button>
+
+                        </form>
+
+                        {% else %}
+
+                        <button class="add-btn" disabled>
+                            Out of Stock
+                        </button>
+
+                        {% endif %}
+
+                    </div>
+
+                </article>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+
+        <!-- PAGINATION -->
+        {% if products.pages > 1 %}
+
+        <div class="shop-pagination">
+
+            <nav>
+
+                <ul class="pagination">
+
+                    {% if products.has_prev %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="{{ url_for('shop_products',
+                                page=products.prev_num,
+                                q=request.args.get('q'),
+                                category=request.args.get('category'),
+                                brand=request.args.get('brand'),
+                                sort=request.args.get('sort'),
+                                min_price=request.args.get('min_price'),
+                                max_price=request.args.get('max_price')) }}">
+
+                            <i class="fas fa-chevron-left"></i>
+
+                        </a>
+
+                    </li>
+
+                    {% endif %}
+
+
+                    {% for page in products.iter_pages() %}
+
+                        {% if page %}
+
+                        <li class="page-item {% if page == products.page %}active{% endif %}">
+
+                            <a
+                                class="page-link"
+                                href="{{ url_for('shop_products',
+                                    page=page,
+                                    q=request.args.get('q'),
+                                    category=request.args.get('category'),
+                                    brand=request.args.get('brand'),
+                                    sort=request.args.get('sort'),
+                                    min_price=request.args.get('min_price'),
+                                    max_price=request.args.get('max_price')) }}">
+
+                                {{ page }}
+
+                            </a>
+
+                        </li>
+
+                        {% else %}
+
+                        <li class="page-item disabled">
+                            <span class="page-link">…</span>
+                        </li>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+
+                    {% if products.has_next %}
+
+                    <li class="page-item">
+
+                        <a
+                            class="page-link"
+                            href="{{ url_for('shop_products',
+                                page=products.next_num,
+                                q=request.args.get('q'),
+                                category=request.args.get('category'),
+                                brand=request.args.get('brand'),
+                                sort=request.args.get('sort'),
+                                min_price=request.args.get('min_price'),
+                                max_price=request.args.get('max_price')) }}">
+
+                            <i class="fas fa-chevron-right"></i>
+
+                        </a>
+
+                    </li>
+
+                    {% endif %}
+
+                </ul>
+
+            </nav>
+
+        </div>
+
+        {% endif %}
+
+
+        {% else %}
+
+        <section class="shop-section">
+
+            <div class="empty-shop">
+
+                <i class="fas fa-box-open"></i>
+
+                <h3>No products found</h3>
+
+                <p>Try another search or browse our categories.</p>
+
+                <a
+                    href="{{ url_for('shop_products') }}"
+                    class="btn btn-primary rounded-pill px-4">
+                    Explore Shop
                 </a>
 
-            </li>
+            </div>
 
+        </section>
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- MOBILE SHOP NAV -->
+    <nav class="mobile-shop-nav" id="mobileShopNav">
+
+        <a
+            href="{{ url_for('shop_products') }}"
+            class="mobile-shop-link active">
+
+            <i class="fas fa-house"></i>
+            Home
+
+        </a>
+
+        <a
+            href="{{ url_for('shop_products', sort='popular') }}"
+            class="mobile-shop-link">
+
+            <i class="fas fa-fire"></i>
+            Deals
+
+        </a>
+
+        <a
+            href="{{ url_for('shop_products') }}"
+            class="mobile-shop-link">
+
+            <i class="fas fa-th-large"></i>
+            Categories
+
+        </a>
+
+        <a
+            href="/wishlist"
+            class="mobile-shop-link">
+
+            <i class="far fa-heart"></i>
+            Wishlist
+
+        </a>
+
+        <a
+            href="/cart"
+            class="mobile-shop-link"
+            style="position:relative;">
+
+            <i class="fas fa-shopping-cart"></i>
+            Cart
+
+            {% if cart_count is defined and cart_count %}
+            <span class="mobile-shop-cart">
+                {{ cart_count }}
+            </span>
             {% endif %}
 
-        </ul>
+        </a>
 
     </nav>
 
-    {% endif %}
-
 </div>
 
-<!-- Back To Top -->
-
-<button id="topBtn"
-
-        class="btn btn-primary rounded-circle shadow"
-
-        style="position:fixed;
-               bottom:20px;
-               right:20px;
-               display:none;
-               z-index:999;">
-
-    <i class="fas fa-arrow-up"></i>
-
-</button>
 
 <script>
+(function(){
 
-window.addEventListener("scroll",function(){
+    const header = document.getElementById("shopTopbar");
+    const bottomNav = document.getElementById("mobileShopNav");
 
-    let btn=document.getElementById("topBtn");
+    let lastScroll = window.scrollY || 0;
+    let ticking = false;
 
-    if(window.scrollY>300){
+    function handleScroll(){
 
-        btn.style.display="block";
+        const current = window.scrollY || 0;
+        const delta = current - lastScroll;
 
-    }else{
+        if(Math.abs(delta) < 5){
+            ticking = false;
+            return;
+        }
 
-        btn.style.display="none";
+        if(current > 90 && delta > 0){
+            if(header) header.classList.add("hide-on-scroll");
+            if(bottomNav) bottomNav.classList.add("hide-on-scroll");
+        }else if(delta < 0){
+            if(header) header.classList.remove("hide-on-scroll");
+            if(bottomNav) bottomNav.classList.remove("hide-on-scroll");
+        }
 
+        lastScroll = current;
+        ticking = false;
     }
 
-});
+    window.addEventListener("scroll",function(){
 
-document.getElementById("topBtn").onclick=function(){
+        if(!ticking){
+            window.requestAnimationFrame(handleScroll);
+            ticking = true;
+        }
 
-    window.scrollTo({
+    },{passive:true});
 
-        top:0,
-
-        behavior:"smooth"
-
-    });
-
-};
-
+})();
 </script>
-
-</div>
 
 {% endblock %}
