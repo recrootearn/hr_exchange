@@ -15084,7 +15084,7 @@ def product_details(id):
     db.session.commit()
 
     return render_template(
-        "product_details.html",
+        "shop/product_details.html",
         product=product,
         related_products=related_products
     )
