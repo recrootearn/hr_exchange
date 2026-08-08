@@ -14636,19 +14636,13 @@ def admin_reported_comments():
 @login_required
 def add_product():
 
-    # Create default categories if they don't exist
     create_default_shop_categories()
 
-    # Get active categories
     categories = ProductCategory.query.filter_by(
         is_active=True
     ).all()
 
     if request.method == "POST":
-
-        # ==========================================
-        # CREATE PRODUCT
-        # ==========================================
 
         product = Product(
 
@@ -14664,10 +14658,6 @@ def add_product():
                 "description",
                 ""
             ).strip(),
-
-            sku=request.form.get(
-                "sku"
-            ),
 
             hsn_code=request.form.get(
                 "hsn_code"
@@ -14731,7 +14721,9 @@ def add_product():
             product_type=request.form.get(
                 "product_type",
                 "simple"
-            )
+            ),
+
+            is_active=True
 
         )
 
@@ -14740,7 +14732,7 @@ def add_product():
         db.session.commit()
 
         # ==========================================
-        # UPLOAD PRODUCT IMAGES
+        # PRODUCT IMAGES
         # ==========================================
 
         images = request.files.getlist(
@@ -14755,7 +14747,6 @@ def add_product():
             )
 
             db.session.delete(product)
-
             db.session.commit()
 
             return redirect(request.url)
@@ -14788,23 +14779,17 @@ def add_product():
                 )
 
                 db.session.add(
-
                     ProductImage(
-
                         product_id=product.id,
-
                         image=filename,
-
                         sort_order=sort_order
-
                     )
-
                 )
 
                 sort_order += 1
 
         # ==========================================
-        # SAVE PRODUCT VARIANTS
+        # PRODUCT VARIANTS
         # ==========================================
 
         if product.product_type == "variable":
@@ -14825,13 +14810,9 @@ def add_product():
                 "option_stock[]"
             )
 
-            for i in range(
-                len(values)
-            ):
+            for i in range(len(values)):
 
-                value = values[i].strip()
-
-                if not value:
+                if not values[i].strip():
                     continue
 
                 variant_name = (
@@ -14855,26 +14836,14 @@ def add_product():
                 )
 
                 db.session.add(
-
                     ProductVariant(
-
                         product_id=product.id,
-
                         variant_name=variant_name,
-
-                        option_value=value,
-
+                        option_value=values[i],
                         price=variant_price,
-
                         stock=variant_stock
-
                     )
-
                 )
-
-        # ==========================================
-        # FINAL DATABASE COMMIT
-        # ==========================================
 
         db.session.commit()
 
@@ -14887,16 +14856,9 @@ def add_product():
             "/shop/products"
         )
 
-    # ==========================================
-    # SHOW ADD PRODUCT PAGE
-    # ==========================================
-
     return render_template(
-
         "shop/add_product.html",
-
         categories=categories
-
     )
 
 @app.route("/shop/products")
