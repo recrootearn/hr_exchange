@@ -15276,8 +15276,240 @@ def checkout():
         subtotal=subtotal,
         shipping_charge=shipping_charge,
         total=total,
-        total_items=total_items
+        total_items=total_items,
+        razorpay_key=RAZORPAY_KEY
     )
+
+# =========================================================
+# CUSTOMER SHIPPING ADDRESS MANAGEMENT
+# =========================================================
+
+@app.route("/shop/add-address", methods=["GET", "POST"])
+@app.route("/add-address", methods=["GET", "POST"])
+@login_required
+def add_address():
+
+    if request.method == "POST":
+
+        full_name = request.form.get("full_name", "").strip()
+        mobile = request.form.get("mobile", "").strip()
+        alternate_mobile = request.form.get("alternate_mobile", "").strip()
+        address_line1 = request.form.get("address_line1", "").strip()
+        address_line2 = request.form.get("address_line2", "").strip()
+        landmark = request.form.get("landmark", "").strip()
+        city = request.form.get("city", "").strip()
+        state = request.form.get("state", "").strip()
+        pincode = request.form.get("pincode", "").strip()
+        country = request.form.get("country", "India").strip()
+        make_default = request.form.get("is_default") == "on"
+
+        # Required fields
+        if not full_name or not mobile or not address_line1:
+            flash("Please fill all required address details.", "warning")
+            return redirect(request.referrer or "/checkout")
+
+        if not city or not state or not pincode:
+            flash("City, state and pincode are required.", "warning")
+            return redirect(request.referrer or "/checkout")
+
+        # If this is the first address, automatically make it default
+        existing_count = ShippingAddress.query.filter_by(
+            user_id=current_user.id
+        ).count()
+
+        if existing_count == 0:
+            make_default = True
+
+        # If setting this as default, remove default from other addresses
+        if make_default:
+            ShippingAddress.query.filter_by(
+                user_id=current_user.id
+            ).update(
+                {"is_default": False},
+                synchronize_session=False
+            )
+
+        address = ShippingAddress(
+            user_id=current_user.id,
+            full_name=full_name,
+            mobile=mobile,
+            alternate_mobile=alternate_mobile or None,
+            address_line1=address_line1,
+            address_line2=address_line2 or None,
+            landmark=landmark or None,
+            city=city,
+            state=state,
+            pincode=pincode,
+            country=country or "India",
+            is_default=make_default
+        )
+
+        db.session.add(address)
+        db.session.commit()
+
+        flash("Address added successfully.", "success")
+
+        return redirect("/checkout")
+
+    return render_template(
+        "add_address.html"
+    )
+
+
+# =========================================================
+# EDIT SHIPPING ADDRESS
+# =========================================================
+
+@app.route("/shop/edit-address/<int:address_id>", methods=["GET", "POST"])
+@app.route("/edit-address/<int:address_id>", methods=["GET", "POST"])
+@login_required
+def edit_address(address_id):
+
+    address = ShippingAddress.query.filter_by(
+        id=address_id,
+        user_id=current_user.id
+    ).first_or_404()
+
+    if request.method == "POST":
+
+        address.full_name = request.form.get(
+            "full_name", ""
+        ).strip()
+
+        address.mobile = request.form.get(
+            "mobile", ""
+        ).strip()
+
+        address.alternate_mobile = request.form.get(
+            "alternate_mobile", ""
+        ).strip() or None
+
+        address.address_line1 = request.form.get(
+            "address_line1", ""
+        ).strip()
+
+        address.address_line2 = request.form.get(
+            "address_line2", ""
+        ).strip() or None
+
+        address.landmark = request.form.get(
+            "landmark", ""
+        ).strip() or None
+
+        address.city = request.form.get(
+            "city", ""
+        ).strip()
+
+        address.state = request.form.get(
+            "state", ""
+        ).strip()
+
+        address.pincode = request.form.get(
+            "pincode", ""
+        ).strip()
+
+        address.country = request.form.get(
+            "country", "India"
+        ).strip() or "India"
+
+        make_default = request.form.get("is_default") == "on"
+
+        if make_default:
+
+            ShippingAddress.query.filter(
+                ShippingAddress.user_id == current_user.id,
+                ShippingAddress.id != address.id
+            ).update(
+                {"is_default": False},
+                synchronize_session=False
+            )
+
+            address.is_default = True
+
+        db.session.commit()
+
+        flash("Address updated successfully.", "success")
+
+        return redirect("/checkout")
+
+    return render_template(
+        "edit_address.html",
+        address=address
+    )
+
+
+# =========================================================
+# DELETE SHIPPING ADDRESS
+# =========================================================
+
+@app.route("/shop/delete-address/<int:address_id>", methods=["POST"])
+@app.route("/delete-address/<int:address_id>", methods=["POST"])
+@login_required
+def delete_address(address_id):
+
+    address = ShippingAddress.query.filter_by(
+        id=address_id,
+        user_id=current_user.id
+    ).first_or_404()
+
+    was_default = address.is_default
+
+    db.session.delete(address)
+    db.session.commit()
+
+    # If default address was deleted,
+    # automatically make another address default
+    if was_default:
+
+        next_address = ShippingAddress.query.filter_by(
+            user_id=current_user.id
+        ).order_by(
+            ShippingAddress.created_at.desc()
+        ).first()
+
+        if next_address:
+            next_address.is_default = True
+            db.session.commit()
+
+    flash("Address deleted successfully.", "success")
+
+    return redirect("/checkout")
+
+
+# =========================================================
+# SET DEFAULT SHIPPING ADDRESS
+# =========================================================
+
+@app.route(
+    "/shop/set-default-address/<int:address_id>",
+    methods=["POST"]
+)
+@app.route(
+    "/set-default-address/<int:address_id>",
+    methods=["POST"]
+)
+@login_required
+def set_default_address(address_id):
+
+    address = ShippingAddress.query.filter_by(
+        id=address_id,
+        user_id=current_user.id
+    ).first_or_404()
+
+    ShippingAddress.query.filter(
+        ShippingAddress.user_id == current_user.id
+    ).update(
+        {"is_default": False},
+        synchronize_session=False
+    )
+
+    address.is_default = True
+
+    db.session.commit()
+
+    flash("Default address updated.", "success")
+
+    return redirect("/checkout")
 
 @app.route("/create-marketplace-order", methods=["POST"])
 @login_required
@@ -15286,6 +15518,25 @@ def create_marketplace_order():
     cart = Cart.query.filter_by(
         user_id=current_user.id
     ).first_or_404()
+
+    data = request.get_json(silent=True) or {}
+
+    address_id = data.get("address_id")
+
+    if not address_id:
+        return jsonify({
+            "error": "Please select a delivery address."
+        }), 400
+
+    address = ShippingAddress.query.filter_by(
+        id=int(address_id),
+        user_id=current_user.id
+    ).first()
+
+    if not address:
+        return jsonify({
+            "error": "Invalid delivery address."
+        }), 400
 
     subtotal = sum(
         item.price * item.quantity
@@ -15296,15 +15547,25 @@ def create_marketplace_order():
 
     total = subtotal + shipping
 
-    order = client.order.create({
+    if total <= 0:
+        return jsonify({
+            "error": "Your cart is empty."
+        }), 400
 
-        "amount": int(total * 100),
-
-        "currency": "INR"
-
+    razorpay_order = client.order.create({
+        "amount": int(round(total * 100)),
+        "currency": "INR",
+        "payment_capture": 1
     })
 
-    return jsonify(order)
+    # Save checkout payment information temporarily
+    session["marketplace_payment"] = {
+        "razorpay_order_id": razorpay_order["id"],
+        "address_id": address.id,
+        "amount": total
+    }
+
+    return jsonify(razorpay_order)
 
 @app.route("/marketplace-payment-success")
 @login_required
@@ -15313,6 +15574,10 @@ def marketplace_payment_success():
     razorpay_payment_id = request.args.get("payment_id")
     razorpay_order_id = request.args.get("order_id")
     razorpay_signature = request.args.get("signature")
+
+    # ---------------------------------------------------------
+    # 1. VERIFY RAZORPAY PAYMENT
+    # ---------------------------------------------------------
 
     try:
 
@@ -15328,40 +15593,142 @@ def marketplace_payment_success():
 
     except Exception:
 
-        flash("Payment verification failed.","danger")
+        flash(
+            "Payment verification failed.",
+            "danger"
+        )
 
         return redirect("/cart")
 
-    cart = Cart.query.filter_by(
-        user_id=current_user.id
-    ).first_or_404()
+
+    # ---------------------------------------------------------
+    # 2. GET PAYMENT SESSION
+    # ---------------------------------------------------------
+
+    payment_data = session.get(
+        "marketplace_payment"
+    )
+
+    if not payment_data:
+
+        flash(
+            "Payment session expired. Please try again.",
+            "danger"
+        )
+
+        return redirect("/checkout")
+
+
+    # ---------------------------------------------------------
+    # 3. VERIFY RAZORPAY ORDER ID
+    # ---------------------------------------------------------
+
+    if payment_data.get(
+        "razorpay_order_id"
+    ) != razorpay_order_id:
+
+        flash(
+            "Invalid payment order.",
+            "danger"
+        )
+
+        return redirect("/cart")
+
+
+    # ---------------------------------------------------------
+    # 4. GET SELECTED DELIVERY ADDRESS
+    # ---------------------------------------------------------
+
+    address_id = payment_data.get(
+        "address_id"
+    )
 
     address = ShippingAddress.query.filter_by(
-        user_id=current_user.id,
-        is_default=True
+        id=address_id,
+        user_id=current_user.id
     ).first()
 
     if not address:
 
-        flash("Please add a delivery address.","warning")
+        flash(
+            "Please select a valid delivery address.",
+            "warning"
+        )
 
         return redirect("/checkout")
+
+
+    # ---------------------------------------------------------
+    # 5. GET CART
+    # ---------------------------------------------------------
+
+    cart = Cart.query.filter_by(
+        user_id=current_user.id
+    ).first()
+
+    if not cart or not cart.items:
+
+        flash(
+            "Your cart is empty.",
+            "warning"
+        )
+
+        return redirect("/cart")
+
+
+    # ---------------------------------------------------------
+    # 6. CALCULATE TOTAL AGAIN FROM SERVER
+    # ---------------------------------------------------------
 
     subtotal = 0
 
     for item in cart.items:
 
-        subtotal += item.price * item.quantity
+        subtotal += (
+            item.price *
+            item.quantity
+        )
 
     shipping = 0
 
     total = subtotal + shipping
 
+
+    # ---------------------------------------------------------
+    # 7. VERIFY AMOUNT AGAINST PAYMENT SESSION
+    # ---------------------------------------------------------
+
+    session_amount = float(
+        payment_data.get(
+            "amount",
+            0
+        )
+    )
+
+    if round(session_amount, 2) != round(total, 2):
+
+        flash(
+            "Payment amount does not match the order amount.",
+            "danger"
+        )
+
+        return redirect("/cart")
+
+
+    # ---------------------------------------------------------
+    # 8. CREATE ORDER NUMBER
+    # ---------------------------------------------------------
+
     order_number = (
         "RE"
         + datetime.now().strftime("%Y%m%d")
-        + str(random.randint(100000,999999))
+        + str(random.randint(100000, 999999))
     )
+
+
+    # ---------------------------------------------------------
+    # 9. CREATE ORDER
+    # ---------------------------------------------------------
 
     order = Order(
 
@@ -15395,6 +15762,11 @@ def marketplace_payment_success():
 
     db.session.flush()
 
+
+    # ---------------------------------------------------------
+    # 10. CREATE ORDER ITEMS + UPDATE STOCK
+    # ---------------------------------------------------------
+
     for item in cart.items:
 
         db.session.add(
@@ -15415,23 +15787,52 @@ def marketplace_payment_success():
 
                 product_name=item.product.name,
 
-                product_image=item.product.images[0].image if item.product.images else None,
+                product_image=(
+                    item.product.images[0].image
+                    if item.product.images
+                    else None
+                ),
 
-                variant_name=item.variant_option.value if item.variant_option else None
+                variant_name=(
+                    item.variant_option.value
+                    if item.variant_option
+                    else None
+                )
 
             )
 
         )
 
+
+        # Reduce product stock
+
         item.product.stock -= item.quantity
+
+
+        # Reduce variant stock
 
         if item.variant_option:
 
-            item.variant_option.stock -= item.quantity
+            item.variant_option.stock -= (
+                item.quantity
+            )
+
+
+        # Increase sold count
 
         item.product.sold += item.quantity
 
+
+    # ---------------------------------------------------------
+    # 11. DELETE CART
+    # ---------------------------------------------------------
+
     db.session.delete(cart)
+
+
+    # ---------------------------------------------------------
+    # 12. CALCULATE PLATFORM COMMISSION
+    # ---------------------------------------------------------
 
     settings = get_business_settings()
 
@@ -15440,23 +15841,47 @@ def marketplace_payment_success():
         settings.marketplace_commission
     ) / 100
 
-    seller_amount = order.total_amount - commission
+    seller_amount = (
+        order.total_amount -
+        commission
+    )
 
     order.platform_commission = commission
+
     order.seller_amount = seller_amount
+
     order.wallet_released = False
+
+
+    # ---------------------------------------------------------
+    # 13. SAVE EVERYTHING
+    # ---------------------------------------------------------
 
     db.session.commit()
 
-    flash(
 
-        "Order placed successfully.",
+    # ---------------------------------------------------------
+    # 14. CLEAR PAYMENT SESSION
+    # ---------------------------------------------------------
 
-        "success"
-
+    session.pop(
+        "marketplace_payment",
+        None
     )
 
-    return redirect(f"/order/{order.id}")
+
+    # ---------------------------------------------------------
+    # 15. SUCCESS
+    # ---------------------------------------------------------
+
+    flash(
+        "Order placed successfully.",
+        "success"
+    )
+
+    return redirect(
+        f"/order/{order.id}"
+    )
 
 @app.route("/my-orders")
 @login_required
@@ -15868,9 +16293,10 @@ def test_shiprocket():
 @login_required
 def check_delivery():
 
-    address_id = request.form.get("address_id")
-
-    address = ShippingAddress.query.get_or_404(address_id)
+    address = ShippingAddress.query.filter_by(
+        id=address_id,
+        user_id=current_user.id
+    ).first_or_404()
 
     cart = Cart.query.filter_by(
         user_id=current_user.id

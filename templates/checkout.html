@@ -203,6 +203,102 @@ main,
     font-weight:800;
 }
 
+
+/* Address enhancements */
+.address-select{
+    display:flex;
+    align-items:flex-start;
+    gap:13px;
+    flex:1;
+    min-width:0;
+    cursor:pointer;
+}
+
+.address-option{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.address-topline{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:2px;
+}
+
+.default-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    padding:4px 8px;
+    border-radius:999px;
+    background:#eaf8ef;
+    color:#15803d;
+    font-size:10px;
+    font-weight:900;
+}
+
+.address-muted{
+    color:#7b8493;
+}
+
+.address-actions{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:6px;
+    flex-wrap:wrap;
+    flex:none;
+}
+
+.address-actions form{
+    margin:0;
+}
+
+.address-action{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    min-height:32px;
+    padding:6px 9px;
+    border-radius:9px;
+    border:1px solid #e2e7ef;
+    background:#fff;
+    color:#475569;
+    font-size:10px;
+    font-weight:800;
+    text-decoration:none;
+    cursor:pointer;
+    transition:.2s;
+    white-space:nowrap;
+}
+
+.address-action:hover{
+    transform:translateY(-1px);
+}
+
+.address-action.edit:hover{
+    color:#2563eb;
+    border-color:#bfd1fb;
+    background:#f5f8ff;
+}
+
+.address-action.default-action:hover{
+    color:#a16207;
+    border-color:#f4d58a;
+    background:#fffaf0;
+}
+
+.address-action.delete:hover{
+    color:#dc2626;
+    border-color:#fecaca;
+    background:#fff5f5;
+}
+
 /* Order items */
 .order-item{
     display:flex;
@@ -492,6 +588,26 @@ main,
         font-size:14px;
     }
 
+    .address-option{
+        display:block;
+    }
+
+    .address-select{
+        width:100%;
+    }
+
+    .address-actions{
+        justify-content:flex-start;
+        margin-top:10px;
+        padding-left:29px;
+    }
+
+    .address-action{
+        min-height:34px;
+        font-size:10px;
+        padding:7px 9px;
+    }
+
     .order-item{
         padding:12px 0;
     }
@@ -605,55 +721,123 @@ main,
 
                         {% for address in addresses %}
 
-                        <label class="address-option">
+                        <div class="address-option">
 
-                            <input
-                                class="form-check-input address-radio"
-                                type="radio"
-                                name="address"
-                                value="{{ address.id }}"
-                                {% if loop.first %}
-                                checked
-                                {% endif %}>
+                            <label class="address-select">
 
-                            <div class="address-content">
+                                <input
+                                    class="form-check-input address-radio"
+                                    type="radio"
+                                    name="address"
+                                    value="{{ address.id }}"
+                                    {% if address.is_default or loop.first %}
+                                    checked
+                                    {% endif %}>
 
-                                <div class="address-name">
+                                <div class="address-content">
 
-                                    {{ address.full_name }}
+                                    <div class="address-topline">
+
+                                        <div class="address-name">
+                                            {{ address.full_name }}
+                                        </div>
+
+                                        {% if address.is_default %}
+                                        <span class="default-badge">
+                                            <i class="fas fa-check"></i>
+                                            Default
+                                        </span>
+                                        {% endif %}
+
+                                    </div>
+
+                                    {{ address.address_line1 }}
+
+                                    {% if address.address_line2 %}
+                                        <br>
+                                        {{ address.address_line2 }}
+                                    {% endif %}
+
+                                    {% if address.landmark %}
+                                        <br>
+                                        <span class="address-muted">
+                                            Near {{ address.landmark }}
+                                        </span>
+                                    {% endif %}
+
+                                    <br>
+
+                                    {{ address.city }},
+                                    {{ address.state }}
+                                    -
+                                    {{ address.pincode }}
+
+                                    <br>
+
+                                    <span class="address-mobile">
+                                        <i class="fas fa-phone-alt"></i>
+                                        {{ address.mobile }}
+                                    </span>
 
                                 </div>
 
-                                {{ address.address_line1 }}
+                            </label>
 
-                                {% if address.address_line2 %}
-                                    <br>
-                                    {{ address.address_line2 }}
+                            <div class="address-actions">
+
+                                <a
+                                    href="{{ url_for('edit_address', address_id=address.id) }}"
+                                    class="address-action edit">
+
+                                    <i class="fas fa-pen"></i>
+                                    Edit
+
+                                </a>
+
+                                {% if not address.is_default %}
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('set_default_address', address_id=address.id) }}">
+
+                                    <button
+                                        type="submit"
+                                        class="address-action default-action">
+
+                                        <i class="fas fa-star"></i>
+                                        Make Default
+
+                                    </button>
+
+                                </form>
+
                                 {% endif %}
 
-                                <br>
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('delete_address', address_id=address.id) }}"
+                                    onsubmit="return confirm('Delete this address?');">
 
-                                {{ address.city }},
-                                {{ address.state }}
-                                -
-                                {{ address.pincode }}
+                                    <button
+                                        type="submit"
+                                        class="address-action delete">
 
-                                <br>
+                                        <i class="fas fa-trash-alt"></i>
+                                        Delete
 
-                                <span class="address-mobile">
-                                    <i class="fas fa-phone-alt"></i>
-                                    {{ address.mobile }}
-                                </span>
+                                    </button>
+
+                                </form>
 
                             </div>
 
-                        </label>
+                        </div>
 
                         {% endfor %}
 
 
                         <a
-                            href="/address/add"
+                            href="{{ url_for('add_address') }}"
                             class="add-address-btn">
 
                             <i class="fas fa-plus"></i>
@@ -829,65 +1013,321 @@ main,
 </div>
 
 
+
+<script>
+(function(){
+
+    const payButton = document.getElementById("payButton");
+
+    if(!payButton) return;
+
+    function selectedAddress(){
+        return document.querySelector('input[name="address"]:checked');
+    }
+
+    function updatePaymentState(){
+
+        const selected = selectedAddress();
+
+        if(!selected){
+            payButton.disabled = true;
+            payButton.style.opacity = ".55";
+            payButton.style.cursor = "not-allowed";
+            payButton.title = "Please select a delivery address";
+        }else{
+            payButton.disabled = false;
+            payButton.style.opacity = "1";
+            payButton.style.cursor = "pointer";
+            payButton.title = "";
+        }
+    }
+
+    document
+        .querySelectorAll('input[name="address"]')
+        .forEach(function(input){
+            input.addEventListener("change", updatePaymentState);
+        });
+
+    updatePaymentState();
+
+})();
+</script>
+
 <!-- RAZORPAY -->
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
+(function(){
 
-document
-    .getElementById("payButton")
-    .onclick = function(){
+    const payButton = document.getElementById("payButton");
 
-        fetch("/create-marketplace-order",{
+    if(!payButton){
+        return;
+    }
 
-            method:"POST"
+    function selectedAddress(){
+
+        return document.querySelector(
+            'input[name="address"]:checked'
+        );
+
+    }
+
+    function updatePaymentState(){
+
+        const selected = selectedAddress();
+
+        if(!selected){
+
+            payButton.disabled = true;
+            payButton.style.opacity = ".55";
+            payButton.style.cursor = "not-allowed";
+            payButton.title = "Please select a delivery address";
+
+        }else{
+
+            payButton.disabled = false;
+            payButton.style.opacity = "1";
+            payButton.style.cursor = "pointer";
+            payButton.title = "";
+
+        }
+
+    }
+
+    document
+        .querySelectorAll('input[name="address"]')
+        .forEach(function(input){
+
+            input.addEventListener(
+                "change",
+                updatePaymentState
+            );
+
+        });
+
+    updatePaymentState();
+
+
+    payButton.addEventListener("click", function(){
+
+        const selected = selectedAddress();
+
+        if(!selected){
+
+            alert("Please select a delivery address.");
+            return;
+
+        }
+
+        payButton.disabled = true;
+
+        payButton.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> ' +
+            'Preparing Payment...';
+
+
+        /*
+         * Send the selected address to Flask.
+         *
+         * Flask calculates the amount again from the cart,
+         * so the browser cannot change the payable amount.
+         */
+
+        fetch("/create-marketplace-order", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+
+            body: JSON.stringify({
+                address_id: selected.value
+            })
 
         })
 
-        .then(function(r){
+        .then(function(response){
 
-            return r.json();
+            if(!response.ok){
+
+                return response.json()
+                    .catch(function(){
+                        return {
+                            error: "Unable to create payment order."
+                        };
+                    })
+                    .then(function(data){
+                        throw new Error(
+                            data.error ||
+                            "Unable to create payment order."
+                        );
+                    });
+
+            }
+
+            return response.json();
 
         })
 
         .then(function(order){
 
-            var options = {
+            if(!order.id || !order.amount){
 
-                key:"YOUR_KEY",
+                throw new Error(
+                    "Invalid Razorpay order received."
+                );
 
-                amount:order.amount,
+            }
 
-                currency:"INR",
+            const options = {
 
-                name:"RecrootEarn",
+                key: "{{ razorpay_key }}",
 
-                description:"Marketplace Order",
+                amount: order.amount,
 
-                order_id:order.id,
+                currency: "INR",
 
-                handler:function(response){
+                name: "RecrootEarn",
 
-                    window.location =
+                description: "Marketplace Order",
+
+                image: "/static/logo.png",
+
+                order_id: order.id,
+
+                webview_intent: true,
+
+                config: {
+
+                    display: {
+
+                        blocks: {
+
+                            upi: {
+
+                                name: "Pay via UPI / GPay / PhonePe",
+
+                                instruments: [
+                                    {
+                                        method: "upi"
+                                    }
+                                ]
+
+                            }
+
+                        },
+
+                        sequence: [
+                            "block.upi",
+                            "block.banks",
+                            "block.cards"
+                        ]
+
+                    }
+
+                },
+
+                handler: function(response){
+
+                    /*
+                     * Razorpay payment succeeded.
+                     *
+                     * The Flask success route verifies the
+                     * Razorpay signature before placing the order.
+                     */
+
+                    window.location.href =
                         "/marketplace-payment-success" +
                         "?payment_id=" +
-                        response.razorpay_payment_id +
+                        encodeURIComponent(
+                            response.razorpay_payment_id
+                        ) +
                         "&order_id=" +
-                        response.razorpay_order_id +
+                        encodeURIComponent(
+                            response.razorpay_order_id
+                        ) +
                         "&signature=" +
-                        response.razorpay_signature;
+                        encodeURIComponent(
+                            response.razorpay_signature
+                        );
+
+                },
+
+                modal: {
+
+                    ondismiss: function(){
+
+                        payButton.disabled = false;
+
+                        payButton.innerHTML =
+                            '<i class="fas fa-lock"></i>' +
+                            ' Continue To Payment ' +
+                            '<i class="fas fa-arrow-right"></i>';
+
+                    }
+
+                },
+
+                theme: {
+
+                    color: "#2563eb"
 
                 }
 
             };
 
-            new Razorpay(options).open();
+            const razorpay = new Razorpay(options);
+
+            razorpay.on(
+                "payment.failed",
+                function(){
+
+                    payButton.disabled = false;
+
+                    payButton.innerHTML =
+                        '<i class="fas fa-lock"></i>' +
+                        ' Continue To Payment ' +
+                        '<i class="fas fa-arrow-right"></i>';
+
+                    alert(
+                        "Payment failed. Please try again."
+                    );
+
+                }
+            );
+
+            razorpay.open();
+
+        })
+
+        .catch(function(error){
+
+            console.error(
+                "Marketplace payment error:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "Unable to start payment. Please try again."
+            );
+
+            payButton.disabled = false;
+
+            payButton.innerHTML =
+                '<i class="fas fa-lock"></i>' +
+                ' Continue To Payment ' +
+                '<i class="fas fa-arrow-right"></i>';
 
         });
 
-    };
+    });
 
+})();
 </script>
 
 {% endblock %}

@@ -1,0 +1,717 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Address{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* =========================================================
+   EDIT ADDRESS - RECROOTEARN
+   MOBILE EDGE-TO-EDGE
+   ========================================================= */
+
+html,
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.content {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #f5f7fb !important;
+}
+
+.address-page {
+    width: 100%;
+    min-height: 100vh;
+    background: #f5f7fb;
+    padding: 24px 16px 50px;
+}
+
+.address-container {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+
+/* HEADER */
+
+.address-header {
+    background: linear-gradient(
+        135deg,
+        #2563eb,
+        #1d4ed8,
+        #3b82f6
+    );
+
+    color: #fff;
+
+    border-radius: 24px;
+
+    padding: 24px;
+
+    margin-bottom: 18px;
+
+    box-shadow: 0 12px 30px rgba(37,99,235,.18);
+}
+
+.address-header-top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.back-btn {
+    width: 44px;
+    height: 44px;
+
+    border-radius: 14px;
+
+    background: rgba(255,255,255,.16);
+
+    color: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+
+    font-size: 18px;
+
+    flex-shrink: 0;
+}
+
+.back-btn:hover {
+    background: rgba(255,255,255,.25);
+    color: #fff;
+}
+
+.address-header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.address-header p {
+    margin: 4px 0 0;
+    opacity: .85;
+    font-size: 13px;
+}
+
+
+/* CARD */
+
+.address-card {
+    background: #fff;
+
+    border-radius: 24px;
+
+    padding: 24px;
+
+    box-shadow: 0 8px 28px rgba(20,35,70,.08);
+}
+
+
+/* SECTION */
+
+.form-section {
+    margin-bottom: 24px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    font-size: 16px;
+    font-weight: 800;
+
+    color: #172033;
+
+    margin-bottom: 15px;
+}
+
+.section-title i {
+    width: 32px;
+    height: 32px;
+
+    border-radius: 10px;
+
+    background: #eef4ff;
+
+    color: #2563eb;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* INPUTS */
+
+.field-group {
+    margin-bottom: 15px;
+}
+
+.field-label {
+    display: block;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #374151;
+
+    margin-bottom: 7px;
+}
+
+.required {
+    color: #ef4444;
+}
+
+.form-control-custom {
+    width: 100%;
+
+    height: 50px;
+
+    border: 1px solid #dfe5ef;
+
+    border-radius: 14px;
+
+    background: #f9fafc;
+
+    padding: 0 14px;
+
+    font-size: 15px;
+
+    color: #172033;
+
+    outline: none;
+
+    transition: .2s;
+
+    box-sizing: border-box;
+}
+
+textarea.form-control-custom {
+    height: auto;
+    min-height: 90px;
+    padding: 13px 14px;
+    resize: vertical;
+}
+
+.form-control-custom:focus {
+    background: #fff;
+
+    border-color: #2563eb;
+
+    box-shadow: 0 0 0 4px rgba(37,99,235,.10);
+}
+
+
+/* GRID */
+
+.form-row {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 14px;
+}
+
+
+/* DEFAULT */
+
+.default-box {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    background: #f8faff;
+
+    border: 1px solid #e5ebf5;
+
+    border-radius: 16px;
+
+    padding: 15px;
+
+    cursor: pointer;
+}
+
+.default-checkbox {
+    width: 20px;
+    height: 20px;
+
+    accent-color: #2563eb;
+
+    flex-shrink: 0;
+}
+
+.default-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: #172033;
+}
+
+.default-subtitle {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+
+/* ACTIONS */
+
+.form-actions {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+
+    margin-top: 25px;
+}
+
+.btn-address {
+    height: 52px;
+
+    border-radius: 15px;
+
+    border: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.btn-cancel {
+    background: #f1f4f8;
+    color: #4b5563;
+}
+
+.btn-save {
+    background: #2563eb;
+    color: #fff;
+
+    box-shadow: 0 7px 18px rgba(37,99,235,.22);
+}
+
+.btn-save:hover {
+    background: #1d4ed8;
+    color: #fff;
+}
+
+
+/* MOBILE EDGE-TO-EDGE */
+
+@media (max-width: 600px) {
+
+    .address-page {
+        padding: 0 0 35px;
+    }
+
+    .address-container {
+        max-width: none;
+    }
+
+    .address-header {
+        border-radius: 0 0 22px 22px;
+        margin-bottom: 10px;
+        padding: 18px 16px 20px;
+    }
+
+    .address-header h1 {
+        font-size: 21px;
+    }
+
+    .address-card {
+        border-radius: 20px 20px 0 0;
+        padding: 20px 15px 35px;
+        box-shadow: none;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .form-control-custom {
+        height: 52px;
+    }
+
+    textarea.form-control-custom {
+        min-height: 95px;
+    }
+
+    .form-actions {
+        position: sticky;
+        bottom: 0;
+
+        background: #fff;
+
+        padding: 12px 0 4px;
+
+        z-index: 20;
+    }
+
+}
+
+</style>
+
+
+<div class="address-page">
+
+    <div class="address-container">
+
+
+        <!-- HEADER -->
+
+        <div class="address-header">
+
+            <div class="address-header-top">
+
+                <a
+                    href="{{ url_for('checkout') }}"
+                    class="back-btn">
+
+                    <i class="fas fa-arrow-left"></i>
+
+                </a>
+
+                <div>
+
+                    <h1>
+                        Edit Address
+                    </h1>
+
+                    <p>
+                        Update your delivery details
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FORM -->
+
+        <div class="address-card">
+
+            <form
+                method="POST"
+                action="{{ url_for('edit_address', address_id=address.id) }}">
+
+
+                <!-- PERSONAL -->
+
+                <div class="form-section">
+
+                    <div class="section-title">
+
+                        <i class="fas fa-user"></i>
+
+                        Personal Details
+
+                    </div>
+
+
+                    <div class="field-group">
+
+                        <label class="field-label">
+
+                            Full Name
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="full_name"
+                            class="form-control-custom"
+                            value="{{ address.full_name or '' }}"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="field-group">
+
+                            <label class="field-label">
+
+                                Mobile Number
+                                <span class="required">*</span>
+
+                            </label>
+
+                            <input
+                                type="tel"
+                                name="mobile"
+                                class="form-control-custom"
+                                value="{{ address.mobile or '' }}"
+                                maxlength="20"
+                                required>
+
+                        </div>
+
+
+                        <div class="field-group">
+
+                            <label class="field-label">
+
+                                Alternate Mobile
+
+                            </label>
+
+                            <input
+                                type="tel"
+                                name="alternate_mobile"
+                                class="form-control-custom"
+                                value="{{ address.alternate_mobile or '' }}"
+                                maxlength="20">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ADDRESS -->
+
+                <div class="form-section">
+
+                    <div class="section-title">
+
+                        <i class="fas fa-map-marker-alt"></i>
+
+                        Address Details
+
+                    </div>
+
+
+                    <div class="field-group">
+
+                        <label class="field-label">
+
+                            Address Line 1
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <textarea
+                            name="address_line1"
+                            class="form-control-custom"
+                            required>{{ address.address_line1 or '' }}</textarea>
+
+                    </div>
+
+
+                    <div class="field-group">
+
+                        <label class="field-label">
+
+                            Address Line 2
+
+                        </label>
+
+                        <textarea
+                            name="address_line2"
+                            class="form-control-custom">{{ address.address_line2 or '' }}</textarea>
+
+                    </div>
+
+
+                    <div class="field-group">
+
+                        <label class="field-label">
+
+                            Landmark
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="landmark"
+                            class="form-control-custom"
+                            value="{{ address.landmark or '' }}">
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="field-group">
+
+                            <label class="field-label">
+
+                                City
+                                <span class="required">*</span>
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="city"
+                                class="form-control-custom"
+                                value="{{ address.city or '' }}"
+                                required>
+
+                        </div>
+
+
+                        <div class="field-group">
+
+                            <label class="field-label">
+
+                                State
+                                <span class="required">*</span>
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="state"
+                                class="form-control-custom"
+                                value="{{ address.state or '' }}"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="field-group">
+
+                            <label class="field-label">
+
+                                Pincode
+                                <span class="required">*</span>
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="pincode"
+                                class="form-control-custom"
+                                value="{{ address.pincode or '' }}"
+                                maxlength="10"
+                                required>
+
+                        </div>
+
+
+                        <div class="field-group">
+
+                            <label class="field-label">
+
+                                Country
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="country"
+                                class="form-control-custom"
+                                value="{{ address.country or 'India' }}">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DEFAULT -->
+
+                <div class="form-section">
+
+                    <label class="default-box">
+
+                        <input
+                            type="checkbox"
+                            name="is_default"
+                            class="default-checkbox"
+                            {% if address.is_default %}checked{% endif %}>
+
+                        <div>
+
+                            <div class="default-title">
+
+                                Make this my default address
+
+                            </div>
+
+                            <div class="default-subtitle">
+
+                                Use this address automatically during checkout
+
+                            </div>
+
+                        </div>
+
+                    </label>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div class="form-actions">
+
+                    <a
+                        href="{{ url_for('checkout') }}"
+                        class="btn-address btn-cancel">
+
+                        Cancel
+
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="btn-address btn-save">
+
+                        <i class="fas fa-save"></i>
+
+                        Update Address
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
