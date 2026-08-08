@@ -1349,47 +1349,6 @@ class CategoryBanner(db.Model):
 
     is_trending = db.Column(db.Boolean, default=False)
 
-class Coupon(db.Model):
-
-    __tablename__ = "coupons"
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    code = db.Column(db.String(50), unique=True)
-
-    title = db.Column(db.String(150))
-
-    description = db.Column(db.Text)
-
-    discount_type = db.Column(db.String(20))
-
-    discount_value = db.Column(db.Float)
-
-    minimum_order = db.Column(db.Float, default=0)
-
-    maximum_discount = db.Column(db.Float)
-
-    usage_limit = db.Column(db.Integer)
-
-    used_count = db.Column(db.Integer, default=0)
-
-    start_date = db.Column(db.DateTime)
-
-    expiry_date = db.Column(db.DateTime)
-
-    active = db.Column(db.Boolean, default=True)
-
-    seller_id = db.Column(
-        db.Integer,
-        db.ForeignKey("user.id"),
-        nullable=True
-    )
-
-    created_at = db.Column(
-        db.DateTime,
-        default=india_time
-    )
-
 class CMSPage(db.Model):
 
     __tablename__ = "cms_pages"
@@ -3489,28 +3448,57 @@ class CouponUsage(db.Model):
 class Coupon(db.Model):
     __tablename__ = "coupons"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
-    code = db.Column(db.String(50), unique=True, nullable=False)
+    code = db.Column(
+        db.String(50),
+        unique=True,
+        nullable=False
+    )
 
-    title = db.Column(db.String(120))
+    title = db.Column(
+        db.String(150)
+    )
 
-    description = db.Column(db.Text)
+    description = db.Column(
+        db.Text
+    )
 
     discount_type = db.Column(
         db.String(20),
         default="percentage"
     )
 
-    discount_value = db.Column(db.Float, default=0)
+    discount_value = db.Column(
+        db.Float,
+        default=0
+    )
 
-    minimum_order_amount = db.Column(db.Float, default=0)
+    minimum_order = db.Column(
+        db.Float,
+        default=0
+    )
 
-    maximum_discount = db.Column(db.Float)
+    minimum_order_amount = db.Column(
+        db.Float,
+        default=0
+    )
 
-    usage_limit = db.Column(db.Integer)
+    maximum_discount = db.Column(
+        db.Float
+    )
 
-    used_count = db.Column(db.Integer, default=0)
+    usage_limit = db.Column(
+        db.Integer
+    )
+
+    used_count = db.Column(
+        db.Integer,
+        default=0
+    )
 
     seller_id = db.Column(
         db.Integer,
@@ -3524,9 +3512,13 @@ class Coupon(db.Model):
         nullable=True
     )
 
-    start_date = db.Column(db.DateTime)
+    start_date = db.Column(
+        db.DateTime
+    )
 
-    expiry_date = db.Column(db.DateTime)
+    expiry_date = db.Column(
+        db.DateTime
+    )
 
     first_order_only = db.Column(
         db.Boolean,
@@ -3536,6 +3528,11 @@ class Coupon(db.Model):
     active = db.Column(
         db.Boolean,
         default=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
     )
 
 class Wishlist(db.Model):
