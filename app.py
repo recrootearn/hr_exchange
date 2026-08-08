@@ -16690,43 +16690,6 @@ def monthly_sales():
 
     return jsonify(data)
 
-@app.route("/seller/analytics")
-@login_required
-def seller_analytics():
-
-    seller_id = current_user.id
-
-    total_sales = db.session.query(
-        db.func.sum(Order.total_amount)
-    ).filter(
-        Order.seller_id == seller_id,
-        Order.payment_status == "Paid"
-    ).scalar() or 0
-
-    total_orders = Order.query.filter_by(
-        seller_id=seller_id
-    ).count()
-
-    total_products = Product.query.filter_by(
-        seller_id=seller_id
-    ).count()
-
-    total_customers = db.session.query(
-        db.func.count(
-            db.distinct(Order.user_id)
-        )
-    ).filter(
-        Order.seller_id == seller_id
-    ).scalar()
-
-    return render_template(
-        "seller_analytics.html",
-        total_sales=total_sales,
-        total_orders=total_orders,
-        total_products=total_products,
-        total_customers=total_customers
-    )
-
 @app.route("/admin/marketplace")
 @admin_required
 def admin_marketplace():
