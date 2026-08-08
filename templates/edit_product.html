@@ -4,6 +4,46 @@
 
 {% block content %}
 
+
+<style>
+/* =========================================================
+   RECROOTEARN - EDIT PRODUCT PAGE
+   ========================================================= */
+.edit-product-page{background:#f5f7fb;min-height:100vh;padding:18px 0 50px}
+.edit-product-page .edit-product-container{max-width:1100px;margin:auto;padding:0 14px}
+.edit-product-page .card{border:0;border-radius:18px;overflow:hidden;box-shadow:0 7px 24px rgba(20,35,70,.08);margin-bottom:18px}
+.edit-product-page .card-header{background:#fff;border-bottom:1px solid #edf0f5;padding:16px 18px}
+.edit-product-page .card-header h4,.edit-product-page .card-header h5{color:#172033;font-weight:800;margin:0}
+.edit-product-page .card-body{background:#fff;padding:20px}
+.edit-product-page label{color:#374151;font-weight:700;margin-bottom:7px}
+.edit-product-page .form-control,.edit-product-page .form-select{min-height:46px;border:1px solid #dbe2ee;border-radius:11px;background:#fff;color:#172033;transition:.2s}
+.edit-product-page textarea.form-control{min-height:auto}
+.edit-product-page .form-control:focus,.edit-product-page .form-select:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.edit-product-page .form-check-input{width:18px;height:18px;cursor:pointer}
+.edit-product-page .form-check-label{cursor:pointer;font-weight:600}
+.edit-product-page .btn{border-radius:11px;font-weight:700;padding:10px 17px}
+.edit-product-page .btn-success{background:#198754;border-color:#198754}
+.edit-product-page .btn-secondary{background:#6b7280;border-color:#6b7280}
+.edit-product-page .existing-product-image{width:100%;height:150px;object-fit:cover;background:#f1f5f9}
+.edit-product-page #preview img{width:100%;height:150px;object-fit:cover;border-radius:12px}
+.edit-product-page .variant-row{background:#f8faff;border:1px solid #e6ebf4!important;border-radius:14px!important}
+.edit-product-page .alert{border-radius:12px}
+.edit-product-page .save-bar{position:sticky;bottom:12px;z-index:20;display:flex;justify-content:flex-end;gap:10px;padding:12px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-radius:15px;box-shadow:0 8px 25px rgba(20,35,70,.12)}
+@media(max-width:768px){
+ .edit-product-page{padding:8px 0 35px}
+ .edit-product-page .edit-product-container{padding:0 8px}
+ .edit-product-page .card{border-radius:15px;margin-bottom:13px}
+ .edit-product-page .card-header{padding:14px 15px}
+ .edit-product-page .card-body{padding:15px}
+ .edit-product-page .form-control,.edit-product-page .form-select{min-height:44px;font-size:14px}
+ .edit-product-page .save-bar{bottom:8px;padding:9px}
+ .edit-product-page .save-bar .btn{flex:1}
+ .edit-product-page .existing-product-image,.edit-product-page #preview img{height:120px}
+}
+</style>
+
+<div class="edit-product-page">
+<div class="edit-product-container">
 <div class="container py-4">
 
 <form method="POST"
@@ -730,7 +770,7 @@ Editing important fields may require admin re-approval depending on your marketp
 
             {% for variant in variants %}
 
-            <div class="border rounded p-3 mb-3">
+            <div class="border rounded p-3 mb-3 variant-row">
 
                 <div class="row">
 
@@ -822,7 +862,7 @@ Editing important fields may require admin re-approval depending on your marketp
 
 <template id="variantTemplate">
 
-<div class="border rounded p-3 mb-3">
+<div class="border rounded p-3 mb-3 variant-row">
 
     <div class="row">
 
@@ -1018,7 +1058,7 @@ Editing important fields may require admin re-approval depending on your marketp
 
 <div class="text-end mt-4 mb-5">
 
-    <a href="{{ url_for('seller_products') }}"
+    <a href="{{ url_for('shop_products') }}"
 
        class="btn btn-secondary">
 
@@ -1042,6 +1082,8 @@ Editing important fields may require admin re-approval depending on your marketp
 
 </form>
 
+</div>
+</div>
 </div>
 
 <script>
