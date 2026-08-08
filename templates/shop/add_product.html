@@ -1,984 +1,1491 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block title %}Add Product{% endblock %}
+<head>
 
-{% block content %}
+    <meta charset="UTF-8">
 
-<div class="container py-4">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<form method="POST"
-      enctype="multipart/form-data">
+    <title>RecrootEarn</title>
 
-<div class="row">
+    <!-- BOOTSTRAP -->
 
-<!-- Product Information -->
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet">
 
-<div class="col-lg-8">
+    <!-- FONT AWESOME -->
 
-<div class="card shadow-sm mb-4">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<div class="card-header">
+    <!-- AOS -->
 
-<h4>
+    <link
+    href="https://unpkg.com/aos@2.3.4/dist/aos.css"
+    rel="stylesheet">
 
-<i class="fas fa-box"></i>
+<style>
 
-Product Information
+/* GLOBAL */
 
-</h4>
+body{
 
-</div>
+    margin:0;
+    background:#f4f5f7;
+    font-family:Arial, sans-serif;
+    overflow-x:hidden;
+}
 
-<div class="card-body">
+/* PAGE ANIMATION */
 
-<div class="mb-3">
+.page-transition{
+    animation: pageEnter .22s ease-out;
+}
 
-<label class="form-label">
+@keyframes pageEnter{
+    from{
+        opacity:0;
+        transform:translateY(12px);
+    }
 
-Product Name
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
 
-</label>
+/* SPLASH SCREEN */
 
-<input type="text"
+#loader{
 
-class="form-control"
+    position:fixed;
 
-name="name"
+    width:100%;
 
-required>
+    height:100vh;
 
-</div>
+    background:white;
 
-<div class="mb-3">
+    z-index:99999;
 
-<label class="form-label">
+    display:flex;
 
-Short Description
+    justify-content:center;
 
-</label>
+    align-items:center;
 
-<textarea
+    transition:0.5s;
+}
 
-class="form-control"
+.loader-content{
+    text-align:center;
+}
 
-rows="2"
+.loader-content h1{
 
-name="short_description"></textarea>
+    font-size:48px;
 
-</div>
+    font-weight:bold;
 
-<div class="mb-3">
+    color:#2563eb;
+}
 
-<label class="form-label">
+.loader-content p{
 
-Description
+    color:#6b7280;
 
-</label>
+    font-size:16px;
+}
 
-<textarea
+/* SIDEBAR */
 
-class="form-control"
+.sidebar{
 
-rows="7"
+    width:260px;
+    height:100vh;
 
-name="description"
+    position:fixed;
 
-required></textarea>
+    background:linear-gradient(
+    180deg,
+    #111827,
+    #1d4ed8
+    );
 
-</div>
+    padding:20px;
 
-<div class="row">
+    overflow-y:auto;
 
-<div class="col-md-6">
+    z-index:9999;
+}
 
-<label>
+.sidebar-logo{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-bottom:25px;
+    padding-top:5px;
+}
 
-Category
+.sidebar-logo img{
+    width:150px;
+    height:auto;
+    display:block;
+}
 
-</label>
+@media(max-width:768px){
 
-<select
+    .sidebar-logo{
+        margin-top:8px;
+        margin-bottom:20px;
+    }
 
-class="form-select"
+    .sidebar-logo img{
+        width:120px;
+    }
 
-name="category_id"
+}
 
-required>
+.sidebar a{
 
-<option value="">
+    display:flex;
+    align-items:center;
+    gap:12px;
 
-Select Category
+    color:white;
+    text-decoration:none;
 
-</option>
+    padding:14px;
 
-{% for category in categories %}
+    border-radius:12px;
 
-<option value="{{ category.id }}">
+    margin-bottom:10px;
 
-{{ category.name }}
+    transition:0.3s;
 
-</option>
+    font-size:15px;
+    font-weight:600;
+}
 
-{% endfor %}
+.sidebar a:hover{
 
-</select>
+    background:rgba(255,255,255,0.15);
+    transform:translateX(5px);
+}
 
-</div>
+/* MAIN */
 
-<div class="col-md-6">
+.main{
+    margin-left:260px;
+}
 
-<label>
+.topbar{
 
-Brand
+    background:white;
 
-</label>
+    padding:20px 30px;
 
-<select
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 
-class="form-select"
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
 
-name="brand_id">
+    position:sticky;
 
-<option value="">
+    top:0;
 
-Select Brand
+    z-index:100;
+}
 
-</option>
+.welcome{
 
-{% for brand in brands %}
+    font-size:32px;
+    font-weight:bold;
+}
 
-<option value="{{ brand.id }}">
+.credit-box{
 
-{{ brand.name }}
+    background:linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+    );
 
-</option>
+    color:white;
 
-{% endfor %}
+    padding:12px 22px;
 
-</select>
+    border-radius:14px;
 
-</div>
+    font-weight:bold;
 
-</div>
+    box-shadow:0 10px 20px rgba(37,99,235,0.25);
+}
 
-</div>
+.content{
 
-</div>
+    padding:30px;
+}
 
-<!-- Pricing -->
+/* CARD UI */
 
-<div class="card shadow-sm mb-4">
+.stats-card,
+.candidate-card,
+.filter-box{
 
-<div class="card-header">
+    background:white;
 
-<h5>
+    border-radius:24px;
 
-Pricing
+    padding:20px;
 
-</h5>
+    margin-bottom:20px;
 
-</div>
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
 
-<div class="card-body">
+    transition:0.3s;
+}
 
-<div class="row">
+.stats-card:hover,
+.candidate-card:hover{
 
-<div class="col-md-4">
+    transform:translateY(-2px);
+}
 
-<label>
+/* CANDIDATE TOP */
 
-MRP
+.candidate-top{
 
-</label>
+    display:flex;
 
-<input
+    justify-content:space-between;
 
-type="number"
+    align-items:flex-start;
 
-step="0.01"
+    margin-bottom:16px;
+}
 
-name="price"
+/* PROFILE */
 
-class="form-control"
+.candidate-profile{
 
-required>
+    display:flex;
 
-</div>
+    align-items:flex-start;
 
-<div class="col-md-4">
+    gap:14px;
+}
 
-<label>
+/* AVATAR */
 
-Sale Price
+.avatar{
 
-</label>
+    width:62px;
+    height:62px;
 
-<input
+    border-radius:20px;
 
-type="number"
+    background:linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+    );
 
-step="0.01"
+    color:white;
 
-name="sale_price"
+    display:flex;
+    justify-content:center;
+    align-items:center;
 
-class="form-control">
+    font-size:24px;
+    font-weight:700;
 
-</div>
+    flex-shrink:0;
+}
 
-<div class="col-md-4">
+/* TEXT */
 
-<label>
+.candidate-name{
 
-GST %
+    font-size:22px;
+    font-weight:700;
+    color:#111827;
+}
 
-</label>
+.candidate-role{
 
-<input
+    color:#6b7280;
+    font-size:14px;
+    margin-top:2px;
+    text-transform:uppercase;
+}
 
-type="number"
+/* DETAILS */
 
-step="0.01"
+.candidate-details{
 
-name="gst_percent"
+    display:flex;
 
-class="form-control"
+    flex-wrap:wrap;
 
-value="0">
+    gap:10px;
 
-</div>
+    margin-top:16px;
+}
 
-</div>
+/* PILLS */
 
-</div>
+.detail-pill{
 
-</div>
+    background:#f3f4f6;
 
-<!-- Inventory -->
+    border-radius:30px;
 
-<div class="card shadow-sm">
+    padding:9px 14px;
 
-<div class="card-header">
+    font-size:13px;
 
-<h5>
+    color:#111827;
 
-Inventory
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
 
-</h5>
+/* BUTTONS */
 
-</div>
+.action-buttons{
 
-<div class="card-body">
+    margin-top:18px;
 
-<div class="row">
+    display:flex;
 
-<div class="col-md-4">
+    gap:10px;
 
-<label>
+    flex-wrap:wrap;
+}
 
-Stock
+.action-buttons .btn{
 
-</label>
+    border-radius:14px;
 
-<input
+    font-weight:600;
 
-type="number"
+    padding:10px 16px;
+}
 
-name="stock"
+/* BADGE */
 
-class="form-control"
+.badge-custom{
 
-required>
+    border-radius:14px;
 
-</div>
+    padding:8px 14px;
 
-<div class="col-md-4">
+    font-size:12px;
+}
 
-<label>
+/* MOBILE */
 
-SKU
+.mobile-topbar{
+    display:none;
+}
 
-</label>
+.mobile-overlay{
+    display:none;
+}
 
-<input
+.bottom-nav{
+    display:none;
+}
 
-type="text"
+.candidate-desktop-menu{
+    display:block;
+}
 
-name="sku"
+/* MOBILE RESPONSIVE */
 
-class="form-control">
+@media(max-width:768px){
 
-</div>
+    .sidebar{
 
-<div class="col-md-4">
+        left:-280px;
 
-<label>
+        top:0;
 
-HSN Code
+        transition:0.3s ease;
+    }
 
-</label>
+    .candidate-desktop-menu{
+        display:none;
+    }
 
-<input
+    .sidebar.active{
+        left:0;
+    }
 
-type="text"
+    .mobile-overlay{
 
-name="hsn_code"
+        position:fixed;
 
-class="form-control">
+        width:100%;
+        height:100vh;
 
-</div>
+        background:rgba(0,0,0,0.45);
 
-</div>
+        z-index:9998;
 
-</div>
+        display:none;
+    }
 
-</div>
+    .mobile-overlay.active{
+        display:block;
+    }
 
-</div>
+    .mobile-topbar{
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:60px;
 
-<!-- Product Status -->
+        background:#0b5ed7;
 
-<div class="col-lg-4">
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
 
-<div class="card shadow-sm">
+        padding:0 18px;
 
-<div class="card-header">
+        z-index:9999;
 
-<h5>
+        box-shadow:0 2px 10px rgba(0,0,0,.08);
+    }
 
-Product Status
+    .menu-btn{
 
-</h5>
+        border:none;
+        background:none;
 
-</div>
+        font-size:22px;
+        color:white;
+    }
 
-<div class="card-body">
+    .mobile-logo{
+        position:absolute;
+        left:50%;
+        transform:translateX(-50%);
 
-<div class="mb-3">
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
 
-<label>
+    .mobile-logo img{
+        height:55px;
+        width:auto;
+        object-fit:contain;
+    }
 
-Product Type
+    .mobile-credit{
 
-</label>
+        background:#2563eb;
 
-<select
+        color:white;
 
-name="product_type"
+        padding:5px 12px;
 
-id="product_type"
+        border-radius:20px;
 
-class="form-select">
+        font-size:12px;
+        font-weight:700;
+    }
 
-<option value="simple">
+    .main{
 
-Simple Product
+        margin-left:0;
 
-</option>
+        padding-top:65px;
+    }
 
-<option value="variable">
+    .topbar{
+        display:none;
+    }
 
-Variable Product
+    .content{
+        padding:14px;
+        padding-bottom:120px;
+    }
 
-</option>
+    .stats-card,
+    .candidate-card,
+    .filter-box{
 
-</select>
+        padding:16px;
 
-</div>
+        border-radius:20px;
+    }
 
-<div class="form-check mb-2">
+    .candidate-name{
+        font-size:18px;
+    }
 
-<input
+    .candidate-role{
+        font-size:13px;
+    }
 
-type="checkbox"
+    .detail-pill{
 
-class="form-check-input"
+        font-size:12px;
 
-name="return_allowed"
+        padding:6px 12px;
+    }
 
-checked>
+    .avatar{
 
-<label class="form-check-label">
+        width:54px;
+        height:54px;
 
-Return Available
+        font-size:20px;
+    }
 
-</label>
+    /* BOTTOM NAV */
 
-</div>
+    /* BOTTOM NAV - SLICE STYLE */
 
-<div class="form-check mb-2">
+.bottom-nav{
+    position:fixed;
+    bottom:15px;
+    left:50%;
+    transform:translateX(-50%);
+    width:95%;
+    max-width:450px;
 
-<input
+    background:#2563eb;
 
-type="checkbox"
+    border-radius:40px;
 
-class="form-check-input"
+    padding:10px;
 
-name="exchange_allowed"
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 
-checked>
+    z-index:9999;
 
-<label class="form-check-label">
+    box-shadow:0 8px 25px rgba(0,0,0,.15);
 
-Exchange Available
+    transition:transform .30s ease;
+}
 
-</label>
+.bottom-nav.hide{
+    transform:translateX(-50%) translateY(120px);
+}
 
-</div>
+.nav-btn{
+    width:44px;
+    height:44px;
 
-<div class="alert alert-info mt-3">
+    border-radius:25px;
 
-Your product will be sent for admin approval before becoming visible in the marketplace.
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-</div>
+    color:white;
+    text-decoration:none;
 
-</div>
+    transition:.3s;
+}
 
-</div>
+.nav-btn span{
+    display:none;
+}
 
-</div>
+.nav-btn.active{
+    width:auto;
+    padding:0 18px;
+    background:white;
+    color:#2563eb;
+    gap:8px;
+}
 
-</div>
+.nav-btn.active span{
+    display:block;
+    font-size:14px;
+    font-weight:700;
+}
 
-<!-- Product Images -->
+.nav-btn i{
+    font-size:18px;
+}
 
-<div class="card shadow-sm mt-4">
+.candidate-card{
 
-    <div class="card-header">
+    background:white !important;
 
-        <h5>
+    border-radius:24px !important;
 
-            Product Images
+    padding:18px !important;
 
-        </h5>
+    margin-bottom:20px !important;
 
-    </div>
+    box-shadow:0 4px 18px rgba(0,0,0,0.08) !important;
 
-    <div class="card-body">
+    display:block !important;
+}
 
-        <label class="form-label">
+.action-buttons{
 
-            Upload Images
+    display:flex !important;
 
-        </label>
+    gap:10px !important;
 
-        <input type="file"
+    flex-wrap:wrap !important;
 
-               class="form-control"
+    margin-top:18px !important;
+}
 
-               name="images"
+.candidate-profile{
 
-               id="images"
+    display:flex !important;
 
-               accept="image/*"
+    align-items:flex-start !important;
 
-               multiple>
+    gap:14px !important;
+}
 
-        <small class="text-muted">
+.candidate-details{
 
-            Maximum 5 images
+    display:flex !important;
 
-        </small>
+    flex-wrap:wrap !important;
 
-        <div id="preview"
+    gap:10px !important;
 
-             class="row mt-3">
+    margin-top:16px !important;
+}
 
-        </div>
+@media(max-width:768px){
 
-    </div>
+    .candidate-card{
 
-</div>
+        padding:16px !important;
 
-<!-- Shipping Information -->
+        border-radius:22px !important;
+    }
 
-<div class="card shadow-sm mt-4">
+}
 
-    <div class="card-header">
+@media(max-width:768px){
 
-        <h5>
+    .mobile-hide-hr{
+        display:none !important;
+    }
 
-            Shipping Information
+}
 
-        </h5>
+.content{
+    animation: contentFade .18s ease;
+}
 
-    </div>
+.flash-overlay{
 
-    <div class="card-body">
+    position:fixed;
+    inset:0;
 
-        <div class="row">
+    background:rgba(0,0,0,.45);
 
-            <div class="col-md-3">
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-                <label>
+    z-index:999999;
 
-                    Weight (kg)
+    animation:fadeFlash .25s ease;
 
-                </label>
+}
 
-                <input
+.flash-box{
 
-                    type="number"
+    position:relative;
 
-                    step="0.01"
+    width:92%;
+    max-width:360px;
 
-                    class="form-control"
+    background:#fff;
 
-                    name="weight"
+    border-radius:24px;
 
-                    required>
+    padding:28px 24px;
 
-            </div>
+    text-align:center;
 
-            <div class="col-md-3">
+    display:flex;
+    flex-direction:column;
+    align-items:center;
 
-                <label>
+    box-shadow:0 20px 45px rgba(0,0,0,.25);
 
-                    Length (cm)
+    animation:popupFlash .28s ease;
 
-                </label>
+}
 
-                <input
+.flash-close{
 
-                    type="number"
+    position:absolute;
 
-                    step="0.01"
+    top:14px;
+    right:14px;
 
-                    class="form-control"
+    width:36px;
+    height:36px;
 
-                    name="length"
+    border:none;
 
-                    required>
+    background:#f3f4f6;
 
-            </div>
+    border-radius:50%;
 
-            <div class="col-md-3">
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-                <label>
+    font-size:26px;
+    font-weight:700;
 
-                    Width (cm)
+    color:#6b7280;
 
-                </label>
+    cursor:pointer;
 
-                <input
+    z-index:1000;
 
-                    type="number"
+    transition:.2s;
 
-                    step="0.01"
+}
 
-                    class="form-control"
+.flash-close:hover{
 
-                    name="width"
+    background:#e5e7eb;
 
-                    required>
+    color:#111827;
 
-            </div>
+}
 
-            <div class="col-md-3">
+.flash-icon{
 
-                <label>
+    font-size:60px;
 
-                    Height (cm)
+    margin-top:6px;
+    margin-bottom:12px;
 
-                </label>
+    line-height:1;
 
-                <input
+}
 
-                    type="number"
+.flash-title{
 
-                    step="0.01"
+    font-size:30px;
 
-                    class="form-control"
+    font-weight:700;
 
-                    name="height"
+    color:#111827;
 
-                    required>
+    margin-bottom:10px;
 
-            </div>
+}
 
-        </div>
+.flash-message{
 
-    </div>
+    font-size:18px;
 
-</div>
+    color:#555;
 
-<!-- Product Variants -->
+    line-height:1.6;
 
-<div class="card shadow-sm mt-4"
+    text-align:center;
 
-     id="variantCard"
+}
 
-     style="display:none;">
+.flash-actions{
 
-    <div class="card-header d-flex justify-content-between">
+    width:100%;
 
-        <h5>
+    display:flex;
 
-            Product Variants
+    justify-content:center;
 
-        </h5>
+    margin-top:22px;
 
-        <button type="button"
+}
 
-                class="btn btn-primary btn-sm"
+.flash-actions .btn{
 
-                onclick="addVariant()">
+    width:180px;
 
-            <i class="fas fa-plus"></i>
+    height:50px;
 
-            Add Variant
+    border-radius:12px;
 
-        </button>
+    font-size:18px;
 
-    </div>
+    font-weight:700;
 
-    <div class="card-body">
+}
 
-        <div id="variantContainer">
+@keyframes popupFlash{
 
-        </div>
+    from{
 
-    </div>
+        opacity:0;
+        transform:scale(.8);
 
-</div>
+    }
 
-<template id="variantTemplate">
+    to{
 
-<div class="border rounded p-3 mb-3">
+        opacity:1;
+        transform:scale(1);
 
-    <div class="row">
+    }
 
-        <div class="col-md-3">
+}
 
-            <input
+@keyframes fadeFlash{
 
-                type="text"
+    from{
 
-                name="variant_name[]"
+        opacity:0;
 
-                class="form-control"
+    }
 
-                placeholder="Variant Name">
+    to{
 
-        </div>
+        opacity:1;
 
-        <div class="col-md-3">
+    }
 
-            <input
+}
 
-                type="text"
+@keyframes popupFlash{
 
-                name="option_value[]"
+    from{
 
-                class="form-control"
+        opacity:0;
 
-                placeholder="Value">
+        transform:scale(.75);
 
-        </div>
+    }
 
-        <div class="col-md-2">
+    to{
 
-            <input
+        opacity:1;
 
-                type="number"
+        transform:scale(1);
 
-                step="0.01"
+    }
 
-                name="option_price[]"
+}
 
-                class="form-control"
+@keyframes fadeFlash{
 
-                placeholder="Price">
+    from{
 
-        </div>
+        opacity:0;
 
-        <div class="col-md-2">
+    }
 
-            <input
+    to{
 
-                type="number"
+        opacity:1;
 
-                name="option_stock[]"
+    }
 
-                class="form-control"
+}
 
-                placeholder="Stock">
+@keyframes contentFade{
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
 
-        </div>
+</style>
 
-        <div class="col-md-2">
+</head>
 
-            <button
+<body>
 
-                type="button"
+{% if session.get('candidate_id') %}
 
-                class="btn btn-danger w-100"
+<div class="mobile-topbar">
 
-                onclick="this.closest('.border').remove()">
-
-                Remove
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-</template>
-
-<!-- SEO -->
-
-<div class="card shadow-sm mt-4">
-
-    <div class="card-header">
-
-        <h5>
-
-            SEO Settings
-
-        </h5>
-
-    </div>
-
-    <div class="card-body">
-
-        <div class="mb-3">
-
-            <label>
-
-                Meta Title
-
-            </label>
-
-            <input
-
-                type="text"
-
-                class="form-control"
-
-                name="meta_title">
-
-        </div>
-
-        <div class="mb-3">
-
-            <label>
-
-                Meta Description
-
-            </label>
-
-            <textarea
-
-                class="form-control"
-
-                rows="3"
-
-                name="meta_description"></textarea>
-
-        </div>
-
-        <div class="mb-3">
-
-            <label>
-
-                Search Keywords
-
-            </label>
-
-            <input
-
-                type="text"
-
-                class="form-control"
-
-                name="search_keywords"
-
-                placeholder="gift, flower, bouquet">
-
-        </div>
-
-        <div class="mb-3">
-
-            <label>
-
-                YouTube Video URL
-
-            </label>
-
-            <input
-
-                type="url"
-
-                class="form-control"
-
-                name="youtube_video">
-
-        </div>
-
-        <div class="mb-3">
-
-            <label>
-
-                Product Tags
-
-            </label>
-
-            <input
-
-                type="text"
-
-                class="form-control"
-
-                name="tags"
-
-                placeholder="love,birthday,anniversary">
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="text-end mt-4 mb-5">
-
-    <button
-
-        class="btn btn-success btn-lg">
-
-        <i class="fas fa-save"></i>
-
-        Add Product
-
+    <button class="menu-btn"
+            onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
     </button>
 
+    <div class="mobile-logo">
+        <img
+        src="{{ url_for('static', filename='images/header_logo.png') }}"
+        alt="RecrootEarn"
+        loading="eager"
+        fetchpriority="high"
+        decoding="sync"
+        draggable="false"
+        style="display:block;">
+    </div>
+
+    <a href="/candidate-notifications"
+   class="mobile-credit"
+   style="text-decoration:none;position:relative;">
+
+    <i class="fas fa-bell"></i>
+
+    {% if unread_notifications|default(0) > 0 %}
+    <span style="
+        position:absolute;
+        top:-5px;
+        right:-5px;
+        background:red;
+        color:white;
+        border-radius:50%;
+        width:18px;
+        height:18px;
+        font-size:10px;
+        display:flex;
+        align-items:center;
+        justify-content:center;">
+        {{ unread_notifications }}
+    </span>
+    {% endif %}
+
+</a>
+
 </div>
 
-</form>
+<div class="mobile-overlay"
+     onclick="toggleSidebar()"></div>
+
+{% elif current_user.is_authenticated %}
+
+<div class="mobile-topbar">
+
+    <button class="menu-btn"
+            onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="mobile-logo">
+        <img src="{{ url_for('static', filename='images/header_logo.png') }}"
+             alt="RecrootEarn">
+    </div>
+
+    <a href="/notifications"
+       class="mobile-credit"
+    style="text-decoration:none;position:relative;">
+
+         <i class="fas fa-bell"></i>
+
+         {% if unread_notifications|default(0) > 0 %}
+         <span style="
+             position:absolute;
+             top:-5px;
+             right:-5px;
+             background:red;
+             color:white;
+             border-radius:50%;
+             width:18px;
+             height:18px;
+             font-size:10px;
+             display:flex;
+             align-items:center;
+             justify-content:center;">
+             {{ unread_notifications }}
+        </span>
+        {% endif %}
+
+    </a>
 
 </div>
+
+<div class="mobile-overlay"
+     onclick="toggleSidebar()"></div>
+
+{% endif %}
+
+<!-- SIDEBAR --><div class="sidebar">
+<div class="sidebar-logo">
+
+    <img
+    src="{{ url_for('static', filename='images/sidebar_logo.png') }}"
+    alt="RecrootEarn">
+
+</div>
+
+{% if session.get('candidate_id') %}
+
+<div class="candidate-desktop-menu">
+
+    <a href="/candidate-dashboard">
+        <i class="fas fa-home"></i>
+        Dashboard
+    </a>
+
+    <a href="/candidate-feed">
+        <i class="fas fa-briefcase"></i>
+        Job Feed
+    </a>
+
+    <a href="/applied-jobs">
+        <i class="fas fa-file-alt"></i>
+        Applied Jobs
+    </a>
+
+    <a href="/candidate-profile">
+        <i class="fas fa-user"></i>
+        My Profile
+    </a>
+
+</div>
+
+<a href="/candidate-referral">
+    <i class="fas fa-gift"></i>
+    Refer & Earn
+</a>
+
+<a href="/candidate-withdraw">
+    <i class="fas fa-wallet"></i>
+    Wallet
+</a>
+
+<a href="/candidate-support">
+    <i class="fas fa-headset"></i>
+    Support
+</a>
+
+<a href="/candidate-general-info">
+    <i class="fas fa-circle-info"></i>
+    General Info
+</a>
+
+<a href="/candidate-logout">
+    <i class="fas fa-right-from-bracket"></i>
+    Logout
+</a>
+
+{% else %}
+
+<!-- HR MENU -->
+
+<a href="/dashboard" class="mobile-hide-hr">
+    <i class="fas fa-chart-line"></i>
+    Dashboard
+</a>
+
+<a href="/leads" class="mobile-hide-hr">
+    <i class="fas fa-users"></i>
+    Leads
+</a>
+
+<a href="/discover-candidates" class="mobile-hide-hr">
+    <i class="fas fa-compass"></i>
+    Discover Candidates
+</a>
+
+<a href="/upload" class="mobile-hide-hr">
+    <i class="fas fa-upload"></i>
+    Upload Candidate
+</a>
+
+<a href="/feed" class="mobile-hide-hr">
+    <i class="fas fa-briefcase"></i>
+    Job Feed
+</a>
+
+<a href="/applied-jobs-hr">
+    <i class="fas fa-file-signature"></i>
+    Applied Jobs
+</a>
+
+<a href="/wallet">
+    <i class="fas fa-wallet"></i>
+    Wallet
+</a>
+
+    <a href="/seller/pickup"
+       class="nav-link">
+
+        <i class="fa-solid fa-warehouse"></i>
+
+        Pickup Address
+
+    </a>
+
+<a href="/cart" class="nav-link">
+
+🛒 Cart
+
+{% if cart_count %}
+
+<span class="badge bg-danger">
+
+{{ cart_count }}
+
+</span>
+
+{% endif %}
+
+</a>
+
+<a href="/profile" class="mobile-hide-hr">
+    <i class="fas fa-user"></i>
+    My Profile
+</a>
+
+<a href="/buy-credits">
+    <i class="fas fa-coins"></i>
+    Buy Credits
+</a>
+
+<a href="/support">
+    <i class="fas fa-headset"></i>
+    Support
+</a>
+
+<a href="/general-info">
+    <i class="fas fa-circle-info"></i>
+    General Info
+</a>
+
+<a href="/referrals">
+    <i class="fas fa-user-plus"></i>
+    Referrals
+</a>
+
+{% if current_user.is_admin %}
+
+<a href="/admin">
+    <i class="fas fa-shield-alt"></i>
+    Admin Panel
+</a>
+
+{% endif %}
+
+<a href="/logout">
+    <i class="fas fa-right-from-bracket"></i>
+    Logout
+</a>
+
+{% endif %}
+
+</div>
+
+<!-- MAIN -->
+
+<div class="main">
+
+    <div class="topbar">
+
+        <div class="welcome">
+
+            Welcome,
+            {{ current_user.first_name }} 👋
+
+        </div>
+
+        <a href="/notifications"
+           style="
+           position:relative;
+           color:#111;
+           font-size:24px;
+           text-decoration:none;
+           ">
+
+           <i class="far fa-bell"></i>
+
+           {% if unread_notifications|default(0) > 0 %}
+           <span style="
+               position:absolute;
+               top:-3px;
+               right:-5px;
+               min-width:18px;
+               height:18px;
+               background:#ff3040;
+               color:white;
+               border-radius:50%;
+               font-size:10px;
+               font-weight:700;
+               display:flex;
+               align-items:center;
+               justify-content:center;
+               padding:2px;
+            ">
+               {{ unread_notifications }}
+            </span>
+            {% endif %}
+
+         </a>
+
+    </div>
+
+    <div class="content">
+
+        {% block content %}
+        {% endblock %}
+
+    </div>
+
+</div>
+
+<!-- MOBILE NAV -->
+
+{% if session.get('candidate_id') %}
+
+<div class="bottom-nav">
+
+    <a href="/candidate-dashboard" class="nav-btn">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
+
+    <a href="/candidate-feed" class="nav-btn">
+        <i class="fas fa-briefcase"></i>
+        <span>Jobs</span>
+    </a>
+
+    <a href="/discover-hr" class="nav-btn">
+        <i class="fas fa-compass"></i>
+        <span>Discover</span>
+    </a>
+
+    <a href="/applied-jobs" class="nav-btn">
+        <i class="fas fa-file-alt"></i>
+        <span>Applied</span>
+    </a>
+
+    <a href="/shop" class="nav-btn">
+        <i class="fas fa-store"></i>
+        <span>Shop</span>
+    </a>
+
+    <a href="/candidate-profile" class="nav-btn">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+    </a>
+
+</div>
+
+{% elif current_user.is_authenticated %}
+
+<div class="bottom-nav">
+
+<a href="/dashboard" class="nav-btn">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+</a>
+
+<a href="/feed" class="nav-btn">
+    <i class="fas fa-briefcase"></i>
+   <span>Feed</span>
+</a>
+
+<a href="/discover-candidates" class="nav-btn">
+    <i class="fas fa-compass"></i>
+    <span>Discover</span>
+</a>
+
+<a href="/leads" class="nav-btn">
+    <i class="fas fa-users"></i>
+    <span>Leads</span>
+</a>
+
+<a href="/upload" class="nav-btn">
+    <i class="fas fa-upload"></i>
+    <span>Upload</span>
+</a>
+
+<a href="/shop" class="nav-btn">
+    <i class="fas fa-store"></i>
+    <span>Shop</span>
+</a>
+
+<a href="/profile" class="nav-btn">
+    <i class="fas fa-user"></i>
+    <span>Profile</span>
+</a>
+
+</div>
+
+{% endif %}
+
+<!-- JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
 <script>
 
-const imageInput = document.getElementById(
+AOS.init({
+    duration:700,
+    once:true
+});
 
-    "images"
+window.addEventListener("load", function(){
 
-);
+    setTimeout(function(){
 
-if(imageInput){
+        document.getElementById("loader").style.opacity = "0";
 
-imageInput.addEventListener(
+        setTimeout(function(){
 
-"change",
+            document.getElementById("loader").style.display = "none";
 
-function(){
+        },500);
 
-let preview=document.getElementById(
-
-"preview"
-
-);
-
-preview.innerHTML="";
-
-if(this.files.length>5){
-
-alert("Maximum 5 images allowed.");
-
-this.value="";
-
-return;
-
-}
-
-Array.from(this.files).forEach(file=>{
-
-let reader=new FileReader();
-
-reader.onload=function(e){
-
-preview.innerHTML+=`
-
-<div class="col-md-3 mb-3">
-
-<img src="${e.target.result}"
-
-class="img-fluid rounded shadow"
-
-style="height:150px;width:100%;object-fit:cover;">
-
-</div>
-
-`;
-
-};
-
-reader.readAsDataURL(file);
+    },800);
 
 });
 
-}
+function toggleSidebar(){
 
-);
+    document
+    .querySelector(".sidebar")
+    .classList.toggle("active");
 
-}
-
-const productType=document.getElementById(
-
-"product_type"
-
-);
-
-if(productType){
-
-productType.addEventListener(
-
-"change",
-
-function(){
-
-document.getElementById(
-
-"variantCard"
-
-).style.display=
-
-this.value==="variable"
-
-?
-
-"block"
-
-:
-
-"none";
-
-}
-
-);
-
-}
-
-function addVariant(){
-
-const template=document.getElementById(
-
-"variantTemplate"
-
-);
-
-const clone=template.content.cloneNode(true);
-
-document.getElementById(
-
-"variantContainer"
-
-).appendChild(clone);
-
+    document
+    .querySelector(".mobile-overlay")
+    .classList.toggle("active");
 }
 
 </script>
 
-{% endblock %}
+{% if request.endpoint != 'login' %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+
+<div id="flashOverlay" class="flash-overlay">
+
+    <div class="flash-box">
+
+        <button class="flash-close"
+                onclick="closeFlash()">
+            &times;
+        </button>
+
+        <div class="flash-message">
+            {{ messages[0][1] }}
+        </div>
+
+        <div class="flash-actions">
+            <button class="btn btn-primary" onclick="closeFlash()">
+                OK
+        </button>
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+{% endwith %}
+
+{% endif %}
+
+<script>
+
+const currentPath = window.location.pathname;
+
+document.querySelectorAll(".nav-btn").forEach(btn => {
+
+    if(btn.getAttribute("href") === currentPath){
+
+        btn.classList.add("active");
+
+    }
+
+});
+
+</script>
+
+<script>
+
+function closeFlash(){
+
+    const box =
+    document.getElementById("flashOverlay");
+
+    if(box){
+
+        box.style.display="none";
+
+    }
+
+}
+
+setTimeout(function(){
+
+    closeFlash();
+
+},3000);
+
+</script>
+
+<script>
+
+let lastScroll = 0;
+
+window.addEventListener("scroll", function(){
+
+    const nav = document.querySelector(".bottom-nav");
+    if(!nav) return;
+
+    const currentScroll = window.pageYOffset;
+
+    if(currentScroll <= 20){
+        nav.classList.remove("hide");
+    }else if(currentScroll > lastScroll){
+        nav.classList.add("hide");
+    }else{
+        nav.classList.remove("hide");
+    }
+
+    lastScroll = currentScroll;
+
+});
+
+</script>
+
+<script>
+document.querySelectorAll("a").forEach(link => {
+
+    link.addEventListener("click", function () {
+
+        const content = document.querySelector(".content");
+
+        if(content){
+
+            content.style.opacity = "0.92";
+
+        }
+
+    });
+
+});
+
+</script>
+
+</body>
+
+</html>
