@@ -14648,9 +14648,9 @@ def add_product():
 
             seller_id=current_user.id,
 
-            category_id=int(request.form["category_id"]),
-
-            brand_id=request.form.get("brand_id") or None,
+            category_id=int(
+                request.form["category_id"]
+            ),
 
             name=request.form["name"].strip(),
 
@@ -14664,32 +14664,53 @@ def add_product():
 
             hsn_code=request.form.get("hsn_code"),
 
-            price=float(request.form["price"]),
+            price=float(
+                request.form["price"]
+            ),
 
-            sale_price=float(request.form["sale_price"])
+            sale_price=float(
+                request.form["sale_price"]
+            )
             if request.form.get("sale_price")
             else None,
 
-            stock=int(request.form["stock"]),
+            stock=int(
+                request.form["stock"]
+            ),
 
             gst_percent=float(
-                request.form.get("gst_percent", 0)
+                request.form.get(
+                    "gst_percent",
+                    0
+                )
             ),
 
             weight=float(
-                request.form.get("weight", 0)
+                request.form.get(
+                    "weight",
+                    0
+                )
             ),
 
             length=float(
-                request.form.get("length", 0)
+                request.form.get(
+                    "length",
+                    0
+                )
             ),
 
             width=float(
-                request.form.get("width", 0)
+                request.form.get(
+                    "width",
+                    0
+                )
             ),
 
             height=float(
-                request.form.get("height", 0)
+                request.form.get(
+                    "height",
+                    0
+                )
             ),
 
             product_type=request.form.get(
@@ -14697,9 +14718,15 @@ def add_product():
                 "simple"
             ),
 
-            return_allowed="return_allowed" in request.form,
+            return_allowed=(
+                "return_allowed"
+                in request.form
+            ),
 
-            exchange_allowed="exchange_allowed" in request.form,
+            exchange_allowed=(
+                "exchange_allowed"
+                in request.form
+            ),
 
             is_active=True
 
@@ -14709,9 +14736,13 @@ def add_product():
 
         db.session.commit()
 
-        # Upload Images
+        # ==========================================
+        # UPLOAD PRODUCT IMAGES
+        # ==========================================
 
-        images = request.files.getlist("images")
+        images = request.files.getlist(
+            "images"
+        )
 
         if len(images) > 5:
 
@@ -14733,11 +14764,18 @@ def add_product():
             if image.filename == "":
                 continue
 
-            if allowed_product_file(image.filename):
+            if allowed_product_file(
+                image.filename
+            ):
 
-                ext = image.filename.rsplit(".", 1)[1].lower()
+                ext = image.filename.rsplit(
+                    ".",
+                    1
+                )[1].lower()
 
-                filename = f"{uuid.uuid4()}.{ext}"
+                filename = (
+                    f"{uuid.uuid4()}.{ext}"
+                )
 
                 image.save(
                     os.path.join(
@@ -14762,7 +14800,9 @@ def add_product():
 
                 order += 1
 
-        # Save Variants
+        # ==========================================
+        # SAVE PRODUCT VARIANTS
+        # ==========================================
 
         if product.product_type == "variable":
 
@@ -14782,7 +14822,9 @@ def add_product():
                 "option_stock[]"
             )
 
-            for i in range(len(values)):
+            for i in range(
+                len(values)
+            ):
 
                 if values[i].strip() == "":
                     continue
@@ -14797,9 +14839,13 @@ def add_product():
 
                         option_value=values[i],
 
-                        price=float(prices[i]),
+                        price=float(
+                            prices[i]
+                        ),
 
-                        stock=int(stocks[i])
+                        stock=int(
+                            stocks[i]
+                        )
 
                     )
 
@@ -14812,13 +14858,15 @@ def add_product():
             "success"
         )
 
-        return redirect("/shop/products")
+        return redirect(
+            "/shop/products"
+        )
 
     return render_template(
 
         "shop/add_product.html",
 
-        categories=categories,
+        categories=categories
 
     )
 
