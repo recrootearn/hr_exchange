@@ -2626,36 +2626,6 @@ class ProductVariantOption(db.Model):
         lazy=True
     )
 
-class HomepageBanner(db.Model):
-    __tablename__ = "homepage_banners"
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    title = db.Column(db.String(200))
-
-    subtitle = db.Column(db.String(255))
-
-    image = db.Column(db.String(255))
-
-    button_text = db.Column(db.String(50))
-
-    button_link = db.Column(db.String(255))
-
-    display_order = db.Column(
-        db.Integer,
-        default=1
-    )
-
-    is_active = db.Column(
-        db.Boolean,
-        default=True
-    )
-
-    created_at = db.Column(
-        db.DateTime,
-        default=india_time
-    )
-
 class ShippingAddress(db.Model):
     __tablename__ = "shipping_addresses"
 
