@@ -364,13 +364,6 @@ class User(UserMixin, db.Model):
         cascade="all, delete-orphan"
     )
 
-    cart = db.relationship(
-        "Cart",
-        foreign_keys=[Cart.user_id],
-        backref="customer",
-        lazy=True
-    )
-
     profile_completion = db.Column(
         db.Integer,
         default=0
