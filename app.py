@@ -65,6 +65,18 @@ def admin_required(f):
 
     return decorated_function
 
+PRODUCT_UPLOAD_FOLDER = os.path.join(
+    app.root_path,
+    "static",
+    "uploads",
+    "products"
+)
+
+os.makedirs(
+    PRODUCT_UPLOAD_FOLDER,
+    exist_ok=True
+)
+
 app.config["MAIL_SERVER"] = "smtp.hostinger.com"
 app.config["MAIL_PORT"] = 465
 app.config["MAIL_USE_SSL"] = True
