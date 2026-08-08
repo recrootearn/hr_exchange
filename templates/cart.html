@@ -1,222 +1,961 @@
 {% extends "base.html" %}
 
-{% block title %}
-
-My Cart
-
-{% endblock %}
+{% block title %}My Cart{% endblock %}
 
 {% block content %}
 
-<div class="container py-4">
+<style>
+/* =========================================================
+   RECROOTEARN — MODERN CART
+   Edge-to-edge mobile override for base.html
+   ========================================================= */
 
-<h2 class="mb-4">
+html,
+body{
+    margin:0 !important;
+    padding:0 !important;
+    overflow-x:hidden;
+}
 
-🛒 My Cart
+.content{
+    padding:0 !important;
+    margin:0 !important;
+    background:#f5f7fb !important;
+}
 
-</h2>
+.cart-page{
+    width:100%;
+    min-height:100vh;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(37,99,235,.08), transparent 28%),
+        #f5f7fb;
+    padding:24px 20px 50px;
+    box-sizing:border-box;
+}
 
-{% if cart and cart.items %}
+.cart-shell{
+    width:100%;
+    max-width:1180px;
+    margin:0 auto;
+}
 
-<div class="row">
+/* Header */
+.cart-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:22px;
+}
 
-<div class="col-lg-8">
+.cart-heading-wrap{
+    min-width:0;
+}
 
-{% for item in cart.items %}
+.cart-eyebrow{
+    color:#2563eb;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    margin-bottom:5px;
+}
 
-<div class="card mb-3 shadow-sm">
+.cart-title{
+    margin:0;
+    color:#111827;
+    font-size:clamp(26px,4vw,36px);
+    line-height:1.1;
+    font-weight:900;
+}
 
-<div class="row g-0">
+.cart-subtitle{
+    margin:7px 0 0;
+    color:#6b7280;
+    font-size:14px;
+}
 
-<div class="col-3">
+.continue-shopping{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:11px 16px;
+    border-radius:13px;
+    background:#fff;
+    color:#2563eb;
+    text-decoration:none;
+    font-weight:800;
+    border:1px solid #e5eaf3;
+    box-shadow:0 5px 18px rgba(15,23,42,.06);
+    transition:.2s;
+    white-space:nowrap;
+}
 
-{% if item.product.images %}
+.continue-shopping:hover{
+    transform:translateY(-1px);
+    color:#1d4ed8;
+    box-shadow:0 8px 24px rgba(15,23,42,.10);
+}
 
-<img
-src="{{ url_for('static',
-filename='product_images/' + item.product.images[0].image) }}"
-class="img-fluid rounded-start"
-style="height:140px;object-fit:cover;">
+/* Main layout */
+.cart-layout{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 370px;
+    gap:20px;
+    align-items:start;
+}
 
-{% endif %}
+/* Cards */
+.cart-card{
+    background:#fff;
+    border:1px solid #e9edf5;
+    border-radius:22px;
+    box-shadow:0 10px 32px rgba(15,23,42,.07);
+    overflow:hidden;
+}
+
+.cart-card-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:17px 20px;
+    border-bottom:1px solid #edf0f5;
+}
+
+.cart-card-head h3{
+    margin:0;
+    font-size:17px;
+    font-weight:900;
+    color:#172033;
+}
+
+.cart-count{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:30px;
+    height:28px;
+    padding:0 9px;
+    border-radius:999px;
+    background:#eef4ff;
+    color:#2563eb;
+    font-size:12px;
+    font-weight:900;
+}
+
+/* Product item */
+.cart-item{
+    display:grid;
+    grid-template-columns:118px minmax(0,1fr);
+    gap:17px;
+    padding:17px 20px;
+    border-bottom:1px solid #edf0f5;
+}
+
+.cart-item:last-child{
+    border-bottom:0;
+}
+
+.cart-image-wrap{
+    width:118px;
+    height:118px;
+    border-radius:17px;
+    overflow:hidden;
+    background:#f1f5f9;
+    border:1px solid #e7ebf2;
+    position:relative;
+}
+
+.cart-product-image{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.cart-image-placeholder{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#94a3b8;
+    font-size:32px;
+}
+
+.cart-item-main{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.cart-product-name{
+    color:#111827;
+    font-size:17px;
+    font-weight:900;
+    line-height:1.3;
+    margin:0 0 6px;
+    overflow-wrap:anywhere;
+}
+
+.cart-variant{
+    color:#6b7280;
+    font-size:13px;
+    margin:0 0 8px;
+}
+
+.cart-price{
+    color:#16a34a;
+    font-size:21px;
+    font-weight:900;
+    margin:3px 0 12px;
+}
+
+/* Quantity */
+.cart-actions{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.quantity-control{
+    display:inline-flex;
+    align-items:center;
+    border:1px solid #dfe5ee;
+    border-radius:12px;
+    overflow:hidden;
+    background:#fff;
+}
+
+.quantity-control a{
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#2563eb;
+    text-decoration:none;
+    font-size:20px;
+    font-weight:800;
+    transition:.15s;
+}
+
+.quantity-control a:hover{
+    background:#eef4ff;
+}
+
+.quantity-number{
+    min-width:38px;
+    text-align:center;
+    font-size:14px;
+    font-weight:900;
+    color:#172033;
+}
+
+.remove-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    border:0;
+    background:#fff1f2;
+    color:#dc2626;
+    border-radius:11px;
+    padding:9px 12px;
+    text-decoration:none;
+    font-size:12px;
+    font-weight:900;
+    transition:.2s;
+}
+
+.remove-btn:hover{
+    background:#ffe4e6;
+    color:#b91c1c;
+}
+
+/* Summary */
+.summary-card{
+    position:sticky;
+    top:18px;
+}
+
+.summary-head{
+    padding:19px 20px;
+    border-bottom:1px solid #edf0f5;
+}
+
+.summary-head h3{
+    margin:0;
+    font-size:19px;
+    font-weight:900;
+    color:#172033;
+}
+
+.summary-body{
+    padding:20px;
+}
+
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:14px;
+    color:#5b6473;
+    font-size:14px;
+}
+
+.summary-row strong{
+    color:#172033;
+    font-weight:800;
+}
+
+.summary-delivery{
+    font-size:12px;
+    color:#8a93a3;
+    text-align:right;
+}
+
+.summary-divider{
+    border:0;
+    border-top:1px solid #edf0f5;
+    margin:17px 0;
+}
+
+.summary-total{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    color:#111827;
+    font-size:18px;
+    font-weight:900;
+}
+
+.summary-total span:last-child{
+    color:#16a34a;
+    font-size:25px;
+}
+
+.checkout-btn{
+    width:100%;
+    min-height:52px;
+    margin-top:20px;
+    border:0;
+    border-radius:15px;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff !important;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    text-decoration:none;
+    font-size:15px;
+    font-weight:900;
+    box-shadow:0 9px 22px rgba(37,99,235,.25);
+    transition:.2s;
+}
+
+.checkout-btn:hover{
+    color:#fff !important;
+    transform:translateY(-1px);
+    box-shadow:0 12px 28px rgba(37,99,235,.32);
+}
+
+.secure-note{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    color:#7b8493;
+    font-size:11px;
+    margin-top:13px;
+}
+
+/* Empty cart */
+.empty-cart{
+    min-height:58vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:35px 20px;
+}
+
+.empty-cart-inner{
+    text-align:center;
+    max-width:430px;
+}
+
+.empty-cart-icon{
+    width:88px;
+    height:88px;
+    border-radius:50%;
+    margin:0 auto 18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#eef4ff;
+    color:#2563eb;
+    font-size:38px;
+}
+
+.empty-cart h2{
+    margin:0;
+    color:#172033;
+    font-size:25px;
+    font-weight:900;
+}
+
+.empty-cart p{
+    margin:8px 0 20px;
+    color:#6b7280;
+    font-size:14px;
+}
+
+.empty-cart-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 18px;
+    border-radius:13px;
+    background:#2563eb;
+    color:#fff !important;
+    text-decoration:none;
+    font-weight:900;
+}
+
+/* =========================================================
+   IMAGE FALLBACK
+   ========================================================= */
+
+.cart-image-error{
+    display:none;
+    width:100%;
+    height:100%;
+    align-items:center;
+    justify-content:center;
+    color:#94a3b8;
+    background:#f1f5f9;
+    font-size:31px;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media(max-width:991.98px){
+
+    .cart-page{
+        padding:20px 14px 40px;
+    }
+
+    .cart-layout{
+        grid-template-columns:1fr;
+    }
+
+    .summary-card{
+        position:static;
+    }
+}
+
+/* =========================================================
+   MOBILE — TRUE EDGE TO EDGE
+   ========================================================= */
+
+@media(max-width:575.98px){
+
+    /* Override common Bootstrap/base.html wrappers */
+    html,
+    body{
+        width:100% !important;
+        max-width:100% !important;
+        margin:0 !important;
+        padding:0 !important;
+    }
+
+    .content,
+    main,
+    .main-content,
+    .container,
+    .container-fluid{
+        max-width:none !important;
+    }
+
+    .content{
+        padding-left:0 !important;
+        padding-right:0 !important;
+        margin-left:0 !important;
+        margin-right:0 !important;
+    }
+
+    .container{
+        width:100% !important;
+        padding-left:0 !important;
+        padding-right:0 !important;
+        margin-left:0 !important;
+        margin-right:0 !important;
+    }
+
+    .cart-page{
+        width:100vw !important;
+        max-width:100vw !important;
+        margin:0 !important;
+        padding:14px 0 34px !important;
+        border-radius:0 !important;
+    }
+
+    .cart-shell{
+        width:100% !important;
+        max-width:none !important;
+        margin:0 !important;
+    }
+
+    .cart-header{
+        padding:0 14px;
+        margin-bottom:13px;
+    }
+
+    .cart-eyebrow{
+        font-size:10px;
+    }
+
+    .cart-title{
+        font-size:27px;
+    }
+
+    .cart-subtitle{
+        font-size:12px;
+    }
+
+    .continue-shopping{
+        padding:9px 11px;
+        font-size:11px;
+        border-radius:11px;
+    }
+
+    .cart-layout{
+        display:block;
+    }
+
+    .cart-card{
+        border-radius:0 !important;
+        border-left:0 !important;
+        border-right:0 !important;
+        box-shadow:none !important;
+    }
+
+    .cart-card-head{
+        padding:15px 14px;
+    }
+
+    .cart-item{
+        grid-template-columns:92px minmax(0,1fr);
+        gap:12px;
+        padding:13px 14px;
+    }
+
+    .cart-image-wrap{
+        width:92px;
+        height:92px;
+        border-radius:14px;
+    }
+
+    .cart-product-name{
+        font-size:14px;
+    }
+
+    .cart-variant{
+        font-size:11px;
+        margin-bottom:5px;
+    }
+
+    .cart-price{
+        font-size:18px;
+        margin:3px 0 8px;
+    }
+
+    .cart-actions{
+        gap:8px;
+    }
+
+    .quantity-control a{
+        width:32px;
+        height:32px;
+    }
+
+    .quantity-number{
+        min-width:32px;
+        font-size:13px;
+    }
+
+    .remove-btn{
+        padding:8px 9px;
+        font-size:10px;
+    }
+
+    .summary-card{
+        margin-top:10px;
+    }
+
+    .summary-body{
+        padding:17px 14px;
+    }
+
+    .summary-total span:last-child{
+        font-size:23px;
+    }
+
+    .checkout-btn{
+        min-height:50px;
+    }
+
+    .empty-cart{
+        min-height:65vh;
+        padding:30px 18px;
+    }
+}
+</style>
+
+<div class="cart-page">
+
+    <div class="cart-shell">
+
+        {% if cart and cart.items %}
+
+        <!-- HEADER -->
+        <div class="cart-header">
+
+            <div class="cart-heading-wrap">
+                <div class="cart-eyebrow">RecrootEarn Shop</div>
+
+                <h1 class="cart-title">
+                    My Cart
+                </h1>
+
+                <p class="cart-subtitle">
+                    Review your products before checkout.
+                </p>
+            </div>
+
+            <a href="/shop" class="continue-shopping">
+                <i class="fas fa-arrow-left"></i>
+                <span>Shop</span>
+            </a>
+
+        </div>
+
+        <div class="cart-layout">
+
+            <!-- CART ITEMS -->
+            <div class="cart-card">
+
+                <div class="cart-card-head">
+
+                    <h3>
+                        <i class="fas fa-shopping-bag me-2"></i>
+                        Cart Items
+                    </h3>
+
+                    <span class="cart-count">
+                        {{ cart.items|length }}
+                    </span>
+
+                </div>
+
+                {% for item in cart.items %}
+
+                <div class="cart-item">
+
+                    <!-- PRODUCT IMAGE -->
+                    <div class="cart-image-wrap">
+
+                        {% if item.product.images and item.product.images|length > 0 %}
+
+                        <img
+                            class="cart-product-image"
+                            src="{{ url_for('static', filename='uploads/products/' + item.product.images[0].image) }}"
+                            data-product-image="{{ item.product.images[0].image }}"
+                            alt="{{ item.product.name }}"
+                            loading="lazy"
+                            onerror="cartImageFallback(this);">
+
+                        <div class="cart-image-error">
+                            <i class="fas fa-image"></i>
+                        </div>
+
+                        {% else %}
+
+                        <div class="cart-image-placeholder">
+                            <i class="fas fa-image"></i>
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                    <!-- PRODUCT DETAILS -->
+                    <div class="cart-item-main">
+
+                        <div>
+
+                            <h2 class="cart-product-name">
+                                {{ item.product.name }}
+                            </h2>
+
+                            {% if item.variant_option %}
+
+                            <p class="cart-variant">
+                                Variant:
+                                <strong>{{ item.variant_option.value }}</strong>
+                            </p>
+
+                            {% endif %}
+
+                            <div class="cart-price">
+                                ₹{{ item.price }}
+                            </div>
+
+                        </div>
+
+                        <div class="cart-actions">
+
+                            <div class="quantity-control">
+
+                                <a
+                                    href="/cart/decrease/{{ item.id }}"
+                                    aria-label="Decrease quantity">
+                                    −
+                                </a>
+
+                                <span class="quantity-number">
+                                    {{ item.quantity }}
+                                </span>
+
+                                <a
+                                    href="/cart/increase/{{ item.id }}"
+                                    aria-label="Increase quantity">
+                                    +
+                                </a>
+
+                            </div>
+
+                            <a
+                                href="/cart/remove/{{ item.id }}"
+                                class="remove-btn"
+                                onclick="return confirm('Remove this product from cart?');">
+
+                                <i class="fas fa-trash-alt"></i>
+
+                                Remove
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <!-- PRICE SUMMARY -->
+            <div class="cart-card summary-card">
+
+                <div class="summary-head">
+
+                    <h3>
+                        Price Details
+                    </h3>
+
+                </div>
+
+                <div class="summary-body">
+
+                    <div class="summary-row">
+
+                        <span>Subtotal</span>
+
+                        <strong>
+                            ₹{{ total }}
+                        </strong>
+
+                    </div>
+
+                    <div class="summary-row">
+
+                        <span>Delivery</span>
+
+                        <span class="summary-delivery">
+                            Calculated at Checkout
+                        </span>
+
+                    </div>
+
+                    <hr class="summary-divider">
+
+                    <div class="summary-total">
+
+                        <span>Total</span>
+
+                        <span>
+                            ₹{{ total }}
+                        </span>
+
+                    </div>
+
+                    <a
+                        href="/checkout"
+                        class="checkout-btn">
+
+                        <i class="fas fa-lock"></i>
+
+                        Proceed To Checkout
+
+                        <i class="fas fa-arrow-right"></i>
+
+                    </a>
+
+                    <div class="secure-note">
+
+                        <i class="fas fa-shield-alt"></i>
+                        Secure checkout
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <!-- EMPTY CART -->
+        <div class="cart-card empty-cart">
+
+            <div class="empty-cart-inner">
+
+                <div class="empty-cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+
+                <h2>
+                    Your Cart Is Empty
+                </h2>
+
+                <p>
+                    Add products from the RecrootEarn Shop to continue shopping.
+                </p>
+
+                <a
+                    href="/shop"
+                    class="empty-cart-btn">
+
+                    <i class="fas fa-store"></i>
+
+                    Continue Shopping
+
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
 
 </div>
 
-<div class="col-9">
+<script>
+/* =========================================================
+   ROBUST PRODUCT IMAGE LOADER
 
-<div class="card-body">
+   Your shop/profile currently uses:
+       /static/uploads/products/
 
-<h5>
+   Older product pages may use:
+       /static/product_images/
 
-{{ item.product.name }}
+   Try the current path first, then the older path,
+   then the generic placeholder.
+   ========================================================= */
 
-</h5>
+function cartImageFallback(img){
 
-{% if item.variant_option %}
+    if(!img) return;
 
-<p class="text-muted">
+    const filename = img.getAttribute("data-product-image");
 
-Variant :
+    if(!filename){
+        showCartImagePlaceholder(img);
+        return;
+    }
 
-<b>
+    const attempts = parseInt(
+        img.getAttribute("data-image-attempt") || "0",
+        10
+    );
 
-{{ item.variant_option.value }}
+    if(attempts === 0){
 
-</b>
+        img.setAttribute("data-image-attempt","1");
 
-</p>
+        img.src =
+            "{{ url_for('static', filename='product_images/') }}" +
+            filename;
 
-{% endif %}
+        return;
+    }
 
-<h4 class="text-success">
+    if(attempts === 1){
 
-₹{{ item.price }}
+        img.setAttribute("data-image-attempt","2");
 
-</h4>
+        img.src =
+            "{{ url_for('static', filename='images/no-image.png') }}";
 
-<div class="d-flex align-items-center mt-3">
+        return;
+    }
 
-<a
-href="/cart/decrease/{{ item.id }}"
-class="btn btn-outline-secondary">
+    showCartImagePlaceholder(img);
+}
 
-−
 
-</a>
+function showCartImagePlaceholder(img){
 
-<span
-class="mx-3 fw-bold">
+    img.style.display = "none";
 
-{{ item.quantity }}
+    const placeholder =
+        img.parentElement.querySelector(".cart-image-error");
 
-</span>
+    if(placeholder){
+        placeholder.style.display = "flex";
+    }
+}
 
-<a
-href="/cart/increase/{{ item.id }}"
-class="btn btn-outline-secondary">
 
-+
+/* If the first/current image URL is already valid,
+   nothing happens. */
+document.addEventListener("DOMContentLoaded", function(){
 
-</a>
+    document
+        .querySelectorAll(".cart-product-image")
+        .forEach(function(img){
 
-<a
-href="/cart/remove/{{ item.id }}"
-class="btn btn-danger ms-4">
+            img.addEventListener("error", function(){
 
-Remove
+                cartImageFallback(this);
 
-</a>
+            });
 
-</div>
+        });
 
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-<div class="col-lg-4">
-
-<div class="card shadow">
-
-<div class="card-body">
-
-<h4>
-
-Price Details
-
-</h4>
-
-<hr>
-
-<p>
-
-Subtotal
-
-<span class="float-end">
-
-₹{{ total }}
-
-</span>
-
-</p>
-
-<p>
-
-Delivery
-
-<span class="float-end">
-
-Calculated at Checkout
-
-</span>
-
-</p>
-
-<hr>
-
-<h4>
-
-Total
-
-<span class="float-end">
-
-₹{{ total }}
-
-</span>
-
-</h4>
-
-<a
-href="/checkout"
-class="btn btn-success w-100 mt-4">
-
-Proceed To Checkout
-
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-{% else %}
-
-<div class="text-center py-5">
-
-<h3>
-
-Your Cart Is Empty
-
-</h3>
-
-<p>
-
-Add products to continue shopping.
-
-</p>
-
-<a
-href="/shop"
-class="btn btn-primary">
-
-Continue Shopping
-
-</a>
-
-</div>
-
-{% endif %}
-
-</div>
+});
+</script>
 
 {% endblock %}
