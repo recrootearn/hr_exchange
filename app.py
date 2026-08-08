@@ -14636,11 +14636,19 @@ def admin_reported_comments():
 @login_required
 def add_product():
 
+    # ==========================================
+    # DEFAULT SHOP CATEGORIES
+    # ==========================================
+
     create_default_shop_categories()
 
     categories = ProductCategory.query.filter_by(
         is_active=True
     ).all()
+
+    # ==========================================
+    # ADD PRODUCT
+    # ==========================================
 
     if request.method == "POST":
 
@@ -14670,11 +14678,11 @@ def add_product():
                 )
             ),
 
-            sale_price=float(
-                request.form["sale_price"]
-            )
-            if request.form.get("sale_price")
-            else None,
+            sale_price=(
+                float(request.form["sale_price"])
+                if request.form.get("sale_price")
+                else None
+            ),
 
             stock=int(
                 request.form.get(
@@ -14724,7 +14732,6 @@ def add_product():
             ),
 
             is_active=True
-
         )
 
         db.session.add(product)
@@ -14735,9 +14742,7 @@ def add_product():
         # PRODUCT IMAGES
         # ==========================================
 
-        images = request.files.getlist(
-            "images"
-        )
+        images = request.files.getlist("images")
 
         if len(images) > 5:
 
@@ -14751,42 +14756,59 @@ def add_product():
 
             return redirect(request.url)
 
+        # Allowed image extensions
+        allowed_extensions = {
+            "jpg",
+            "jpeg",
+            "png",
+            "webp"
+        }
+
         sort_order = 1
 
         for image in images:
 
-            if not image or image.filename == "":
+            if not image:
                 continue
 
-            if allowed_product_file(
-                image.filename
-            ):
+            if image.filename == "":
+                continue
 
-                ext = image.filename.rsplit(
-                    ".",
-                    1
-                )[1].lower()
+            # Check extension
+            if "." not in image.filename:
+                continue
 
-                filename = (
-                    f"{uuid.uuid4()}.{ext}"
+            ext = image.filename.rsplit(
+                ".",
+                1
+            )[1].lower()
+
+            if ext not in allowed_extensions:
+                continue
+
+            # Generate unique filename
+            filename = (
+                f"{uuid.uuid4()}.{ext}"
+            )
+
+            # Save image
+            image.save(
+                os.path.join(
+                    PRODUCT_UPLOAD_FOLDER,
+                    filename
                 )
+            )
 
-                image.save(
-                    os.path.join(
-                        PRODUCT_UPLOAD_FOLDER,
-                        filename
-                    )
+            # Save image record
+            db.session.add(
+                ProductImage(
+                    product_id=product.id,
+                    image=filename,
+                    sort_order=sort_order
                 )
+            )
 
-                db.session.add(
-                    ProductImage(
-                        product_id=product.id,
-                        image=filename,
-                        sort_order=sort_order
-                    )
-                )
-
-                sort_order += 1
+            sort_order += 1
 
         # ==========================================
         # PRODUCT VARIANTS
@@ -14812,15 +14834,19 @@ def add_product():
 
             for i in range(len(values)):
 
+                # Ignore empty options
                 if not values[i].strip():
                     continue
 
+                # Variant name
                 variant_name = (
                     names[i]
                     if i < len(names)
+                    and names[i].strip()
                     else "Option"
                 )
 
+                # Variant price
                 variant_price = (
                     float(prices[i])
                     if i < len(prices)
@@ -14828,6 +14854,7 @@ def add_product():
                     else float(product.price)
                 )
 
+                # Variant stock
                 variant_stock = (
                     int(stocks[i])
                     if i < len(stocks)
@@ -14837,13 +14864,22 @@ def add_product():
 
                 db.session.add(
                     ProductVariant(
+
                         product_id=product.id,
+
                         variant_name=variant_name,
-                        option_value=values[i],
+
+                        option_value=values[i].strip(),
+
                         price=variant_price,
+
                         stock=variant_stock
                     )
                 )
+
+        # ==========================================
+        # FINAL SAVE
+        # ==========================================
 
         db.session.commit()
 
@@ -14855,6 +14891,10 @@ def add_product():
         return redirect(
             "/shop/products"
         )
+
+    # ==========================================
+    # SHOW ADD PRODUCT PAGE
+    # ==========================================
 
     return render_template(
         "shop/add_product.html",
