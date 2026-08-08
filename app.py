@@ -32,6 +32,7 @@ from flask_mail import Mail, Message
 from flask import render_template
 from weasyprint import HTML, CSS
 from io import BytesIO
+from functools import wraps
 
 IST = ZoneInfo("Asia/Kolkata")
 
@@ -56,6 +57,7 @@ app = Flask(__name__)
 
 def admin_required(f):
     @login_required
+    @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_admin:
             return "Access Denied", 403
