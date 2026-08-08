@@ -2486,7 +2486,6 @@ class CartItem(db.Model):
 
     variant_option = db.relationship(
         "ProductVariantOption",
-        backref="cart_items"
     )
 
 class ProductVariant(db.Model):
