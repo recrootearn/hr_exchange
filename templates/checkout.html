@@ -2,253 +2,892 @@
 
 {% block content %}
 
-<div class="container py-4">
+<style>
+/* =========================================================
+   RECROOTEARN CHECKOUT
+   Modern UI + true edge-to-edge mobile override
+   ========================================================= */
 
-<h2 class="mb-4">
+html, body{
+    margin:0 !important;
+    padding:0 !important;
+    overflow-x:hidden !important;
+}
 
-Checkout
+.content,
+main,
+.main-content{
+    margin:0 !important;
+    padding:0 !important;
+    background:#f5f7fb !important;
+}
 
-</h2>
+.checkout-page{
+    width:100%;
+    min-height:100vh;
+    box-sizing:border-box;
+    padding:26px 20px 55px;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(37,99,235,.09), transparent 28%),
+        linear-gradient(180deg,#f8faff 0%,#f5f7fb 100%);
+}
 
-<div class="row">
+.checkout-shell{
+    width:100%;
+    max-width:1160px;
+    margin:0 auto;
+}
 
-<div class="col-lg-8">
+/* Header */
+.checkout-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    margin-bottom:22px;
+}
 
-<div class="card mb-4">
+.checkout-eyebrow{
+    color:#2563eb;
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:1.3px;
+    text-transform:uppercase;
+    margin-bottom:6px;
+}
 
-<div class="card-header">
+.checkout-title{
+    margin:0;
+    color:#111827;
+    font-size:clamp(27px,4vw,38px);
+    line-height:1.1;
+    font-weight:900;
+}
 
-<h5>
+.checkout-subtitle{
+    margin:7px 0 0;
+    color:#6b7280;
+    font-size:14px;
+}
 
-Select Delivery Address
+.checkout-back{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:11px 15px;
+    border-radius:13px;
+    background:#fff;
+    color:#2563eb !important;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:800;
+    border:1px solid #e5eaf3;
+    box-shadow:0 5px 18px rgba(15,23,42,.06);
+    white-space:nowrap;
+}
 
-</h5>
+/* Layout */
+.checkout-layout{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 370px;
+    gap:20px;
+    align-items:start;
+}
+
+/* Cards */
+.checkout-card{
+    background:#fff;
+    border:1px solid #e7ebf2;
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow:0 10px 32px rgba(15,23,42,.07);
+    margin-bottom:18px;
+}
+
+.checkout-card:last-child{
+    margin-bottom:0;
+}
+
+.checkout-card-header{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:17px 20px;
+    border-bottom:1px solid #edf0f5;
+}
+
+.checkout-card-icon{
+    width:38px;
+    height:38px;
+    border-radius:11px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#eef4ff;
+    color:#2563eb;
+    flex:none;
+}
+
+.checkout-card-header h3{
+    margin:0;
+    color:#172033;
+    font-size:17px;
+    font-weight:900;
+}
+
+.checkout-card-body{
+    padding:20px;
+}
+
+/* Address */
+.address-option{
+    position:relative;
+    display:flex;
+    gap:13px;
+    padding:15px;
+    margin-bottom:11px;
+    border:1px solid #e1e7f0;
+    border-radius:15px;
+    background:#fff;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.address-option:hover{
+    border-color:#b8cdfb;
+    background:#f9fbff;
+}
+
+.address-option:has(input:checked){
+    border-color:#2563eb;
+    background:#f5f8ff;
+    box-shadow:0 0 0 2px rgba(37,99,235,.08);
+}
+
+.address-radio{
+    flex:none;
+    margin-top:3px;
+}
+
+.address-content{
+    min-width:0;
+    color:#4b5563;
+    font-size:13px;
+    line-height:1.65;
+}
+
+.address-name{
+    color:#172033;
+    font-size:15px;
+    font-weight:900;
+    margin-bottom:2px;
+}
+
+.address-mobile{
+    color:#2563eb;
+    font-weight:700;
+}
+
+.add-address-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:4px;
+    padding:10px 14px;
+    border:1px solid #2563eb;
+    border-radius:12px;
+    color:#2563eb !important;
+    background:#fff;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:800;
+}
+
+/* Order items */
+.order-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    padding:13px 0;
+    border-bottom:1px solid #edf0f5;
+}
+
+.order-item:first-child{
+    padding-top:0;
+}
+
+.order-item:last-child{
+    border-bottom:0;
+    padding-bottom:0;
+}
+
+.order-item-info{
+    min-width:0;
+}
+
+.order-item-name{
+    color:#172033;
+    font-size:14px;
+    font-weight:800;
+    overflow-wrap:anywhere;
+}
+
+.order-item-meta{
+    color:#7b8493;
+    font-size:12px;
+    margin-top:4px;
+}
+
+.order-item-price{
+    color:#172033;
+    font-size:14px;
+    font-weight:900;
+    white-space:nowrap;
+}
+
+/* Price summary */
+.summary-card{
+    position:sticky;
+    top:18px;
+}
+
+.summary-body{
+    padding:20px;
+}
+
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:14px;
+    color:#5b6473;
+    font-size:14px;
+}
+
+.summary-row strong{
+    color:#172033;
+    font-weight:800;
+}
+
+.delivery-price{
+    color:#172033;
+    font-weight:800;
+}
+
+.summary-divider{
+    border:0;
+    border-top:1px solid #edf0f5;
+    margin:18px 0;
+}
+
+.total-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    color:#111827;
+    font-size:18px;
+    font-weight:900;
+}
+
+.total-amount{
+    color:#16a34a;
+    font-size:26px;
+}
+
+.pay-button{
+    width:100%;
+    min-height:54px;
+    margin-top:20px;
+    border:0;
+    border-radius:15px;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff;
+    font-size:15px;
+    font-weight:900;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    box-shadow:0 9px 23px rgba(37,99,235,.25);
+    transition:.2s;
+    cursor:pointer;
+}
+
+.pay-button:hover{
+    transform:translateY(-1px);
+    box-shadow:0 12px 28px rgba(37,99,235,.32);
+}
+
+.pay-button:active{
+    transform:scale(.98);
+}
+
+.secure-note{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    color:#7b8493;
+    font-size:11px;
+    margin-top:13px;
+}
+
+/* Step indicator */
+.checkout-steps{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:20px;
+}
+
+.checkout-step{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    color:#2563eb;
+    font-size:11px;
+    font-weight:900;
+}
+
+.checkout-step-number{
+    width:25px;
+    height:25px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#2563eb;
+    color:#fff;
+}
+
+.checkout-step-line{
+    width:32px;
+    height:1px;
+    background:#cbd5e1;
+}
+
+/* Mobile */
+@media(max-width:991.98px){
+    .checkout-page{
+        padding:20px 14px 45px;
+    }
+
+    .checkout-layout{
+        grid-template-columns:1fr;
+    }
+
+    .summary-card{
+        position:static;
+    }
+}
+
+@media(max-width:575.98px){
+
+    /* Aggressively override base.html / Bootstrap wrappers */
+    html,
+    body{
+        width:100% !important;
+        max-width:100% !important;
+        margin:0 !important;
+        padding:0 !important;
+    }
+
+    .content,
+    main,
+    .main-content,
+    .container,
+    .container-fluid{
+        width:100% !important;
+        max-width:none !important;
+        margin-left:0 !important;
+        margin-right:0 !important;
+        padding-left:0 !important;
+        padding-right:0 !important;
+    }
+
+    .checkout-page{
+        width:100vw !important;
+        max-width:100vw !important;
+        min-height:100vh;
+        margin:0 !important;
+        padding:13px 0 30px !important;
+    }
+
+    .checkout-shell{
+        width:100% !important;
+        max-width:none !important;
+        margin:0 !important;
+    }
+
+    .checkout-header{
+        padding:0 14px;
+        margin-bottom:13px;
+    }
+
+    .checkout-title{
+        font-size:27px;
+    }
+
+    .checkout-eyebrow{
+        font-size:10px;
+    }
+
+    .checkout-subtitle{
+        font-size:12px;
+    }
+
+    .checkout-back{
+        padding:9px 11px;
+        font-size:11px;
+    }
+
+    .checkout-steps{
+        padding:0 14px;
+        margin-bottom:12px;
+    }
+
+    .checkout-step{
+        font-size:9px;
+    }
+
+    .checkout-step-number{
+        width:23px;
+        height:23px;
+    }
+
+    .checkout-step-line{
+        width:20px;
+    }
+
+    .checkout-card{
+        border-radius:0 !important;
+        border-left:0 !important;
+        border-right:0 !important;
+        box-shadow:none !important;
+        margin-bottom:9px;
+    }
+
+    .checkout-card-header{
+        padding:14px;
+    }
+
+    .checkout-card-body,
+    .summary-body{
+        padding:14px;
+    }
+
+    .address-option{
+        padding:13px;
+        border-radius:13px;
+    }
+
+    .address-content{
+        font-size:12px;
+    }
+
+    .address-name{
+        font-size:14px;
+    }
+
+    .order-item{
+        padding:12px 0;
+    }
+
+    .order-item-name{
+        font-size:13px;
+    }
+
+    .order-item-price{
+        font-size:13px;
+    }
+
+    .summary-card{
+        margin-top:9px;
+    }
+
+    .total-amount{
+        font-size:23px;
+    }
+
+    .pay-button{
+        min-height:52px;
+        margin-top:18px;
+    }
+}
+</style>
+
+
+<div class="checkout-page">
+
+    <div class="checkout-shell">
+
+        <!-- HEADER -->
+
+        <div class="checkout-header">
+
+            <div>
+                <div class="checkout-eyebrow">
+                    RecrootEarn Shop
+                </div>
+
+                <h1 class="checkout-title">
+                    Checkout
+                </h1>
+
+                <p class="checkout-subtitle">
+                    Confirm your delivery details and order.
+                </p>
+            </div>
+
+            <a href="/cart" class="checkout-back">
+                <i class="fas fa-arrow-left"></i>
+                Cart
+            </a>
+
+        </div>
+
+
+        <!-- STEPS -->
+
+        <div class="checkout-steps">
+
+            <div class="checkout-step">
+                <span class="checkout-step-number">1</span>
+                Cart
+            </div>
+
+            <div class="checkout-step-line"></div>
+
+            <div class="checkout-step">
+                <span class="checkout-step-number">2</span>
+                Address
+            </div>
+
+            <div class="checkout-step-line"></div>
+
+            <div class="checkout-step">
+                <span class="checkout-step-number">3</span>
+                Payment
+            </div>
+
+        </div>
+
+
+        <div class="checkout-layout">
+
+
+            <!-- LEFT -->
+
+            <div>
+
+
+                <!-- DELIVERY ADDRESS -->
+
+                <div class="checkout-card">
+
+                    <div class="checkout-card-header">
+
+                        <div class="checkout-card-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+
+                        <h3>
+                            Select Delivery Address
+                        </h3>
+
+                    </div>
+
+
+                    <div class="checkout-card-body">
+
+                        {% for address in addresses %}
+
+                        <label class="address-option">
+
+                            <input
+                                class="form-check-input address-radio"
+                                type="radio"
+                                name="address"
+                                value="{{ address.id }}"
+                                {% if loop.first %}
+                                checked
+                                {% endif %}>
+
+                            <div class="address-content">
+
+                                <div class="address-name">
+
+                                    {{ address.full_name }}
+
+                                </div>
+
+                                {{ address.address_line1 }}
+
+                                {% if address.address_line2 %}
+                                    <br>
+                                    {{ address.address_line2 }}
+                                {% endif %}
+
+                                <br>
+
+                                {{ address.city }},
+                                {{ address.state }}
+                                -
+                                {{ address.pincode }}
+
+                                <br>
+
+                                <span class="address-mobile">
+                                    <i class="fas fa-phone-alt"></i>
+                                    {{ address.mobile }}
+                                </span>
+
+                            </div>
+
+                        </label>
+
+                        {% endfor %}
+
+
+                        <a
+                            href="/address/add"
+                            class="add-address-btn">
+
+                            <i class="fas fa-plus"></i>
+
+                            Add New Address
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ORDER SUMMARY -->
+
+                <div class="checkout-card">
+
+                    <div class="checkout-card-header">
+
+                        <div class="checkout-card-icon">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+
+                        <h3>
+                            Order Summary
+                        </h3>
+
+                    </div>
+
+
+                    <div class="checkout-card-body">
+
+                        {% for item in cart.items %}
+
+                        <div class="order-item">
+
+                            <div class="order-item-info">
+
+                                <div class="order-item-name">
+
+                                    {{ item.product.name }}
+
+                                </div>
+
+                                <div class="order-item-meta">
+
+                                    Qty: {{ item.quantity }}
+
+                                    {% if item.variant_option %}
+
+                                    · {{ item.variant_option.value }}
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="order-item-price">
+
+                                ₹{{ item.price * item.quantity }}
+
+                            </div>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- RIGHT -->
+
+            <div>
+
+                <div class="checkout-card summary-card">
+
+                    <div class="checkout-card-header">
+
+                        <div class="checkout-card-icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+
+                        <h3>
+                            Price Details
+                        </h3>
+
+                    </div>
+
+
+                    <div class="summary-body">
+
+                        <div class="summary-row">
+
+                            <span>
+                                Subtotal
+                            </span>
+
+                            <strong>
+                                ₹{{ subtotal }}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-row">
+
+                            <span>
+                                Delivery
+                            </span>
+
+                            <span class="delivery-price">
+                                ₹{{ shipping_charge }}
+                            </span>
+
+                        </div>
+
+
+                        <hr class="summary-divider">
+
+
+                        <div class="total-row">
+
+                            <span>
+                                Total
+                            </span>
+
+                            <span class="total-amount">
+                                ₹{{ total }}
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            id="payButton"
+                            type="button"
+                            class="pay-button">
+
+                            <i class="fas fa-lock"></i>
+
+                            Continue To Payment
+
+                            <i class="fas fa-arrow-right"></i>
+
+                        </button>
+
+
+                        <div class="secure-note">
+
+                            <i class="fas fa-shield-alt"></i>
+
+                            Secure payment powered by Razorpay
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
-<div class="card-body">
 
-{% for address in addresses %}
-
-<div class="form-check mb-3">
-
-<input
-class="form-check-input"
-type="radio"
-name="address"
-value="{{ address.id }}"
-{% if loop.first %}
-checked
-{% endif %}>
-
-<label class="form-check-label">
-
-<b>
-
-{{ address.full_name }}
-
-</b>
-
-<br>
-
-{{ address.address_line1 }}
-
-{{ address.address_line2 }}
-
-<br>
-
-{{ address.city }}
-
-{{ address.state }}
-
-{{ address.pincode }}
-
-<br>
-
-{{ address.mobile }}
-
-</label>
-
-</div>
-
-{% endfor %}
-
-<a
-href="/address/add"
-class="btn btn-outline-primary">
-
-Add New Address
-
-</a>
-
-</div>
-
-</div>
-
-<div class="card">
-
-<div class="card-header">
-
-Order Summary
-
-</div>
-
-<div class="card-body">
-
-{% for item in cart.items %}
-
-<div class="d-flex justify-content-between mb-3">
-
-<div>
-
-<b>
-
-{{ item.product.name }}
-
-</b>
-
-<br>
-
-Qty : {{ item.quantity }}
-
-{% if item.variant_option %}
-
-<br>
-
-{{ item.variant_option.value }}
-
-{% endif %}
-
-</div>
-
-<div>
-
-₹{{ item.price * item.quantity }}
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
-</div>
-
-<div class="col-lg-4">
-
-<div class="card">
-
-<div class="card-body">
-
-<h5>
-
-Price Details
-
-</h5>
-
-<hr>
-
-<p>
-
-Subtotal
-
-<span class="float-end">
-
-₹{{ subtotal }}
-
-</span>
-
-</p>
-
-<p>
-
-Delivery
-
-<span class="float-end">
-
-₹{{ shipping_charge }}
-
-</span>
-
-</p>
-
-<hr>
-
-<h4>
-
-Total
-
-<span class="float-end">
-
-₹{{ total }}
-
-</span>
-
-</h4>
-
-<button
-id="payButton"
-class="btn btn-success w-100 mt-3">
-
-Continue To Payment
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
+<!-- RAZORPAY -->
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
+<script>
+
 document
-.getElementById("payButton")
-.onclick=function(){
+    .getElementById("payButton")
+    .onclick = function(){
 
-fetch("/create-marketplace-order",{
+        fetch("/create-marketplace-order",{
 
-method:"POST"
+            method:"POST"
 
-})
+        })
 
-.then(r=>r.json())
+        .then(function(r){
 
-.then(function(order){
+            return r.json();
 
-var options={
+        })
 
-key:"YOUR_KEY",
+        .then(function(order){
 
-amount:order.amount,
+            var options = {
 
-currency:"INR",
+                key:"YOUR_KEY",
 
-name:"RecrootEarn",
+                amount:order.amount,
 
-description:"Marketplace Order",
+                currency:"INR",
 
-order_id:order.id,
+                name:"RecrootEarn",
 
-handler:function(response){
+                description:"Marketplace Order",
 
-window.location="/marketplace-payment-success?payment_id="+response.razorpay_payment_id+"&order_id="+response.razorpay_order_id+"&signature="+response.razorpay_signature;
+                order_id:order.id,
 
-}
+                handler:function(response){
 
-};
+                    window.location =
+                        "/marketplace-payment-success" +
+                        "?payment_id=" +
+                        response.razorpay_payment_id +
+                        "&order_id=" +
+                        response.razorpay_order_id +
+                        "&signature=" +
+                        response.razorpay_signature;
 
-new Razorpay(options).open();
+                }
 
-});
+            };
 
-};
+            new Razorpay(options).open();
+
+        });
+
+    };
+
+</script>
 
 {% endblock %}
