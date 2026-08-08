@@ -306,6 +306,191 @@
     transform:scale(1.05);
 }
 
+
+/* =========================
+   POSTS | SHOP TABS
+   ========================= */
+
+.profile-content-tabs{
+    margin-top:15px;
+    display:flex;
+    width:100%;
+    background:#fff;
+    border-radius:16px 16px 0 0;
+    border-bottom:1px solid #e5e7eb;
+    overflow:hidden;
+}
+
+.profile-tab{
+    flex:1;
+    border:0;
+    background:#fff;
+    color:#6b7280;
+    padding:15px 10px;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:.5px;
+    cursor:pointer;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:.2s;
+}
+
+.profile-tab.active{
+    color:#2563eb;
+}
+
+.profile-tab.active::after{
+    content:"";
+    position:absolute;
+    bottom:0;
+    left:15%;
+    right:15%;
+    height:3px;
+    background:#2563eb;
+    border-radius:5px 5px 0 0;
+}
+
+.profile-tab-content{
+    display:none;
+}
+
+.profile-tab-content.active{
+    display:block;
+}
+
+.profile-tab-content .post-grid{
+    margin-top:0;
+    border-radius:0 0 16px 16px;
+    overflow:hidden;
+}
+
+/* Shop product grid */
+.shop-profile-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    background:#f5f7fb;
+    padding:10px;
+}
+
+.shop-profile-product{
+    display:block;
+    background:#fff;
+    border-radius:14px;
+    overflow:hidden;
+    text-decoration:none;
+    color:inherit;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    transition:.2s;
+}
+
+.shop-profile-product:hover{
+    transform:translateY(-2px);
+}
+
+.shop-product-image{
+    width:100%;
+    aspect-ratio:1/1;
+    background:#f1f5f9;
+    overflow:hidden;
+}
+
+.shop-product-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.shop-product-placeholder{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#94a3b8;
+    font-size:35px;
+}
+
+.shop-product-info{
+    padding:10px;
+}
+
+.shop-product-name{
+    font-size:14px;
+    font-weight:600;
+    color:#111827;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.shop-product-price{
+    margin-top:5px;
+    font-size:15px;
+    font-weight:800;
+    color:#2563eb;
+}
+
+.shop-product-price span{
+    margin-left:5px;
+    color:#9ca3af;
+    font-size:12px;
+    font-weight:500;
+    text-decoration:line-through;
+}
+
+.shop-empty{
+    background:#fff;
+    text-align:center;
+    padding:60px 20px;
+    border-radius:0 0 16px 16px;
+}
+
+.shop-empty i{
+    font-size:55px;
+    color:#2563eb;
+    margin-bottom:15px;
+}
+
+.shop-empty h4{
+    font-weight:700;
+    margin-bottom:7px;
+}
+
+.shop-empty p{
+    color:#6b7280;
+    margin-bottom:0;
+}
+
+@media(max-width:768px){
+    .profile-tab{
+        padding:14px 8px;
+        font-size:13px;
+    }
+
+    .shop-profile-grid{
+        grid-template-columns:repeat(2,1fr);
+        gap:8px;
+        padding:8px;
+    }
+
+    .shop-product-info{
+        padding:8px;
+    }
+
+    .shop-product-name{
+        font-size:13px;
+    }
+
+    .shop-product-price{
+        font-size:14px;
+    }
+}
+
 </style>
 
 <div class="insta-profile">
@@ -500,14 +685,29 @@ Gumasta
 
 </div>
 
-<div class="posts-tab">
+<div class="profile-content-tabs">
 
-<i class="fas fa-th"></i>
+    <button type="button"
+            class="profile-tab active"
+            data-tab="posts"
+            onclick="switchProfileTab('posts')">
+        <i class="fas fa-th"></i>
+        <span>Posts</span>
+    </button>
 
-POSTS
+    {% if current_user.is_verified_seller or products_count > 0 %}
+    <button type="button"
+            class="profile-tab"
+            data-tab="shop"
+            onclick="switchProfileTab('shop')">
+        <i class="fas fa-store"></i>
+        <span>Shop</span>
+    </button>
+    {% endif %}
 
 </div>
 
+<div id="profile-posts" class="profile-tab-content active">
 <div class="post-grid">
 
 {% for job in jobs %}
@@ -615,7 +815,82 @@ class="btn btn-primary mt-2">
 {% endfor %}
 
 </div>
+</div>
+
+{% if current_user.is_verified_seller or products_count > 0 %}
+<div id="profile-shop" class="profile-tab-content">
+
+    {% if products %}
+    <div class="shop-profile-grid">
+
+        {% for product in products %}
+        <a href="/product/{{ product.id }}" class="shop-profile-product">
+
+            <div class="shop-product-image">
+                {% if product.images and product.images|length > 0 %}
+                    <img src="/static/uploads/{{ product.images[0].image }}"
+                         alt="{{ product.name }}"
+                         loading="lazy">
+                {% else %}
+                    <div class="shop-product-placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="shop-product-info">
+                <div class="shop-product-name">{{ product.name }}</div>
+
+                <div class="shop-product-price">
+                    {% if product.sale_price %}
+                        ₹{{ "%.0f"|format(product.sale_price) }}
+                        <span>₹{{ "%.0f"|format(product.price) }}</span>
+                    {% else %}
+                        ₹{{ "%.0f"|format(product.price) }}
+                    {% endif %}
+                </div>
+            </div>
+
+        </a>
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+    <div class="shop-empty">
+        <i class="fas fa-store"></i>
+        <h4>No Products Yet</h4>
+        <p>Add products to start selling from your shop.</p>
+
+        <a href="/shop/add-product" class="btn btn-primary mt-2">
+            + Add Product
+        </a>
+    </div>
+    {% endif %}
 
 </div>
+{% endif %}
+
+</div>
+
+<script>
+function switchProfileTab(tab) {
+    document.querySelectorAll('.profile-tab').forEach(function(button) {
+        button.classList.toggle(
+            'active',
+            button.getAttribute('data-tab') === tab
+        );
+    });
+
+    document.querySelectorAll('.profile-tab-content').forEach(function(content) {
+        content.classList.remove('active');
+    });
+
+    var selected = document.getElementById('profile-' + tab);
+    if (selected) {
+        selected.classList.add('active');
+    }
+}
+</script>
 
 {% endblock %}
