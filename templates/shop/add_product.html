@@ -1,1491 +1,1150 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
+{% block title %}Add Product{% endblock %}
 
-    <meta charset="UTF-8">
+{% block content %}
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>RecrootEarn</title>
-
-    <!-- BOOTSTRAP -->
-
-    <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet">
-
-    <!-- FONT AWESOME -->
-
-    <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- AOS -->
-
-    <link
-    href="https://unpkg.com/aos@2.3.4/dist/aos.css"
-    rel="stylesheet">
 
 <style>
-
-/* GLOBAL */
-
-body{
-
-    margin:0;
-    background:#f4f5f7;
-    font-family:Arial, sans-serif;
-    overflow-x:hidden;
+/* ===== RecrootEarn Add Product UI ===== */
+.add-product-page{
+    --ap-blue:#2563eb;
+    --ap-blue-dark:#1748c7;
+    --ap-bg:#f5f7fb;
+    --ap-card:#fff;
+    --ap-text:#111827;
+    --ap-muted:#6b7280;
+    --ap-border:#e5e7eb;
+    margin:-16px -12px 0;
+    padding-bottom:100px;
+    background:var(--ap-bg);
+    min-height:100vh;
 }
-
-/* PAGE ANIMATION */
-
-.page-transition{
-    animation: pageEnter .22s ease-out;
+.ap-hero{
+    background:linear-gradient(135deg,#0b5ed7,#2563eb 55%,#4f46e5);
+    color:#fff;
+    padding:20px 16px 24px;
+    border-radius:0 0 24px 24px;
 }
-
-@keyframes pageEnter{
-    from{
-        opacity:0;
-        transform:translateY(12px);
-    }
-
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
+.ap-hero-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ap-hero h1{margin:0;font-size:24px;font-weight:900;letter-spacing:-.5px}
+.ap-hero p{margin:4px 0 0;font-size:12px;opacity:.86}
+.ap-hero-icon{width:48px;height:48px;border-radius:15px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:20px}
+.ap-wrap{padding:14px 12px 0}
+.ap-card{
+    background:var(--ap-card)!important;
+    border:1px solid #edf0f5!important;
+    border-radius:18px!important;
+    box-shadow:0 5px 18px rgba(15,23,42,.06)!important;
+    overflow:hidden;
 }
-
-/* SPLASH SCREEN */
-
-#loader{
-
-    position:fixed;
-
-    width:100%;
-
-    height:100vh;
-
-    background:white;
-
-    z-index:99999;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    transition:0.5s;
+.ap-card .card-header{
+    background:#fff!important;
+    border-bottom:1px solid #eef1f5!important;
+    padding:14px 16px!important;
 }
-
-.loader-content{
-    text-align:center;
+.ap-card .card-header h4,.ap-card .card-header h5{
+    margin:0!important;
+    color:var(--ap-text);
+    font-weight:850;
 }
-
-.loader-content h1{
-
-    font-size:48px;
-
-    font-weight:bold;
-
-    color:#2563eb;
+.ap-card .card-header i{color:var(--ap-blue);margin-right:7px}
+.ap-card .card-body{padding:16px!important}
+.add-product-page label{font-weight:700;color:#374151;font-size:13px;margin-bottom:7px}
+.add-product-page .form-control,
+.add-product-page .form-select{
+    min-height:45px;
+    border-radius:12px!important;
+    border:1px solid #dfe3ea!important;
+    box-shadow:none!important;
 }
-
-.loader-content p{
-
-    color:#6b7280;
-
-    font-size:16px;
+.add-product-page textarea.form-control{min-height:auto}
+.add-product-page .form-control:focus,
+.add-product-page .form-select:focus{
+    border-color:#7aa2ff!important;
+    box-shadow:0 0 0 3px rgba(37,99,235,.10)!important;
 }
-
-/* SIDEBAR */
-
-.sidebar{
-
-    width:260px;
-    height:100vh;
-
-    position:fixed;
-
-    background:linear-gradient(
-    180deg,
-    #111827,
-    #1d4ed8
-    );
-
-    padding:20px;
-
-    overflow-y:auto;
-
-    z-index:9999;
+.ap-required{color:#ef4444}
+.ap-image-box{
+    border:2px dashed #bfdbfe;
+    background:#f8fbff;
+    border-radius:16px;
+    padding:16px;
 }
-
-.sidebar-logo{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    margin-bottom:25px;
-    padding-top:5px;
-}
-
-.sidebar-logo img{
-    width:150px;
-    height:auto;
-    display:block;
-}
-
-@media(max-width:768px){
-
-    .sidebar-logo{
-        margin-top:8px;
-        margin-bottom:20px;
-    }
-
-    .sidebar-logo img{
-        width:120px;
-    }
-
-}
-
-.sidebar a{
-
-    display:flex;
-    align-items:center;
-    gap:12px;
-
-    color:white;
-    text-decoration:none;
-
-    padding:14px;
-
-    border-radius:12px;
-
-    margin-bottom:10px;
-
-    transition:0.3s;
-
-    font-size:15px;
-    font-weight:600;
-}
-
-.sidebar a:hover{
-
-    background:rgba(255,255,255,0.15);
-    transform:translateX(5px);
-}
-
-/* MAIN */
-
-.main{
-    margin-left:260px;
-}
-
-.topbar{
-
-    background:white;
-
-    padding:20px 30px;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    box-shadow:0 2px 10px rgba(0,0,0,0.08);
-
+.ap-preview img{height:105px!important;border-radius:12px!important;object-fit:cover}
+.ap-upload-note{font-size:11px;color:#64748b;margin-top:7px}
+.ap-submit-wrap{
     position:sticky;
-
-    top:0;
-
-    z-index:100;
+    bottom:8px;
+    z-index:20;
+    padding:10px 0;
 }
-
-.welcome{
-
-    font-size:32px;
-    font-weight:bold;
-}
-
-.credit-box{
-
-    background:linear-gradient(
-    135deg,
-    #2563eb,
-    #7c3aed
-    );
-
-    color:white;
-
-    padding:12px 22px;
-
-    border-radius:14px;
-
-    font-weight:bold;
-
-    box-shadow:0 10px 20px rgba(37,99,235,0.25);
-}
-
-.content{
-
-    padding:30px;
-}
-
-/* CARD UI */
-
-.stats-card,
-.candidate-card,
-.filter-box{
-
-    background:white;
-
-    border-radius:24px;
-
-    padding:20px;
-
-    margin-bottom:20px;
-
-    box-shadow:0 6px 18px rgba(0,0,0,0.08);
-
-    transition:0.3s;
-}
-
-.stats-card:hover,
-.candidate-card:hover{
-
-    transform:translateY(-2px);
-}
-
-/* CANDIDATE TOP */
-
-.candidate-top{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:flex-start;
-
-    margin-bottom:16px;
-}
-
-/* PROFILE */
-
-.candidate-profile{
-
-    display:flex;
-
-    align-items:flex-start;
-
-    gap:14px;
-}
-
-/* AVATAR */
-
-.avatar{
-
-    width:62px;
-    height:62px;
-
-    border-radius:20px;
-
-    background:linear-gradient(
-    135deg,
-    #2563eb,
-    #7c3aed
-    );
-
-    color:white;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    font-size:24px;
-    font-weight:700;
-
-    flex-shrink:0;
-}
-
-/* TEXT */
-
-.candidate-name{
-
-    font-size:22px;
-    font-weight:700;
-    color:#111827;
-}
-
-.candidate-role{
-
-    color:#6b7280;
-    font-size:14px;
-    margin-top:2px;
-    text-transform:uppercase;
-}
-
-/* DETAILS */
-
-.candidate-details{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:10px;
-
-    margin-top:16px;
-}
-
-/* PILLS */
-
-.detail-pill{
-
-    background:#f3f4f6;
-
-    border-radius:30px;
-
-    padding:9px 14px;
-
-    font-size:13px;
-
-    color:#111827;
-
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
-
-/* BUTTONS */
-
-.action-buttons{
-
-    margin-top:18px;
-
-    display:flex;
-
-    gap:10px;
-
-    flex-wrap:wrap;
-}
-
-.action-buttons .btn{
-
-    border-radius:14px;
-
-    font-weight:600;
-
-    padding:10px 16px;
-}
-
-/* BADGE */
-
-.badge-custom{
-
-    border-radius:14px;
-
-    padding:8px 14px;
-
-    font-size:12px;
-}
-
-/* MOBILE */
-
-.mobile-topbar{
-    display:none;
-}
-
-.mobile-overlay{
-    display:none;
-}
-
-.bottom-nav{
-    display:none;
-}
-
-.candidate-desktop-menu{
-    display:block;
-}
-
-/* MOBILE RESPONSIVE */
-
-@media(max-width:768px){
-
-    .sidebar{
-
-        left:-280px;
-
-        top:0;
-
-        transition:0.3s ease;
-    }
-
-    .candidate-desktop-menu{
-        display:none;
-    }
-
-    .sidebar.active{
-        left:0;
-    }
-
-    .mobile-overlay{
-
-        position:fixed;
-
-        width:100%;
-        height:100vh;
-
-        background:rgba(0,0,0,0.45);
-
-        z-index:9998;
-
-        display:none;
-    }
-
-    .mobile-overlay.active{
-        display:block;
-    }
-
-    .mobile-topbar{
-        position:fixed;
-        top:0;
-        left:0;
-        width:100%;
-        height:60px;
-
-        background:#0b5ed7;
-
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-
-        padding:0 18px;
-
-        z-index:9999;
-
-        box-shadow:0 2px 10px rgba(0,0,0,.08);
-    }
-
-    .menu-btn{
-
-        border:none;
-        background:none;
-
-        font-size:22px;
-        color:white;
-    }
-
-    .mobile-logo{
-        position:absolute;
-        left:50%;
-        transform:translateX(-50%);
-
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .mobile-logo img{
-        height:55px;
-        width:auto;
-        object-fit:contain;
-    }
-
-    .mobile-credit{
-
-        background:#2563eb;
-
-        color:white;
-
-        padding:5px 12px;
-
-        border-radius:20px;
-
-        font-size:12px;
-        font-weight:700;
-    }
-
-    .main{
-
-        margin-left:0;
-
-        padding-top:65px;
-    }
-
-    .topbar{
-        display:none;
-    }
-
-    .content{
-        padding:14px;
-        padding-bottom:120px;
-    }
-
-    .stats-card,
-    .candidate-card,
-    .filter-box{
-
-        padding:16px;
-
-        border-radius:20px;
-    }
-
-    .candidate-name{
-        font-size:18px;
-    }
-
-    .candidate-role{
-        font-size:13px;
-    }
-
-    .detail-pill{
-
-        font-size:12px;
-
-        padding:6px 12px;
-    }
-
-    .avatar{
-
-        width:54px;
-        height:54px;
-
-        font-size:20px;
-    }
-
-    /* BOTTOM NAV */
-
-    /* BOTTOM NAV - SLICE STYLE */
-
-.bottom-nav{
-    position:fixed;
-    bottom:15px;
-    left:50%;
-    transform:translateX(-50%);
-    width:95%;
-    max-width:450px;
-
-    background:#2563eb;
-
-    border-radius:40px;
-
-    padding:10px;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    z-index:9999;
-
-    box-shadow:0 8px 25px rgba(0,0,0,.15);
-
-    transition:transform .30s ease;
-}
-
-.bottom-nav.hide{
-    transform:translateX(-50%) translateY(120px);
-}
-
-.nav-btn{
-    width:44px;
-    height:44px;
-
-    border-radius:25px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    color:white;
-    text-decoration:none;
-
-    transition:.3s;
-}
-
-.nav-btn span{
-    display:none;
-}
-
-.nav-btn.active{
-    width:auto;
-    padding:0 18px;
-    background:white;
-    color:#2563eb;
-    gap:8px;
-}
-
-.nav-btn.active span{
-    display:block;
-    font-size:14px;
-    font-weight:700;
-}
-
-.nav-btn i{
-    font-size:18px;
-}
-
-.candidate-card{
-
-    background:white !important;
-
-    border-radius:24px !important;
-
-    padding:18px !important;
-
-    margin-bottom:20px !important;
-
-    box-shadow:0 4px 18px rgba(0,0,0,0.08) !important;
-
-    display:block !important;
-}
-
-.action-buttons{
-
-    display:flex !important;
-
-    gap:10px !important;
-
-    flex-wrap:wrap !important;
-
-    margin-top:18px !important;
-}
-
-.candidate-profile{
-
-    display:flex !important;
-
-    align-items:flex-start !important;
-
-    gap:14px !important;
-}
-
-.candidate-details{
-
-    display:flex !important;
-
-    flex-wrap:wrap !important;
-
-    gap:10px !important;
-
-    margin-top:16px !important;
-}
-
-@media(max-width:768px){
-
-    .candidate-card{
-
-        padding:16px !important;
-
-        border-radius:22px !important;
-    }
-
-}
-
-@media(max-width:768px){
-
-    .mobile-hide-hr{
-        display:none !important;
-    }
-
-}
-
-.content{
-    animation: contentFade .18s ease;
-}
-
-.flash-overlay{
-
-    position:fixed;
-    inset:0;
-
-    background:rgba(0,0,0,.45);
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    z-index:999999;
-
-    animation:fadeFlash .25s ease;
-
-}
-
-.flash-box{
-
-    position:relative;
-
-    width:92%;
-    max-width:360px;
-
-    background:#fff;
-
-    border-radius:24px;
-
-    padding:28px 24px;
-
-    text-align:center;
-
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-
-    box-shadow:0 20px 45px rgba(0,0,0,.25);
-
-    animation:popupFlash .28s ease;
-
-}
-
-.flash-close{
-
-    position:absolute;
-
-    top:14px;
-    right:14px;
-
-    width:36px;
-    height:36px;
-
-    border:none;
-
-    background:#f3f4f6;
-
-    border-radius:50%;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:26px;
-    font-weight:700;
-
-    color:#6b7280;
-
-    cursor:pointer;
-
-    z-index:1000;
-
-    transition:.2s;
-
-}
-
-.flash-close:hover{
-
-    background:#e5e7eb;
-
-    color:#111827;
-
-}
-
-.flash-icon{
-
-    font-size:60px;
-
-    margin-top:6px;
-    margin-bottom:12px;
-
-    line-height:1;
-
-}
-
-.flash-title{
-
-    font-size:30px;
-
-    font-weight:700;
-
-    color:#111827;
-
-    margin-bottom:10px;
-
-}
-
-.flash-message{
-
-    font-size:18px;
-
-    color:#555;
-
-    line-height:1.6;
-
-    text-align:center;
-
-}
-
-.flash-actions{
-
+.ap-submit{
     width:100%;
-
-    display:flex;
-
-    justify-content:center;
-
-    margin-top:22px;
-
+    min-height:52px;
+    border:0;
+    border-radius:15px;
+    background:linear-gradient(135deg,#2563eb,#1748c7);
+    color:#fff;
+    font-size:15px;
+    font-weight:900;
+    box-shadow:0 10px 24px rgba(37,99,235,.25);
 }
-
-.flash-actions .btn{
-
-    width:180px;
-
-    height:50px;
-
-    border-radius:12px;
-
-    font-size:18px;
-
-    font-weight:700;
-
+.ap-variant{
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    padding:12px;
+    margin-bottom:10px;
+    background:#fafbfc;
 }
-
-@keyframes popupFlash{
-
-    from{
-
-        opacity:0;
-        transform:scale(.8);
-
-    }
-
-    to{
-
-        opacity:1;
-        transform:scale(1);
-
-    }
-
+.ap-variant-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ap-remove{margin-top:8px;border:0;background:#fee2e2;color:#b91c1c;border-radius:10px;padding:8px 11px;font-size:12px;font-weight:800}
+@media(max-width:768px){
+    .add-product-page .col-lg-8,.add-product-page .col-lg-4{width:100%}
+    .add-product-page .row>*{margin-bottom:0}
+    .ap-wrap{padding:12px 10px 0}
+    .ap-hero{padding:18px 14px 22px}
+    .ap-hero h1{font-size:22px}
+    .ap-card{margin-bottom:12px!important}
+    .ap-card .card-body{padding:14px!important}
+    .ap-variant-grid{grid-template-columns:1fr 1fr}
 }
-
-@keyframes fadeFlash{
-
-    from{
-
-        opacity:0;
-
-    }
-
-    to{
-
-        opacity:1;
-
-    }
-
+@media(min-width:769px){
+    .add-product-page{margin:-30px -30px 0}
+    .ap-wrap{padding:24px 30px 0}
+    .ap-hero{padding:25px 30px 28px}
 }
-
-@keyframes popupFlash{
-
-    from{
-
-        opacity:0;
-
-        transform:scale(.75);
-
-    }
-
-    to{
-
-        opacity:1;
-
-        transform:scale(1);
-
-    }
-
-}
-
-@keyframes fadeFlash{
-
-    from{
-
-        opacity:0;
-
-    }
-
-    to{
-
-        opacity:1;
-
-    }
-
-}
-
-@keyframes contentFade{
-    from{
-        opacity:0;
-        transform:translateY(8px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
-
 </style>
 
-</head>
+<div class="add-product-page">
+<div class="ap-hero">
+    <div class="ap-hero-row">
+        <div>
+            <h1><i class="fas fa-store"></i> Add Product</h1>
+            <p>Create a professional listing for your RecrootEarn Shop</p>
+        </div>
+        <div class="ap-hero-icon"><i class="fas fa-box-open"></i></div>
+    </div>
+</div>
+<div class="ap-wrap">
 
-<body>
+<form method="POST"
+      enctype="multipart/form-data">
 
-{% if session.get('candidate_id') %}
+<div class="row">
 
-<div class="mobile-topbar">
+<!-- Product Information -->
 
-    <button class="menu-btn"
-            onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
+<div class="col-lg-8">
 
-    <div class="mobile-logo">
-        <img
-        src="{{ url_for('static', filename='images/header_logo.png') }}"
-        alt="RecrootEarn"
-        loading="eager"
-        fetchpriority="high"
-        decoding="sync"
-        draggable="false"
-        style="display:block;">
+<div class="card shadow-sm mb-4">
+
+<div class="card-header">
+
+<h4>
+
+<i class="fas fa-box"></i>
+
+Product Information
+
+</h4>
+
+</div>
+
+<div class="card-body">
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Product Name
+
+</label>
+
+<input type="text"
+
+class="form-control"
+
+name="name"
+
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Short Description
+
+</label>
+
+<textarea
+
+class="form-control"
+
+rows="2"
+
+name="short_description"></textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Description
+
+</label>
+
+<textarea
+
+class="form-control"
+
+rows="7"
+
+name="description"
+
+required></textarea>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6">
+
+<label>
+
+Category <span class="ap-required">*</span>
+
+</label>
+
+<input type="search"
+       class="form-control mb-2 ap-category-search"
+       id="categorySearch"
+       placeholder="Search category..."
+       autocomplete="off">
+
+<select
+
+class="form-select"
+
+name="category_id"
+
+required>
+
+<option value="">
+
+Select Category
+
+</option>
+
+{% for category in categories %}
+
+<option value="{{ category.id }}">
+
+{{ category.name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<div class="col-md-6">
+
+<label>
+
+Brand
+
+</label>
+
+<input type="search"
+       class="form-control mb-2 ap-brand-search"
+       id="brandSearch"
+       placeholder="Search brand..."
+       autocomplete="off">
+
+<select
+
+class="form-select"
+
+name="brand_id">
+
+<option value="">
+
+Select Brand
+
+</option>
+
+{% for brand in brands %}
+
+<option value="{{ brand.id }}">
+
+{{ brand.name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Pricing -->
+
+<div class="card shadow-sm mb-4">
+
+<div class="card-header">
+
+<h5>
+
+Pricing
+
+</h5>
+
+</div>
+
+<div class="card-body">
+
+<div class="row">
+
+<div class="col-md-4">
+
+<label>
+
+MRP
+
+</label>
+
+<input
+
+type="number"
+
+step="0.01"
+
+name="price"
+
+class="form-control"
+
+required>
+
+</div>
+
+<div class="col-md-4">
+
+<label>
+
+Sale Price
+
+</label>
+
+<input
+
+type="number"
+
+step="0.01"
+
+name="sale_price"
+
+class="form-control">
+
+</div>
+
+<div class="col-md-4">
+
+<label>
+
+GST %
+
+</label>
+
+<input
+
+type="number"
+
+step="0.01"
+
+name="gst_percent"
+
+class="form-control"
+
+value="0">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Inventory -->
+
+<div class="card shadow-sm">
+
+<div class="card-header">
+
+<h5>
+
+Inventory
+
+</h5>
+
+</div>
+
+<div class="card-body">
+
+<div class="row">
+
+<div class="col-md-4">
+
+<label>
+
+Stock
+
+</label>
+
+<input
+
+type="number"
+
+name="stock"
+
+class="form-control"
+
+required>
+
+</div>
+
+<div class="col-md-4">
+
+<label>
+
+SKU
+
+</label>
+
+<input
+
+type="text"
+
+name="sku"
+
+class="form-control">
+
+</div>
+
+<div class="col-md-4">
+
+<label>
+
+HSN Code
+
+</label>
+
+<input
+
+type="text"
+
+name="hsn_code"
+
+class="form-control">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Product Status -->
+
+<div class="col-lg-4">
+
+<div class="card shadow-sm">
+
+<div class="card-header">
+
+<h5>
+
+Product Status
+
+</h5>
+
+</div>
+
+<div class="card-body">
+
+<div class="mb-3">
+
+<label>
+
+Product Type
+
+</label>
+
+<select
+
+name="product_type"
+
+id="product_type"
+
+class="form-select">
+
+<option value="simple">
+
+Simple Product
+
+</option>
+
+<option value="variable">
+
+Variable Product
+
+</option>
+
+</select>
+
+</div>
+
+<div class="form-check mb-2">
+
+<input
+
+type="checkbox"
+
+class="form-check-input"
+
+name="return_allowed"
+
+checked>
+
+<label class="form-check-label">
+
+Return Available
+
+</label>
+
+</div>
+
+<div class="form-check mb-2">
+
+<input
+
+type="checkbox"
+
+class="form-check-input"
+
+name="exchange_allowed"
+
+checked>
+
+<label class="form-check-label">
+
+Exchange Available
+
+</label>
+
+</div>
+
+<div class="alert alert-info mt-3">
+
+Your product will be sent for admin approval before becoming visible in the marketplace.
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Product Images -->
+
+<div class="card shadow-sm mt-4">
+
+    <div class="card-header">
+
+        <h5>
+
+            Product Images
+
+        </h5>
+
     </div>
 
-    <a href="/candidate-notifications"
-   class="mobile-credit"
-   style="text-decoration:none;position:relative;">
+    <div class="card-body">
 
-    <i class="fas fa-bell"></i>
+        <div class="ap-image-box">
 
-    {% if unread_notifications|default(0) > 0 %}
-    <span style="
-        position:absolute;
-        top:-5px;
-        right:-5px;
-        background:red;
-        color:white;
-        border-radius:50%;
-        width:18px;
-        height:18px;
-        font-size:10px;
-        display:flex;
-        align-items:center;
-        justify-content:center;">
-        {{ unread_notifications }}
-    </span>
-    {% endif %}
+        <label class="form-label">
 
-</a>
+            Upload Images
 
-</div>
+        </label>
 
-<div class="mobile-overlay"
-     onclick="toggleSidebar()"></div>
+        <input type="file"
 
-{% elif current_user.is_authenticated %}
+               class="form-control"
 
-<div class="mobile-topbar">
+               name="images"
 
-    <button class="menu-btn"
-            onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
+               id="images"
 
-    <div class="mobile-logo">
-        <img src="{{ url_for('static', filename='images/header_logo.png') }}"
-             alt="RecrootEarn">
-    </div>
+               accept="image/*"
 
-    <a href="/notifications"
-       class="mobile-credit"
-    style="text-decoration:none;position:relative;">
+               multiple>
 
-         <i class="fas fa-bell"></i>
+        <small class="text-muted ap-upload-note">
 
-         {% if unread_notifications|default(0) > 0 %}
-         <span style="
-             position:absolute;
-             top:-5px;
-             right:-5px;
-             background:red;
-             color:white;
-             border-radius:50%;
-             width:18px;
-             height:18px;
-             font-size:10px;
-             display:flex;
-             align-items:center;
-             justify-content:center;">
-             {{ unread_notifications }}
-        </span>
-        {% endif %}
+            Maximum 5 images • JPG, PNG or WebP
 
-    </a>
+        </small>
 
-</div>
+        <div id="preview"
 
-<div class="mobile-overlay"
-     onclick="toggleSidebar()"></div>
-
-{% endif %}
-
-<!-- SIDEBAR --><div class="sidebar">
-<div class="sidebar-logo">
-
-    <img
-    src="{{ url_for('static', filename='images/sidebar_logo.png') }}"
-    alt="RecrootEarn">
-
-</div>
-
-{% if session.get('candidate_id') %}
-
-<div class="candidate-desktop-menu">
-
-    <a href="/candidate-dashboard">
-        <i class="fas fa-home"></i>
-        Dashboard
-    </a>
-
-    <a href="/candidate-feed">
-        <i class="fas fa-briefcase"></i>
-        Job Feed
-    </a>
-
-    <a href="/applied-jobs">
-        <i class="fas fa-file-alt"></i>
-        Applied Jobs
-    </a>
-
-    <a href="/candidate-profile">
-        <i class="fas fa-user"></i>
-        My Profile
-    </a>
-
-</div>
-
-<a href="/candidate-referral">
-    <i class="fas fa-gift"></i>
-    Refer & Earn
-</a>
-
-<a href="/candidate-withdraw">
-    <i class="fas fa-wallet"></i>
-    Wallet
-</a>
-
-<a href="/candidate-support">
-    <i class="fas fa-headset"></i>
-    Support
-</a>
-
-<a href="/candidate-general-info">
-    <i class="fas fa-circle-info"></i>
-    General Info
-</a>
-
-<a href="/candidate-logout">
-    <i class="fas fa-right-from-bracket"></i>
-    Logout
-</a>
-
-{% else %}
-
-<!-- HR MENU -->
-
-<a href="/dashboard" class="mobile-hide-hr">
-    <i class="fas fa-chart-line"></i>
-    Dashboard
-</a>
-
-<a href="/leads" class="mobile-hide-hr">
-    <i class="fas fa-users"></i>
-    Leads
-</a>
-
-<a href="/discover-candidates" class="mobile-hide-hr">
-    <i class="fas fa-compass"></i>
-    Discover Candidates
-</a>
-
-<a href="/upload" class="mobile-hide-hr">
-    <i class="fas fa-upload"></i>
-    Upload Candidate
-</a>
-
-<a href="/feed" class="mobile-hide-hr">
-    <i class="fas fa-briefcase"></i>
-    Job Feed
-</a>
-
-<a href="/applied-jobs-hr">
-    <i class="fas fa-file-signature"></i>
-    Applied Jobs
-</a>
-
-<a href="/wallet">
-    <i class="fas fa-wallet"></i>
-    Wallet
-</a>
-
-    <a href="/seller/pickup"
-       class="nav-link">
-
-        <i class="fa-solid fa-warehouse"></i>
-
-        Pickup Address
-
-    </a>
-
-<a href="/cart" class="nav-link">
-
-🛒 Cart
-
-{% if cart_count %}
-
-<span class="badge bg-danger">
-
-{{ cart_count }}
-
-</span>
-
-{% endif %}
-
-</a>
-
-<a href="/profile" class="mobile-hide-hr">
-    <i class="fas fa-user"></i>
-    My Profile
-</a>
-
-<a href="/buy-credits">
-    <i class="fas fa-coins"></i>
-    Buy Credits
-</a>
-
-<a href="/support">
-    <i class="fas fa-headset"></i>
-    Support
-</a>
-
-<a href="/general-info">
-    <i class="fas fa-circle-info"></i>
-    General Info
-</a>
-
-<a href="/referrals">
-    <i class="fas fa-user-plus"></i>
-    Referrals
-</a>
-
-{% if current_user.is_admin %}
-
-<a href="/admin">
-    <i class="fas fa-shield-alt"></i>
-    Admin Panel
-</a>
-
-{% endif %}
-
-<a href="/logout">
-    <i class="fas fa-right-from-bracket"></i>
-    Logout
-</a>
-
-{% endif %}
-
-</div>
-
-<!-- MAIN -->
-
-<div class="main">
-
-    <div class="topbar">
-
-        <div class="welcome">
-
-            Welcome,
-            {{ current_user.first_name }} 👋
+             class="row mt-3 ap-preview">
 
         </div>
 
-        <a href="/notifications"
-           style="
-           position:relative;
-           color:#111;
-           font-size:24px;
-           text-decoration:none;
-           ">
-
-           <i class="far fa-bell"></i>
-
-           {% if unread_notifications|default(0) > 0 %}
-           <span style="
-               position:absolute;
-               top:-3px;
-               right:-5px;
-               min-width:18px;
-               height:18px;
-               background:#ff3040;
-               color:white;
-               border-radius:50%;
-               font-size:10px;
-               font-weight:700;
-               display:flex;
-               align-items:center;
-               justify-content:center;
-               padding:2px;
-            ">
-               {{ unread_notifications }}
-            </span>
-            {% endif %}
-
-         </a>
-
-    </div>
-
-    <div class="content">
-
-        {% block content %}
-        {% endblock %}
+        </div>
 
     </div>
 
 </div>
 
-<!-- MOBILE NAV -->
+<!-- Shipping Information -->
 
-{% if session.get('candidate_id') %}
+<div class="card shadow-sm mt-4">
 
-<div class="bottom-nav">
+    <div class="card-header">
 
-    <a href="/candidate-dashboard" class="nav-btn">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
-    </a>
+        <h5>
 
-    <a href="/candidate-feed" class="nav-btn">
-        <i class="fas fa-briefcase"></i>
-        <span>Jobs</span>
-    </a>
+            Shipping Information
 
-    <a href="/discover-hr" class="nav-btn">
-        <i class="fas fa-compass"></i>
-        <span>Discover</span>
-    </a>
+        </h5>
 
-    <a href="/applied-jobs" class="nav-btn">
-        <i class="fas fa-file-alt"></i>
-        <span>Applied</span>
-    </a>
+    </div>
 
-    <a href="/shop" class="nav-btn">
-        <i class="fas fa-store"></i>
-        <span>Shop</span>
-    </a>
+    <div class="card-body">
 
-    <a href="/candidate-profile" class="nav-btn">
-        <i class="fas fa-user"></i>
-        <span>Profile</span>
-    </a>
+        <div class="row">
+
+            <div class="col-md-3">
+
+                <label>
+
+                    Weight (kg)
+
+                </label>
+
+                <input
+
+                    type="number"
+
+                    step="0.01"
+
+                    class="form-control"
+
+                    name="weight"
+
+                    required>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <label>
+
+                    Length (cm)
+
+                </label>
+
+                <input
+
+                    type="number"
+
+                    step="0.01"
+
+                    class="form-control"
+
+                    name="length"
+
+                    required>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <label>
+
+                    Width (cm)
+
+                </label>
+
+                <input
+
+                    type="number"
+
+                    step="0.01"
+
+                    class="form-control"
+
+                    name="width"
+
+                    required>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <label>
+
+                    Height (cm)
+
+                </label>
+
+                <input
+
+                    type="number"
+
+                    step="0.01"
+
+                    class="form-control"
+
+                    name="height"
+
+                    required>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
-{% elif current_user.is_authenticated %}
+<!-- Product Variants -->
 
-<div class="bottom-nav">
+<div class="card shadow-sm mt-4"
 
-<a href="/dashboard" class="nav-btn">
-    <i class="fas fa-home"></i>
-    <span>Home</span>
-</a>
+     id="variantCard"
 
-<a href="/feed" class="nav-btn">
-    <i class="fas fa-briefcase"></i>
-   <span>Feed</span>
-</a>
+     style="display:none;">
 
-<a href="/discover-candidates" class="nav-btn">
-    <i class="fas fa-compass"></i>
-    <span>Discover</span>
-</a>
+    <div class="card-header d-flex justify-content-between">
 
-<a href="/leads" class="nav-btn">
-    <i class="fas fa-users"></i>
-    <span>Leads</span>
-</a>
+        <h5>
 
-<a href="/upload" class="nav-btn">
-    <i class="fas fa-upload"></i>
-    <span>Upload</span>
-</a>
+            Product Variants
 
-<a href="/shop" class="nav-btn">
-    <i class="fas fa-store"></i>
-    <span>Shop</span>
-</a>
+        </h5>
 
-<a href="/profile" class="nav-btn">
-    <i class="fas fa-user"></i>
-    <span>Profile</span>
-</a>
+        <button type="button"
 
-</div>
+                class="btn btn-primary btn-sm"
 
-{% endif %}
+                onclick="addVariant()">
 
-<!-- JS -->
+            <i class="fas fa-plus"></i>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            Add Variant
 
-<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-
-<script>
-
-AOS.init({
-    duration:700,
-    once:true
-});
-
-window.addEventListener("load", function(){
-
-    setTimeout(function(){
-
-        document.getElementById("loader").style.opacity = "0";
-
-        setTimeout(function(){
-
-            document.getElementById("loader").style.display = "none";
-
-        },500);
-
-    },800);
-
-});
-
-function toggleSidebar(){
-
-    document
-    .querySelector(".sidebar")
-    .classList.toggle("active");
-
-    document
-    .querySelector(".mobile-overlay")
-    .classList.toggle("active");
-}
-
-</script>
-
-{% if request.endpoint != 'login' %}
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-
-<div id="flashOverlay" class="flash-overlay">
-
-    <div class="flash-box">
-
-        <button class="flash-close"
-                onclick="closeFlash()">
-            &times;
         </button>
 
-        <div class="flash-message">
-            {{ messages[0][1] }}
-        </div>
+    </div>
 
-        <div class="flash-actions">
-            <button class="btn btn-primary" onclick="closeFlash()">
-                OK
-        </button>
+    <div class="card-body">
+
+        <div id="variantContainer">
+
         </div>
 
     </div>
 
 </div>
 
-{% endif %}
-{% endwith %}
+<template id="variantTemplate">
 
-{% endif %}
+<div class="border rounded p-3 mb-3">
+
+    <div class="row">
+
+        <div class="col-md-3">
+
+            <input
+
+                type="text"
+
+                name="variant_name[]"
+
+                class="form-control"
+
+                placeholder="Variant Name">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <input
+
+                type="text"
+
+                name="option_value[]"
+
+                class="form-control"
+
+                placeholder="Value">
+
+        </div>
+
+        <div class="col-md-2">
+
+            <input
+
+                type="number"
+
+                step="0.01"
+
+                name="option_price[]"
+
+                class="form-control"
+
+                placeholder="Price">
+
+        </div>
+
+        <div class="col-md-2">
+
+            <input
+
+                type="number"
+
+                name="option_stock[]"
+
+                class="form-control"
+
+                placeholder="Stock">
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button
+
+                type="button"
+
+                class="btn btn-danger w-100"
+
+                onclick="this.closest('.border').remove()">
+
+                Remove
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</template>
+
+<!-- SEO -->
+
+<div class="card shadow-sm mt-4">
+
+    <div class="card-header">
+
+        <h5>
+
+            SEO Settings
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="mb-3">
+
+            <label>
+
+                Meta Title
+
+            </label>
+
+            <input
+
+                type="text"
+
+                class="form-control"
+
+                name="meta_title">
+
+        </div>
+
+        <div class="mb-3">
+
+            <label>
+
+                Meta Description
+
+            </label>
+
+            <textarea
+
+                class="form-control"
+
+                rows="3"
+
+                name="meta_description"></textarea>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label>
+
+                Search Keywords
+
+            </label>
+
+            <input
+
+                type="text"
+
+                class="form-control"
+
+                name="search_keywords"
+
+                placeholder="gift, flower, bouquet">
+
+        </div>
+
+        <div class="mb-3">
+
+            <label>
+
+                YouTube Video URL
+
+            </label>
+
+            <input
+
+                type="url"
+
+                class="form-control"
+
+                name="youtube_video">
+
+        </div>
+
+        <div class="mb-3">
+
+            <label>
+
+                Product Tags
+
+            </label>
+
+            <input
+
+                type="text"
+
+                class="form-control"
+
+                name="tags"
+
+                placeholder="love,birthday,anniversary">
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="ap-submit-wrap">
+
+    <button type="submit" class="ap-submit">
+
+        <i class="fas fa-cloud-upload-alt"></i>
+
+        Publish Product
+
+    </button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+</div>
 
 <script>
 
-const currentPath = window.location.pathname;
+const imageInput = document.getElementById(
 
-document.querySelectorAll(".nav-btn").forEach(btn => {
+    "images"
 
-    if(btn.getAttribute("href") === currentPath){
+);
 
-        btn.classList.add("active");
+if(imageInput){
 
-    }
+imageInput.addEventListener(
 
-});
+"change",
 
-</script>
+function(){
 
-<script>
+let preview=document.getElementById(
 
-function closeFlash(){
+"preview"
 
-    const box =
-    document.getElementById("flashOverlay");
+);
 
-    if(box){
+preview.innerHTML="";
 
-        box.style.display="none";
+if(this.files.length>5){
 
-    }
+alert("Maximum 5 images allowed.");
+
+this.value="";
+
+return;
 
 }
 
-setTimeout(function(){
+Array.from(this.files).forEach(file=>{
 
-    closeFlash();
+let reader=new FileReader();
 
-},3000);
+reader.onload=function(e){
 
-</script>
+preview.innerHTML+=`
 
-<script>
+<div class="col-md-3 mb-3">
 
-let lastScroll = 0;
+<img src="${e.target.result}"
 
-window.addEventListener("scroll", function(){
+class="img-fluid rounded shadow"
 
-    const nav = document.querySelector(".bottom-nav");
-    if(!nav) return;
+style="height:150px;width:100%;object-fit:cover;">
 
-    const currentScroll = window.pageYOffset;
+</div>
 
-    if(currentScroll <= 20){
-        nav.classList.remove("hide");
-    }else if(currentScroll > lastScroll){
-        nav.classList.add("hide");
-    }else{
-        nav.classList.remove("hide");
-    }
+`;
 
-    lastScroll = currentScroll;
+};
+
+reader.readAsDataURL(file);
 
 });
 
-</script>
+}
 
-<script>
-document.querySelectorAll("a").forEach(link => {
+);
 
-    link.addEventListener("click", function () {
+}
 
-        const content = document.querySelector(".content");
+const productType=document.getElementById(
 
-        if(content){
+"product_type"
 
-            content.style.opacity = "0.92";
+);
 
+if(productType){
+
+productType.addEventListener(
+
+"change",
+
+function(){
+
+document.getElementById(
+
+"variantCard"
+
+).style.display=
+
+this.value==="variable"
+
+?
+
+"block"
+
+:
+
+"none";
+
+}
+
+);
+
+}
+
+function addVariant(){
+
+const template=document.getElementById(
+
+"variantTemplate"
+
+);
+
+const clone=template.content.cloneNode(true);
+
+document.getElementById(
+
+"variantContainer"
+
+).appendChild(clone);
+
+}
+
+
+/* Category / brand quick filtering */
+function setupAPSearch(inputId, selectName){
+    const input=document.getElementById(inputId);
+    const select=document.querySelector('select[name="'+selectName+'"]');
+    if(!input || !select) return;
+
+    input.addEventListener('input', function(){
+        const q=this.value.trim().toLowerCase();
+
+        Array.from(select.options).forEach(function(option,index){
+            if(index===0){
+                option.hidden=false;
+                return;
+            }
+            option.hidden=!!q && !option.text.toLowerCase().includes(q);
+        });
+
+        if(select.selectedOptions[0] && select.selectedOptions[0].hidden){
+            select.value="";
         }
-
     });
+}
 
-});
+setupAPSearch("categorySearch","category_id");
+setupAPSearch("brandSearch","brand_id");
 
 </script>
 
-</body>
-
-</html>
+{% endblock %}
