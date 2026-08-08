@@ -18190,7 +18190,7 @@ def manage_product(id):
     methods=["POST"]
 )
 @login_required
-def toggle_product(id):
+def owner_toggle_product(id):
 
     product = Product.query.filter_by(
         id=id,
