@@ -42,7 +42,7 @@ html,body{margin:0!important;padding:0!important}
   </div>
   {% if orders %}
    {% for order in orders %}
-   <a href="{{ url_for('order_details', order_id=order.id) }}" style="text-decoration:none;color:inherit">
+   <a href="{{ url_for('my_order_details', order_id=order.id) }}" style="text-decoration:none;color:inherit">
     <div class="order-list-card">
      <div class="order-row">
       <div class="order-icon"><i class="fas fa-box"></i></div>

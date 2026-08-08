@@ -15898,6 +15898,27 @@ def my_orders():
         orders=orders
     )
 
+@app.route("/my-orders/<int:order_id>")
+@login_required
+def my_order_details(order_id):
+
+    order = Order.query.filter_by(
+        id=order_id,
+        user_id=current_user.id
+    ).first_or_404()
+
+    history = OrderStatusHistory.query.filter_by(
+        order_id=order.id
+    ).order_by(
+        OrderStatusHistory.created_at.desc()
+    ).all()
+
+    return render_template(
+        "my_order_details.html",
+        order=order,
+        history=history
+    )
+
 @app.route("/seller/orders")
 @login_required
 def seller_orders():
