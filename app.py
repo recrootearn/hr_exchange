@@ -1223,18 +1223,43 @@ class BoostCity(db.Model):
     city = db.Column(db.String(100))
 
 class MarketplaceFee(db.Model):
+    __tablename__ = "marketplace_fees"
 
-    category_id
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
-    commission_percent
+    category_id = db.Column(
+        db.Integer,
+        db.ForeignKey("product_categories.id"),
+        nullable=True
+    )
 
-    shipping_fee
+    commission_percent = db.Column(
+        db.Float,
+        default=0
+    )
 
-    return_fee
+    shipping_fee = db.Column(
+        db.Float,
+        default=0
+    )
 
-    cod_fee
+    return_fee = db.Column(
+        db.Float,
+        default=0
+    )
 
-    promotion_discount
+    cod_fee = db.Column(
+        db.Float,
+        default=0
+    )
+
+    promotion_discount = db.Column(
+        db.Float,
+        default=0
+    )
 
 class HomepageBanner(db.Model):
     __tablename__ = "homepage_banners"
