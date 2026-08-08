@@ -15,8 +15,9 @@ import resend
 from email.mime.text import MIMEText
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, redirect, session, url_for, flash
+from flask import Flask, render_template, request, redirect, session, url_for, flash, abort
 import os
+from functools import wraps
 from datetime import datetime,date
 import pandas as pd
 from openpyxl import Workbook
@@ -131,6 +132,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://recrootearn:Kymore%4095
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+PRODUCT_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'products')
+ALLOWED_PRODUCT_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp', 'gif'}
+os.makedirs(PRODUCT_UPLOAD_FOLDER, exist_ok=True)
+RETURN_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'returns')
+os.makedirs(RETURN_UPLOAD_FOLDER, exist_ok=True)
+
 VIDEO_EXTENSIONS = {
     "mp4",
     "mov",
@@ -261,15 +269,13 @@ class User(UserMixin, db.Model):
     product_reviews = db.relationship(
         "ProductReview",
         foreign_keys="ProductReview.customer_id",
-        backref="customer",
+        back_populates="customer",
         lazy=True
     )
 
     company_logo = db.Column(db.String(300))
 
-    company_city = db.Column(db.String(100))
 
-    company_website = db.Column(db.String(300))
 
     company_photos = db.Column(db.Text)
 
@@ -298,15 +304,15 @@ class User(UserMixin, db.Model):
 
     orders = db.relationship(
         "Order",
-        foreign_keys=[Order.user_id],
-        backref="customer",
+        foreign_keys="Order.user_id",
+        back_populates="customer",
         lazy=True
     )
 
     seller_orders = db.relationship(
         "Order",
-        foreign_keys=[Order.seller_id],
-        backref="seller",
+        foreign_keys="Order.seller_id",
+        back_populates="seller",
         lazy=True
     )
 
@@ -317,24 +323,11 @@ class User(UserMixin, db.Model):
         cascade="all, delete-orphan"
     )
 
-    reviews = db.relationship(
-        "ProductReview",
-        backref="customer",
-        lazy=True
-    )
-
     products = db.relationship(
         "Product",
         backref="seller",
         lazy=True,
         cascade="all, delete-orphan"
-    )
-
-    cart = db.relationship(
-        "Cart",
-        foreign_keys=[Cart.user_id],
-        backref="customer",
-        lazy=True
     )
 
     profile_completion = db.Column(
@@ -463,7 +456,6 @@ class CandidateUser(UserMixin, db.Model):
 
     profile_photo = db.Column(db.String(300))
 
-    resume_file = db.Column(db.String(300))
 
     designation = db.Column(db.String(200))
 
@@ -872,9 +864,6 @@ class Follow(db.Model):
         db.Integer
     )
 
-    followed_hr_id = db.Column(
-        db.Integer
-    )
 
     followed_hr_id = db.Column(
         db.Integer
@@ -964,23 +953,13 @@ class BusinessSettings(db.Model):
     hr_to_candidate_reward = db.Column(db.Integer, default=25)
     candidate_to_candidate_reward = db.Column(db.Integer, default=25)
 
-    product_promotion_price = db.Column(
-        db.Integer,
-        default=100
-    )
 
-    shop_promotion_price = db.Column(
-        db.Integer,
-        default=500
-    )
 
     # Marketplace
 
     marketplace_enabled = db.Column(db.Boolean, default=True)
 
-    marketplace_commission = db.Column(db.Float, default=10)
 
-    seller_payment_hold_days = db.Column(db.Integer, default=7)
 
     minimum_order_amount = db.Column(db.Float, default=0)
 
@@ -1002,9 +981,7 @@ class BusinessSettings(db.Model):
 
     # Wallet
 
-    minimum_withdrawal = db.Column(db.Float, default=500)
 
-    maximum_daily_withdrawal = db.Column(db.Float, default=50000)
 
     # Promotions
 
@@ -1012,9 +989,7 @@ class BusinessSettings(db.Model):
 
     shop_promotion_price = db.Column(db.Integer, default=500)
 
-    homepage_banner_price = db.Column(db.Integer, default=1000)
 
-    promotion_duration_days = db.Column(db.Integer, default=7)
 
     # Search
 
@@ -1169,10 +1144,6 @@ class BusinessSettings(db.Model):
         default=10
     )
 
-    seller_payment_hold_days = db.Column(
-        db.Integer,
-        default=7
-    )
 
     platform_commission = db.Column(
         db.Float,
@@ -1195,19 +1166,6 @@ class BoostCity(db.Model):
 
     city = db.Column(db.String(100))
 
-class MarketplaceFee(db.Model):
-
-    category_id
-
-    commission_percent
-
-    shipping_fee
-
-    return_fee
-
-    cod_fee
-
-    promotion_discount
 
 class HomepageBanner(db.Model):
     __tablename__ = "homepage_banners"
@@ -1259,84 +1217,7 @@ class HomepageSection(db.Model):
         default=1
     )
 
-class CategoryBanner(db.Model):
 
-    id=db.Column(db.Integer,primary_key=True)
-
-    category_id=db.Column(
-
-        db.Integer,
-
-        db.ForeignKey("categories.id")
-
-    )
-
-    image=db.Column(db.String(255))
-
-    active=db.Column(
-
-        db.Boolean,
-
-        default=True
-
-    )
-
-    icon = db.Column(db.String(255))
-
-    banner_image = db.Column(db.String(255))
-
-    mobile_banner = db.Column(db.String(255))
-
-    seo_title = db.Column(db.String(255))
-
-    seo_description = db.Column(db.Text)
-
-    display_order = db.Column(db.Integer, default=0)
-
-    show_on_homepage = db.Column(db.Boolean, default=False)
-
-    is_trending = db.Column(db.Boolean, default=False)
-
-class Coupon(db.Model):
-
-    __tablename__ = "coupons"
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    code = db.Column(db.String(50), unique=True)
-
-    title = db.Column(db.String(150))
-
-    description = db.Column(db.Text)
-
-    discount_type = db.Column(db.String(20))
-
-    discount_value = db.Column(db.Float)
-
-    minimum_order = db.Column(db.Float, default=0)
-
-    maximum_discount = db.Column(db.Float)
-
-    usage_limit = db.Column(db.Integer)
-
-    used_count = db.Column(db.Integer, default=0)
-
-    start_date = db.Column(db.DateTime)
-
-    expiry_date = db.Column(db.DateTime)
-
-    active = db.Column(db.Boolean, default=True)
-
-    seller_id = db.Column(
-        db.Integer,
-        db.ForeignKey("user.id"),
-        nullable=True
-    )
-
-    created_at = db.Column(
-        db.DateTime,
-        default=india_time
-    )
 
 class CMSPage(db.Model):
 
@@ -2181,10 +2062,6 @@ class Product(db.Model):
 
     name = db.Column(db.String(200), nullable=False)
 
-    is_promoted = db.Column(
-        db.Boolean,
-        default=False
-    )
 
     is_active = db.Column(
         db.Boolean,
@@ -2264,9 +2141,7 @@ class Product(db.Model):
 
     promotion_end = db.Column(db.DateTime)
 
-    views = db.Column(db.Integer, default=0)
 
-    sold = db.Column(db.Integer, default=0)
 
     order_items = db.relationship(
         "OrderItem",
@@ -2292,22 +2167,6 @@ class Product(db.Model):
         lazy=True
     )
 
-    average_rating = db.Column(
-        db.Float,
-        default=0
-    )
-
-    total_reviews = db.Column(
-        db.Integer,
-        default=0
-    )
-
-    cart_items = db.relationship(
-        "CartItem",
-        backref="product",
-        lazy=True
-    )
-
     variants = db.relationship(
         "ProductVariant",
         backref="product",
@@ -2315,27 +2174,10 @@ class Product(db.Model):
         cascade="all, delete-orphan"
     )
 
-    reviews = db.relationship(
-        "ProductReview",
-        backref="product",
-        lazy=True,
-        cascade="all, delete-orphan"
-    )
-
     cart_items = db.relationship(
         "CartItem",
         backref="product",
         lazy=True
-    )
-
-    average_rating = db.Column(
-        db.Float,
-        default=0
-    )
-
-    total_reviews = db.Column(
-        db.Integer,
-        default=0
     )
 
     sold = db.Column(
@@ -2402,36 +2244,6 @@ class ProductImage(db.Model):
         default=0
     )
 
-class ProductReview(db.Model):
-    __tablename__ = "product_reviews"
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    product_id = db.Column(
-        db.Integer,
-        db.ForeignKey("products.id"),
-        nullable=False
-    )
-
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey("user.id"),
-        nullable=False
-    )
-
-    rating = db.Column(
-        db.Integer,
-        nullable=False
-    )
-
-    review = db.Column(
-        db.Text
-    )
-
-    created_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
-    )
 
 class Cart(db.Model):
     __tablename__ = "cart"
@@ -2501,7 +2313,7 @@ class CartItem(db.Model):
 
     variant_option = db.relationship(
         "ProductVariantOption",
-        backref="cart_items"
+        back_populates="cart_items"
     )
 
 class ProductVariant(db.Model):
@@ -2564,7 +2376,7 @@ class ProductVariantOption(db.Model):
 
     cart_items = db.relationship(
         "CartItem",
-        backref="variant",
+        back_populates="variant_option",
         lazy=True
     )
 
@@ -2574,35 +2386,6 @@ class ProductVariantOption(db.Model):
         lazy=True
     )
 
-class HomepageBanner(db.Model):
-    __tablename__ = "homepage_banners"
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    title = db.Column(db.String(200))
-
-    subtitle = db.Column(db.String(255))
-
-    image = db.Column(db.String(255))
-
-    button_text = db.Column(db.String(50))
-
-    button_link = db.Column(db.String(255))
-
-    display_order = db.Column(
-        db.Integer,
-        default=1
-    )
-
-    is_active = db.Column(
-        db.Boolean,
-        default=True
-    )
-
-    created_at = db.Column(
-        db.DateTime,
-        default=india_time
-    )
 
 class ShippingAddress(db.Model):
     __tablename__ = "shipping_addresses"
@@ -2930,23 +2713,18 @@ class Order(db.Model):
     seller = db.relationship(
         "User",
         foreign_keys=[seller_id],
-        backref="seller_orders"
+        back_populates="seller_orders"
     )
 
     customer = db.relationship(
         "User",
         foreign_keys=[user_id],
-        backref="customer_orders"
+        back_populates="orders"
     )
 
     # ==================================
     # RELATIONSHIPS
     # ==================================
-
-    shipping_address = db.relationship(
-        "ShippingAddress",
-        backref="orders"
-    )
 
     items = db.relationship(
         "OrderItem",
@@ -3468,6 +3246,18 @@ class ProductReview(db.Model):
         default=india_time
     )
 
+    customer = db.relationship(
+        "User",
+        foreign_keys=[customer_id],
+        back_populates="product_reviews"
+    )
+
+    seller = db.relationship(
+        "User",
+        foreign_keys=[seller_id],
+        backref="seller_reviews"
+    )
+
 class CouponUsage(db.Model):
     __tablename__ = "coupon_usage"
 
@@ -3513,7 +3303,7 @@ class Coupon(db.Model):
 
     discount_value = db.Column(db.Float, default=0)
 
-    minimum_order_amount = db.Column(db.Float, default=0)
+    minimum_order = db.Column(db.Float, default=0)
 
     maximum_discount = db.Column(db.Float)
 
@@ -3529,7 +3319,7 @@ class Coupon(db.Model):
 
     category_id = db.Column(
         db.Integer,
-        db.ForeignKey("categories.id"),
+        db.ForeignKey("product_categories.id"),
         nullable=True
     )
 
@@ -3545,6 +3335,11 @@ class Coupon(db.Model):
     active = db.Column(
         db.Boolean,
         default=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
     )
 
 class Wishlist(db.Model):
@@ -3716,6 +3511,38 @@ def admin_only():
         return False
 
     return True
+
+def admin_required(view_func):
+    @wraps(view_func)
+    @login_required
+    def wrapped(*args, **kwargs):
+        if not current_user.is_admin:
+            abort(403)
+        return view_func(*args, **kwargs)
+    return wrapped
+
+def parse_datetime(value):
+    if not value:
+        return None
+    value = value.strip()
+    for fmt in ("%Y-%m-%dT%H:%M", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(value, fmt)
+        except ValueError:
+            continue
+    return datetime.fromisoformat(value)
+
+def allowed_product_file(filename):
+    return bool(filename and "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_PRODUCT_EXTENSIONS)
+
+def save_image(file_storage, subfolder):
+    if not file_storage or not file_storage.filename:
+        return None
+    folder = os.path.join(UPLOAD_FOLDER, subfolder)
+    os.makedirs(folder, exist_ok=True)
+    filename = f"{uuid.uuid4().hex}_{secure_filename(file_storage.filename)}"
+    file_storage.save(os.path.join(folder, filename))
+    return filename
 
 def get_business_settings():
 
@@ -4473,13 +4300,6 @@ def update_last_login():
                 candidate.last_login = today
                 db.session.commit()
 
-    def allowed_product_file(filename):
-
-        return (
-            "." in filename
-            and filename.rsplit(".", 1)[1].lower()
-            in ALLOWED_PRODUCT_EXTENSIONS
-        )
 
 def get_cart_count(user_id):
 
@@ -4508,127 +4328,29 @@ def inject_cart():
 
     return dict(cart_count=0)
 
-def headers(self):
 
-    return{
 
-        "Authorization":"Bearer "+self.token,
 
-        "Content-Type":"application/json"
 
-    }
 
-def check_serviceability(
 
-        self,
 
-        pickup_pincode,
 
-        delivery_pincode,
 
-        weight
-
-):
-
-    response=requests.get(
-
-        BASE_URL+"/courier/serviceability/",
-
-        headers=self.headers(),
-
-        params={
-
-            "pickup_postcode":pickup_pincode,
-
-            "delivery_postcode":delivery_pincode,
-
-            "weight":weight
-
-        }
-
-    )
-
-    return response.json()
-
-def create_order(self,data):
-
-    response=requests.post(
-
-        BASE_URL+"/orders/create/adhoc",
-
-        headers=self.headers(),
-
-        json=data
-
-    )
-
-    return response.json()
-
-def track(self,awb):
-
-    response=requests.get(
-
-        BASE_URL+
-
-        f"/courier/track/awb/{awb}",
-
-        headers=self.headers()
-
-    )
-
-    return response.json()
-
-def label(self,shipment_id):
-
-    response=requests.post(
-
-        BASE_URL+"/courier/generate/label",
-
-        headers=self.headers(),
-
-        json={
-
-            "shipment_id":[shipment_id]
-
-        }
-
-    )
-
-    return response.json()
-
-from datetime import datetime, timedelta
 
 def release_wallet_amount():
-
     settings = get_business_settings()
-
-orders = Order.query.filter_by(
-
-    wallet_released=False,
-
-    order_status="Delivered"
-
-).all()
-
-for order in orders:
-
-    if not order.delivered_at:
-        continue
-
-    days = (
-        datetime.utcnow() -
-        order.delivered_at
-    ).days
-
-    if days >= settings.seller_payment_hold_days:
-
-        seller = User.query.get(order.seller_id)
-
-        seller.wallet_balance += order.seller_amount
-
-        order.wallet_released = True
-
-db.session.commit()
+    orders = Order.query.filter_by(wallet_released=False, order_status="Delivered").all()
+    for order in orders:
+        if not order.delivered_at:
+            continue
+        days = (datetime.utcnow() - order.delivered_at).days
+        if days >= (settings.seller_payment_hold_days or 0):
+            seller = User.query.get(order.seller_id)
+            if seller:
+                seller.wallet_balance = (seller.wallet_balance or 0) + (order.seller_amount or 0)
+                order.wallet_released = True
+    db.session.commit()
 
 # =========================
 # USER ROUTES
@@ -13189,7 +12911,7 @@ def admin_delete_candidate(id):
 
     return redirect('/admin/candidate-users')
 
-@app.route('/job/<int:job_id>')
+@app.route('/job-share/<int:job_id>')
 def job_share(job_id):
     return redirect(f'/job-details/{job_id}')
 
@@ -14112,7 +13834,7 @@ def payment_info():
 
 @app.route('/add-review/<int:id>', methods=['POST'])
 @login_required
-def add_review(id):
+def add_candidate_review(id):
 
     candidate = Candidate.query.get(id)
 
@@ -14343,7 +14065,7 @@ def mention_search():
     results = []
 
     hrs = User.query.filter(
-        User.company_name.ilike(f"%{q}%")
+        User.company.ilike(f"%{q}%")
     ).limit(5).all()
 
     candidates = CandidateUser.query.filter(
@@ -14588,17 +14310,9 @@ def add_product():
 
             category_id=int(request.form["category_id"]),
 
-            brand_id=request.form.get("brand_id") or None,
-
             name=request.form["name"].strip(),
 
             description=request.form["description"].strip(),
-
-            short_description=request.form.get(
-                "short_description"
-            ),
-
-            sku=request.form.get("sku"),
 
             hsn_code=request.form.get("hsn_code"),
 
@@ -14610,7 +14324,7 @@ def add_product():
 
             stock=int(request.form["stock"]),
 
-            gst_percent=float(
+            gst_percentage=float(
                 request.form.get("gst_percent", 0)
             ),
 
@@ -14634,10 +14348,6 @@ def add_product():
                 "product_type",
                 "simple"
             ),
-
-            return_allowed="return_allowed" in request.form,
-
-            exchange_allowed="exchange_allowed" in request.form,
 
             is_active=True
 
@@ -14725,22 +14435,20 @@ def add_product():
                 if values[i].strip() == "":
                     continue
 
+                variant = ProductVariant(
+                    product_id=product.id,
+                    name=names[i].strip() if i < len(names) and names[i].strip() else "Option"
+                )
+                db.session.add(variant)
+                db.session.flush()
                 db.session.add(
-
-                    ProductVariant(
-
-                        product_id=product.id,
-
-                        variant_name=names[i],
-
-                        option_value=values[i],
-
-                        price=float(prices[i]),
-
-                        stock=int(stocks[i])
-
+                    ProductVariantOption(
+                        variant_id=variant.id,
+                        value=values[i].strip(),
+                        extra_price=float(prices[i] or 0),
+                        stock=int(stocks[i] or 0),
+                        sku=None
                     )
-
                 )
 
         db.session.commit()
@@ -15993,127 +15701,71 @@ def wishlist():
 @app.route("/return/<int:order_item_id>", methods=["POST"])
 @login_required
 def submit_return(order_item_id):
-
-    item = OrderItem.query.get_or_404(order_item_id)
-
-    request_return = ReturnRequest(
-
-        order_id=item.order_id,
-
-        order_item_id=item.id,
-
-        product_id=item.product_id,
-
-        customer_id=current_user.id,
-
-        seller_id=item.product.seller_id,
-
-        reason=request.form.get("reason"),
-
-        description=request.form.get("description"),
-
-        refund_amount=item.total_price
-
-    )
-
-    db.session.add(request_return)
-
-    db.session.flush()
-
-@app.route("/return/<int:order_item_id>")
-@login_required
-def return_product(order_item_id):
-
     item = OrderItem.query.get_or_404(order_item_id)
 
     if item.order.user_id != current_user.id:
         abort(403)
 
     if item.order.order_status != "Delivered":
-
-        flash(
-            "Return can only be requested after delivery.",
-            "warning"
-        )
-
+        flash("Return can only be requested after delivery.", "warning")
         return redirect(f"/order/{item.order_id}")
 
-    existing = ReturnRequest.query.filter_by(
-        order_item_id=item.id
-    ).first()
-
+    existing = ReturnRequest.query.filter_by(order_item_id=item.id).first()
     if existing:
-
-        flash(
-            "Return request already submitted.",
-            "warning"
-        )
-
+        flash("Return request already submitted.", "warning")
         return redirect(f"/order/{item.order_id}")
 
-    return render_template(
-        "return_product.html",
-        item=item
+    request_return = ReturnRequest(
+        order_id=item.order_id,
+        order_item_id=item.id,
+        product_id=item.product_id,
+        customer_id=current_user.id,
+        seller_id=item.product.seller_id,
+        reason=request.form.get("reason"),
+        description=request.form.get("description"),
+        refund_amount=item.total or 0,
+        status="Pending"
     )
 
-    images = request.files.getlist("images")
+    db.session.add(request_return)
+    db.session.flush()
 
-    for image in images:
-
-        if image.filename:
-
-            filename = secure_filename(image.filename)
-
-            filename = (
-                str(uuid.uuid4())
-                + "_"
-                + filename
-            )
-
-            image.save(
-                os.path.join(
-                    app.config["RETURN_UPLOAD_FOLDER"],
-                    filename
-                )
-            )
-
-            db.session.add(
-
-                ReturnImage(
-
-                    return_id=request_return.id,
-
-                    image=filename
-
-                )
-
-            )
+    for image in request.files.getlist("images"):
+        if image and image.filename:
+            filename = save_image(image, "returns")
+            if filename:
+                db.session.add(ReturnImage(return_id=request_return.id, image=filename))
 
     send_notification(
-
         user_id=item.product.seller_id,
-
         user_type="hr",
-
         message=f"New return request for Order #{item.order.order_number}",
-
         link=f"/seller/returns/{request_return.id}",
-
         type="return"
-
     )
 
     db.session.commit()
-
-    flash(
-
-        "Return request submitted successfully.",
-
-        "success"
-
-    )
-
+    flash("Return request submitted successfully.", "success")
     return redirect(f"/order/{item.order_id}")
+
+@app.route("/return/<int:order_item_id>")
+@login_required
+def return_product(order_item_id):
+    item = OrderItem.query.get_or_404(order_item_id)
+
+    if item.order.user_id != current_user.id:
+        abort(403)
+
+    if item.order.order_status != "Delivered":
+        flash("Return can only be requested after delivery.", "warning")
+        return redirect(f"/order/{item.order_id}")
+
+    existing = ReturnRequest.query.filter_by(order_item_id=item.id).first()
+    if existing:
+        flash("Return request already submitted.", "warning")
+        return redirect(f"/order/{item.order_id}")
+
+    return render_template("return_product.html", item=item)
 
 @app.route("/admin/returns")
 @admin_required
@@ -16513,19 +16165,15 @@ def promote_product(id):
 
     db.session.commit()
 
-send_notification(
-
-    user_id=current_user.id,
-
-    user_type="hr",
-
-    message=f"{product.name} is now promoted.",
-
-    link=f"/product/{product.id}",
-
-    type="promotion"
-
-)
+    send_notification(
+        user_id=current_user.id,
+        user_type="hr",
+        message=f"{product.name} is now promoted.",
+        link=f"/product/{product.id}",
+        type="promotion"
+    )
+    flash("Product promoted successfully.", "success")
+    return redirect("/seller/products")
 
 @app.route("/admin/seller/<int:id>/verify")
 @admin_required
@@ -16559,20 +16207,6 @@ def verify_seller(id):
 
     return redirect("/admin/seller-verifications")
 
-@app.route("/shop/search")
-def shop_search():
-
-    keyword = request.args.get("q","")
-
-    category = request.args.get("category")
-
-    min_price = request.args.get("min_price")
-
-    max_price = request.args.get("max_price")
-
-    rating = request.args.get("rating")
-
-    sort = request.args.get("sort")
 
 products = Product.query.filter(
     Product.is_active == True
@@ -16666,6 +16300,46 @@ products = products.paginate(
     per_page=20
 
 )
+
+@app.route("/shop/search")
+def shop_search():
+    keyword = request.args.get("q", "").strip()
+    category = request.args.get("category")
+    min_price = request.args.get("min_price")
+    max_price = request.args.get("max_price")
+    rating = request.args.get("rating")
+    verified = request.args.get("verified")
+    sort = request.args.get("sort")
+
+    products = Product.query.filter(Product.is_active == True)
+    if keyword:
+        products = products.filter(Product.name.ilike(f"%{keyword}%"))
+    if category:
+        try:
+            products = products.filter(Product.category_id == int(category))
+        except ValueError:
+            pass
+    if min_price:
+        products = products.filter(Product.price >= float(min_price))
+    if max_price:
+        products = products.filter(Product.price <= float(max_price))
+    if rating:
+        products = products.filter(Product.average_rating >= float(rating))
+    if verified:
+        products = products.join(User, Product.seller_id == User.id).filter(User.is_verified_seller == True)
+
+    if sort == "price_low":
+        products = products.order_by(Product.price.asc())
+    elif sort == "price_high":
+        products = products.order_by(Product.price.desc())
+    elif sort == "rating":
+        products = products.order_by(Product.average_rating.desc())
+    else:
+        products = products.order_by(Product.is_promoted.desc(), Product.promotion_priority.desc(), Product.created_at.desc())
+
+    products = products.paginate(page=request.args.get("page", 1, type=int), per_page=20)
+    categories = ProductCategory.query.filter_by(is_active=True).all()
+    return render_template("shop_home.html", categories=categories, promoted_products=[], latest_products=products)
 
 @app.route("/seller/analytics")
 @login_required
@@ -16728,52 +16402,7 @@ def monthly_sales():
 
     return jsonify(data)
 
-@app.route("/admin/seller/<int:id>/verify")
-@admin_required
-def verify_seller(id):
 
-    seller = User.query.get_or_404(id)
-
-    seller.is_verified_seller = True
-
-    seller.verification_status = "Verified"
-
-    seller.verification_date = india_time()
-
-    db.session.commit()
-
-    send_notification(
-
-        user_id=seller.id,
-
-        user_type="hr",
-
-        message="🎉 Your shop has been verified.",
-
-        link="/profile",
-
-        type="verification"
-
-    )
-
-    flash("Seller verified.","success")
-
-    return redirect("/admin/seller-verifications")
-
-@app.route("/shop/search")
-def shop_search():
-
-    keyword = request.args.get("q","")
-
-    category = request.args.get("category")
-
-    min_price = request.args.get("min_price")
-
-    max_price = request.args.get("max_price")
-
-    rating = request.args.get("rating")
-
-    sort = request.args.get("sort")
 
 products = Product.query.filter(
     Product.is_active == True
@@ -16868,42 +16497,6 @@ products = products.paginate(
 
 )
 
-@app.route("/seller/analytics")
-@login_required
-def seller_analytics():
-
-    seller_id = current_user.id
-
-    total_sales = db.session.query(
-        db.func.sum(Order.total_amount)
-    ).filter(
-        Order.seller_id == seller_id,
-        Order.payment_status == "Paid"
-    ).scalar() or 0
-
-    total_orders = Order.query.filter_by(
-        seller_id=seller_id
-    ).count()
-
-    total_products = Product.query.filter_by(
-        seller_id=seller_id
-    ).count()
-
-    total_customers = db.session.query(
-        db.func.count(
-            db.distinct(Order.user_id)
-        )
-    ).filter(
-        Order.seller_id == seller_id
-    ).scalar()
-
-    return render_template(
-        "seller_analytics.html",
-        total_sales=total_sales,
-        total_orders=total_orders,
-        total_products=total_products,
-        total_customers=total_customers
-    )
 
 @app.route("/admin/marketplace")
 @admin_required
@@ -17625,8 +17218,8 @@ def delete_banner(id):
 @admin_required
 def marketplace_categories():
 
-    categories = Category.query.order_by(
-        Category.name
+    categories = ProductCategory.query.order_by(
+        ProductCategory.name
     ).all()
 
     return render_template(
@@ -17653,18 +17246,10 @@ def add_marketplace_category():
 
             )
 
-        category=Category(
-
+        category=ProductCategory(
             name=request.form["name"],
-
-            description=request.form["description"],
-
             image=image,
-
-            is_featured="is_featured" in request.form,
-
-            active="active" in request.form
-
+            is_active="active" in request.form
         )
 
         db.session.add(category)
@@ -17684,17 +17269,12 @@ methods=["GET","POST"])
 @admin_required
 def edit_marketplace_category(id):
 
-    category=Category.query.get_or_404(id)
+    category=ProductCategory.query.get_or_404(id)
 
     if request.method=="POST":
 
         category.name=request.form["name"]
-
-        category.description=request.form["description"]
-
-        category.is_featured="is_featured" in request.form
-
-        category.active="active" in request.form
+        category.is_active="active" in request.form
 
         if request.files.get("image"):
 
@@ -17724,7 +17304,7 @@ def edit_marketplace_category(id):
 @admin_required
 def delete_marketplace_category(id):
 
-    category=Category.query.get_or_404(id)
+    category=ProductCategory.query.get_or_404(id)
 
     db.session.delete(category)
 
@@ -17738,9 +17318,9 @@ def delete_marketplace_category(id):
 @admin_required
 def toggle_category(id):
 
-    category = Category.query.get_or_404(id)
+    category = ProductCategory.query.get_or_404(id)
 
-    category.active = not category.active
+    category.is_active = not category.is_active
 
     db.session.commit()
 
@@ -17755,7 +17335,7 @@ def toggle_category(id):
 @admin_required
 def marketplace_category(id):
 
-    category = Category.query.get_or_404(id)
+    category = ProductCategory.query.get_or_404(id)
 
     total_products = Product.query.filter_by(
         category_id=id
