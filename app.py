@@ -16505,19 +16505,16 @@ def promote_product(id):
 
     db.session.commit()
 
-send_notification(
+    send_notification(
+        user_id=current_user.id,
+        user_type="hr",
+        message=f"{product.name} is now promoted.",
+        link=f"/product/{product.id}",
+        type="promotion"
+    )
 
-    user_id=current_user.id,
+    return redirect("/seller/products")
 
-    user_type="hr",
-
-    message=f"{product.name} is now promoted.",
-
-    link=f"/product/{product.id}",
-
-    type="promotion"
-
-)
 
 @app.route("/admin/seller/<int:id>/verify")
 @admin_required
