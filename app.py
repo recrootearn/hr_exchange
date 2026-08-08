@@ -14636,6 +14636,8 @@ def admin_reported_comments():
 @login_required
 def add_product():
 
+    create_default_shop_categories()
+
     categories = ProductCategory.query.filter_by(
         is_active=True
     ).all()
