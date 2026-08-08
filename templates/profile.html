@@ -4,6 +4,10 @@
 
 <style>
 
+/* =========================================================
+   PROFILE PAGE
+   ========================================================= */
+
 .content{
     padding:0 !important;
     background:#f5f7fb;
@@ -16,6 +20,11 @@
     background:#f5f7fb;
     min-height:100vh;
 }
+
+
+/* =========================================================
+   PROFILE HEADER
+   ========================================================= */
 
 .profile-header{
 
@@ -168,61 +177,102 @@
     color:#ffd0d0;
 }
 
+
+/* =========================================================
+   ACTION BUTTONS
+   ========================================================= */
+
 .action-buttons{
+
     display:flex;
+
     gap:12px;
+
     margin-top:18px;
 }
 
 .action-buttons a{
+
     flex:1;
+
     height:56px;
+
     border-radius:16px;
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
+
     text-decoration:none;
+
     font-size:24px;
+
     font-weight:600;
+
     transition:.25s;
+
     border:1.5px solid rgba(255,255,255,.18);
 }
 
 .btn-edit{
+
     background:#fff;
+
     color:#2563eb;
+
     box-shadow:0 4px 12px rgba(0,0,0,.12);
 }
 
 .btn-job{
+
     background:rgba(255,255,255,.10);
+
     color:#fff;
+
     backdrop-filter:blur(10px);
 }
 
 .action-buttons a:hover{
+
     transform:translateY(-2px);
 }
 
 .action-buttons a:active{
+
     transform:scale(.96);
 }
 
-/* Mobile */
-@media (max-width:768px){
+
+/* =========================================================
+   MOBILE ACTION BUTTONS
+   ========================================================= */
+
+@media(max-width:768px){
 
     .action-buttons{
+
         gap:10px;
+
         margin-top:16px;
     }
 
     .action-buttons a{
+
         height:52px;
+
         border-radius:15px;
+
         font-size:22px;
     }
 
 }
+
+
+/* =========================================================
+   MOBILE PROFILE
+   ========================================================= */
 
 @media(max-width:768px){
 
@@ -243,6 +293,7 @@
     .profile-pic{
 
         width:82px;
+
         height:82px;
     }
 
@@ -252,6 +303,11 @@
     }
 
 }
+
+
+/* =========================================================
+   POSTS
+   ========================================================= */
 
 .posts-tab{
 
@@ -307,586 +363,1117 @@
 }
 
 
-/* =========================
+/* =========================================================
    POSTS | SHOP TABS
-   ========================= */
+   ========================================================= */
 
 .profile-content-tabs{
+
     margin-top:15px;
+
     display:flex;
+
     width:100%;
+
     background:#fff;
+
     border-radius:16px 16px 0 0;
+
     border-bottom:1px solid #e5e7eb;
+
     overflow:hidden;
 }
 
 .profile-tab{
+
     flex:1;
+
     border:0;
+
     background:#fff;
+
     color:#6b7280;
+
     padding:15px 10px;
+
     font-size:14px;
+
     font-weight:700;
+
     letter-spacing:.5px;
+
     cursor:pointer;
+
     position:relative;
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
+
     gap:8px;
+
     transition:.2s;
 }
 
 .profile-tab.active{
+
     color:#2563eb;
 }
 
 .profile-tab.active::after{
+
     content:"";
+
     position:absolute;
+
     bottom:0;
+
     left:15%;
+
     right:15%;
+
     height:3px;
+
     background:#2563eb;
+
     border-radius:5px 5px 0 0;
 }
 
 .profile-tab-content{
+
     display:none;
 }
 
 .profile-tab-content.active{
+
     display:block;
 }
 
 .profile-tab-content .post-grid{
+
     margin-top:0;
+
     border-radius:0 0 16px 16px;
+
     overflow:hidden;
 }
 
-/* Shop product grid */
+
+/* =========================================================
+   SHOP PRODUCT GRID
+   ========================================================= */
+
 .shop-profile-grid{
+
     display:grid;
+
     grid-template-columns:repeat(2,1fr);
+
     gap:10px;
+
     background:#f5f7fb;
+
     padding:10px;
 }
 
+
+/* =========================================================
+   PRODUCT CARD
+   ========================================================= */
+
 .shop-profile-product{
+
     display:block;
+
     background:#fff;
+
     border-radius:14px;
+
     overflow:hidden;
+
     text-decoration:none;
+
     color:inherit;
+
     box-shadow:0 2px 8px rgba(0,0,0,.06);
+
     transition:.2s;
 }
 
 .shop-profile-product:hover{
+
     transform:translateY(-2px);
+
+    box-shadow:0 5px 15px rgba(0,0,0,.10);
 }
 
-.shop-product-image{
-    width:100%;
-    aspect-ratio:1/1;
-    background:#f1f5f9;
+
+/* =========================================================
+   ADD PRODUCT CARD
+   FIRST POSITION
+   ========================================================= */
+
+.shop-add-product{
+
+    display:block;
+
+    background:#fff;
+
+    border-radius:14px;
+
     overflow:hidden;
+
+    text-decoration:none;
+
+    color:inherit;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+
+    transition:.2s;
+}
+
+.shop-add-product:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 5px 15px rgba(0,0,0,.10);
+}
+
+.shop-add-product-box{
+
+    width:100%;
+
+    aspect-ratio:1/1;
+
+    background:linear-gradient(
+        135deg,
+        #eef4ff,
+        #f8faff
+    );
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    flex-direction:column;
+
+    color:#2563eb;
+}
+
+.shop-add-product-icon{
+
+    width:64px;
+
+    height:64px;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    color:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:30px;
+
+    margin-bottom:12px;
+
+    box-shadow:0 5px 15px rgba(37,99,235,.25);
+}
+
+.shop-add-product-text{
+
+    font-size:15px;
+
+    font-weight:800;
+
+    color:#2563eb;
+}
+
+
+/* =========================================================
+   PRODUCT IMAGE
+   ========================================================= */
+
+.shop-product-image{
+
+    width:100%;
+
+    aspect-ratio:1/1;
+
+    background:#f1f5f9;
+
+    overflow:hidden;
+
+    position:relative;
 }
 
 .shop-product-image img{
+
     width:100%;
+
     height:100%;
+
     object-fit:cover;
+
+    display:block;
 }
 
 .shop-product-placeholder{
+
     width:100%;
+
     height:100%;
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
+
     color:#94a3b8;
+
     font-size:35px;
 }
 
+
+/* =========================================================
+   PRODUCT INFORMATION
+   ========================================================= */
+
 .shop-product-info{
+
     padding:10px;
 }
 
 .shop-product-name{
+
     font-size:14px;
+
     font-weight:600;
+
     color:#111827;
+
     white-space:nowrap;
+
     overflow:hidden;
+
     text-overflow:ellipsis;
 }
 
 .shop-product-price{
+
     margin-top:5px;
+
     font-size:15px;
+
     font-weight:800;
+
     color:#2563eb;
 }
 
 .shop-product-price span{
+
     margin-left:5px;
+
     color:#9ca3af;
+
     font-size:12px;
+
     font-weight:500;
+
     text-decoration:line-through;
 }
 
+
+/* =========================================================
+   EMPTY SHOP
+   ========================================================= */
+
 .shop-empty{
+
     background:#fff;
+
     text-align:center;
+
     padding:60px 20px;
+
     border-radius:0 0 16px 16px;
 }
 
 .shop-empty i{
+
     font-size:55px;
+
     color:#2563eb;
+
     margin-bottom:15px;
 }
 
 .shop-empty h4{
+
     font-weight:700;
+
     margin-bottom:7px;
 }
 
 .shop-empty p{
+
     color:#6b7280;
+
     margin-bottom:0;
 }
 
+
+/* =========================================================
+   SHOP MOBILE
+   ========================================================= */
+
 @media(max-width:768px){
+
     .profile-tab{
+
         padding:14px 8px;
+
         font-size:13px;
     }
 
     .shop-profile-grid{
+
         grid-template-columns:repeat(2,1fr);
+
         gap:8px;
+
         padding:8px;
     }
 
     .shop-product-info{
+
         padding:8px;
     }
 
     .shop-product-name{
+
         font-size:13px;
     }
 
     .shop-product-price{
+
         font-size:14px;
     }
+
+    .shop-add-product-icon{
+
+        width:55px;
+
+        height:55px;
+
+        font-size:25px;
+    }
+
+    .shop-add-product-text{
+
+        font-size:13px;
+    }
+
 }
 
 </style>
 
+
 <div class="insta-profile">
 
-<div class="profile-header">
 
-<div class="profile-row">
+    <!-- =====================================================
+         PROFILE HEADER
+         ===================================================== -->
 
-{% if current_user.profile_photo %}
+    <div class="profile-header">
 
-<img
-src="/static/uploads/{{ current_user.profile_photo }}"
-class="profile-pic">
+        <div class="profile-row">
 
-{% else %}
 
-<img
-src="https://via.placeholder.com/300"
-class="profile-pic">
+            <!-- PROFILE PHOTO -->
 
-{% endif %}
+            {% if current_user.profile_photo %}
 
-<div class="profile-stats">
+            <img
+                src="/static/uploads/{{ current_user.profile_photo }}"
+                class="profile-pic"
+                alt="Profile">
 
-<div>
+            {% else %}
 
-<strong>{{ posts_count }}</strong>
+            <img
+                src="https://via.placeholder.com/300"
+                class="profile-pic"
+                alt="Profile">
 
-<small>Posts</small>
+            {% endif %}
 
-</div>
 
-<div>
+            <!-- PROFILE STATS -->
 
-<strong>{{ followers_count }}</strong>
+            <div class="profile-stats">
 
-<small>Followers</small>
+                <div>
 
-</div>
+                    <strong>
+                        {{ posts_count }}
+                    </strong>
 
-<div>
+                    <small>
+                        Posts
+                    </small>
 
-<strong>{{ following_count }}</strong>
+                </div>
 
-<small>Following</small>
 
-</div>
+                <div>
 
-</div>
+                    <strong>
+                        {{ followers_count }}
+                    </strong>
 
-</div>
+                    <small>
+                        Followers
+                    </small>
 
-<div class="profile-name">
+                </div>
 
-{{ current_user.first_name }}
-{{ current_user.last_name }}
 
-</div>
+                <div>
 
-<div class="company-name">
+                    <strong>
+                        {{ following_count }}
+                    </strong>
 
-{{ current_user.company }}
+                    <small>
+                        Following
+                    </small>
 
-{% if current_user.company_city %}
+                </div>
 
-<br>
+            </div>
 
-<small>
+        </div>
 
-<i class="fas fa-map-marker-alt"></i>
 
-{{ current_user.company_city }}
+        <!-- NAME -->
 
-</small>
+        <div class="profile-name">
 
-{% endif %}
+            {{ current_user.first_name }}
+            {{ current_user.last_name }}
 
-</div>
+        </div>
 
-{% if current_user.hr_type %}
 
-<div class="hr-badge">
+        <!-- COMPANY -->
 
-{{ current_user.hr_type }}
+        <div class="company-name">
 
-</div>
+            {{ current_user.company }}
 
-{% endif %}
+            {% if current_user.company_city %}
 
-<div class="verify-row">
+            <br>
 
-<div>
+            <small>
 
-{% if current_user.msme_certificate %}
+                <i class="fas fa-map-marker-alt"></i>
 
-<span class="verify-ok">
+                {{ current_user.company_city }}
 
-<i class="fas fa-check-circle"></i>
+            </small>
 
-MSME
+            {% endif %}
 
-</span>
+        </div>
 
-{% else %}
 
-<span class="verify-no">
+        <!-- HR TYPE -->
 
-<i class="fas fa-times-circle"></i>
+        {% if current_user.hr_type %}
 
-MSME
+        <div class="hr-badge">
 
-</span>
+            {{ current_user.hr_type }}
 
-{% endif %}
+        </div>
 
-</div>
+        {% endif %}
 
-<div>
 
-{% if current_user.gumasta_certificate %}
+        <!-- VERIFICATION -->
 
-<span class="verify-ok">
+        <div class="verify-row">
 
-<i class="fas fa-check-circle"></i>
 
-Gumasta
+            <div>
 
-</span>
+                {% if current_user.msme_certificate %}
 
-{% else %}
+                <span class="verify-ok">
 
-<span class="verify-no">
+                    <i class="fas fa-check-circle"></i>
 
-<i class="fas fa-times-circle"></i>
+                    MSME
 
-Gumasta
+                </span>
 
-</span>
+                {% else %}
 
-{% endif %}
+                <span class="verify-no">
 
-</div>
+                    <i class="fas fa-times-circle"></i>
 
-</div>
+                    MSME
 
-<div class="mt-4">
+                </span>
 
-    <div class="d-flex justify-content-between mb-2">
+                {% endif %}
 
-        <strong>Profile Completion</strong>
+            </div>
 
-        <strong>{{ current_user.profile_completion or 0 }}%</strong>
 
-    </div>
+            <div>
 
-    <div
-        class="progress"
-        style="
-            height:12px;
-            border-radius:30px;
-            background:rgba(255,255,255,.25);
-        ">
+                {% if current_user.gumasta_certificate %}
 
-        <div
-            class="progress-bar bg-success"
-            role="progressbar"
-            style="
-                width:{{ current_user.profile_completion or 0 }}%;
-                border-radius:30px;
-            ">
+                <span class="verify-ok">
+
+                    <i class="fas fa-check-circle"></i>
+
+                    Gumasta
+
+                </span>
+
+                {% else %}
+
+                <span class="verify-no">
+
+                    <i class="fas fa-times-circle"></i>
+
+                    Gumasta
+
+                </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- PROFILE COMPLETION -->
+
+        <div class="mt-4">
+
+            <div class="d-flex justify-content-between mb-2">
+
+                <strong>
+                    Profile Completion
+                </strong>
+
+                <strong>
+                    {{ current_user.profile_completion or 0 }}%
+                </strong>
+
+            </div>
+
+
+            <div
+                class="progress"
+                style="
+                    height:12px;
+                    border-radius:30px;
+                    background:rgba(255,255,255,.25);
+                ">
+
+                <div
+                    class="progress-bar bg-success"
+                    role="progressbar"
+                    style="
+                        width:{{ current_user.profile_completion or 0 }}%;
+                        border-radius:30px;
+                    ">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTION BUTTONS -->
+
+        <div class="action-buttons">
+
+            <a
+                href="/edit-profile"
+                class="btn-edit">
+
+                <i class="fas fa-pen"></i>
+
+            </a>
+
+
+            <a
+                href="/post-job"
+                class="btn-job">
+
+                <i class="fas fa-plus"></i>
+
+            </a>
+
+
+            <a
+                href="/post-video"
+                class="btn-job">
+
+                <i class="fas fa-video"></i>
+
+            </a>
+
         </div>
 
     </div>
 
-</div>
 
-<div class="action-buttons">
+    <!-- =====================================================
+         POSTS / SHOP TABS
+         ===================================================== -->
 
-    <a href="/edit-profile" class="btn-edit">
-        <i class="fas fa-pen"></i>
-    </a>
+    <div class="profile-content-tabs">
 
-    <a href="/post-job" class="btn-job">
-        <i class="fas fa-plus"></i>
-    </a>
 
-    <a href="/post-video" class="btn-job">
-        <i class="fas fa-video"></i>
-    </a>
-
-</div>
-
-</div>
-
-<div class="profile-content-tabs">
-
-    <button type="button"
+        <button
+            type="button"
             class="profile-tab active"
             data-tab="posts"
             onclick="switchProfileTab('posts')">
-        <i class="fas fa-th"></i>
-        <span>Posts</span>
-    </button>
 
-    <button type="button"
+            <i class="fas fa-th"></i>
+
+            <span>
+                Posts
+            </span>
+
+        </button>
+
+
+        <button
+            type="button"
             class="profile-tab"
             data-tab="shop"
             onclick="switchProfileTab('shop')">
-        <i class="fas fa-store"></i>
-        <span>Shop</span>
-    </button>
 
-</div>
+            <i class="fas fa-store"></i>
 
-<div id="profile-posts" class="profile-tab-content active">
-<div class="post-grid">
+            <span>
+                Shop
+            </span>
 
-{% for job in jobs %}
+        </button>
 
-<a href="/feed/{{ job.id }}" class="post-item">
+    </div>
 
-    {% if job.images and job.images != "" %}
 
-    {% set first_file = job.images.split(',')[0] %}
+    <!-- =====================================================
+         POSTS TAB
+         ===================================================== -->
 
-    {% if first_file.lower().endswith(('.mp4','.mov','.avi','.mkv','.webm')) %}
-        {% set thumb = first_file.rsplit('.',1)[0] + '.jpg' %}
-        <div style="position:relative;width:100%;height:100%;">
-            <!-- Uses generated thumbnail, falls back to placeholder for old videos -->
-            <img
-                src="/static/uploads/{{ thumb }}"
-                onerror="this.onerror=null;this.src='/static/uploads/video-placeholder.jpg';"
-                loading="lazy"
-                style="width:100%;height:100%;object-fit:cover;">
-            <div style="
-                position:absolute;
-                top:50%;
-                left:50%;
-                transform:translate(-50%,-50%);
-                width:42px;
-                height:42px;
-                border-radius:50%;
-                background:rgba(0,0,0,.45);
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                color:#fff;
-                font-size:18px;
-            ">
-                ▶
+    <div
+        id="profile-posts"
+        class="profile-tab-content active">
+
+        <div class="post-grid">
+
+
+            {% for job in jobs %}
+
+            <a
+                href="/feed/{{ job.id }}"
+                class="post-item">
+
+
+                {% if job.images and job.images != "" %}
+
+                    {% set first_file = job.images.split(',')[0] %}
+
+
+                    {% if first_file.lower().endswith(
+                        ('.mp4','.mov','.avi','.mkv','.webm')
+                    ) %}
+
+                        {% set thumb =
+                            first_file.rsplit('.',1)[0] + '.jpg'
+                        %}
+
+
+                        <div
+                            style="
+                                position:relative;
+                                width:100%;
+                                height:100%;
+                            ">
+
+
+                            <img
+                                src="/static/uploads/{{ thumb }}"
+                                onerror="
+                                    this.onerror=null;
+                                    this.src='/static/uploads/video-placeholder.jpg';
+                                "
+                                loading="lazy"
+                                style="
+                                    width:100%;
+                                    height:100%;
+                                    object-fit:cover;
+                                ">
+
+
+                            <div
+                                style="
+                                    position:absolute;
+                                    top:50%;
+                                    left:50%;
+                                    transform:translate(-50%,-50%);
+                                    width:42px;
+                                    height:42px;
+                                    border-radius:50%;
+                                    background:rgba(0,0,0,.45);
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    color:#fff;
+                                    font-size:18px;
+                                ">
+
+                                ▶
+
+                            </div>
+
+                        </div>
+
+
+                    {% else %}
+
+                        <img
+                            src="/static/uploads/{{ first_file }}"
+                            loading="lazy"
+                            alt="Post">
+
+                    {% endif %}
+
+
+                {% elif job.image and job.image != "" %}
+
+                    <img
+                        src="/static/uploads/{{ job.image }}"
+                        loading="lazy"
+                        alt="Post">
+
+
+                {% else %}
+
+                    <img
+                        src="https://via.placeholder.com/500x500?text=JOB"
+                        loading="lazy"
+                        alt="Job">
+
+                {% endif %}
+
+            </a>
+
+
+            {% else %}
+
+            <div
+                style="
+                    grid-column:1/-1;
+                    background:white;
+                    padding:60px 20px;
+                    text-align:center;
+                ">
+
+                <i
+                    class="fas fa-briefcase"
+                    style="
+                        font-size:60px;
+                        color:#2563eb;
+                        margin-bottom:15px;
+                    ">
+                </i>
+
+
+                <h4 class="fw-bold">
+
+                    No Posts Yet
+
+                </h4>
+
+
+                <p class="text-muted">
+
+                    Start hiring by posting your first job.
+
+                </p>
+
+
+                <a
+                    href="/post-job"
+                    class="btn btn-primary mt-2">
+
+                    + Post Your First Job
+
+                </a>
+
             </div>
+
+            {% endfor %}
 
         </div>
 
-    {% else %}
+    </div>
 
-        <img
-            src="/static/uploads/{{ first_file }}"
-            loading="lazy">
 
-    {% endif %}
+    <!-- =====================================================
+         SHOP TAB
+         ===================================================== -->
 
-{% elif job.image and job.image != "" %}
+    <div
+        id="profile-shop"
+        class="profile-tab-content">
 
-    <img
-        src="/static/uploads/{{ job.image }}"
-        loading="lazy">
 
-{% else %}
+        <div class="shop-profile-grid">
 
-        <img
-            src="https://via.placeholder.com/500x500?text=JOB"
-            loading="lazy">
 
-    {% endif %}
+            <!-- =================================================
+                 FIRST CARD = ADD PRODUCT
+                 ================================================= -->
 
-</a>
+            <a
+                href="/shop/add-product"
+                class="shop-add-product">
 
-{% else %}
 
-<div
-style="
-grid-column:1/-1;
-background:white;
-padding:60px 20px;
-text-align:center;
-">
+                <div class="shop-add-product-box">
 
-<i
-class="fas fa-briefcase"
-style="
-font-size:60px;
-color:#2563eb;
-margin-bottom:15px;
-">
-</i>
 
-<h4 class="fw-bold">
+                    <div class="shop-add-product-icon">
 
-No Posts Yet
+                        <i class="fas fa-plus"></i>
 
-</h4>
-
-<p class="text-muted">
-
-Start hiring by posting your first job.
-
-</p>
-
-<a
-href="/post-job"
-class="btn btn-primary mt-2">
-
-+ Post Your First Job
-
-</a>
-
-</div>
-
-{% endfor %}
-
-</div>
-</div>
-
-<div id="profile-shop" class="profile-tab-content">
-
-    {% if products %}
-    <div class="shop-profile-grid">
-
-        {% for product in products %}
-        <a href="/product/{{ product.id }}" class="shop-profile-product">
-
-            <div class="shop-product-image">
-                {% if product.images and product.images|length > 0 %}
-                    <img src="/static/uploads/{{ product.images[0].image }}"
-                         alt="{{ product.name }}"
-                         loading="lazy">
-                {% else %}
-                    <div class="shop-product-placeholder">
-                        <i class="fas fa-image"></i>
                     </div>
-                {% endif %}
-            </div>
 
-            <div class="shop-product-info">
-                <div class="shop-product-name">{{ product.name }}</div>
 
-                <div class="shop-product-price">
-                    {% if product.sale_price %}
-                        ₹{{ "%.0f"|format(product.sale_price) }}
-                        <span>₹{{ "%.0f"|format(product.price) }}</span>
-                    {% else %}
-                        ₹{{ "%.0f"|format(product.price) }}
-                    {% endif %}
+                    <div class="shop-add-product-text">
+
+                        Add Product
+
+                    </div>
+
+
                 </div>
-            </div>
 
-        </a>
-        {% endfor %}
+            </a>
+
+
+            <!-- =================================================
+                 PRODUCTS
+                 START FROM SECOND CARD
+                 ================================================= -->
+
+            {% for product in products %}
+
+            <a
+                href="/product/{{ product.id }}"
+                class="shop-profile-product">
+
+
+                <!-- PRODUCT IMAGE -->
+
+                <div class="shop-product-image">
+
+
+                    {% if product.images and product.images|length > 0 %}
+
+                    <img
+                        src="{{ url_for(
+                            'static',
+                            filename='product_images/' + product.images[0].image
+                        ) }}"
+                        alt="{{ product.name }}"
+                        loading="lazy"
+                        onerror="
+                            this.onerror=null;
+                            this.src='{{ url_for(
+                                'static',
+                                filename='images/no-image.png'
+                            ) }}';
+                        ">
+
+
+                    {% else %}
+
+                    <div class="shop-product-placeholder">
+
+                        <i class="fas fa-image"></i>
+
+                    </div>
+
+                    {% endif %}
+
+
+                </div>
+
+
+                <!-- PRODUCT INFORMATION -->
+
+                <div class="shop-product-info">
+
+
+                    <div class="shop-product-name">
+
+                        {{ product.name }}
+
+                    </div>
+
+
+                    <div class="shop-product-price">
+
+
+                        {% if product.sale_price %}
+
+                            ₹{{ "%.0f"|format(product.sale_price) }}
+
+                            <span>
+
+                                ₹{{ "%.0f"|format(product.price) }}
+
+                            </span>
+
+
+                        {% else %}
+
+                            ₹{{ "%.0f"|format(product.price) }}
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                </div>
+
+            </a>
+
+            {% endfor %}
+
+
+        </div>
+
+
+        <!-- =================================================
+             EMPTY SHOP
+             ================================================= -->
+
+        {% if not products %}
+
+        <div class="shop-empty">
+
+
+            <i class="fas fa-store"></i>
+
+
+            <h4>
+
+                No Products Yet
+
+            </h4>
+
+
+            <p>
+
+                Add your first product to start selling.
+
+            </p>
+
+
+        </div>
+
+        {% endif %}
+
 
     </div>
 
-    {% else %}
-    <div class="shop-empty">
-        <i class="fas fa-store"></i>
-        <h4>No Products Yet</h4>
-        <p>Add products to start selling from your shop.</p>
-
-        <a href="/shop/add-product" class="btn btn-primary mt-2">
-            + Add Product
-        </a>
-    </div>
-    {% endif %}
-
 </div>
 
-</div>
+
+<!-- =========================================================
+     TAB SWITCHING
+     ========================================================= -->
 
 <script>
+
 function switchProfileTab(tab) {
-    document.querySelectorAll('.profile-tab').forEach(function(button) {
-        button.classList.toggle(
-            'active',
-            button.getAttribute('data-tab') === tab
+
+
+    /* Remove active from all tab buttons */
+
+    document
+        .querySelectorAll('.profile-tab')
+        .forEach(function(button) {
+
+            button.classList.toggle(
+
+                'active',
+
+                button.getAttribute('data-tab') === tab
+
+            );
+
+        });
+
+
+    /* Hide all tab contents */
+
+    document
+        .querySelectorAll('.profile-tab-content')
+        .forEach(function(content) {
+
+            content.classList.remove('active');
+
+        });
+
+
+    /* Show selected tab */
+
+    var selected =
+        document.getElementById(
+            'profile-' + tab
         );
-    });
 
-    document.querySelectorAll('.profile-tab-content').forEach(function(content) {
-        content.classList.remove('active');
-    });
 
-    var selected = document.getElementById('profile-' + tab);
-    if (selected) {
+    if(selected){
+
         selected.classList.add('active');
+
     }
+
 }
+
 </script>
+
 
 {% endblock %}
