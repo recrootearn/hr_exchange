@@ -2454,37 +2454,6 @@ class ProductImage(db.Model):
         default=0
     )
 
-class ProductReview(db.Model):
-    __tablename__ = "product_reviews"
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    product_id = db.Column(
-        db.Integer,
-        db.ForeignKey("products.id"),
-        nullable=False
-    )
-
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey("user.id"),
-        nullable=False
-    )
-
-    rating = db.Column(
-        db.Integer,
-        nullable=False
-    )
-
-    review = db.Column(
-        db.Text
-    )
-
-    created_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow
-    )
-
 class Cart(db.Model):
     __tablename__ = "cart"
 
