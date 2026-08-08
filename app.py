@@ -15860,7 +15860,7 @@ def seller_sales_chart():
 
 @app.route("/product/<int:product_id>/review", methods=["POST"])
 @login_required
-def add_review(product_id):
+def add_product_review(product_id):
 
     product = Product.query.get_or_404(product_id)
 
