@@ -1,93 +1,72 @@
 {% extends "base.html" %}
-
 {% block title %}My Orders{% endblock %}
-
 {% block content %}
-
-<div class="container py-4">
-
-<h2 class="mb-4">
-
-My Orders
-
-</h2>
-
-{% if orders %}
-
-{% for order in orders %}
-
-<div class="card shadow-sm mb-3">
-
-<div class="card-body">
-
-<div class="row align-items-center">
-
-<div class="col-md-3">
-
-<h6>
-
-{{ order.order_number }}
-
-</h6>
-
-<small>
-
-{{ order.created_at.strftime("%d %b %Y %I:%M %p") }}
-
-</small>
-
+<style>
+html,body{margin:0!important;padding:0!important}
+.content{padding:0!important;background:#f5f7fb!important}
+.orders-page{min-height:100vh;background:#f5f7fb;padding:24px 16px 50px}
+.orders-wrap{max-width:950px;margin:auto}
+.orders-hero{background:linear-gradient(135deg,#2563eb,#1d4ed8,#3b82f6);color:#fff;border-radius:24px;padding:22px;margin-bottom:16px;box-shadow:0 12px 30px rgba(37,99,235,.18)}
+.orders-hero h1{margin:0;font-size:25px;font-weight:900}
+.orders-hero p{margin:5px 0 0;font-size:13px;opacity:.85}
+.order-list-card{background:#fff;border-radius:20px;margin-bottom:12px;padding:16px;box-shadow:0 6px 22px rgba(20,35,70,.07);transition:.2s}
+.order-list-card:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(20,35,70,.10)}
+.order-row{display:flex;align-items:center;gap:14px}
+.order-icon{width:56px;height:56px;flex:0 0 56px;border-radius:16px;background:#eef4ff;color:#2563eb;display:flex;align-items:center;justify-content:center;font-size:21px}
+.order-main{flex:1;min-width:0}
+.order-no{font-size:15px;font-weight:850;color:#172033}
+.order-date{font-size:11px;color:#8a93a3;margin-top:4px}
+.order-items{font-size:12px;color:#6b7280;margin-top:5px}
+.order-right{text-align:right}
+.amount{font-size:16px;font-weight:900;color:#172033}
+.status{display:inline-flex;margin-top:6px;padding:6px 10px;border-radius:999px;background:#eef4ff;color:#2563eb;font-size:10px;font-weight:850}
+.view{display:inline-flex;align-items:center;gap:5px;margin-top:7px;color:#2563eb;font-size:11px;font-weight:800;text-decoration:none}
+.empty{background:#fff;border-radius:22px;padding:65px 20px;text-align:center;box-shadow:0 6px 22px rgba(20,35,70,.07)}
+.empty i{font-size:52px;color:#2563eb;margin-bottom:15px}
+.empty h3{font-size:20px;font-weight:850}.empty p{color:#6b7280}
+@media(max-width:600px){
+ .orders-page{padding:0 0 35px}
+ .orders-hero{border-radius:0 0 22px 22px;margin-bottom:10px;padding:19px 15px 21px}
+ .orders-hero h1{font-size:22px}
+ .order-list-card{border-radius:16px;margin:8px 8px 0;padding:12px}
+ .order-row{gap:10px}.order-icon{width:48px;height:48px;flex-basis:48px;border-radius:13px;font-size:18px}
+ .order-no{font-size:13px}.amount{font-size:14px}.status{font-size:9px}
+ .empty{border-radius:18px;margin:8px}
+}
+</style>
+<div class="orders-page">
+ <div class="orders-wrap">
+  <div class="orders-hero">
+   <h1><i class="fas fa-bag-shopping"></i> My Orders</h1>
+   <p>Orders you have placed from the marketplace</p>
+  </div>
+  {% if orders %}
+   {% for order in orders %}
+   <a href="{{ url_for('order_details', order_id=order.id) }}" style="text-decoration:none;color:inherit">
+    <div class="order-list-card">
+     <div class="order-row">
+      <div class="order-icon"><i class="fas fa-box"></i></div>
+      <div class="order-main">
+       <div class="order-no">{{ order.order_number }}</div>
+       <div class="order-date">{{ order.created_at.strftime("%d %b %Y, %I:%M %p") }}</div>
+       <div class="order-items">{{ order.items|length }} item{% if order.items|length != 1 %}s{% endif %} · {{ order.payment_status }}</div>
+      </div>
+      <div class="order-right">
+       <div class="amount">₹{{ "%.2f"|format(order.total_amount) }}</div>
+       <div class="status">{{ order.order_status }}</div>
+       <div class="view">View <i class="fas fa-chevron-right"></i></div>
+      </div>
+     </div>
+    </div>
+   </a>
+   {% endfor %}
+  {% else %}
+   <div class="empty">
+    <i class="fas fa-box-open"></i>
+    <h3>No Orders Yet</h3>
+    <p>Your marketplace orders will appear here.</p>
+   </div>
+  {% endif %}
+ </div>
 </div>
-
-<div class="col-md-3">
-
-<b>
-
-₹{{ order.total_amount }}
-
-</b>
-
-</div>
-
-<div class="col-md-3">
-
-<span class="badge bg-primary">
-
-{{ order.order_status }}
-
-</span>
-
-</div>
-
-<div class="col-md-3 text-end">
-
-<a
-href="/order/{{ order.id }}"
-class="btn btn-primary">
-
-View
-
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-{% else %}
-
-<div class="alert alert-info">
-
-No Orders Found.
-
-</div>
-
-{% endif %}
-
-</div>
-
 {% endblock %}

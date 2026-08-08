@@ -1,101 +1,104 @@
 {% extends "base.html" %}
-
-{% block title %}
-
-Seller Orders
-
-{% endblock %}
-
+{% block title %}Customer Orders{% endblock %}
 {% block content %}
+<style>
+html,body{margin:0!important;padding:0!important}
+.content{padding:0!important;background:#f5f7fb!important}
+.seller-page{min-height:100vh;background:#f5f7fb;padding:24px 16px 50px}
+.seller-wrap{max-width:1050px;margin:auto}
+.seller-hero{background:linear-gradient(135deg,#2563eb,#1d4ed8,#3b82f6);color:#fff;border-radius:24px;padding:22px;margin-bottom:16px;box-shadow:0 12px 30px rgba(37,99,235,.18)}
+.seller-hero h1{margin:0;font-size:25px;font-weight:900}.seller-hero p{margin:5px 0 0;font-size:13px;opacity:.85}
+.filters{background:#fff;border-radius:18px;padding:10px;display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;box-shadow:0 5px 18px rgba(20,35,70,.06)}
+.filter{flex:0 0 auto;text-decoration:none;padding:9px 14px;border-radius:999px;background:#f3f6fb;color:#475569;font-size:12px;font-weight:800}
+.filter.active{background:#2563eb;color:#fff}
+.customer-order{background:#fff;border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 6px 22px rgba(20,35,70,.07);transition:.2s}
+.customer-order:hover{transform:translateY(-2px)}
+.order-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.order-no{font-size:15px;font-weight:900;color:#172033}.date{font-size:11px;color:#8a93a3;margin-top:4px}
+.customer{margin-top:9px;background:#f8faff;border:1px solid #e7edf6;border-radius:13px;padding:10px 12px;font-size:12px;color:#475569}
+.customer strong{color:#172033;font-size:13px}
+.status{padding:7px 11px;border-radius:999px;background:#eef4ff;color:#2563eb;font-size:10px;font-weight:850;white-space:nowrap}
+.products{display:flex;gap:8px;overflow-x:auto;margin-top:13px;padding-bottom:2px}
+.mini-product{display:flex;align-items:center;gap:8px;background:#f8faff;border:1px solid #edf1f7;border-radius:12px;padding:7px;min-width:190px}
+.mini-product img,.mini-placeholder{width:48px;height:48px;border-radius:9px;object-fit:cover;background:#eef2f7}
+.mini-placeholder{display:flex;align-items:center;justify-content:center;color:#94a3b8}
+.mini-name{font-size:12px;font-weight:800;color:#172033;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.mini-meta{font-size:10px;color:#6b7280;margin-top:3px}
+.order-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:13px;border-top:1px solid #edf0f5}
+.amount{font-size:18px;font-weight:900;color:#172033}
+.view-btn{display:inline-flex;align-items:center;gap:6px;background:#2563eb;color:#fff;text-decoration:none;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:850}
+.empty{background:#fff;border-radius:22px;padding:65px 20px;text-align:center;box-shadow:0 6px 22px rgba(20,35,70,.07)}
+.empty i{font-size:52px;color:#2563eb;margin-bottom:15px}.empty h3{font-size:20px;font-weight:850}.empty p{color:#6b7280}
+@media(max-width:600px){
+ .seller-page{padding:0 0 35px}.seller-hero{border-radius:0 0 22px 22px;margin-bottom:8px;padding:19px 15px 21px}.seller-hero h1{font-size:22px}
+ .filters{border-radius:0;margin:0 0 8px;padding:9px 10px}.customer-order{border-radius:16px;margin:8px 8px 0;padding:12px}
+ .order-top{gap:8px}.order-no{font-size:13px}.customer{font-size:11px}.mini-product{min-width:175px}
+}
+</style>
+<div class="seller-page">
+ <div class="seller-wrap">
+  <div class="seller-hero">
+   <h1><i class="fas fa-box-open"></i> Customer Orders</h1>
+   <p>Manage orders placed by customers for your products</p>
+  </div>
 
-<div class="container py-4">
+  <div class="filters">
+   <a href="{{ url_for('seller_orders') }}" class="filter {% if not status %}active{% endif %}">All</a>
+   <a href="{{ url_for('seller_orders', status='Pending') }}" class="filter {% if status == 'Pending' %}active{% endif %}">Pending</a>
+   <a href="{{ url_for('seller_orders', status='Accepted') }}" class="filter {% if status == 'Accepted' %}active{% endif %}">Accepted</a>
+   <a href="{{ url_for('seller_orders', status='Packed') }}" class="filter {% if status == 'Packed' %}active{% endif %}">Packed</a>
+   <a href="{{ url_for('seller_orders', status='Shipped') }}" class="filter {% if status == 'Shipped' %}active{% endif %}">Shipped</a>
+   <a href="{{ url_for('seller_orders', status='Delivered') }}" class="filter {% if status == 'Delivered' %}active{% endif %}">Delivered</a>
+   <a href="{{ url_for('seller_orders', status='Rejected') }}" class="filter {% if status == 'Rejected' %}active{% endif %}">Rejected</a>
+   <a href="{{ url_for('seller_orders', status='Cancelled') }}" class="filter {% if status == 'Cancelled' %}active{% endif %}">Cancelled</a>
+  </div>
 
-<h2>
+  {% if orders %}
+   {% for order in orders %}
+   <div class="customer-order">
+    <div class="order-top">
+     <div>
+      <div class="order-no">{{ order.order_number }}</div>
+      <div class="date">{{ order.created_at.strftime("%d %b %Y, %I:%M %p") }}</div>
+      <div class="customer">
+       <strong>{{ order.customer.first_name }} {{ order.customer.last_name }}</strong><br>
+       {{ order.shipping_address.mobile }} · {{ order.shipping_address.city }}, {{ order.shipping_address.state }}
+      </div>
+     </div>
+     <span class="status">{{ order.order_status }}</span>
+    </div>
 
-Orders
+    <div class="products">
+     {% for item in order.items %}
+     <div class="mini-product">
+      {% if item.product_image %}
+       <img src="{{ url_for('static', filename='product_images/' + item.product_image) }}" alt="{{ item.product_name }}">
+      {% else %}
+       <div class="mini-placeholder"><i class="fas fa-image"></i></div>
+      {% endif %}
+      <div>
+       <div class="mini-name">{{ item.product_name }}</div>
+       <div class="mini-meta">Qty {{ item.quantity }} · ₹{{ "%.2f"|format(item.total) }}</div>
+      </div>
+     </div>
+     {% endfor %}
+    </div>
 
-</h2>
-
-<div class="mb-4">
-
-<a href="?status=Pending" class="btn btn-outline-warning">
-
-Pending
-
-</a>
-
-<a href="?status=Accepted" class="btn btn-outline-primary">
-
-Accepted
-
-</a>
-
-<a href="?status=Packed" class="btn btn-outline-info">
-
-Packed
-
-</a>
-
-<a href="?status=Shipped" class="btn btn-outline-secondary">
-
-Shipped
-
-</a>
-
-<a href="?status=Delivered" class="btn btn-outline-success">
-
-Delivered
-
-</a>
-
+    <div class="order-bottom">
+     <div class="amount">₹{{ "%.2f"|format(order.total_amount) }}</div>
+     <a href="{{ url_for('order_details', order_id=order.id) }}" class="view-btn">
+      View Order <i class="fas fa-chevron-right"></i>
+     </a>
+    </div>
+   </div>
+   {% endfor %}
+  {% else %}
+   <div class="empty">
+    <i class="fas fa-box-open"></i>
+    <h3>No Customer Orders</h3>
+    <p>Orders for your products will appear here.</p>
+   </div>
+  {% endif %}
+ </div>
 </div>
-
-{% for order in orders %}
-
-<div class="card mb-3">
-
-<div class="card-body">
-
-<div class="row">
-
-<div class="col-md-3">
-
-{{ order.order_number }}
-
-</div>
-
-<div class="col-md-3">
-
-₹{{ order.total_amount }}
-
-</div>
-
-<div class="col-md-3">
-
-{{ order.order_status }}
-
-</div>
-
-<div class="col-md-3 text-end">
-
-<a
-href="/order/{{ order.id }}"
-class="btn btn-primary">
-
-Open
-
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
-
 {% endblock %}
