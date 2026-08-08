@@ -3513,7 +3513,7 @@ class Coupon(db.Model):
 
     category_id = db.Column(
         db.Integer,
-        db.ForeignKey("categories.id"),
+        db.ForeignKey("product_categories.id"),
         nullable=True
     )
 
