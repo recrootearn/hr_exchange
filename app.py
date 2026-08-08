@@ -16551,110 +16551,83 @@ def verify_seller(id):
 @app.route("/shop/search")
 def shop_search():
 
-    keyword = request.args.get("q","")
-
+    keyword = request.args.get("q", "")
     category = request.args.get("category")
-
     min_price = request.args.get("min_price")
-
     max_price = request.args.get("max_price")
-
     rating = request.args.get("rating")
-
     sort = request.args.get("sort")
 
-products = Product.query.filter(
-    Product.is_active == True
-)
-
-if keyword:
-
-    products = products.filter(
-
-        Product.name.ilike(f"%{keyword}%")
-
+    products = Product.query.filter(
+        Product.is_active == True
     )
 
-if category:
+    if keyword:
+        products = products.filter(
+            Product.name.ilike(f"%{keyword}%")
+        )
 
-    products = products.filter(
+    if category:
+        products = products.filter(
+            Product.category_id == category
+        )
 
-        Product.category_id == category
+    if min_price:
+        products = products.filter(
+            Product.price >= float(min_price)
+        )
 
-    )
+    if max_price:
+        products = products.filter(
+            Product.price <= float(max_price)
+        )
 
-if min_price:
+    if rating:
+        products = products.filter(
+            Product.average_rating >= float(rating)
+        )
 
-    products = products.filter(
+    verified = request.args.get("verified")
 
-        Product.price >= float(min_price)
-
-    )
-
-if max_price:
-
-    products = products.filter(
-
-        Product.price <= float(max_price)
-
-    )
-
-if rating:
-
-    products = products.filter(
-
-        Product.average_rating >= float(rating)
-
-    )
-
-verified = request.args.get("verified")
-
-if verified:
-
-    products = products.join(User).filter(
-
-        User.is_verified_seller == True
-
-    )
-
-products = products.order_by(
-
-    Product.is_promoted.desc(),
-
-    Product.promotion_priority.desc()
-)
-
-if sort == "price_low":
-
-    products = products.order_by(Product.price.asc())
-
-elif sort == "price_high":
-
-    products = products.order_by(Product.price.desc())
-
-elif sort == "rating":
+    if verified:
+        products = products.join(User).filter(
+            User.is_verified_seller == True
+        )
 
     products = products.order_by(
-
-        Product.average_rating.desc()
-
+        Product.is_promoted.desc(),
+        Product.promotion_priority.desc()
     )
 
-elif sort == "latest":
+    if sort == "price_low":
+        products = products.order_by(
+            Product.price.asc()
+        )
 
-    products = products.order_by(
+    elif sort == "price_high":
+        products = products.order_by(
+            Product.price.desc()
+        )
 
-        Product.created_at.desc()
+    elif sort == "rating":
+        products = products.order_by(
+            Product.average_rating.desc()
+        )
 
+    elif sort == "latest":
+        products = products.order_by(
+            Product.created_at.desc()
+        )
+
+    products = products.paginate(
+        page=request.args.get("page", 1, type=int),
+        per_page=20
     )
 
-products = products.paginate(
-
-    page=request.args.get("page",1,type=int),
-
-    per_page=20
-
-)
+    return render_template(
+        "shop_products.html",
+        products=products
+    )
 
 @app.route("/seller/analytics")
 @login_required
@@ -16748,114 +16721,6 @@ def verify_seller(id):
     flash("Seller verified.","success")
 
     return redirect("/admin/seller-verifications")
-
-@app.route("/shop/search")
-def shop_search():
-
-    keyword = request.args.get("q","")
-
-    category = request.args.get("category")
-
-    min_price = request.args.get("min_price")
-
-    max_price = request.args.get("max_price")
-
-    rating = request.args.get("rating")
-
-    sort = request.args.get("sort")
-
-products = Product.query.filter(
-    Product.is_active == True
-)
-
-if keyword:
-
-    products = products.filter(
-
-        Product.name.ilike(f"%{keyword}%")
-
-    )
-
-if category:
-
-    products = products.filter(
-
-        Product.category_id == category
-
-    )
-
-if min_price:
-
-    products = products.filter(
-
-        Product.price >= float(min_price)
-
-    )
-
-if max_price:
-
-    products = products.filter(
-
-        Product.price <= float(max_price)
-
-    )
-
-if rating:
-
-    products = products.filter(
-
-        Product.average_rating >= float(rating)
-
-    )
-
-verified = request.args.get("verified")
-
-if verified:
-
-    products = products.join(User).filter(
-
-        User.is_verified_seller == True
-
-    )
-
-products = products.order_by(
-
-    Product.is_promoted.desc(),
-
-    Product.promotion_priority.desc()
-)
-
-if sort == "price_low":
-
-    products = products.order_by(Product.price.asc())
-
-elif sort == "price_high":
-
-    products = products.order_by(Product.price.desc())
-
-elif sort == "rating":
-
-    products = products.order_by(
-
-        Product.average_rating.desc()
-
-    )
-
-elif sort == "latest":
-
-    products = products.order_by(
-
-        Product.created_at.desc()
-
-    )
-
-products = products.paginate(
-
-    page=request.args.get("page",1,type=int),
-
-    per_page=20
-
-)
 
 @app.route("/seller/analytics")
 @login_required
