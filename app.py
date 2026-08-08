@@ -2898,7 +2898,6 @@ class Order(db.Model):
 
     shipping_address = db.relationship(
         "ShippingAddress",
-        backref="orders"
     )
 
     items = db.relationship(
