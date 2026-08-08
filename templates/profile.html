@@ -695,7 +695,6 @@ Gumasta
         <span>Posts</span>
     </button>
 
-    {% if current_user.is_verified_seller or products_count > 0 %}
     <button type="button"
             class="profile-tab"
             data-tab="shop"
@@ -703,7 +702,6 @@ Gumasta
         <i class="fas fa-store"></i>
         <span>Shop</span>
     </button>
-    {% endif %}
 
 </div>
 
@@ -817,7 +815,6 @@ class="btn btn-primary mt-2">
 </div>
 </div>
 
-{% if current_user.is_verified_seller or products_count > 0 %}
 <div id="profile-shop" class="profile-tab-content">
 
     {% if products %}
@@ -869,7 +866,6 @@ class="btn btn-primary mt-2">
     {% endif %}
 
 </div>
-{% endif %}
 
 </div>
 
