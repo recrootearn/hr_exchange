@@ -104,6 +104,131 @@ body{
 /* SIDEBAR */
 
 .sidebar{
+/* =========================================================
+   MODERN SIDEBAR ENHANCEMENTS
+   ========================================================= */
+
+.sidebar{
+    background:
+        radial-gradient(circle at 20% 0%, rgba(59,130,246,.28), transparent 35%),
+        linear-gradient(180deg,#0f172a 0%,#172554 48%,#1d4ed8 100%);
+    padding:20px 14px 30px;
+    overflow-y:auto;
+    overflow-x:hidden;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+    scrollbar-color:rgba(255,255,255,.28) transparent;
+}
+
+.sidebar::-webkit-scrollbar{
+    width:6px;
+}
+
+.sidebar::-webkit-scrollbar-track{
+    background:transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb{
+    background:rgba(255,255,255,.28);
+    border-radius:20px;
+}
+
+.sidebar a{
+    min-height:48px;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+    border:1px solid rgba(255,255,255,.05);
+    background:rgba(255,255,255,.045);
+}
+
+.sidebar a:hover{
+    background:rgba(255,255,255,.13);
+    border-color:rgba(255,255,255,.10);
+}
+
+.sidebar a i{
+    width:22px;
+    min-width:22px;
+    text-align:center;
+}
+
+/* More menu */
+.more-section{
+    margin-top:4px;
+}
+
+.more-toggle{
+    width:100%;
+    min-height:48px;
+    border:1px solid rgba(255,255,255,.05);
+    background:rgba(255,255,255,.045);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:#fff;
+    text-align:left;
+    padding:14px;
+    border-radius:12px;
+    margin-bottom:0;
+    transition:.25s;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    touch-action:manipulation;
+}
+
+.more-toggle:hover{
+    background:rgba(255,255,255,.13);
+}
+
+.more-toggle .more-chevron{
+    margin-left:auto;
+    transition:transform .25s ease;
+}
+
+.more-section.open .more-chevron{
+    transform:rotate(180deg);
+}
+
+.more-items{
+    display:none;
+    padding-top:8px;
+}
+
+.more-section.open .more-items{
+    display:block;
+}
+
+.more-items a{
+    margin:0 0 8px;
+    background:rgba(255,255,255,.06);
+}
+
+/* Header hide/show */
+.topbar,
+.mobile-topbar{
+    transition:transform .28s ease;
+    will-change:transform;
+}
+
+.topbar.hide-header,
+.mobile-topbar.hide-header{
+    transform:translateY(-110%);
+}
+
+@media(max-width:768px){
+    .sidebar{
+        padding:18px 12px 28px;
+        padding-bottom:calc(28px + env(safe-area-inset-bottom));
+    }
+
+    .sidebar a,
+    .more-toggle{
+        min-height:52px;
+    }
+}
+
 
     width:260px;
     height:100vh;
@@ -1068,20 +1193,37 @@ body{
     Wallet
 </a>
 
-<a href="/candidate-support">
-    <i class="fas fa-headset"></i>
-    Support
+<a href="/my-orders">
+    <i class="fas fa-bag-shopping"></i>
+    My Orders
 </a>
 
-<a href="/candidate-general-info">
-    <i class="fas fa-circle-info"></i>
-    General Info
-</a>
+<div class="more-section">
+    <div class="more-items">
+        <a href="/candidate-general-info">
+            <i class="fas fa-circle-info"></i>
+            General Info
+        </a>
 
-<a href="/candidate-logout">
-    <i class="fas fa-right-from-bracket"></i>
-    Logout
-</a>
+        <a href="/candidate-support">
+            <i class="fas fa-headset"></i>
+            Support
+        </a>
+
+        <a href="/candidate-logout">
+            <i class="fas fa-right-from-bracket"></i>
+            Logout
+        </a>
+    </div>
+
+    <button type="button"
+            class="more-toggle"
+            onclick="toggleMore(this)">
+        <i class="fas fa-ellipsis"></i>
+        More
+        <i class="fas fa-chevron-down more-chevron"></i>
+    </button>
+</div>
 
 {% else %}
 
@@ -1157,19 +1299,19 @@ body{
     Buy Credits
 </a>
 
-<a href="/support">
-    <i class="fas fa-headset"></i>
-    Support
-</a>
-
-<a href="/general-info">
-    <i class="fas fa-circle-info"></i>
-    General Info
-</a>
-
 <a href="/referrals">
     <i class="fas fa-user-plus"></i>
     Referrals
+</a>
+
+<a href="/my-orders">
+    <i class="fas fa-bag-shopping"></i>
+    My Orders
+</a>
+
+<a href="/seller/orders">
+    <i class="fas fa-box-open"></i>
+    Customer Orders
 </a>
 
 {% if current_user.is_admin %}
@@ -1181,10 +1323,32 @@ body{
 
 {% endif %}
 
-<a href="/logout">
-    <i class="fas fa-right-from-bracket"></i>
-    Logout
-</a>
+<div class="more-section">
+    <div class="more-items">
+        <a href="/general-info">
+            <i class="fas fa-circle-info"></i>
+            General Info
+        </a>
+
+        <a href="/support">
+            <i class="fas fa-headset"></i>
+            Support
+        </a>
+
+        <a href="/logout">
+            <i class="fas fa-right-from-bracket"></i>
+            Logout
+        </a>
+    </div>
+
+    <button type="button"
+            class="more-toggle"
+            onclick="toggleMore(this)">
+        <i class="fas fa-ellipsis"></i>
+        More
+        <i class="fas fa-chevron-down more-chevron"></i>
+    </button>
+</div>
 
 {% endif %}
 
@@ -1357,6 +1521,15 @@ window.addEventListener("load", function(){
 
 });
 
+function toggleMore(button){
+
+    const section = button.closest(".more-section");
+
+    if(section){
+        section.classList.toggle("open");
+    }
+}
+
 function toggleSidebar(){
 
     document
@@ -1449,16 +1622,31 @@ let lastScroll = 0;
 window.addEventListener("scroll", function(){
 
     const nav = document.querySelector(".bottom-nav");
-    if(!nav) return;
+    const mobileHeader = document.querySelector(".mobile-topbar");
+    const desktopHeader = document.querySelector(".topbar");
 
     const currentScroll = window.pageYOffset;
 
     if(currentScroll <= 20){
-        nav.classList.remove("hide");
+
+        if(nav) nav.classList.remove("hide");
+        if(mobileHeader) mobileHeader.classList.remove("hide-header");
+        if(desktopHeader) desktopHeader.classList.remove("hide-header");
+
     }else if(currentScroll > lastScroll){
-        nav.classList.add("hide");
-    }else{
-        nav.classList.remove("hide");
+
+        /* Scroll down: hide header and bottom navigation */
+        if(nav) nav.classList.add("hide");
+        if(mobileHeader) mobileHeader.classList.add("hide-header");
+        if(desktopHeader) desktopHeader.classList.add("hide-header");
+
+    }else if(currentScroll < lastScroll){
+
+        /* Scroll up: show header and bottom navigation */
+        if(nav) nav.classList.remove("hide");
+        if(mobileHeader) mobileHeader.classList.remove("hide-header");
+        if(desktopHeader) desktopHeader.classList.remove("hide-header");
+
     }
 
     lastScroll = currentScroll;
