@@ -14636,13 +14636,19 @@ def admin_reported_comments():
 @login_required
 def add_product():
 
+    # Create default categories if they don't exist
     create_default_shop_categories()
 
+    # Get active categories
     categories = ProductCategory.query.filter_by(
         is_active=True
     ).all()
 
     if request.method == "POST":
+
+        # ==========================================
+        # CREATE PRODUCT
+        # ==========================================
 
         product = Product(
 
@@ -14654,18 +14660,24 @@ def add_product():
 
             name=request.form["name"].strip(),
 
-            description=request.form["description"].strip(),
+            description=request.form.get(
+                "description",
+                ""
+            ).strip(),
 
-            short_description=request.form.get(
-                "short_description"
+            sku=request.form.get(
+                "sku"
             ),
 
-            sku=request.form.get("sku"),
-
-            hsn_code=request.form.get("hsn_code"),
+            hsn_code=request.form.get(
+                "hsn_code"
+            ),
 
             price=float(
-                request.form["price"]
+                request.form.get(
+                    "price",
+                    0
+                )
             ),
 
             sale_price=float(
@@ -14675,10 +14687,13 @@ def add_product():
             else None,
 
             stock=int(
-                request.form["stock"]
+                request.form.get(
+                    "stock",
+                    0
+                )
             ),
 
-            gst_percent=float(
+            gst_percentage=float(
                 request.form.get(
                     "gst_percent",
                     0
@@ -14716,19 +14731,7 @@ def add_product():
             product_type=request.form.get(
                 "product_type",
                 "simple"
-            ),
-
-            return_allowed=(
-                "return_allowed"
-                in request.form
-            ),
-
-            exchange_allowed=(
-                "exchange_allowed"
-                in request.form
-            ),
-
-            is_active=True
+            )
 
         )
 
@@ -14757,11 +14760,11 @@ def add_product():
 
             return redirect(request.url)
 
-        order = 1
+        sort_order = 1
 
         for image in images:
 
-            if image.filename == "":
+            if not image or image.filename == "":
                 continue
 
             if allowed_product_file(
@@ -14792,13 +14795,13 @@ def add_product():
 
                         image=filename,
 
-                        sort_order=order
+                        sort_order=sort_order
 
                     )
 
                 )
 
-                order += 1
+                sort_order += 1
 
         # ==========================================
         # SAVE PRODUCT VARIANTS
@@ -14826,8 +14829,30 @@ def add_product():
                 len(values)
             ):
 
-                if values[i].strip() == "":
+                value = values[i].strip()
+
+                if not value:
                     continue
+
+                variant_name = (
+                    names[i]
+                    if i < len(names)
+                    else "Option"
+                )
+
+                variant_price = (
+                    float(prices[i])
+                    if i < len(prices)
+                    and prices[i]
+                    else float(product.price)
+                )
+
+                variant_stock = (
+                    int(stocks[i])
+                    if i < len(stocks)
+                    and stocks[i]
+                    else 0
+                )
 
                 db.session.add(
 
@@ -14835,21 +14860,21 @@ def add_product():
 
                         product_id=product.id,
 
-                        variant_name=names[i],
+                        variant_name=variant_name,
 
-                        option_value=values[i],
+                        option_value=value,
 
-                        price=float(
-                            prices[i]
-                        ),
+                        price=variant_price,
 
-                        stock=int(
-                            stocks[i]
-                        )
+                        stock=variant_stock
 
                     )
 
                 )
+
+        # ==========================================
+        # FINAL DATABASE COMMIT
+        # ==========================================
 
         db.session.commit()
 
@@ -14861,6 +14886,10 @@ def add_product():
         return redirect(
             "/shop/products"
         )
+
+    # ==========================================
+    # SHOW ADD PRODUCT PAGE
+    # ==========================================
 
     return render_template(
 
