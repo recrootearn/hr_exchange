@@ -2179,6 +2179,87 @@ class ProductCategory(db.Model):
         default=datetime.utcnow
     )
 
+# =========================================================
+# RECROOTEARN SHOP - DEFAULT CATEGORIES
+# =========================================================
+
+DEFAULT_SHOP_CATEGORIES = [
+
+    "Mobiles & Tablets",
+    "Electronics",
+    "Computers & Laptops",
+    "Computer Accessories",
+    "TV, Audio & Video",
+    "Cameras & Photography",
+
+    "Home Appliances",
+    "Kitchen Appliances",
+
+    "Fashion",
+    "Men's Clothing",
+    "Women's Clothing",
+    "Kids' Clothing",
+    "Footwear",
+    "Bags & Luggage",
+    "Jewellery & Accessories",
+
+    "Beauty & Personal Care",
+    "Health & Wellness",
+
+    "Home & Kitchen",
+    "Furniture",
+    "Home Decor",
+    "Home Improvement",
+    "Kitchen & Dining",
+
+    "Grocery & Gourmet Food",
+
+    "Baby Products",
+    "Toys & Games",
+
+    "Books",
+    "Stationery & Office",
+
+    "Sports & Fitness",
+
+    "Pet Supplies",
+
+    "Automotive",
+
+    "Tools & Hardware",
+    "Garden & Outdoor",
+
+    "Arts, Crafts & Hobbies",
+
+    "Gifts & Custom Products",
+
+    "Musical Instruments",
+
+    "Travel & Travel Accessories",
+
+    "Other Products"
+]
+
+
+def create_default_shop_categories():
+
+    for category_name in DEFAULT_SHOP_CATEGORIES:
+
+        existing = ProductCategory.query.filter_by(
+            name=category_name
+        ).first()
+
+        if not existing:
+
+            db.session.add(
+                ProductCategory(
+                    name=category_name,
+                    is_active=True
+                )
+            )
+
+    db.session.commit()
+
 class Product(db.Model):
     __tablename__ = "products"
 
@@ -14559,10 +14640,6 @@ def add_product():
         is_active=True
     ).all()
 
-    brands = Brand.query.filter_by(
-        active=True
-    ).all()
-
     if request.method == "POST":
 
         product = Product(
@@ -14740,8 +14817,6 @@ def add_product():
         "shop/add_product.html",
 
         categories=categories,
-
-        brands=brands
 
     )
 
@@ -18043,14 +18118,16 @@ def verify_single_device():
 
         return redirect(url_for("login"))
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     with app.app_context():
+
         db.create_all()
+
+        create_default_shop_categories()
 
     app.run(
         host='0.0.0.0',
         port=5000,
         debug=True
     )
-

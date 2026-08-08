@@ -211,85 +211,29 @@ required></textarea>
 
 <div class="row">
 
-<div class="col-md-6">
+<div class="col-md-12">
 
 <label>
-
 Category <span class="ap-required">*</span>
-
 </label>
 
-<input type="search"
-       class="form-control mb-2 ap-category-search"
-       id="categorySearch"
-       placeholder="Search category..."
-       autocomplete="off">
-
 <select
+    class="form-select"
+    name="category_id"
+    id="category_id"
+    required>
 
-class="form-select"
+    <option value="">Select Category</option>
 
-name="category_id"
-
-required>
-
-<option value="">
-
-Select Category
-
-</option>
-
-{% for category in categories %}
-
-<option value="{{ category.id }}">
-
-{{ category.name }}
-
-</option>
-
-{% endfor %}
+    {% for category in categories %}
+    <option value="{{ category.id }}">{{ category.name }}</option>
+    {% endfor %}
 
 </select>
 
-</div>
-
-<div class="col-md-6">
-
-<label>
-
-Brand
-
-</label>
-
-<input type="search"
-       class="form-control mb-2 ap-brand-search"
-       id="brandSearch"
-       placeholder="Search brand..."
-       autocomplete="off">
-
-<select
-
-class="form-select"
-
-name="brand_id">
-
-<option value="">
-
-Select Brand
-
-</option>
-
-{% for brand in brands %}
-
-<option value="{{ brand.id }}">
-
-{{ brand.name }}
-
-</option>
-
-{% endfor %}
-
-</select>
+<small class="text-muted">
+    Choose the category that best matches your product.
+</small>
 
 </div>
 
@@ -1117,34 +1061,6 @@ document.getElementById(
 ).appendChild(clone);
 
 }
-
-
-/* Category / brand quick filtering */
-function setupAPSearch(inputId, selectName){
-    const input=document.getElementById(inputId);
-    const select=document.querySelector('select[name="'+selectName+'"]');
-    if(!input || !select) return;
-
-    input.addEventListener('input', function(){
-        const q=this.value.trim().toLowerCase();
-
-        Array.from(select.options).forEach(function(option,index){
-            if(index===0){
-                option.hidden=false;
-                return;
-            }
-            option.hidden=!!q && !option.text.toLowerCase().includes(q);
-        });
-
-        if(select.selectedOptions[0] && select.selectedOptions[0].hidden){
-            select.value="";
-        }
-    });
-}
-
-setupAPSearch("categorySearch","category_id");
-setupAPSearch("brandSearch","brand_id");
-
 </script>
 
 {% endblock %}
