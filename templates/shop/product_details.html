@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ product.name }}</div>
-
-{% endblock %}
+{% block title %}{{ product.name }}{% endblock %}
 
 {% block content %}
 
@@ -10,918 +8,1504 @@
 /* ==============================
    RECROOTEARN PRODUCT DETAILS UI
    ============================== */
-.product-page{background:#f6f8fc;min-height:100vh;margin:0 -12px;padding:18px 12px 40px}
-.product-page .product-main-card,.product-page .info-card,.product-page .seller-card,.product-page .shipping-card,.product-page .related-card{background:#fff;border:0;border-radius:22px;box-shadow:0 8px 28px rgba(20,35,70,.08);overflow:hidden}
-.product-page .product-main-card{padding:14px}
-.product-page .main-product-image{width:100%;height:520px;object-fit:cover;border-radius:18px;background:#f1f3f7}
-.product-page .thumb-wrap{padding:3px}
-.product-page .product-thumb{height:82px;width:100%;object-fit:cover;border-radius:12px;border:2px solid transparent;cursor:pointer;transition:.2s}
-.product-page .product-thumb:hover{border-color:#0b5ed7;transform:translateY(-1px)}
-.product-page .product-title{font-size:clamp(24px,3vw,36px);line-height:1.2;font-weight:800;color:#172033;margin-bottom:8px}
-.product-page .category-text{font-size:14px;color:#6b7280;margin-bottom:14px}
-.product-page .rating-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:12px}
-.product-page .rating-stars{letter-spacing:1px}
-.product-page .rating-text{font-size:14px;color:#6b7280}
-.product-page .price-main{font-size:30px;font-weight:800;margin:10px 0}
-.product-page .old-price{font-size:16px;font-weight:500;margin-left:7px}
-.product-page .stock-badge{display:inline-flex;align-items:center;border-radius:999px;padding:7px 13px;font-weight:700;font-size:13px}
-.product-page .short-description{color:#4b5563;line-height:1.65;font-size:15px}
-.product-page .spec-mini{background:#f8faff;border:1px solid #e8edf7;border-radius:15px;padding:13px;height:100%}
-.product-page .spec-mini small{display:block;color:#6b7280;margin-bottom:3px}
-.product-page .spec-mini strong{color:#172033;word-break:break-word}
-.product-page .variant-select,.product-page .quantity-input{border-radius:13px;padding:12px 14px;border:1px solid #dbe2ee}
-.product-page .variant-select:focus,.product-page .quantity-input:focus{border-color:#0b5ed7;box-shadow:0 0 0 3px rgba(11,94,215,.12)}
-.product-page .cart-btn{border:0;border-radius:14px;padding:13px 18px;font-weight:800;background:#0b5ed7}
-.product-page .wishlist-btn{border-radius:14px;padding:12px;font-weight:700}
-.product-page .section-card{background:#fff;border:0;border-radius:20px;box-shadow:0 8px 25px rgba(20,35,70,.07);overflow:hidden;margin-bottom:18px}
-.product-page .section-head{padding:17px 20px;border-bottom:1px solid #eef1f6;font-weight:800;font-size:18px;color:#172033}
-.product-page .section-body{padding:20px}
-.product-page .description-body{color:#374151;line-height:1.75;font-size:15px;overflow-wrap:anywhere}
-.product-page .spec-table{margin:0;border-color:#edf0f5}
-.product-page .spec-table th{background:#f8faff;width:36%;color:#374151}
-.product-page .spec-table td,.product-page .spec-table th{padding:13px 14px;vertical-align:middle}
-.product-page .review-item{padding:16px 0;border-bottom:1px solid #edf0f5}
-.product-page .review-item:last-child{border-bottom:0;padding-bottom:0}
-.product-page .review-name{font-weight:800;color:#172033}
-.product-page .review-date{color:#8a93a3;font-size:12px}
-.product-page .seller-avatar{width:86px;height:86px;object-fit:cover;border-radius:50%;border:4px solid #eef4ff}
-.product-page .seller-name{font-weight:800;font-size:19px;color:#172033}
-.product-page .shop-btn{border-radius:12px;font-weight:700;padding:11px}
-.product-page .benefit{display:flex;gap:10px;align-items:center;padding:9px 0;color:#374151}
-.product-page .benefit-icon{width:34px;height:34px;border-radius:10px;background:#eef5ff;display:flex;align-items:center;justify-content:center;flex:none}
-.product-page .related-title{font-size:22px;font-weight:800;color:#172033;margin:24px 0 14px}
-.product-page .related-product{height:100%;background:#fff;border:0;border-radius:17px;box-shadow:0 6px 20px rgba(20,35,70,.07);overflow:hidden;transition:.2s}
-.product-page .related-product:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(20,35,70,.12)}
-.product-page .related-img{height:190px;width:100%;object-fit:cover;background:#f1f3f7}
-.product-page .related-body{padding:13px}
-.product-page .related-name{font-weight:700;color:#172033;min-height:40px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.product-page .share-box{text-align:center;background:#fff;border-radius:20px;padding:20px;box-shadow:0 8px 25px rgba(20,35,70,.07);margin-top:24px}
-.product-page .share-btn{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin:3px}
-@media(max-width:991.98px){
- .product-page{margin:0 -8px;padding:10px 8px 28px}
- .product-page .main-product-image{height:390px}
- .product-page .product-title{font-size:25px;margin-top:4px}
- .product-page .price-main{font-size:27px}
+
+.product-page{
+    background:#f6f8fc;
+    min-height:100vh;
+    margin:0 -12px;
+    padding:18px 12px 40px
 }
+
+.product-page .product-main-card,
+.product-page .info-card,
+.product-page .seller-card,
+.product-page .shipping-card,
+.product-page .related-card{
+    background:#fff;
+    border:0;
+    border-radius:22px;
+    box-shadow:0 8px 28px rgba(20,35,70,.08);
+    overflow:hidden
+}
+
+.product-page .product-main-card{
+    padding:14px
+}
+
+.product-page .main-product-image{
+    width:100%;
+    height:520px;
+    object-fit:cover;
+    border-radius:18px;
+    background:#f1f3f7
+}
+
+.product-page .thumb-wrap{
+    padding:3px
+}
+
+.product-page .product-thumb{
+    height:82px;
+    width:100%;
+    object-fit:cover;
+    border-radius:12px;
+    border:2px solid transparent;
+    cursor:pointer;
+    transition:.2s
+}
+
+.product-page .product-thumb:hover{
+    border-color:#0b5ed7;
+    transform:translateY(-1px)
+}
+
+.product-page .product-title{
+    font-size:clamp(24px,3vw,36px);
+    line-height:1.2;
+    font-weight:800;
+    color:#172033;
+    margin-bottom:8px
+}
+
+.product-page .category-text{
+    font-size:14px;
+    color:#6b7280;
+    margin-bottom:14px
+}
+
+.product-page .rating-row{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    flex-wrap:wrap;
+    margin-bottom:12px
+}
+
+.product-page .rating-stars{
+    letter-spacing:1px
+}
+
+.product-page .rating-text{
+    font-size:14px;
+    color:#6b7280
+}
+
+.product-page .price-main{
+    font-size:30px;
+    font-weight:800;
+    margin:10px 0
+}
+
+.product-page .old-price{
+    font-size:16px;
+    font-weight:500;
+    margin-left:7px
+}
+
+.product-page .stock-badge{
+    display:inline-flex;
+    align-items:center;
+    border-radius:999px;
+    padding:7px 13px;
+    font-weight:700;
+    font-size:13px
+}
+
+.product-page .short-description{
+    color:#4b5563;
+    line-height:1.65;
+    font-size:15px
+}
+
+.product-page .spec-mini{
+    background:#f8faff;
+    border:1px solid #e8edf7;
+    border-radius:15px;
+    padding:13px;
+    height:100%
+}
+
+.product-page .spec-mini small{
+    display:block;
+    color:#6b7280;
+    margin-bottom:3px
+}
+
+.product-page .spec-mini strong{
+    color:#172033;
+    word-break:break-word
+}
+
+.product-page .variant-select,
+.product-page .quantity-input{
+    border-radius:13px;
+    padding:12px 14px;
+    border:1px solid #dbe2ee
+}
+
+.product-page .variant-select:focus,
+.product-page .quantity-input:focus{
+    border-color:#0b5ed7;
+    box-shadow:0 0 0 3px rgba(11,94,215,.12)
+}
+
+.product-page .cart-btn{
+    border:0;
+    border-radius:14px;
+    padding:13px 18px;
+    font-weight:800;
+    background:#0b5ed7
+}
+
+.product-page .wishlist-btn{
+    border-radius:14px;
+    padding:12px;
+    font-weight:700
+}
+
+.product-page .section-card{
+    background:#fff;
+    border:0;
+    border-radius:20px;
+    box-shadow:0 8px 25px rgba(20,35,70,.07);
+    overflow:hidden;
+    margin-bottom:18px
+}
+
+.product-page .section-head{
+    padding:17px 20px;
+    border-bottom:1px solid #eef1f6;
+    font-weight:800;
+    font-size:18px;
+    color:#172033
+}
+
+.product-page .section-body{
+    padding:20px
+}
+
+.product-page .description-body{
+    color:#374151;
+    line-height:1.75;
+    font-size:15px;
+    overflow-wrap:anywhere
+}
+
+.product-page .spec-table{
+    margin:0;
+    border-color:#edf0f5
+}
+
+.product-page .spec-table th{
+    background:#f8faff;
+    width:36%;
+    color:#374151
+}
+
+.product-page .spec-table td,
+.product-page .spec-table th{
+    padding:13px 14px;
+    vertical-align:middle
+}
+
+.product-page .review-item{
+    padding:16px 0;
+    border-bottom:1px solid #edf0f5
+}
+
+.product-page .review-item:last-child{
+    border-bottom:0;
+    padding-bottom:0
+}
+
+.product-page .review-name{
+    font-weight:800;
+    color:#172033
+}
+
+.product-page .review-date{
+    color:#8a93a3;
+    font-size:12px
+}
+
+.product-page .seller-avatar{
+    width:86px;
+    height:86px;
+    object-fit:cover;
+    border-radius:50%;
+    border:4px solid #eef4ff
+}
+
+.product-page .seller-name{
+    font-weight:800;
+    font-size:19px;
+    color:#172033
+}
+
+.product-page .shop-btn{
+    border-radius:12px;
+    font-weight:700;
+    padding:11px
+}
+
+.product-page .benefit{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    padding:9px 0;
+    color:#374151
+}
+
+.product-page .benefit-icon{
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    background:#eef5ff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:none
+}
+
+.product-page .related-title{
+    font-size:22px;
+    font-weight:800;
+    color:#172033;
+    margin:24px 0 14px
+}
+
+.product-page .related-product{
+    height:100%;
+    background:#fff;
+    border:0;
+    border-radius:17px;
+    box-shadow:0 6px 20px rgba(20,35,70,.07);
+    overflow:hidden;
+    transition:.2s
+}
+
+.product-page .related-product:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 28px rgba(20,35,70,.12)
+}
+
+.product-page .related-img{
+    height:190px;
+    width:100%;
+    object-fit:cover;
+    background:#f1f3f7
+}
+
+.product-page .related-body{
+    padding:13px
+}
+
+.product-page .related-name{
+    font-weight:700;
+    color:#172033;
+    min-height:40px;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden
+}
+
+.product-page .share-box{
+    text-align:center;
+    background:#fff;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 8px 25px rgba(20,35,70,.07);
+    margin-top:24px
+}
+
+.product-page .share-btn{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    margin:3px
+}
+
+@media(max-width:991.98px){
+
+    .product-page{
+        margin:0 -8px;
+        padding:10px 8px 28px
+    }
+
+    .product-page .main-product-image{
+        height:390px
+    }
+
+    .product-page .product-title{
+        font-size:25px;
+        margin-top:4px
+    }
+
+    .product-page .price-main{
+        font-size:27px
+    }
+}
+
 @media(max-width:575.98px){
- .product-page{margin:0 -12px;padding:0 8px 25px}
- .product-page .product-main-card,.product-page .section-card,.product-page .seller-card,.product-page .shipping-card,.product-page .share-box{border-radius:16px}
- .product-page .main-product-image{height:330px;border-radius:13px}
- .product-page .product-main-card{padding:8px}
- .product-page .product-thumb{height:68px;border-radius:9px}
- .product-page .product-title{font-size:23px}
- .product-page .price-main{font-size:26px}
- .product-page .section-head{padding:14px 15px;font-size:17px}
- .product-page .section-body{padding:15px}
- .product-page .spec-table th{width:42%}
- .product-page .related-img{height:155px}
- .product-page .related-name{font-size:14px}
- .product-page .related-title{font-size:20px}
+
+    .product-page{
+        margin:0 -12px;
+        padding:0 8px 25px
+    }
+
+    .product-page .product-main-card,
+    .product-page .section-card,
+    .product-page .seller-card,
+    .product-page .shipping-card,
+    .product-page .share-box{
+        border-radius:16px
+    }
+
+    .product-page .main-product-image{
+        height:330px;
+        border-radius:13px
+    }
+
+    .product-page .product-main-card{
+        padding:8px
+    }
+
+    .product-page .product-thumb{
+        height:68px;
+        border-radius:9px
+    }
+
+    .product-page .product-title{
+        font-size:23px
+    }
+
+    .product-page .price-main{
+        font-size:26px
+    }
+
+    .product-page .section-head{
+        padding:14px 15px;
+        font-size:17px
+    }
+
+    .product-page .section-body{
+        padding:15px
+    }
+
+    .product-page .spec-table th{
+        width:42%
+    }
+
+    .product-page .related-img{
+        height:155px
+    }
+
+    .product-page .related-name{
+        font-size:14px
+    }
+
+    .product-page .related-title{
+        font-size:20px
+    }
 }
 </style>
 
+
 <div class="product-page">
 
-<div class="container py-4">
+    <div class="container py-4">
 
-<div class="row">
+        <!-- =========================================
+             PRODUCT TOP SECTION
+             ========================================= -->
 
-<!-- Product Images -->
+        <div class="row g-4">
 
-<div class="col-lg-6 mb-4">
+            <!-- PRODUCT IMAGES -->
+            <div class="col-lg-6">
 
-    <div class="card shadow-sm">
+                <div class="product-main-card">
 
-        <div class="card-body">
+                    {% if product.images %}
 
-            {% if product.images %}
+                    <img
+                        id="mainImage"
+                        src="{{ url_for(
+                            'static',
+                            filename='product_images/' + product.images[0].image
+                        ) }}"
+                        class="img-fluid main-product-image"
+                        alt="{{ product.name }}"
+                    >
 
-            <img id="mainImage"
+                    {% else %}
 
-                 src="{{ url_for('static', filename='product_images/' + product.images[0].image) }}"
+                    <img
+                        id="mainImage"
+                        src="{{ url_for(
+                            'static',
+                            filename='images/no-image.png'
+                        ) }}"
+                        class="img-fluid main-product-image"
+                        alt="No image"
+                    >
 
-                 class="img-fluid main-product-image"
+                    {% endif %}
 
-                 style="height:500px;object-fit:cover;">
 
-            {% else %}
+                    {% if product.images %}
 
-            <img id="mainImage"
+                    <div class="row mt-3">
 
-                 src="{{ url_for('static', filename='images/no-image.png') }}"
+                        {% for image in product.images %}
 
-                 class="img-fluid main-product-image"
+                        <div class="col-3 mb-2 thumb-wrap">
 
-                 style="height:500px;object-fit:cover;">
+                            <img
+                                src="{{ url_for(
+                                    'static',
+                                    filename='product_images/' + image.image
+                                ) }}"
+                                class="product-thumb"
+                                alt="{{ product.name }}"
+                                onclick="changeImage(this.src)"
+                            >
 
-            {% endif %}
-
-            <div class="row mt-3">
-
-                {% for image in product.images %}
-
-                <div class="col-3 mb-2">
-
-                    <img src="{{ url_for('static', filename='product_images/' + image.image) }}"
-
-                         class="product-thumb"
-
-                         style="height:90px;width:100%;object-fit:cover;cursor:pointer;"
-
-                         onclick="changeImage(this.src)">
-
-                </div>
-
-                {% endfor %}
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- Product Details -->
-
-<div class="col-lg-6">
-
-    <h2 class="product-title">
-
-        {{ product.name }}
-
-    </h2>
-
-    <p class="text-muted">
-
-        {{ product.category.name }}
-
-    </p>
-
-    <div class="mb-2">
-
-        {% for i in range(5) %}
-
-            {% if i < product.average_rating|int %}
-
-            <i class="fas fa-star text-warning"></i>
-
-            {% else %}
-
-            <i class="far fa-star text-warning"></i>
-
-            {% endif %}
-
-        {% endfor %}
-
-        <span>
-
-            {{ product.average_rating }}
-
-            ({{ product.review_count }} Reviews)
-
-        </span>
-
-    </div>
-
-    {% if product.sale_price %}
-
-    <h3 class="price-main text-success">
-
-        ₹{{ product.sale_price }}
-
-        <small>
-
-            <del class="text-muted">
-
-                ₹{{ product.price }}
-
-            </del>
-
-        </small>
-
-    </h3>
-
-    {% else %}
-
-    <h3>
-
-        ₹{{ product.price }}
-
-    </h3>
-
-    {% endif %}
-
-    {% if product.stock > 0 %}
-
-    <span class="stock-badge badge bg-success">
-
-        In Stock
-
-    </span>
-
-    {% else %}
-
-    <span class="stock-badge badge bg-danger">
-
-        Out of Stock
-
-    </span>
-
-    {% endif %}
-
-    <hr>
-
-    <p>
-
-        {{ product.short_description }}
-
-    </p>
-
-    <div class="row mb-3">
-
-        <div class="col-6">
-
-            <strong>SKU</strong>
-
-            <br>
-
-            {{ product.sku }}
-
-        </div>
-
-        <div class="col-6">
-
-            <strong>Brand</strong>
-
-            <br>
-
-            {{ product.brand.name if product.brand else "-" }}
-
-        </div>
-
-    </div>
-
-    {% if product.product_type=="variable" %}
-
-    <div class="mb-3">
-
-        <label class="form-label">
-
-            Select Variant
-
-        </label>
-
-        <select class="form-select variant-select"
-
-                id="variantSelect">
-
-            {% for variant in variants %}
-
-            <option
-
-                value="{{ variant.id }}"
-
-                data-price="{{ variant.price }}">
-
-                {{ variant.variant_name }}
-
-                -
-
-                {{ variant.option_value }}
-
-                (₹{{ variant.price }})
-
-            </option>
-
-            {% endfor %}
-
-        </select>
-
-    </div>
-
-    {% endif %}
-
-    <form action="{{ url_for('add_to_cart',
-
-    product_id=product.id) }}"
-
-          method="POST">
-
-        <div class="row">
-
-            <div class="col-4">
-
-                <input type="number"
-
-                       class="form-control quantity-input"
-
-                       value="1"
-
-                       min="1"
-
-                       max="{{ product.stock }}"
-
-                       name="quantity">
-
-            </div>
-
-            <div class="col-8 d-grid">
-
-                {% if product.stock > 0 %}
-
-                <button class="btn btn-primary btn-lg cart-btn">
-
-                    <i class="fas fa-shopping-cart"></i>
-
-                    Add To Cart
-
-                </button>
-
-                {% else %}
-
-                <button class="btn btn-secondary btn-lg"
-
-                        disabled>
-
-                    Out of Stock
-
-                </button>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-    </form>
-
-    <div class="d-grid mt-3">
-
-        <a href="{{ url_for('add_to_wishlist',
-
-        product_id=product.id) }}"
-
-           class="btn btn-outline-danger wishlist-btn">
-
-            <i class="far fa-heart"></i>
-
-            Add To Wishlist
-
-        </a>
-
-    </div>
-
-</div>
-
-</div>
-
-<hr class="my-5">
-
-<div class="row">
-
-    <!-- Product Description -->
-
-    <div class="col-lg-8">
-
-        <div class="card shadow-sm mb-4">
-
-            <div class="card-header bg-white">
-
-                <h5 class="mb-0">
-
-                    Product Description
-
-                </h5>
-
-            </div>
-
-            <div class="card-body">
-
-                {{ product.description|safe }}
-
-            </div>
-
-        </div>
-
-        <!-- Specifications -->
-
-        <div class="card shadow-sm mb-4">
-
-            <div class="card-header bg-white">
-
-                <h5 class="mb-0">
-
-                    Specifications
-
-                </h5>
-
-            </div>
-
-            <div class="card-body">
-
-                <table class="table table-bordered">
-
-                    <tr>
-
-                        <th width="35%">
-
-                            Brand
-
-                        </th>
-
-                        <td>
-
-                            {{ product.brand.name if product.brand else "-" }}
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <th>
-
-                            SKU
-
-                        </th>
-
-                        <td>
-
-                            {{ product.sku }}
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <th>
-
-                            Weight
-
-                        </th>
-
-                        <td>
-
-                            {{ product.weight }} kg
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <th>
-
-                            Dimensions
-
-                        </th>
-
-                        <td>
-
-                            {{ product.length }}
-
-                            ×
-
-                            {{ product.width }}
-
-                            ×
-
-                            {{ product.height }}
-
-                            cm
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <th>
-
-                            GST
-
-                        </th>
-
-                        <td>
-
-                            {{ product.gst_percent }}%
-
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <th>
-
-                            HSN Code
-
-                        </th>
-
-                        <td>
-
-                            {{ product.hsn_code }}
-
-                        </td>
-
-                    </tr>
-
-                </table>
-
-            </div>
-
-        </div>
-
-        <!-- Reviews -->
-
-        <div class="card shadow-sm">
-
-            <div class="card-header bg-white">
-
-                <h5>
-
-                    Customer Reviews
-
-                </h5>
-
-            </div>
-
-            <div class="card-body">
-
-                {% if reviews %}
-
-                {% for review in reviews %}
-
-                <div class="border-bottom mb-3 pb-3">
-
-                    <div class="d-flex justify-content-between">
-
-                        <strong>
-
-                            {{ review.user.name }}
-
-                        </strong>
-
-                        <small>
-
-                            {{ review.created_at.strftime("%d %b %Y") }}
-
-                        </small>
-
-                    </div>
-
-                    <div class="mb-2">
-
-                        {% for i in range(5) %}
-
-                            {% if i < review.rating %}
-
-                            <i class="fas fa-star text-warning"></i>
-
-                            {% else %}
-
-                            <i class="far fa-star text-warning"></i>
-
-                            {% endif %}
+                        </div>
 
                         {% endfor %}
 
                     </div>
 
-                    <p>
+                    {% endif %}
 
-                        {{ review.review }}
+                </div>
+
+            </div>
+
+
+            <!-- PRODUCT DETAILS -->
+            <div class="col-lg-6">
+
+                <div class="info-card p-4 h-100">
+
+                    <h1 class="product-title">
+                        {{ product.name }}
+                    </h1>
+
+
+                    {% if product.category %}
+
+                    <div class="category-text">
+                        {{ product.category.name }}
+                    </div>
+
+                    {% endif %}
+
+
+                    <!-- RATING -->
+
+                    <div class="rating-row">
+
+                        <span class="rating-stars">
+
+                            {% for i in range(5) %}
+
+                                {% if i < product.average_rating|int %}
+
+                                    <i class="fas fa-star text-warning"></i>
+
+                                {% else %}
+
+                                    <i class="far fa-star text-warning"></i>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </span>
+
+                        <span class="rating-text">
+
+                            {{ product.average_rating or 0 }}
+
+                            ({{ product.review_count or product.total_reviews or 0 }}
+                            Reviews)
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- PRICE -->
+
+                    {% if product.sale_price %}
+
+                    <div class="price-main text-success">
+
+                        ₹{{ product.sale_price }}
+
+                        <del class="text-muted old-price">
+
+                            ₹{{ product.price }}
+
+                        </del>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="price-main">
+
+                        ₹{{ product.price }}
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <!-- STOCK -->
+
+                    {% if product.stock > 0 %}
+
+                    <span class="stock-badge badge bg-success">
+
+                        <i class="fas fa-check-circle me-1"></i>
+
+                        In Stock
+
+                    </span>
+
+                    {% else %}
+
+                    <span class="stock-badge badge bg-danger">
+
+                        <i class="fas fa-times-circle me-1"></i>
+
+                        Out of Stock
+
+                    </span>
+
+                    {% endif %}
+
+
+                    <hr>
+
+
+                    <!-- SHORT DESCRIPTION -->
+
+                    {% if product.short_description %}
+
+                    <p class="short-description">
+
+                        {{ product.short_description }}
 
                     </p>
 
-                </div>
-
-                {% endfor %}
-
-                {% else %}
-
-                <div class="alert alert-light">
-
-                    No reviews yet.
-
-                </div>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Seller Information -->
-
-    <div class="col-lg-4">
-
-        <div class="card shadow-sm mb-4">
-
-            <div class="card-header bg-white">
-
-                <h5>
-
-                    Sold By
-
-                </h5>
-
-            </div>
-
-            <div class="card-body text-center">
-
-                {% if product.seller.profile_photo %}
-
-                <img src="{{ url_for('static',
-                filename='profile/' + product.seller.profile_photo) }}"
-
-                     class="rounded-circle mb-3"
-
-                     width="90"
-
-                     height="90">
-
-                {% endif %}
-
-                <h5>
-
-                    {{ product.seller.shop_name }}
-
-                </h5>
-
-                <p>
-
-                    ⭐ {{ product.seller.seller_rating }}
-
-                    ({{ product.seller.total_reviews }} Reviews)
-
-                </p>
-
-                <a href="{{ url_for('seller_profile',
-                seller_id=product.seller.id) }}"
-
-                   class="btn btn-outline-primary w-100">
-
-                    Visit Shop
-
-                </a>
-
-            </div>
-
-        </div>
-
-        <!-- Shipping -->
-
-        <div class="card shadow-sm">
-
-            <div class="card-header bg-white">
-
-                <h5>
-
-                    Shipping Information
-
-                </h5>
-
-            </div>
-
-            <div class="card-body">
-
-                <p>
-
-                    🚚 Fast Delivery Available
-
-                </p>
-
-                <p>
-
-                    🔄 Easy Returns
-
-                </p>
-
-                <p>
-
-                    🔒 Secure Payment
-
-                </p>
-
-                <p>
-
-                    ✅ Quality Assured
-
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<hr class="my-5">
-
-<!-- Related Products -->
-
-<div class="container-fluid">
-
-    <h3 class="fw-bold mb-4">
-
-        Related Products
-
-    </h3>
-
-    <div class="row">
-
-        {% for item in related_products %}
-
-        <div class="col-6 col-md-3 col-lg-2 mb-4">
-
-            <div class="card shadow-sm border-0 h-100">
-
-                <a href="{{ url_for('product_details',
-                product_id=item.id) }}">
-
-                    {% if item.images %}
-
-                    <img src="{{ url_for('static',
-                    filename='product_images/' + item.images[0].image) }}"
-                         class="card-img-top"
-                         style="height:180px;object-fit:cover;">
-
-                    {% else %}
-
-                    <img src="{{ url_for('static',
-                    filename='images/no-image.png') }}"
-                         class="card-img-top"
-                         style="height:180px;object-fit:cover;">
-
                     {% endif %}
 
-                </a>
 
-                <div class="card-body">
+                    <!-- MINI SPECS -->
 
-                    <h6 class="fw-bold">
+                    <div class="row g-3 mb-3">
 
-                        {{ item.name }}
+                        <div class="col-6">
 
-                    </h6>
+                            <div class="spec-mini">
 
-                    {% if item.sale_price %}
+                                <small>SKU</small>
 
-                    <span class="text-success fw-bold">
+                                <strong>
+                                    {{ product.sku or "-" }}
+                                </strong>
 
-                        ₹{{ item.sale_price }}
+                            </div>
 
-                    </span>
+                        </div>
 
-                    <del class="small text-muted">
 
-                        ₹{{ item.price }}
+                        <div class="col-6">
 
-                    </del>
+                            <div class="spec-mini">
 
-                    {% else %}
+                                <small>Brand</small>
 
-                    <span class="fw-bold">
+                                <strong>
 
-                        ₹{{ item.price }}
+                                    {{ product.brand.name
+                                       if product.brand
+                                       else "-" }}
 
-                    </span>
+                                </strong>
 
-                    {% endif %}
+                            </div>
 
-                    <a href="{{ url_for('product_details',
-                    product_id=item.id) }}"
-                       class="btn btn-outline-primary btn-sm w-100 mt-3">
+                        </div>
 
-                        View
+                    </div>
+
+
+                    <!-- =========================================
+                         ADD TO CART
+                         IMPORTANT:
+                         selected_variant is INSIDE the form
+                         because add_to_cart reads:
+                         request.form.get("selected_variant")
+                         ========================================= -->
+
+                    <form
+                        action="{{ url_for(
+                            'add_to_cart',
+                            product_id=product.id
+                        ) }}"
+                        method="POST"
+                    >
+
+                        {% if product.product_type == "variable" %}
+
+                        <div class="mb-3">
+
+                            <label
+                                for="variantSelect"
+                                class="form-label fw-bold"
+                            >
+                                Select Variant
+                            </label>
+
+                            <select
+                                class="form-select variant-select"
+                                id="variantSelect"
+                                name="selected_variant"
+                            >
+
+                                {% if product.variant_options %}
+
+                                    {% for variant in product.variant_options %}
+
+                                    <option
+                                        value="{{ variant.id }}"
+                                        data-extra-price="{{ variant.extra_price or 0 }}"
+                                    >
+
+                                        {{ variant.variant_name }}
+
+                                        {% if variant.option_value %}
+                                            - {{ variant.option_value }}
+                                        {% endif %}
+
+                                        {% if variant.extra_price %}
+                                            (+₹{{ variant.extra_price }})
+                                        {% endif %}
+
+                                    </option>
+
+                                    {% endfor %}
+
+                                {% else %}
+
+                                    <option value="">
+                                        Default Variant
+                                    </option>
+
+                                {% endif %}
+
+                            </select>
+
+                        </div>
+
+                        {% endif %}
+
+
+                        <div class="row g-2">
+
+                            <!-- Quantity -->
+
+                            <div class="col-4">
+
+                                <input
+                                    type="number"
+                                    class="form-control quantity-input"
+                                    value="1"
+                                    min="1"
+                                    max="{{ product.stock }}"
+                                    name="quantity"
+                                >
+
+                            </div>
+
+
+                            <!-- Add To Cart -->
+
+                            <div class="col-8 d-grid">
+
+                                {% if product.stock > 0 %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary btn-lg cart-btn"
+                                >
+
+                                    <i class="fas fa-shopping-cart me-1"></i>
+
+                                    Add To Cart
+
+                                </button>
+
+                                {% else %}
+
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary btn-lg"
+                                    disabled
+                                >
+
+                                    Out of Stock
+
+                                </button>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+
+                    <!-- WISHLIST -->
+
+                    <div class="d-grid mt-3">
+
+                        <a
+                            href="{{ url_for(
+                                'add_to_wishlist',
+                                product_id=product.id
+                            ) }}"
+                            class="btn btn-outline-danger wishlist-btn"
+                        >
+
+                            <i class="far fa-heart me-1"></i>
+
+                            Add To Wishlist
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <hr class="my-5">
+
+
+        <!-- =========================================
+             DESCRIPTION + SPECIFICATIONS + REVIEWS
+             ========================================= -->
+
+        <div class="row g-4">
+
+            <!-- LEFT -->
+
+            <div class="col-lg-8">
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="section-card">
+
+                    <div class="section-head">
+
+                        <i class="fas fa-align-left me-2"></i>
+
+                        Product Description
+
+                    </div>
+
+                    <div class="section-body description-body">
+
+                        {% if product.description %}
+
+                            {{ product.description|safe }}
+
+                        {% else %}
+
+                            <p class="text-muted mb-0">
+                                No description available.
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- SPECIFICATIONS -->
+
+                <div class="section-card">
+
+                    <div class="section-head">
+
+                        <i class="fas fa-list me-2"></i>
+
+                        Specifications
+
+                    </div>
+
+                    <div class="section-body p-0">
+
+                        <div class="table-responsive">
+
+                            <table class="table table-bordered spec-table">
+
+                                <tr>
+
+                                    <th>
+                                        Brand
+                                    </th>
+
+                                    <td>
+
+                                        {{ product.brand.name
+                                           if product.brand
+                                           else "-" }}
+
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <th>
+                                        SKU
+                                    </th>
+
+                                    <td>
+                                        {{ product.sku or "-" }}
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <th>
+                                        Weight
+                                    </th>
+
+                                    <td>
+
+                                        {% if product.weight is not none %}
+
+                                            {{ product.weight }} kg
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <th>
+                                        Dimensions
+                                    </th>
+
+                                    <td>
+
+                                        {% if product.length is not none
+                                              or product.width is not none
+                                              or product.height is not none %}
+
+                                            {{ product.length or "-" }}
+                                            ×
+                                            {{ product.width or "-" }}
+                                            ×
+                                            {{ product.height or "-" }}
+                                            cm
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <th>
+                                        GST
+                                    </th>
+
+                                    <td>
+
+                                        {% if product.gst_percent is not none %}
+
+                                            {{ product.gst_percent }}%
+
+                                        {% else %}
+
+                                            -
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+
+                                <tr>
+
+                                    <th>
+                                        HSN Code
+                                    </th>
+
+                                    <td>
+
+                                        {{ product.hsn_code or "-" }}
+
+                                    </td>
+
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- REVIEWS -->
+
+                <div class="section-card">
+
+                    <div class="section-head">
+
+                        <i class="fas fa-star me-2"></i>
+
+                        Customer Reviews
+
+                    </div>
+
+                    <div class="section-body">
+
+                        <!--
+                        Current product_details route does not pass
+                        a "reviews" variable.
+
+                        Therefore we don't reference an undefined
+                        reviews list here.
+                        -->
+
+                        <div class="alert alert-light mb-0">
+
+                            <i class="far fa-star me-2"></i>
+
+                            No reviews available yet.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT -->
+
+            <div class="col-lg-4">
+
+
+                <!-- SELLER -->
+
+                <div class="seller-card mb-4">
+
+                    <div class="section-head">
+
+                        <i class="fas fa-store me-2"></i>
+
+                        Sold By
+
+                    </div>
+
+                    <div class="section-body text-center">
+
+
+                        {% if product.seller.profile_photo %}
+
+                        <img
+                            src="{{ url_for(
+                                'static',
+                                filename='profile/' + product.seller.profile_photo
+                            ) }}"
+                            class="seller-avatar mb-3"
+                            alt="{{ product.seller.shop_name }}"
+                        >
+
+                        {% else %}
+
+                        <div
+                            class="seller-avatar mb-3 mx-auto d-flex align-items-center justify-content-center bg-light"
+                        >
+
+                            <i class="fas fa-store fa-2x text-muted"></i>
+
+                        </div>
+
+                        {% endif %}
+
+
+                        <div class="seller-name">
+
+                            {{ product.seller.shop_name }}
+
+                        </div>
+
+
+                        <p class="text-muted mt-2">
+
+                            ⭐ {{ product.seller.seller_rating or 0 }}
+
+                            ({{ product.seller.total_reviews or 0 }}
+                            Reviews)
+
+                        </p>
+
+
+                        <!--
+                        IMPORTANT:
+                        app.py has company_shop(seller_id),
+                        NOT seller_profile(seller_id).
+                        -->
+
+                        <a
+                            href="{{ url_for(
+                                'company_shop',
+                                seller_id=product.seller.id
+                            ) }}"
+                            class="btn btn-outline-primary w-100 shop-btn"
+                        >
+
+                            <i class="fas fa-store me-2"></i>
+
+                            Visit Shop
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SHIPPING -->
+
+                <div class="shipping-card">
+
+                    <div class="section-head">
+
+                        <i class="fas fa-truck me-2"></i>
+
+                        Shipping Information
+
+                    </div>
+
+                    <div class="section-body">
+
+                        <div class="benefit">
+
+                            <div class="benefit-icon">
+                                🚚
+                            </div>
+
+                            <div>
+                                Fast Delivery Available
+                            </div>
+
+                        </div>
+
+
+                        <div class="benefit">
+
+                            <div class="benefit-icon">
+                                🔄
+                            </div>
+
+                            <div>
+                                Easy Returns
+                            </div>
+
+                        </div>
+
+
+                        <div class="benefit">
+
+                            <div class="benefit-icon">
+                                🔒
+                            </div>
+
+                            <div>
+                                Secure Payment
+                            </div>
+
+                        </div>
+
+
+                        <div class="benefit">
+
+                            <div class="benefit-icon">
+                                ✅
+                            </div>
+
+                            <div>
+                                Quality Assured
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <hr class="my-5">
+
+
+        <!-- =========================================
+             RELATED PRODUCTS
+             ========================================= -->
+
+        <h3 class="related-title">
+
+            Related Products
+
+        </h3>
+
+
+        <div class="row g-3">
+
+            {% for item in related_products %}
+
+            <div class="col-6 col-md-3 col-lg-2">
+
+                <div class="related-product">
+
+
+                    <!--
+                    IMPORTANT:
+                    product_details route uses /product/<int:id>
+                    therefore parameter must be "id", NOT "product_id".
+                    -->
+
+                    <a
+                        href="{{ url_for(
+                            'product_details',
+                            id=item.id
+                        ) }}"
+                    >
+
+                        {% if item.images %}
+
+                        <img
+                            src="{{ url_for(
+                                'static',
+                                filename='product_images/' + item.images[0].image
+                            ) }}"
+                            class="related-img"
+                            alt="{{ item.name }}"
+                        >
+
+                        {% else %}
+
+                        <img
+                            src="{{ url_for(
+                                'static',
+                                filename='images/no-image.png'
+                            ) }}"
+                            class="related-img"
+                            alt="No image"
+                        >
+
+                        {% endif %}
 
                     </a>
 
+
+                    <div class="related-body">
+
+                        <div class="related-name">
+
+                            {{ item.name }}
+
+                        </div>
+
+
+                        <div class="mt-2">
+
+                            {% if item.sale_price %}
+
+                            <span class="text-success fw-bold">
+
+                                ₹{{ item.sale_price }}
+
+                            </span>
+
+                            <del class="small text-muted ms-1">
+
+                                ₹{{ item.price }}
+
+                            </del>
+
+                            {% else %}
+
+                            <span class="fw-bold">
+
+                                ₹{{ item.price }}
+
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <a
+                            href="{{ url_for(
+                                'product_details',
+                                id=item.id
+                            ) }}"
+                            class="btn btn-outline-primary btn-sm w-100 mt-3"
+                        >
+
+                            View
+
+                        </a>
+
+                    </div>
+
                 </div>
 
             </div>
 
+            {% else %}
+
+            <div class="col-12">
+
+                <div class="alert alert-light">
+
+                    No related products available.
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
         </div>
 
-        {% endfor %}
+
+        <!-- =========================================
+             SHARE
+             ========================================= -->
+
+        <div class="share-box">
+
+            <h5 class="fw-bold mb-3">
+
+                Share this Product
+
+            </h5>
+
+
+            <a
+                href="https://wa.me/?text={{ request.url|urlencode }}"
+                target="_blank"
+                class="btn btn-success share-btn"
+                title="Share on WhatsApp"
+            >
+
+                <i class="fab fa-whatsapp"></i>
+
+            </a>
+
+
+            <a
+                href="https://www.facebook.com/sharer/sharer.php?u={{ request.url|urlencode }}"
+                target="_blank"
+                class="btn btn-primary share-btn"
+                title="Share on Facebook"
+            >
+
+                <i class="fab fa-facebook-f"></i>
+
+            </a>
+
+
+            <button
+                type="button"
+                class="btn btn-dark share-btn"
+                onclick="copyLink()"
+                title="Copy link"
+            >
+
+                <i class="fas fa-link"></i>
+
+            </button>
+
+        </div>
 
     </div>
 
 </div>
 
-<hr>
-
-<!-- Share -->
-
-<div class="text-center mb-4">
-
-    <h5>
-
-        Share this Product
-
-    </h5>
-
-    <a href="https://wa.me/?text={{ request.url }}"
-       target="_blank"
-       class="btn btn-success">
-
-        <i class="fab fa-whatsapp"></i>
-
-    </a>
-
-    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}"
-       target="_blank"
-       class="btn btn-primary">
-
-        <i class="fab fa-facebook-f"></i>
-
-    </a>
-
-    <button
-        class="btn btn-dark"
-        onclick="copyLink()">
-
-        <i class="fas fa-link"></i>
-
-    </button>
-
-</div>
-
-</div>
 
 <script>
 
+/* =========================================
+   CHANGE MAIN PRODUCT IMAGE
+   ========================================= */
+
 function changeImage(src){
 
-    document.getElementById(
+    const mainImage =
+        document.getElementById("mainImage");
 
-        "mainImage"
+    if(mainImage){
 
-    ).src = src;
+        mainImage.src = src;
+
+    }
 
 }
+
+
+/* =========================================
+   COPY PRODUCT LINK
+   ========================================= */
 
 function copyLink(){
 
-    navigator.clipboard.writeText(
+    const url = window.location.href;
 
-        window.location.href
+    if(navigator.clipboard){
 
-    );
+        navigator.clipboard.writeText(url)
+            .then(function(){
 
-    alert(
+                alert("Product link copied.");
 
-        "Product link copied."
+            })
+            .catch(function(){
 
-    );
+                alert("Unable to copy link.");
+
+            });
+
+    }else{
+
+        const temp =
+            document.createElement("input");
+
+        temp.value = url;
+
+        document.body.appendChild(temp);
+
+        temp.select();
+
+        document.execCommand("copy");
+
+        document.body.removeChild(temp);
+
+        alert("Product link copied.");
+
+    }
 
 }
 
-const variant=document.getElementById(
 
-    "variantSelect"
+/* =========================================
+   VARIANT DISPLAY
+   =========================================
 
-);
+   The actual cart price calculation is still
+   handled by your existing add_to_cart route.
+
+   app.py does:
+
+       price = product.sale_price or product.price
+
+       if selected_variant:
+           option = ProductVariantOption.query.get(selected_variant)
+           price += option.extra_price
+
+   So this JS only updates the displayed price.
+*/
+
+const variant =
+    document.getElementById("variantSelect");
+
 
 if(variant){
 
-variant.addEventListener(
+    variant.addEventListener(
+        "change",
+        function(){
 
-"change",
+            const option =
+                this.options[this.selectedIndex];
 
-function(){
+            const extraPrice =
+                parseFloat(
+                    option.dataset.extraPrice || "0"
+                );
 
-let option=this.options[
+            const basePrice =
+                parseFloat(
+                    "{{ product.sale_price or product.price }}"
+                ) || 0;
 
-this.selectedIndex
+            const finalPrice =
+                basePrice + extraPrice;
 
-];
 
-let price=option.dataset.price;
+            const priceElement =
+                document.querySelector(".price-main");
 
-let priceElement=document.querySelector(
 
-"h3"
+            if(priceElement){
 
-);
+                priceElement.innerHTML =
+                    "₹" +
+                    finalPrice.toFixed(2);
 
-if(priceElement){
+            }
 
-priceElement.innerHTML=
-
-"₹"+price;
-
-}
-
-}
-
-);
+        }
+    );
 
 }
 
