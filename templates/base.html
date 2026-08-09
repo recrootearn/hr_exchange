@@ -1264,29 +1264,12 @@ body{
     Wallet
 </a>
 
-    <a href="/seller/pickup"
-       class="nav-link">
-
-        <i class="fa-solid fa-warehouse"></i>
-
-        Pickup Address
-
-    </a>
-
 <a href="/cart" class="nav-link">
-
-🛒 Cart
-
-{% if cart_count %}
-
-<span class="badge bg-danger">
-
-{{ cart_count }}
-
-</span>
-
-{% endif %}
-
+    <i class="fas fa-shopping-cart"></i>
+    Cart
+    {% if cart_count %}
+    <span class="badge bg-danger ms-auto">{{ cart_count }}</span>
+    {% endif %}
 </a>
 
 <a href="/profile" class="mobile-hide-hr">
@@ -1309,10 +1292,42 @@ body{
     My Orders
 </a>
 
-<a href="/seller/orders">
-    <i class="fas fa-box-open"></i>
-    Customer Orders
-</a>
+<!-- SELLER DASHBOARD -->
+<div class="more-section seller-dashboard-section">
+
+    <button type="button"
+            class="more-toggle"
+            onclick="toggleMore(this)">
+        <i class="fas fa-store"></i>
+        <span>Seller Dashboard</span>
+        <i class="fas fa-chevron-down more-chevron"></i>
+    </button>
+
+    <div class="more-items">
+
+        <a href="{{ url_for('company_shop', seller_id=current_user.id) }}">
+            <i class="fas fa-store"></i>
+            My Shop
+        </a>
+
+        <a href="{{ url_for('company_shop', seller_id=current_user.id) }}"
+           onclick="shareMyShop(event)">
+            <i class="fas fa-share-nodes"></i>
+            Share My Shop
+        </a>
+
+        <a href="/seller/orders">
+            <i class="fas fa-box-open"></i>
+            Customer Orders
+        </a>
+
+        <a href="/seller/pickup">
+            <i class="fas fa-warehouse"></i>
+            Pickup Address
+        </a>
+
+    </div>
+</div>
 
 {% if current_user.is_admin %}
 
@@ -1324,7 +1339,9 @@ body{
 {% endif %}
 
 <div class="more-section">
+
     <div class="more-items">
+
         <a href="/general-info">
             <i class="fas fa-circle-info"></i>
             General Info
@@ -1339,6 +1356,7 @@ body{
             <i class="fas fa-right-from-bracket"></i>
             Logout
         </a>
+
     </div>
 
     <button type="button"
@@ -1348,6 +1366,7 @@ body{
         More
         <i class="fas fa-chevron-down more-chevron"></i>
     </button>
+
 </div>
 
 {% endif %}
@@ -1539,6 +1558,34 @@ function toggleSidebar(){
     document
     .querySelector(".mobile-overlay")
     .classList.toggle("active");
+}
+
+
+function shareMyShop(event){
+
+    event.preventDefault();
+
+    const shopUrl = event.currentTarget.href;
+
+    if(navigator.share){
+
+        navigator.share({
+            title: "My RecrootEarn Shop",
+            text: "Check out my shop on RecrootEarn",
+            url: shopUrl
+        }).catch(function(){});
+
+    }else if(navigator.clipboard){
+
+        navigator.clipboard.writeText(shopUrl).then(function(){
+            alert("Shop link copied!");
+        }).catch(function(){
+            window.prompt("Copy your shop link:", shopUrl);
+        });
+
+    }else{
+        window.prompt("Copy your shop link:", shopUrl);
+    }
 }
 
 </script>

@@ -15259,6 +15259,24 @@ def shop_all_products():
         products=products
     )
 
+@app.route("/share-shop/<int:seller_id>")
+def company_share_shop(seller_id):
+
+    seller = User.query.get_or_404(seller_id)
+
+    products = Product.query.filter_by(
+        seller_id=seller.id,
+        status="active"
+    ).order_by(
+        Product.created_at.desc()
+    ).all()
+
+    return render_template(
+        "company_share_shop.html",
+        seller=seller,
+        products=products
+    )
+
 @app.route("/shop/category/<int:id>")
 @login_required
 def shop_category(id):

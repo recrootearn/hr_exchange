@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>{{ seller.company or (seller.first_name ~ ' ' ~ seller.last_name) }} | RECROOTEARN SHOP</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+html,body{
+    width:100%;
+    min-height:100%;
+    background:#f5f7fb;
+    color:#171a21;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+}
+
+body{overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button,input{font-family:inherit}
+
+.shop-page{
+    width:100%;
+    min-height:100vh;
+    padding-bottom:35px;
+}
+
+/* HEADER */
+.shop-header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    width:100%;
+    background:linear-gradient(135deg,#0759d9,#2563eb,#0b5ed7);
+    color:#fff;
+    box-shadow:0 5px 20px rgba(0,0,0,.14);
+}
+
+.header-inner{
+    max-width:1200px;
+    min-height:64px;
+    margin:auto;
+    padding:8px 18px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.back-btn{
+    width:40px;
+    height:40px;
+    border:0;
+    border-radius:50%;
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-size:17px;
+}
+
+.logo{
+    font-size:25px;
+    font-weight:900;
+    letter-spacing:-1px;
+    white-space:nowrap;
+}
+
+.logo span{color:#19b957}
+
+/* CONTENT */
+.container{
+    width:100%;
+    max-width:1200px;
+    margin:auto;
+    padding:20px 18px 40px;
+}
+
+/* SHOP PROFILE */
+.shop-profile{
+    background:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:0 7px 25px rgba(15,23,42,.07);
+    border:1px solid #e9edf4;
+    margin-bottom:18px;
+}
+
+.profile-top{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.profile-photo{
+    width:86px;
+    height:86px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid #edf4ff;
+    background:#eef2f7;
+}
+
+.profile-placeholder{
+    width:86px;
+    height:86px;
+    border-radius:50%;
+    background:#edf4ff;
+    color:#2563eb;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    flex:none;
+}
+
+.shop-name{
+    font-size:28px;
+    font-weight:900;
+    line-height:1.1;
+}
+
+.shop-owner{
+    margin-top:5px;
+    color:#6b7280;
+    font-size:14px;
+}
+
+.shop-location{
+    margin-top:5px;
+    color:#6b7280;
+    font-size:13px;
+}
+
+.verified{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    margin-left:6px;
+    color:#2563eb;
+    font-size:13px;
+}
+
+/* SHARE CARD */
+.share-card{
+    margin-top:20px;
+    padding:14px;
+    border-radius:17px;
+    background:linear-gradient(135deg,#eef6ff,#e7efff);
+    border:1px solid #dbe8ff;
+}
+
+.share-title{
+    font-size:13px;
+    font-weight:900;
+    color:#172554;
+    margin-bottom:8px;
+}
+
+.share-row{
+    display:flex;
+    gap:8px;
+}
+
+.share-url{
+    flex:1;
+    min-width:0;
+    height:43px;
+    border:1px solid #d6e0ef;
+    border-radius:11px;
+    background:#fff;
+    padding:0 12px;
+    color:#475569;
+    font-size:13px;
+    outline:none;
+}
+
+.share-btn{
+    height:43px;
+    padding:0 15px;
+    border:0;
+    border-radius:11px;
+    background:#2563eb;
+    color:#fff;
+    font-weight:900;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    white-space:nowrap;
+}
+
+.share-buttons{
+    display:flex;
+    gap:8px;
+    margin-top:9px;
+}
+
+.whatsapp-btn{
+    background:#16a34a;
+}
+
+.native-share-btn{
+    background:#111827;
+}
+
+/* PRODUCTS */
+.products-head{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:15px;
+    margin:22px 2px 14px;
+}
+
+.products-title{
+    font-size:25px;
+    font-weight:900;
+}
+
+.products-subtitle{
+    color:#6b7280;
+    font-size:13px;
+    margin-top:4px;
+}
+
+.product-count{
+    color:#64748b;
+    font-size:13px;
+    font-weight:700;
+}
+
+/* GRID */
+.products-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:14px;
+}
+
+.product-card{
+    background:#fff;
+    border:1px solid #e7ebf1;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 5px 18px rgba(15,23,42,.06);
+    transition:.2s;
+}
+
+.product-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 12px 28px rgba(15,23,42,.12);
+}
+
+.product-image{
+    width:100%;
+    aspect-ratio:1/1;
+    background:#f1f5f9;
+    overflow:hidden;
+    position:relative;
+}
+
+.product-image img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+}
+
+.placeholder{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#a3afc2;
+    font-size:42px;
+}
+
+.product-info{
+    padding:12px;
+}
+
+.product-name{
+    font-size:15px;
+    font-weight:800;
+    min-height:38px;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+.rating{
+    margin-top:6px;
+    color:#f59e0b;
+    font-size:11px;
+}
+
+.price{
+    margin-top:7px;
+    font-size:18px;
+    font-weight:900;
+    color:#2563eb;
+}
+
+.old-price{
+    margin-left:5px;
+    color:#9ca3af;
+    font-size:12px;
+    text-decoration:line-through;
+    font-weight:500;
+}
+
+.view-product{
+    display:block;
+    margin-top:10px;
+    width:100%;
+    padding:10px;
+    text-align:center;
+    border-radius:10px;
+    background:#edf4ff;
+    color:#2563eb;
+    font-size:12px;
+    font-weight:900;
+}
+
+/* EMPTY */
+.empty{
+    background:#fff;
+    border:1px solid #e7ebf1;
+    border-radius:22px;
+    padding:70px 20px;
+    text-align:center;
+}
+
+.empty i{
+    font-size:52px;
+    color:#2563eb;
+    margin-bottom:14px;
+}
+
+.empty h3{
+    font-size:22px;
+    font-weight:900;
+}
+
+.empty p{
+    margin-top:6px;
+    color:#6b7280;
+}
+
+/* MOBILE */
+@media(max-width:900px){
+    .products-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+}
+
+@media(max-width:650px){
+    html,body{
+        width:100vw !important;
+        max-width:100vw !important;
+        margin:0 !important;
+        padding:0 !important;
+    }
+
+    .shop-page{
+        width:100vw;
+        padding-bottom:25px;
+    }
+
+    .header-inner{
+        min-height:58px;
+        padding:7px 10px;
+    }
+
+    .logo{
+        font-size:21px;
+    }
+
+    .container{
+        padding:10px 8px 30px;
+    }
+
+    .shop-profile{
+        border-radius:18px;
+        padding:17px;
+        margin-bottom:12px;
+    }
+
+    .profile-top{
+        gap:12px;
+    }
+
+    .profile-photo,
+    .profile-placeholder{
+        width:65px;
+        height:65px;
+    }
+
+    .profile-placeholder{
+        font-size:25px;
+    }
+
+    .shop-name{
+        font-size:21px;
+    }
+
+    .shop-owner,
+    .shop-location{
+        font-size:12px;
+    }
+
+    .share-card{
+        margin-top:15px;
+        padding:11px;
+        border-radius:14px;
+    }
+
+    .share-row{
+        display:grid;
+        grid-template-columns:1fr auto;
+    }
+
+    .share-url{
+        height:40px;
+        font-size:11px;
+    }
+
+    .share-btn{
+        height:40px;
+        padding:0 12px;
+        font-size:11px;
+    }
+
+    .share-buttons{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+    }
+
+    .products-head{
+        margin:17px 2px 11px;
+    }
+
+    .products-title{
+        font-size:20px;
+    }
+
+    .products-subtitle{
+        font-size:11px;
+    }
+
+    .product-count{
+        font-size:11px;
+    }
+
+    .products-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
+    }
+
+    .product-card{
+        border-radius:15px;
+    }
+
+    .product-info{
+        padding:9px;
+    }
+
+    .product-name{
+        font-size:13px;
+    }
+
+    .price{
+        font-size:15px;
+    }
+
+    .view-product{
+        font-size:11px;
+        padding:8px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="shop-page">
+
+    <header class="shop-header">
+        <div class="header-inner">
+            <button class="back-btn" type="button" onclick="history.back()" aria-label="Go back">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+
+            <div class="logo">
+                RECROOT<span>EARN</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- SHOP OWNER / SHARE LINK -->
+        <section class="shop-profile">
+
+            <div class="profile-top">
+
+                {% if seller.profile_photo %}
+                    <img
+                        class="profile-photo"
+                        src="/static/uploads/{{ seller.profile_photo }}"
+                        alt="{{ seller.company or seller.first_name }}"
+                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                    >
+                    <div class="profile-placeholder" style="display:none;">
+                        <i class="fas fa-store"></i>
+                    </div>
+                {% else %}
+                    <div class="profile-placeholder">
+                        <i class="fas fa-store"></i>
+                    </div>
+                {% endif %}
+
+                <div>
+                    <div class="shop-name">
+                        {{ seller.company or ((seller.first_name or '') ~ ' ' ~ (seller.last_name or ''))|trim or 'Shop' }}
+
+                        {% if seller.is_verified_seller %}
+                            <span class="verified">
+                                <i class="fas fa-circle-check"></i>
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    {% if seller.first_name or seller.last_name %}
+                        <div class="shop-owner">
+                            {{ seller.first_name or '' }} {{ seller.last_name or '' }}
+                        </div>
+                    {% endif %}
+
+                    {% if seller.company_city %}
+                        <div class="shop-location">
+                            <i class="fas fa-location-dot"></i>
+                            {{ seller.company_city }}
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <div class="share-card">
+
+                <div class="share-title">
+                    <i class="fas fa-link"></i>
+                    Share this shop
+                </div>
+
+                <div class="share-row">
+                    <input
+                        id="shopShareUrl"
+                        class="share-url"
+                        type="text"
+                        value="{{ request.url }}"
+                        readonly
+                    >
+
+                    <button class="share-btn" type="button" onclick="copyShopLink()">
+                        <i class="fas fa-copy"></i>
+                        Copy
+                    </button>
+                </div>
+
+                <div class="share-buttons">
+
+                    <button
+                        class="share-btn whatsapp-btn"
+                        type="button"
+                        onclick="shareWhatsApp()"
+                    >
+                        <i class="fab fa-whatsapp"></i>
+                        WhatsApp
+                    </button>
+
+                    <button
+                        class="share-btn native-share-btn"
+                        type="button"
+                        onclick="shareShop()"
+                    >
+                        <i class="fas fa-share-nodes"></i>
+                        Share Shop
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PRODUCTS -->
+        <div class="products-head">
+
+            <div>
+                <div class="products-title">
+                    All Products
+                </div>
+
+                <div class="products-subtitle">
+                    Shop directly from this seller
+                </div>
+            </div>
+
+            <div class="product-count">
+                {{ products|length }} products
+            </div>
+
+        </div>
+
+
+        {% if products %}
+
+        <section class="products-grid">
+
+            {% for product in products %}
+
+            <a
+                href="/product/{{ product.id }}"
+                class="product-card"
+            >
+
+                <div class="product-image">
+
+                    {% if product.images and product.images|length > 0 %}
+
+                    <img
+                        src="/static/uploads/products/{{ product.images[0].image }}"
+                        alt="{{ product.name }}"
+                        loading="lazy"
+                        onerror="
+                            if(!this.dataset.f1){
+                                this.dataset.f1='1';
+                                this.src='/static/product_images/{{ product.images[0].image }}';
+                            }else if(!this.dataset.f2){
+                                this.dataset.f2='1';
+                                this.src='/static/uploads/{{ product.images[0].image }}';
+                            }else{
+                                this.style.display='none';
+                                this.parentElement.querySelector('.placeholder').style.display='flex';
+                            }
+                        "
+                    >
+
+                    {% endif %}
+
+                    <div
+                        class="placeholder"
+                        {% if product.images and product.images|length > 0 %}
+                        style="display:none;"
+                        {% endif %}
+                    >
+                        <i class="fas fa-image"></i>
+                    </div>
+
+                </div>
+
+                <div class="product-info">
+
+                    <div class="product-name">
+                        {{ product.name }}
+                    </div>
+
+                    <div class="rating">
+                        ★★★★★
+                    </div>
+
+                    <div class="price">
+
+                        {% if product.sale_price %}
+
+                            ₹{{ "%.0f"|format(product.sale_price) }}
+
+                            <span class="old-price">
+                                ₹{{ "%.0f"|format(product.price) }}
+                            </span>
+
+                        {% else %}
+
+                            ₹{{ "%.0f"|format(product.price) }}
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="view-product">
+                        View Product
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+
+                </div>
+
+            </a>
+
+            {% endfor %}
+
+        </section>
+
+        {% else %}
+
+        <div class="empty">
+            <i class="fas fa-store-slash"></i>
+            <h3>No Products Yet</h3>
+            <p>This shop hasn't added any products yet.</p>
+        </div>
+
+        {% endif %}
+
+    </main>
+
+</div>
+
+
+<script>
+function getShopUrl(){
+    return document.getElementById("shopShareUrl").value;
+}
+
+async function copyShopLink(){
+    const url = getShopUrl();
+    const button = event.currentTarget;
+
+    try{
+        await navigator.clipboard.writeText(url);
+    }catch(e){
+        const input = document.getElementById("shopShareUrl");
+        input.select();
+        input.setSelectionRange(0,99999);
+        document.execCommand("copy");
+    }
+
+    const old = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i> Copied';
+
+    setTimeout(function(){
+        button.innerHTML = old;
+    },1800);
+}
+
+function shareWhatsApp(){
+    const url = encodeURIComponent(getShopUrl());
+    const shopName = encodeURIComponent(
+        "{{ seller.company or ((seller.first_name or '') ~ ' ' ~ (seller.last_name or ''))|trim or 'this shop' }}"
+    );
+
+    window.open(
+        "https://wa.me/?text=" +
+        encodeURIComponent("Check out " + decodeURIComponent(shopName) + " on RECROOTEARN:\n") +
+        url,
+        "_blank"
+    );
+}
+
+async function shareShop(){
+
+    const url = getShopUrl();
+
+    if(navigator.share){
+        try{
+            await navigator.share({
+                title: "{{ seller.company or 'RECROOTEARN Shop' }}",
+                text: "Check out this shop on RECROOTEARN.",
+                url: url
+            });
+            return;
+        }catch(e){}
+    }
+
+    copyShopLink();
+}
+</script>
+
+</body>
+</html>
