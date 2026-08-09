@@ -15306,7 +15306,6 @@ def shop_category(id):
     )
 
 @app.route("/product/<int:id>")
-@login_required
 def product_details(id):
 
     product = Product.query.get_or_404(id)
