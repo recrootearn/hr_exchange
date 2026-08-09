@@ -3,6 +3,7 @@ import requests
 import time
 import random
 import uuid
+import re
 from flask import session
 from flask_login import logout_user, current_user
 import razorpay
@@ -4296,6 +4297,18 @@ def generate_invoice_pdf(user, purchase, payment_id):
         invoice_no,
         invoice_path
     )
+
+def make_shop_slug(name):
+    if not name:
+        return "store"
+
+    slug = name.lower().strip()
+
+    slug = re.sub(r'[^a-z0-9]+', '-', slug)
+
+    slug = slug.strip('-')
+
+    return slug or "store"
 
 def send_invoice_email(user, purchase, payment_id):
     try:
@@ -15099,6 +15112,15 @@ def shop_home():
         User.id.in_(store_seller_ids)
     ).all()
 
+    for store in stores:
+
+        store.generated_shop_slug = make_shop_slug(
+            store.company
+            or store.first_name
+            or store.username
+            or "store"
+        )
+
     # ==========================================
     # ADMIN CONTROLLED BANNERS
     # ==========================================
@@ -15275,17 +15297,25 @@ def shop_all_products():
         products=products
     )
 
-@app.route("/share-shop/<int:seller_id>/<shop_slug>")
+@app.route(
+    "/share-shop/<int:seller_id>/<shop_slug>",
+    strict_slashes=False
+)
 def company_share_shop(seller_id, shop_slug):
 
     seller = User.query.get_or_404(seller_id)
 
-    products = Product.query.filter_by(
-        seller_id=seller.id,
-        status="active"
-    ).order_by(
-        Product.created_at.desc()
-    ).all()
+    products = (
+        Product.query
+        .filter_by(
+            seller_id=seller.id,
+            status="active"
+        )
+        .order_by(
+            Product.created_at.desc()
+        )
+        .all()
+    )
 
     return render_template(
         "company_share_shop.html",
