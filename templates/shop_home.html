@@ -2032,10 +2032,7 @@ input{
 
                 {% for banner in banners[1:3] %}
 
-                <a
-                    href="{{ banner.button_link or '/shop/products' }}"
-                    class="admin-small-banner"
-                >
+                <div class="admin-small-banner">
 
                     {% if banner.image %}
                     <img
@@ -2064,16 +2061,9 @@ input{
                         <p>{{ banner.subtitle }}</p>
                         {% endif %}
 
-                        {% if banner.button_text %}
-                        <span class="admin-small-banner-button">
-                            {{ banner.button_text }}
-                            <i class="fas fa-arrow-right"></i>
-                        </span>
-                        {% endif %}
-
                     </div>
 
-                </a>
+                </div>
 
                 {% endfor %}
 
@@ -2104,7 +2094,7 @@ input{
                     and discover amazing deals.
                 </p>
 
-                <a href="#products" class="hero-btn">
+                <a href="/shop/products" class="hero-btn">
                     Shop Now
                     <i class="fas fa-arrow-right"></i>
                 </a>
@@ -2151,7 +2141,7 @@ input{
                         {{ category.name }}
                     </div>
 
-                </a>
+                </div>
 
                 {% endfor %}
 
@@ -2188,7 +2178,7 @@ input{
         {% macro product_card(product, badge='') %}
 
         <a
-            href="/shop/product/{{ product.id }}"
+            href="/product/{{ product.id }}"
             class="product-card"
         >
 
@@ -2498,49 +2488,27 @@ input{
 
     <nav class="mobile-shop-nav">
 
+    <a href="/shop" class="active">
+        <i class="fas fa-house"></i>
+        <span>Home</span>
+    </a>
 
-        <a
-            href="/shop"
-            class="active">
+    <a href="/cart">
+        <i class="fas fa-cart-shopping"></i>
+        <span>Cart</span>
+    </a>
 
-            <i class="fas fa-house"></i>
+    <a href="/my-orders">
+        <i class="fas fa-box-open"></i>
+        <span>My Orders</span>
+    </a>
 
-            <span>
+    <a href="/profile">
+        <i class="fas fa-user"></i>
+        <span>Account</span>
+    </a>
 
-                Home
-
-            </span>
-
-        </a>
-<a
-            href="/cart">
-
-            <i class="fas fa-cart-shopping"></i>
-
-            <span>
-
-                Cart
-
-            </span>
-
-        </a>
-
-
-        <a
-            href="/profile">
-
-            <i class="fas fa-user"></i>
-
-            <span>
-
-                Account
-
-            </span>
-
-        </a>
-
-
-    </nav>
+</nav>
 
 
 </div>
