@@ -1,167 +1,351 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+    <meta name="theme-color" content="#0b5ed7">
+    <title>{{ category.name }} · RecrootEarn Shop</title>
 
-{% block title %}
-{{ category.name }}
-{% endblock %}
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-{% block content %}
+    <style>
+        :root{
+            --blue:#0b5ed7;
+            --blue2:#2563eb;
+            --text:#111827;
+            --muted:#7b8494;
+            --bg:#f6f8fc;
+            --card:#fff;
+            --line:#e9edf4;
+            --green:#188b55;
+            --shadow:0 8px 26px rgba(17,24,39,.07);
+        }
 
-<div class="container py-4">
+        *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+        html,body{width:100%;min-height:100%;margin:0!important;padding:0!important;overflow-x:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+        body{padding-bottom:0!important;}
+        a{text-decoration:none;color:inherit;}
+        button,input{font:inherit;}
 
-<h2 class="mb-4">
+        /* This page intentionally does not extend base.html. */
+        .category-page{width:100%;min-height:100vh;background:var(--bg);padding-bottom:96px;}
 
-{{ category.name }}
+        .shop-topbar{
+            position:sticky;
+            top:0;
+            z-index:1000;
+            width:100%;
+            background:linear-gradient(135deg,#0759d9,#2563eb);
+            box-shadow:0 5px 20px rgba(15,23,42,.15);
+        }
+        .topbar-inner{
+            width:100%;
+            max-width:1280px;
+            min-height:68px;
+            margin:auto;
+            padding:10px 18px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+        .back-btn,.top-action{
+            width:42px;height:42px;border:0;border-radius:50%;
+            display:flex;align-items:center;justify-content:center;
+            background:rgba(255,255,255,.14);color:#fff;flex:0 0 auto;
+        }
+        .brand{font-size:23px;font-weight:950;letter-spacing:-1.2px;color:#fff;white-space:nowrap;}
+        .brand span{color:#20b85a;}
+        .search-wrap{flex:1;min-width:0;position:relative;}
+        .search-wrap input{
+            width:100%;height:44px;border:0;outline:0;border-radius:14px;
+            background:#fff;padding:0 46px 0 16px;color:#111827;font-size:14px;
+            box-shadow:0 5px 16px rgba(0,0,0,.12);
+        }
+        .search-wrap i{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--blue2);}
+        .cart-wrap{position:relative;}
+        .cart-badge{position:absolute;right:-2px;top:-3px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;}
 
-</h2>
+        .category-shell{
+            width:100%;
+            max-width:1280px;
+            margin:0 auto;
+            padding:20px 22px 32px;
+        }
 
-{% if promoted_products %}
+        /* No category heading/title: products start immediately. */
+        .category-toolbar{
+            display:flex;align-items:center;justify-content:space-between;gap:12px;
+            margin-bottom:18px;
+        }
+        .category-chip{
+            display:inline-flex;align-items:center;gap:8px;
+            padding:9px 13px;border-radius:999px;background:#eaf2ff;color:#155bd7;
+            font-size:12px;font-weight:900;
+        }
+        .category-count{font-size:12px;color:var(--muted);font-weight:750;}
 
-<h4 class="mb-3">
+        .featured-strip{
+            display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:20px;
+        }
+        .featured-card{
+            min-height:92px;border-radius:18px;overflow:hidden;position:relative;color:#fff;
+            background:linear-gradient(135deg,#0b5ed7,#4d8bf2);box-shadow:var(--shadow);
+        }
+        .featured-card:nth-child(2){background:linear-gradient(135deg,#0f9d63,#54c98c);}
+        .featured-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.32;}
+        .featured-card::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.58),rgba(0,0,0,.05));}
+        .featured-copy{position:relative;z-index:2;padding:17px;}
+        .featured-copy small{font-size:10px;font-weight:900;opacity:.88;text-transform:uppercase;letter-spacing:.5px;}
+        .featured-copy strong{display:block;margin-top:3px;font-size:16px;font-weight:950;}
 
-⭐ Promoted Products
+        .product-grid{
+            display:grid;
+            grid-template-columns:repeat(4,minmax(0,1fr));
+            gap:16px;
+        }
+        .product-card{
+            min-width:0;background:var(--card);border:1px solid var(--line);border-radius:20px;
+            overflow:hidden;box-shadow:0 5px 18px rgba(15,23,42,.055);transition:transform .18s,box-shadow .18s;
+        }
+        .product-card:hover{transform:translateY(-3px);box-shadow:0 13px 30px rgba(15,23,42,.11);}
+        .product-image-wrap{display:block;position:relative;background:#f1f4f8;aspect-ratio:1/1;overflow:hidden;}
+        .product-image-wrap img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .25s;}
+        .product-card:hover .product-image-wrap img{transform:scale(1.035);}
+        .image-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#aeb7c6;font-size:38px;background:linear-gradient(135deg,#f7f9fc,#edf1f7);}
+        .sale-pill{position:absolute;top:10px;left:10px;z-index:3;padding:6px 9px;border-radius:999px;background:#ef4444;color:#fff;font-size:9px;font-weight:950;letter-spacing:.3px;}
+        .product-body{padding:13px 13px 14px;}
+        .product-name{font-size:14px;font-weight:900;line-height:1.3;min-height:36px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+        .rating{margin-top:6px;color:#f59e0b;font-size:11px;letter-spacing:1px;}
+        .rating span{color:#9aa3b2;letter-spacing:0;font-size:10px;margin-left:3px;}
+        .price-row{display:flex;align-items:baseline;gap:7px;margin-top:7px;}
+        .current-price{font-size:18px;font-weight:950;color:var(--green);}
+        .mrp{font-size:12px;color:#9aa1ad;text-decoration:line-through;}
+        .buy-btn{
+            display:flex;align-items:center;justify-content:center;width:100%;height:42px;margin-top:11px;
+            border-radius:12px;background:linear-gradient(135deg,#0b5ed7,#2563eb);color:#fff;
+            font-size:13px;font-weight:900;box-shadow:0 5px 13px rgba(37,99,235,.18);
+        }
+        .buy-btn i{font-size:11px;margin-left:7px;}
 
-</h4>
+        .empty-state{background:#fff;border:1px solid var(--line);border-radius:22px;padding:65px 20px;text-align:center;box-shadow:var(--shadow);}
+        .empty-state i{font-size:42px;color:#8ea9d9;margin-bottom:13px;}
+        .empty-state h3{font-size:20px;font-weight:950;}
+        .empty-state p{margin-top:5px;color:var(--muted);font-size:13px;}
 
-<div class="row">
+        .mobile-nav{
+            display:none;
+        }
 
-{% for product in promoted_products %}
+        @media(max-width:900px){
+            .brand{font-size:20px;}
+            .product-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+            .category-shell{padding:16px 14px 32px;}
+        }
 
-<div class="col-6 col-md-4 col-lg-3 mb-4">
+        @media(max-width:768px){
+            html,body{width:100vw!important;max-width:100vw!important;min-width:100vw!important;margin:0!important;padding:0!important;}
+            body>*{max-width:100vw!important;}
+            .category-page{width:100vw!important;max-width:100vw!important;min-height:100dvh;padding-bottom:94px;}
+            .shop-topbar{width:100vw!important;max-width:100vw!important;}
+            .topbar-inner{width:100vw;min-height:62px;padding:8px 10px;gap:8px;}
+            .back-btn{display:none;}
+            .brand{display:block;font-size:21px;margin-left:3px;}
+            .search-wrap{display:none;}
+            .top-action{width:42px;height:42px;}
+            .cart-wrap{margin-left:auto;}
+            .category-shell{width:100vw!important;max-width:none!important;padding:14px 10px 24px!important;margin:0!important;}
+            .category-toolbar{margin-bottom:14px;padding:0 2px;}
+            .category-chip{font-size:11px;padding:8px 11px;}
+            .category-count{font-size:11px;}
+            .featured-strip{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px;}
+            .featured-card{min-height:82px;border-radius:15px;}
+            .featured-copy{padding:13px;}
+            .featured-copy strong{font-size:13px;}
+            .product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+            .product-card{border-radius:16px;box-shadow:0 4px 14px rgba(15,23,42,.055);}
+            .product-body{padding:10px;}
+            .product-name{font-size:13px;min-height:34px;}
+            .rating{font-size:10px;margin-top:5px;}
+            .rating span{font-size:9px;}
+            .current-price{font-size:16px;}
+            .mrp{font-size:10px;}
+            .buy-btn{height:39px;border-radius:11px;font-size:12px;margin-top:9px;}
+            .sale-pill{top:7px;left:7px;font-size:8px;padding:5px 7px;}
 
-<div class="card shadow-sm h-100">
+            /* Full-width mobile shop navigation. It intentionally replaces the base navigation. */
+            .mobile-nav{
+                position:fixed;left:0;right:0;bottom:0;z-index:5000;
+                display:flex!important;width:100vw;height:72px;
+                padding:7px max(10px,env(safe-area-inset-left)) calc(7px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-right));
+                background:rgba(255,255,255,.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+                border-top:1px solid rgba(17,24,39,.08);box-shadow:0 -7px 25px rgba(15,23,42,.10);
+            }
+            .mobile-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#77808e;font-size:9px;font-weight:850;}
+            .mobile-nav a i{font-size:19px;}
+            .mobile-nav a.active{color:#0b5ed7;}
+        }
 
-{% if product.images %}
+        @media(max-width:390px){
+            .brand{font-size:19px;}
+            .product-grid{gap:7px;}
+            .product-body{padding:9px;}
+            .current-price{font-size:15px;}
+        }
+    </style>
+</head>
+<body>
 
-<img
-src="{{ url_for('static',
-filename='product_images/' + product.images[0].image) }}"
-class="card-img-top"
-style="height:200px;object-fit:cover;">
+<div class="category-page">
 
-{% endif %}
+    <header class="shop-topbar">
+        <div class="topbar-inner">
+            <button class="back-btn" type="button" onclick="history.back()" aria-label="Back">
+                <i class="fas fa-arrow-left"></i>
+            </button>
 
-<div class="card-body">
+            <a href="/shop" class="brand" aria-label="RecrootEarn Shop">
+                RECROOT<span>EARN</span>
+            </a>
 
-<span class="badge bg-warning text-dark">
+            <form class="search-wrap" action="/shop/search" method="GET">
+                <input type="search" name="q" placeholder="Search products..." autocomplete="off">
+                <i class="fas fa-search"></i>
+            </form>
 
-Promoted
+            <div class="cart-wrap">
+                <a href="/cart" class="top-action" aria-label="Cart">
+                    <i class="fas fa-cart-shopping"></i>
+                </a>
+                {% if cart_count|default(0) %}
+                    <span class="cart-badge">{{ cart_count }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </header>
 
-</span>
+    <main class="category-shell">
+        <div class="category-toolbar">
+            <div class="category-chip">
+                <i class="fas fa-gift"></i>
+                {{ category.name }}
+            </div>
+            <div class="category-count">
+                {{ products|length }} products
+            </div>
+        </div>
 
-<h6 class="mt-2">
+        {% if promoted_products %}
+        <section class="featured-strip" aria-label="Featured products">
+            {% for product in promoted_products[:2] %}
+            <a class="featured-card" href="/product/{{ product.id }}">
+                {% if product.images and product.images|length > 0 %}
+                <img src="{{ url_for('static', filename='uploads/products/' ~ product.images[0].image) }}"
+                     alt="{{ product.name }}" loading="lazy"
+                     onerror="this.onerror=null;this.src='{{ url_for('static', filename='product_images/' ~ product.images[0].image) }}';">
+                {% endif %}
+                <div class="featured-copy">
+                    <small>Featured</small>
+                    <strong>{{ product.name }}</strong>
+                </div>
+            </a>
+            {% endfor %}
+        </section>
+        {% endif %}
 
-{{ product.name }}
+        {% if products %}
+        <section class="product-grid" aria-label="Products">
+            {% for product in products %}
+            <article class="product-card">
+                <a class="product-image-wrap" href="/product/{{ product.id }}">
+                    {% if product.sale_price %}
+                    <span class="sale-pill">SALE</span>
+                    {% endif %}
 
-</h6>
+                    <div class="image-placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
 
-<h5 class="text-success">
+                    {% if product.images and product.images|length > 0 %}
+                    <img src="{{ url_for('static', filename='uploads/products/' ~ product.images[0].image) }}"
+                         alt="{{ product.name }}" loading="lazy"
+                         onload="this.previousElementSibling.style.display='none';"
+                         onerror="productImageFallback(this);">
+                    {% endif %}
+                </a>
 
-₹{{ product.sale_price or product.price }}
+                <div class="product-body">
+                    <a class="product-name" href="/product/{{ product.id }}">
+                        {{ product.name }}
+                    </a>
 
-</h5>
+                    <div class="rating">
+                        {% set rating = product.average_rating|default(0)|float %}
+                        {% for i in range(5) %}
+                            {% if i < rating|int %}★{% else %}☆{% endif %}
+                        {% endfor %}
+                        <span>({{ product.total_reviews|default(0) }})</span>
+                    </div>
 
-<p class="text-muted">
+                    <div class="price-row">
+                        {% if product.sale_price %}
+                            <span class="current-price">₹{{ "%.0f"|format(product.sale_price) }}</span>
+                            <del class="mrp">₹{{ "%.0f"|format(product.price) }}</del>
+                        {% else %}
+                            <span class="current-price">₹{{ "%.0f"|format(product.price) }}</span>
+                        {% endif %}
+                    </div>
 
-{{ product.seller.company_name }}
+                    <a class="buy-btn" href="/product/{{ product.id }}">
+                        Buy Now <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </section>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-box-open"></i>
+            <h3>No products yet</h3>
+            <p>Products from this category will appear here.</p>
+        </div>
+        {% endif %}
+    </main>
 
-</p>
-
-<a
-href="/product/{{ product.id }}"
-class="btn btn-primary w-100">
-
-Buy Now
-
-</a>
-
+    <nav class="mobile-nav" aria-label="Shop navigation">
+        {% if session.get('candidate_id') %}
+            <a href="/candidate-dashboard"><i class="fas fa-house"></i><span>Home</span></a>
+            <a href="/candidate-feed"><i class="fas fa-briefcase"></i><span>Jobs</span></a>
+            <a href="/candidate-profile"><i class="fas fa-compass"></i><span>Explore</span></a>
+            <a href="/applied-jobs"><i class="fas fa-file-lines"></i><span>Orders</span></a>
+            <a class="active" href="/shop"><i class="fas fa-store"></i><span>Shop</span></a>
+            <a href="/candidate-profile"><i class="fas fa-user"></i><span>Account</span></a>
+        {% else %}
+            <a href="/dashboard"><i class="fas fa-house"></i><span>Home</span></a>
+            <a href="/feed"><i class="fas fa-briefcase"></i><span>Jobs</span></a>
+            <a href="/discover-candidates"><i class="fas fa-compass"></i><span>Discover</span></a>
+            <a href="/applied-jobs-hr"><i class="fas fa-file-lines"></i><span>Orders</span></a>
+            <a class="active" href="/shop"><i class="fas fa-store"></i><span>Shop</span></a>
+            <a href="/profile"><i class="fas fa-user"></i><span>Account</span></a>
+        {% endif %}
+    </nav>
 </div>
 
-</div>
+<script>
+function productImageFallback(img){
+    if(!img.dataset.f1){
+        img.dataset.f1='1';
+        img.src='/static/product_images/' + img.src.split('/').pop();
+        return;
+    }
+    if(!img.dataset.f2){
+        img.dataset.f2='1';
+        img.src='/static/uploads/' + img.src.split('/').pop();
+        return;
+    }
+    img.style.display='none';
+}
+</script>
 
-</div>
-
-{% endfor %}
-
-</div>
-
-{% endif %}
-
-<hr class="my-4">
-
-<h4 class="mb-3">
-
-All Products
-
-</h4>
-
-<div class="row">
-
-{% for product in products %}
-
-<div class="col-6 col-md-4 col-lg-3 mb-4">
-
-<div class="card shadow-sm h-100">
-
-{% if product.images %}
-
-<img
-src="{{ url_for('static',
-filename='product_images/' + product.images[0].image) }}"
-class="card-img-top"
-style="height:200px;object-fit:cover;">
-
-{% endif %}
-
-<div class="card-body">
-
-<h6>
-
-{{ product.name }}
-
-</h6>
-
-<h5 class="text-success">
-
-₹{{ product.sale_price or product.price }}
-
-</h5>
-
-<p class="text-muted">
-
-{{ product.seller.company_name }}
-
-</p>
-
-<a
-href="/product/{{ product.id }}"
-class="btn btn-primary w-100">
-
-Buy Now
-
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-{% else %}
-
-<div class="col-12">
-
-<div class="alert alert-info">
-
-No products found in this category.
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
-{% endblock %}
+</body>
+</html>
