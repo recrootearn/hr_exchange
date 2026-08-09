@@ -1897,6 +1897,30 @@ input{
     color:#94a3b8;
 }
 
+
+/* SHOP CATEGORY / SPACING FIX */
+.category-scroll{
+    height:auto !important;
+    min-height:0 !important;
+    align-items:stretch;
+}
+.category-card{
+    height:112px;
+    min-height:0 !important;
+    max-height:112px;
+    text-decoration:none;
+}
+@media (max-width:700px){
+    .section{margin-bottom:18px !important;}
+    .category-scroll{padding-bottom:0 !important;}
+    .category-card{
+        height:100px !important;
+        min-height:0 !important;
+        max-height:100px;
+    }
+    .sale-banner{margin-top:0 !important; margin-bottom:18px !important;}
+}
+
 </style>
 
 </head>
@@ -2010,16 +2034,6 @@ input{
 
                     {% if main_banner.subtitle %}
                     <p>{{ main_banner.subtitle }}</p>
-                    {% endif %}
-
-                    {% if main_banner.button_text %}
-                    <a
-                        href="{{ main_banner.button_link or '/shop/products' }}"
-                        class="admin-banner-btn"
-                    >
-                        {{ main_banner.button_text }}
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
                     {% endif %}
 
                 </div>
@@ -2141,7 +2155,7 @@ input{
                         {{ category.name }}
                     </div>
 
-                </div>
+                </a>
 
                 {% endfor %}
 
@@ -2503,7 +2517,7 @@ input{
         <span>My Orders</span>
     </a>
 
-    <a href="/profile">
+    <a href="{% if session.get('candidate_id') %}{{ url_for('candidate_profile') }}{% else %}{{ url_for('profile') }}{% endif %}">
         <i class="fas fa-user"></i>
         <span>Account</span>
     </a>
