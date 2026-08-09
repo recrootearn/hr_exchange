@@ -311,24 +311,6 @@
         </div>
         {% endif %}
     </main>
-
-    <nav class="mobile-nav" aria-label="Shop navigation">
-        {% if session.get('candidate_id') %}
-            <a href="/candidate-dashboard"><i class="fas fa-house"></i><span>Home</span></a>
-            <a href="/candidate-feed"><i class="fas fa-briefcase"></i><span>Jobs</span></a>
-            <a href="/candidate-profile"><i class="fas fa-compass"></i><span>Explore</span></a>
-            <a href="/applied-jobs"><i class="fas fa-file-lines"></i><span>Orders</span></a>
-            <a class="active" href="/shop"><i class="fas fa-store"></i><span>Shop</span></a>
-            <a href="/candidate-profile"><i class="fas fa-user"></i><span>Account</span></a>
-        {% else %}
-            <a href="/dashboard"><i class="fas fa-house"></i><span>Home</span></a>
-            <a href="/feed"><i class="fas fa-briefcase"></i><span>Jobs</span></a>
-            <a href="/discover-candidates"><i class="fas fa-compass"></i><span>Discover</span></a>
-            <a href="/applied-jobs-hr"><i class="fas fa-file-lines"></i><span>Orders</span></a>
-            <a class="active" href="/shop"><i class="fas fa-store"></i><span>Shop</span></a>
-            <a href="/profile"><i class="fas fa-user"></i><span>Account</span></a>
-        {% endif %}
-    </nav>
 </div>
 
 <script>
