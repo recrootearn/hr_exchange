@@ -586,6 +586,100 @@
 
         </div>
 
+
+        <!-- ====================================== -->
+        <!-- SHIPROCKET SHIPPING -->
+        <!-- ====================================== -->
+
+        <div class="card mb-4">
+
+            <div class="card-header bg-primary text-white">
+                🚚 Shiprocket Shipping
+            </div>
+
+            <div class="card-body">
+
+                <div class="alert alert-light border">
+                    <strong>Marketplace Shipping</strong><br>
+                    Configure the Shiprocket account used for marketplace
+                    order shipping and the default pickup location.
+                    Each seller's own pickup address can be used when
+                    creating that seller's shipment.
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+                        <label>Shiprocket Email</label>
+
+                        <input
+                            type="email"
+                            class="form-control"
+                            name="shiprocket_email"
+                            value="{{ settings.shiprocket_email or '' }}"
+                            placeholder="Shiprocket login email"
+                            autocomplete="off">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Shiprocket Password</label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="password"
+                                class="form-control"
+                                name="shiprocket_password"
+                                id="shiprocket_password"
+                                value="{{ settings.shiprocket_password or '' }}"
+                                placeholder="Shiprocket password"
+                                autocomplete="new-password">
+
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary"
+                                onclick="toggleShiprocketPassword()"
+                                title="Show/Hide Password">
+                                👁️
+                            </button>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Default Pickup Location</label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="shiprocket_pickup_location"
+                            value="{{ settings.shiprocket_pickup_location or '' }}"
+                            placeholder="Example: RECROOTEARN"
+                            maxlength="100">
+
+                        <small class="text-muted">
+                            Default platform pickup location.
+                        </small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <script>
+        function toggleShiprocketPassword() {
+            const input = document.getElementById("shiprocket_password");
+
+            if (input.type === "password") {
+                input.type = "text";
+            } else {
+                input.type = "password";
+            }
+        }
+        </script>
+
         <button
             class="btn btn-success btn-lg w-100">
 

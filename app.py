@@ -3116,40 +3116,86 @@ class ShiprocketService:
 
     def create_shipment(self, order):
 
-        pickup = order.seller.pickup_address
-        address = order.shipping_address
+        # ==========================================
+        # GET SELLER
+        # ==========================================
+
+        seller = order.seller
+
+        if not seller:
+            raise Exception(
+                "Seller not found for this order."
+            )
+
+        # ==========================================
+        # GET SELLER PICKUP ADDRESS
+        # ==========================================
+
+        pickup = seller.pickup_address
 
         if not pickup:
             raise Exception(
                 "Seller pickup address is not configured."
             )
 
+        # ==========================================
+        # GET CUSTOMER SHIPPING ADDRESS
+        # ==========================================
+
+        address = order.shipping_address
+
         if not address:
             raise Exception(
                 "Customer shipping address is missing."
             )
+
+        # ==========================================
+        # CREATE ORDER ITEMS
+        # ==========================================
 
         items = []
 
         for item in order.items:
 
             items.append({
-                "name": item.product_name,
-                "sku": str(item.product_id),
-                "units": item.quantity,
-                "selling_price": item.price,
-                "discount": "",
-                "tax": "",
-                "hsn": (
-                    item.product.hsn_code
-                    if item.product and item.product.hsn_code
-                    else ""
-                )
+
+                "name":
+                    item.product_name,
+
+                "sku":
+                    str(item.product_id),
+
+                "units":
+                    item.quantity,
+
+                "selling_price":
+                    item.price,
+
+                "discount":
+                    "",
+
+                "tax":
+                    "",
+
+                "hsn":
+                    (
+                        item.product.hsn_code
+                        if (
+                            item.product
+                            and item.product.hsn_code
+                        )
+                        else ""
+                    )
             })
 
-        # ------------------------------------------
+        if not items:
+            raise Exception(
+                "Order contains no products."
+            )
+
+        # ==========================================
         # PACKAGE DIMENSIONS
-        # ------------------------------------------
+        # ==========================================
 
         lengths = []
         widths = []
@@ -3164,11 +3210,17 @@ class ShiprocketService:
             if not product:
                 continue
 
-            lengths.append(product.length or 1)
-            widths.append(product.width or 1)
+            lengths.append(
+                product.length or 1
+            )
+
+            widths.append(
+                product.width or 1
+            )
 
             heights.append(
-                (product.height or 1) * item.quantity
+                (product.height or 1)
+                * item.quantity
             )
 
             total_weight += (
@@ -3176,42 +3228,156 @@ class ShiprocketService:
                 * item.quantity
             )
 
-        package_length = max(lengths) if lengths else 1
-        package_width = max(widths) if widths else 1
-        package_height = sum(heights) if heights else 1
+        package_length = (
+            max(lengths)
+            if lengths
+            else 1
+        )
+
+        package_width = (
+            max(widths)
+            if widths
+            else 1
+        )
+
+        package_height = (
+            sum(heights)
+            if heights
+            else 1
+        )
 
         if total_weight <= 0:
             total_weight = 0.1
 
-        # ------------------------------------------
+        # ==========================================
         # PAYMENT METHOD
-        # ------------------------------------------
+        # ==========================================
 
         payment_method = "Prepaid"
 
-        if getattr(order, "payment_method", "").lower() == "cod":
+        if (
+            getattr(
+                order,
+                "payment_method",
+                ""
+            ).lower()
+            == "cod"
+        ):
             payment_method = "COD"
 
-        # ------------------------------------------
+        # ==========================================
+        # SELLER PICKUP LOCATION
+        #
+        # IMPORTANT:
+        # Every seller gets their own unique
+        # pickup location code.
+        # ==========================================
+
+        pickup_location = (
+            pickup.pickup_location_code
+        )
+
+        if not pickup_location:
+
+            pickup_location = (
+                f"RECROOT_{seller.id}"
+            )
+
+            pickup.pickup_location_code = (
+                pickup_location
+            )
+
+            db.session.commit()
+
+        # ==========================================
+        # SELLER DETAILS
+        # ==========================================
+
+        seller_name = (
+            pickup.company_name
+            or pickup.pickup_name
+            or seller.company
+            or seller.first_name
+            or f"Seller {seller.id}"
+        )
+
+        seller_email = (
+            pickup.email
+            or seller.email
+            or ""
+        )
+
+        seller_phone = (
+            pickup.mobile
+            or seller.mobile
+            or ""
+        )
+
+        seller_address = (
+            pickup.address_line1
+            or ""
+        )
+
+        seller_address_2 = (
+            pickup.address_line2
+            or ""
+        )
+
+        seller_city = (
+            pickup.city
+            or ""
+        )
+
+        seller_state = (
+            pickup.state
+            or ""
+        )
+
+        seller_country = (
+            pickup.country
+            or "India"
+        )
+
+        seller_pincode = (
+            str(pickup.pincode)
+            if pickup.pincode
+            else ""
+        )
+
+        # ==========================================
         # PAYLOAD
-        # ------------------------------------------
+        # ==========================================
 
         payload = {
 
-            "order_id": order.order_number,
+            # --------------------------------------
+            # ORDER
+            # --------------------------------------
+
+            "order_id":
+                order.order_number,
 
             "order_date":
                 order.created_at.strftime(
                     "%Y-%m-%d %H:%M"
                 ),
 
+            # --------------------------------------
+            # SELLER PICKUP LOCATION
+            # --------------------------------------
+
             "pickup_location":
-                pickup.pickup_name,
+                pickup_location,
+
+            # --------------------------------------
+            # CUSTOMER BILLING ADDRESS
+            # --------------------------------------
 
             "billing_customer_name":
                 address.full_name,
 
-            "billing_last_name": "",
+            "billing_last_name":
+                "",
 
             "billing_address":
                 address.address_line1,
@@ -3232,22 +3398,95 @@ class ShiprocketService:
                 address.country or "India",
 
             "billing_email":
-                order.customer.email or "",
+                (
+                    order.customer.email
+                    if order.customer
+                    else ""
+                ),
 
             "billing_phone":
                 address.mobile,
 
+            # --------------------------------------
+            # SHIPPING ADDRESS
+            # --------------------------------------
+
             "shipping_is_billing":
                 True,
+
+            "shipping_customer_name":
+                address.full_name,
+
+            "shipping_last_name":
+                "",
+
+            "shipping_address":
+                address.address_line1,
+
+            "shipping_address_2":
+                address.address_line2 or "",
+
+            "shipping_city":
+                address.city,
+
+            "shipping_pincode":
+                str(address.pincode),
+
+            "shipping_state":
+                address.state,
+
+            "shipping_country":
+                address.country or "India",
+
+            "shipping_email":
+                (
+                    order.customer.email
+                    if order.customer
+                    else ""
+                ),
+
+            "shipping_phone":
+                address.mobile,
+
+            # --------------------------------------
+            # PRODUCTS
+            # --------------------------------------
 
             "order_items":
                 items,
 
+            # --------------------------------------
+            # PAYMENT
+            # --------------------------------------
+
             "payment_method":
                 payment_method,
 
+            # --------------------------------------
+            # AMOUNT
+            # --------------------------------------
+
             "sub_total":
                 order.subtotal,
+
+            "shipping_charges":
+                (
+                    order.shipping_charge
+                    or 0
+                ),
+
+            "giftwrap_charges":
+                0,
+
+            "transaction_charges":
+                0,
+
+            "total_discount":
+                0,
+
+            # --------------------------------------
+            # PACKAGE
+            # --------------------------------------
 
             "length":
                 package_length,
@@ -3259,16 +3498,58 @@ class ShiprocketService:
                 package_height,
 
             "weight":
-                total_weight
+                total_weight,
+
+            # --------------------------------------
+            # SELLER DETAILS
+            #
+            # These are kept in the payload so the
+            # seller information is available when
+            # the shipment is created.
+            # --------------------------------------
+
+            "vendor_details": {
+
+                "name":
+                    seller_name,
+
+                "email":
+                    seller_email,
+
+                "phone":
+                    seller_phone,
+
+                "address":
+                    seller_address,
+
+                "address_2":
+                    seller_address_2,
+
+                "city":
+                    seller_city,
+
+                "state":
+                    seller_state,
+
+                "country":
+                    seller_country,
+
+                "pin_code":
+                    seller_pincode,
+
+                "pickup_location":
+                    pickup_location
+            }
         }
 
-        # ------------------------------------------
+        # ==========================================
         # API REQUEST
-        # ------------------------------------------
+        # ==========================================
 
         response = requests.post(
 
-            BASE_URL + "/orders/create/adhoc",
+            BASE_URL
+            + "/orders/create/adhoc",
 
             headers=self.headers(),
 
@@ -3277,7 +3558,12 @@ class ShiprocketService:
             timeout=30
         )
 
+        # ==========================================
+        # ERROR HANDLING
+        # ==========================================
+
         try:
+
             response.raise_for_status()
 
         except requests.HTTPError:
@@ -3286,6 +3572,10 @@ class ShiprocketService:
                 "Shiprocket shipment creation failed: "
                 + response.text
             )
+
+        # ==========================================
+        # RETURN SHIPROCKET RESPONSE
+        # ==========================================
 
         return response.json()
 
@@ -3303,7 +3593,8 @@ class ShiprocketService:
 
         response = requests.get(
 
-            BASE_URL + "/courier/serviceability",
+            BASE_URL
+            + "/courier/serviceability",
 
             headers=self.headers(),
 
@@ -3335,6 +3626,11 @@ class ShiprocketService:
 
     def track_shipment(self, awb):
 
+        if not awb:
+            raise Exception(
+                "AWB number is required for tracking."
+            )
+
         response = requests.get(
 
             BASE_URL
@@ -3352,7 +3648,8 @@ class ShiprocketService:
 
 # ==================================================
 # GET SHIPROCKET INSTANCE
-# IMPORTANT: OUTSIDE ShiprocketService CLASS
+# IMPORTANT:
+# THIS MUST BE OUTSIDE ShiprocketService CLASS
 # ==================================================
 
 def get_shiprocket():
@@ -3375,7 +3672,9 @@ def get_shiprocket():
         )
 
     shiprocket = ShiprocketService(
+
         settings.shiprocket_email,
+
         settings.shiprocket_password
     )
 
@@ -5138,6 +5437,25 @@ def admin_business_settings():
             settings.enable_leads = "enable_leads" in request.form
             settings.enable_wallet = "enable_wallet" in request.form
             settings.enable_withdrawals = "enable_withdrawals" in request.form
+
+            # ======================================
+            # SHIPROCKET SETTINGS
+            # ======================================
+
+            settings.shiprocket_email = request.form.get(
+                "shiprocket_email",
+                ""
+            ).strip()
+
+            settings.shiprocket_password = request.form.get(
+                "shiprocket_password",
+                ""
+            ).strip()
+
+            settings.shiprocket_pickup_location = request.form.get(
+                "shiprocket_pickup_location",
+                ""
+            ).strip()
 
             # ======================================
             # VALIDATIONS
@@ -16353,67 +16671,123 @@ def cancel_order(order_id):
 @login_required
 def create_shipment(order_id):
 
+    # ==========================================
+    # ONLY SELLER OF THIS ORDER CAN SHIP IT
+    # ==========================================
+
     order = Order.query.filter_by(
-
         id=order_id,
-
         seller_id=current_user.id
-
     ).first_or_404()
 
+    # ==========================================
+    # SELLER PICKUP ADDRESS
+    # ==========================================
+
     pickup = SellerPickupAddress.query.filter_by(
-
-        seller_id=current_user.id
-
+        seller_id=order.seller_id
     ).first()
 
     if not pickup:
 
-        flash("Pickup address not verified.","warning")
-
-        return redirect(f"/order/{order.id}")
-
-    ship = get_shiprocket()
-
-    data = ship.create_shipment(order)
-
-    shipment = data.get("shipment_id")
-
-    awb = data.get("awb_code")
-
-    courier = data.get("courier_name")
-
-    order.tracking_id = awb
-
-    order.courier_name = courier
-
-    order.order_status = "Packed"
-
-    db.session.add(
-
-        OrderStatusHistory(
-
-            order_id=order.id,
-
-            status="Packed",
-
-            remarks="Shipment Created"
-
+        flash(
+            "Please add your shop pickup address first.",
+            "warning"
         )
 
+        return redirect(
+            f"/order/{order.id}"
+        )
+
+    # ==========================================
+    # CREATE SHIPMENT
+    # ==========================================
+
+    try:
+
+        ship = get_shiprocket()
+
+        data = ship.create_shipment(order)
+
+    except Exception as e:
+
+        flash(
+            f"Shipment creation failed: {str(e)}",
+            "danger"
+        )
+
+        return redirect(
+            f"/order/{order.id}"
+        )
+
+    # ==========================================
+    # GET SHIPMENT DATA
+    # ==========================================
+
+    shipment = (
+        data.get("shipment_id")
+        or data.get("shipment", {}).get("id")
+    )
+
+    awb = (
+        data.get("awb_code")
+        or data.get("awb")
+    )
+
+    courier = (
+        data.get("courier_name")
+        or data.get("courier", {}).get("name")
+    )
+
+    shiprocket_order_id = (
+        data.get("order_id")
+        or data.get("order", {}).get("id")
+    )
+
+    # ==========================================
+    # SAVE SHIPMENT DETAILS
+    # ==========================================
+
+    if shipment:
+        order.shipment_id = str(shipment)
+
+    if shiprocket_order_id:
+        order.shipment_reference = str(
+            shiprocket_order_id
+        )
+
+    if awb:
+        order.tracking_id = awb
+        order.awb_code = awb
+
+    if courier:
+        order.courier_name = courier
+
+    order.order_status = "Packed"
+    order.shipping_status = "Packed"
+
+    # ==========================================
+    # STATUS HISTORY
+    # ==========================================
+
+    db.session.add(
+        OrderStatusHistory(
+            order_id=order.id,
+            status="Packed",
+            remarks="Shipment Created"
+        )
     )
 
     db.session.commit()
 
     flash(
-
         "Shipment created successfully.",
-
         "success"
-
     )
 
-    return redirect(f"/order/{order.id}")
+    return redirect(
+        f"/order/{order.id}"
+    )
 
 from flask import render_template, request, redirect, flash
 from flask_login import login_required, current_user
