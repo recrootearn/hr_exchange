@@ -1,214 +1,2440 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
-{% block title %}Shop{% endblock %}
+<meta charset="UTF-8">
 
-{% block content %}
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
 
-<div class="container py-4">
+<title>RECROOTEARN SHOP</title>
 
-    <!-- Search -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
 
-    <div class="mb-4">
+<style>
 
-        <input
-            type="text"
-            class="form-control form-control-lg"
-            placeholder="🔍 Search Products or Shops">
+/* =========================================================
+   RESET
+   ========================================================= */
 
-    </div>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
-    <!-- Categories -->
+html,
+body{
+    width:100%;
+    min-height:100%;
+    margin:0;
+    padding:0;
+    background:#f5f7fb;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+    color:#171a21;
+}
 
-    <h4 class="mb-3">
-        Shop Categories
-    </h4>
+body{
+    overflow-x:hidden;
+}
 
-    <div class="row">
+a{
+    text-decoration:none;
+    color:inherit;
+}
 
-        {% for category in categories %}
+button,
+input{
+    font-family:inherit;
+}
 
-        <div class="col-4 col-md-3 col-lg-2 mb-3">
 
-            <a href="/shop/category/{{ category.id }}"
-               class="text-decoration-none">
+/* =========================================================
+   MAIN SHOP
+   ========================================================= */
 
-                <div class="card shadow-sm text-center h-100">
+.shop-app{
 
-                    <div class="card-body">
+    width:100%;
 
-                        {% if category.image %}
+    min-height:100vh;
 
-                        <img
-                            src="{{ url_for('static', filename='category_images/' + category.image) }}"
-                            class="img-fluid mb-2"
-                            style="height:60px;object-fit:contain;">
+    background:#f5f7fb;
 
-                        {% endif %}
+    padding-bottom:80px;
+}
 
-                        <h6 class="mb-0">
 
-                            {{ category.name }}
+/* =========================================================
+   HEADER
+   ========================================================= */
 
-                        </h6>
+.shop-header{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:1000;
+
+    width:100%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0759d9,
+            #2563eb,
+            #0b5ed7
+        );
+
+    color:#fff;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,.14);
+}
+
+.shop-header-inner{
+
+    width:100%;
+
+    max-width:1250px;
+
+    margin:auto;
+
+    min-height:70px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    padding:10px 20px;
+}
+
+
+/* LOGO */
+
+.shop-logo{
+
+    font-size:28px;
+
+    font-weight:900;
+
+    letter-spacing:-1.5px;
+
+    white-space:nowrap;
+}
+
+.shop-logo span{
+
+    color:#19b957;
+}
+
+
+/* MENU */
+
+.shop-menu{
+
+    width:42px;
+
+    height:42px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.12);
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:21px;
+
+    cursor:pointer;
+}
+
+
+/* SEARCH */
+
+.shop-search{
+
+    flex:1;
+
+    max-width:650px;
+
+    margin:auto;
+
+    position:relative;
+}
+
+.shop-search input{
+
+    width:100%;
+
+    height:48px;
+
+    border:0;
+
+    outline:none;
+
+    border-radius:14px;
+
+    padding:
+        0 52px
+        0 18px;
+
+    font-size:16px;
+
+    background:#fff;
+
+    color:#222;
+
+    box-shadow:
+        0 4px 15px rgba(0,0,0,.12);
+}
+
+.shop-search i{
+
+    position:absolute;
+
+    right:18px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#2563eb;
+
+    font-size:19px;
+}
+
+
+/* HEADER ACTIONS */
+
+.shop-header-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+}
+
+.shop-header-btn{
+
+    width:42px;
+
+    height:42px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#fff;
+
+    background:rgba(255,255,255,.12);
+
+    position:relative;
+}
+
+.cart-count{
+
+    position:absolute;
+
+    top:-3px;
+
+    right:-3px;
+
+    min-width:19px;
+
+    height:19px;
+
+    padding:0 5px;
+
+    background:#ef4444;
+
+    border-radius:50px;
+
+    font-size:10px;
+
+    font-weight:800;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+}
+
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.shop-container{
+
+    width:100%;
+
+    max-width:1250px;
+
+    margin:auto;
+
+    padding:
+        20px
+        20px
+        40px;
+}
+
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero-section{
+
+    width:100%;
+
+    display:grid;
+
+    grid-template-columns:
+        minmax(0,1.5fr)
+        minmax(280px,.8fr);
+
+    gap:15px;
+
+    margin-bottom:22px;
+}
+
+.hero-main{
+
+    min-height:285px;
+
+    border-radius:24px;
+
+    overflow:hidden;
+
+    position:relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            #065bdc,
+            #4388f4
+        );
+
+    color:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    padding:35px;
+
+    box-shadow:
+        0 10px 30px rgba(37,99,235,.18);
+}
+
+.hero-main-content{
+
+    position:relative;
+
+    z-index:2;
+
+    max-width:55%;
+}
+
+.hero-main h1{
+
+    font-size:38px;
+
+    line-height:1.05;
+
+    font-weight:900;
+
+    margin-bottom:12px;
+}
+
+.hero-main p{
+
+    font-size:16px;
+
+    line-height:1.5;
+
+    opacity:.92;
+
+    margin-bottom:20px;
+}
+
+.hero-btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:12px 20px;
+
+    border-radius:12px;
+
+    background:#fff;
+
+    color:#125bd7;
+
+    font-weight:800;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,.15);
+}
+
+
+/* HERO PRODUCT IMAGE */
+
+.hero-product-image{
+
+    position:absolute;
+
+    right:0;
+
+    bottom:0;
+
+    width:48%;
+
+    height:100%;
+
+    display:flex;
+
+    align-items:flex-end;
+
+    justify-content:center;
+
+    z-index:1;
+}
+
+.hero-product-image img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:contain;
+
+    object-position:center bottom;
+
+    filter:
+        drop-shadow(
+            0 15px 25px rgba(0,0,0,.2)
+        );
+}
+
+
+/* HERO SIDE */
+
+.hero-side{
+
+    display:grid;
+
+    grid-template-rows:1fr 1fr;
+
+    gap:15px;
+}
+
+.hero-small{
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    position:relative;
+
+    min-height:135px;
+
+    padding:20px;
+
+    color:#fff;
+
+    display:flex;
+
+    align-items:center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff8a32,
+            #ffb347
+        );
+}
+
+.hero-small:nth-child(2){
+
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #6bdc75
+        );
+}
+
+.hero-small-content{
+
+    position:relative;
+
+    z-index:2;
+
+    width:55%;
+}
+
+.hero-small h3{
+
+    font-size:20px;
+
+    font-weight:900;
+
+    margin-bottom:6px;
+}
+
+.hero-small p{
+
+    font-size:13px;
+
+    opacity:.95;
+}
+
+.hero-small img{
+
+    position:absolute;
+
+    right:0;
+
+    bottom:0;
+
+    width:48%;
+
+    height:100%;
+
+    object-fit:contain;
+}
+
+
+/* =========================================================
+   SECTION
+   ========================================================= */
+
+.section{
+
+    margin-bottom:28px;
+}
+
+.section-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:14px;
+}
+
+.section-title{
+
+    font-size:24px;
+
+    font-weight:900;
+
+    color:#171a21;
+}
+
+.section-link{
+
+    color:#2563eb;
+
+    font-size:14px;
+
+    font-weight:800;
+}
+
+
+/* =========================================================
+   CATEGORY HORIZONTAL SCROLL
+   ========================================================= */
+
+.category-scroll{
+
+    display:flex;
+
+    gap:12px;
+
+    overflow-x:auto;
+
+    scrollbar-width:none;
+
+    padding-bottom:4px;
+}
+
+.category-scroll::-webkit-scrollbar{
+
+    display:none;
+}
+
+.category-card{
+
+    flex:0 0 120px;
+
+    min-height:112px;
+
+    background:#fff;
+
+    border-radius:18px;
+
+    border:1px solid #e9edf4;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:12px 8px;
+
+    text-align:center;
+
+    box-shadow:
+        0 4px 14px rgba(15,23,42,.05);
+
+    transition:.2s;
+}
+
+.category-card:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 8px 22px rgba(15,23,42,.1);
+}
+
+.category-icon{
+
+    width:48px;
+
+    height:48px;
+
+    border-radius:15px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:#edf4ff;
+
+    color:#2563eb;
+
+    font-size:22px;
+
+    margin-bottom:8px;
+}
+
+.category-name{
+
+    font-size:13px;
+
+    font-weight:800;
+
+    line-height:1.25;
+
+    display:-webkit-box;
+
+    -webkit-line-clamp:2;
+
+    -webkit-box-orient:vertical;
+
+    overflow:hidden;
+}
+
+
+/* =========================================================
+   PRODUCT RAIL
+   ========================================================= */
+
+.product-rail{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(5,minmax(0,1fr));
+
+    gap:14px;
+}
+
+
+/* =========================================================
+   PRODUCT CARD
+   ========================================================= */
+
+.product-card{
+
+    min-width:0;
+
+    background:#fff;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    border:1px solid #e8ecf2;
+
+    box-shadow:
+        0 5px 18px rgba(15,23,42,.06);
+
+    transition:
+        transform .2s,
+        box-shadow .2s;
+
+    position:relative;
+}
+
+.product-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 12px 28px rgba(15,23,42,.12);
+}
+
+
+/* IMAGE */
+
+.product-image{
+
+    width:100%;
+
+    aspect-ratio:1/1;
+
+    background:#f1f5f9;
+
+    overflow:hidden;
+
+    position:relative;
+}
+
+.product-image img{
+
+    width:100%;
+
+    height:100%;
+
+    display:block;
+
+    object-fit:cover;
+
+    transition:.3s;
+}
+
+.product-card:hover
+.product-image img{
+
+    transform:scale(1.04);
+}
+
+
+/* FALLBACK */
+
+.image-placeholder{
+
+    width:100%;
+
+    height:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#a3afc2;
+
+    font-size:42px;
+}
+
+
+/* BADGE */
+
+.product-badge{
+
+    position:absolute;
+
+    top:9px;
+
+    left:9px;
+
+    z-index:2;
+
+    background:#ef4444;
+
+    color:#fff;
+
+    padding:5px 8px;
+
+    border-radius:8px;
+
+    font-size:10px;
+
+    font-weight:900;
+}
+
+
+/* INFO */
+
+.product-info{
+
+    padding:12px;
+}
+
+.product-name{
+
+    font-size:14px;
+
+    font-weight:750;
+
+    color:#171a21;
+
+    min-height:38px;
+
+    display:-webkit-box;
+
+    -webkit-line-clamp:2;
+
+    -webkit-box-orient:vertical;
+
+    overflow:hidden;
+}
+
+.product-rating{
+
+    margin-top:6px;
+
+    font-size:11px;
+
+    color:#f59e0b;
+}
+
+.product-price{
+
+    margin-top:7px;
+
+    font-size:17px;
+
+    font-weight:900;
+
+    color:#2563eb;
+}
+
+.product-old-price{
+
+    margin-left:5px;
+
+    font-size:12px;
+
+    color:#9ca3af;
+
+    text-decoration:line-through;
+
+    font-weight:500;
+}
+
+.product-view{
+
+    display:block;
+
+    width:100%;
+
+    margin-top:10px;
+
+    text-align:center;
+
+    padding:9px;
+
+    border-radius:10px;
+
+    background:#edf4ff;
+
+    color:#2563eb;
+
+    font-size:12px;
+
+    font-weight:800;
+}
+
+
+/* =========================================================
+   PROMOTED PRODUCT GRID
+   ========================================================= */
+
+.deal-section{
+
+    border-radius:24px;
+
+    padding:20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eaffef,
+            #d9ffe4
+        );
+
+    overflow:hidden;
+}
+
+.deal-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:15px;
+}
+
+.deal-title{
+
+    font-size:24px;
+
+    font-weight:900;
+}
+
+.deal-subtitle{
+
+    font-size:13px;
+
+    color:#4b5563;
+}
+
+.deal-products{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(5,minmax(0,1fr));
+
+    gap:14px;
+}
+
+
+/* =========================================================
+   BANNER STRIP
+   ========================================================= */
+
+.sale-banner{
+
+    width:100%;
+
+    min-height:145px;
+
+    border-radius:22px;
+
+    padding:25px 30px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff7a18,
+            #ffb347
+        );
+
+    color:#fff;
+
+    margin-bottom:28px;
+}
+
+.sale-banner h2{
+
+    font-size:27px;
+
+    font-weight:900;
+
+    position:relative;
+
+    z-index:2;
+}
+
+.sale-banner p{
+
+    margin-top:5px;
+
+    position:relative;
+
+    z-index:2;
+}
+
+.sale-banner::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:230px;
+
+    height:230px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.15);
+
+    right:-40px;
+
+    top:-80px;
+}
+
+
+/* =========================================================
+   ALL PRODUCTS
+   ========================================================= */
+
+.all-products-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(5,minmax(0,1fr));
+
+    gap:14px;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-shop{
+
+    background:#fff;
+
+    border-radius:22px;
+
+    padding:70px 20px;
+
+    text-align:center;
+
+    border:1px solid #e9edf4;
+}
+
+.empty-shop i{
+
+    font-size:55px;
+
+    color:#2563eb;
+
+    margin-bottom:15px;
+}
+
+.empty-shop h3{
+
+    font-size:22px;
+
+    font-weight:900;
+}
+
+.empty-shop p{
+
+    color:#6b7280;
+
+    margin-top:6px;
+}
+
+
+/* =========================================================
+   MOBILE BOTTOM NAV
+   ========================================================= */
+
+.mobile-shop-nav{
+
+    display:none;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:900px){
+
+    .shop-header-inner{
+
+        padding:9px 14px;
+
+        gap:10px;
+    }
+
+    .shop-logo{
+
+        font-size:23px;
+    }
+
+    .shop-menu{
+
+        display:none;
+    }
+
+    .shop-header-actions{
+
+        display:none;
+    }
+
+    .shop-search{
+
+        order:2;
+    }
+
+    .shop-search input{
+
+        height:44px;
+
+        font-size:15px;
+
+        border-radius:12px;
+    }
+
+    .hero-section{
+
+        grid-template-columns:1fr;
+    }
+
+    .hero-main{
+
+        min-height:245px;
+
+        padding:25px;
+
+        border-radius:20px;
+    }
+
+    .hero-main h1{
+
+        font-size:30px;
+    }
+
+    .hero-main-content{
+
+        max-width:58%;
+    }
+
+    .hero-side{
+
+        grid-template-columns:1fr 1fr;
+
+        grid-template-rows:1fr;
+
+        gap:10px;
+    }
+
+    .hero-small{
+
+        min-height:125px;
+
+        padding:15px;
+
+        border-radius:17px;
+    }
+
+    .hero-small h3{
+
+        font-size:16px;
+    }
+
+    .product-rail,
+    .deal-products{
+
+        display:flex;
+
+        overflow-x:auto;
+
+        gap:12px;
+
+        scrollbar-width:none;
+    }
+
+    .product-rail::-webkit-scrollbar,
+    .deal-products::-webkit-scrollbar{
+
+        display:none;
+    }
+
+    .product-rail .product-card,
+    .deal-products .product-card{
+
+        flex:0 0 175px;
+    }
+
+    .all-products-grid{
+
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+
+        gap:10px;
+    }
+
+    .shop-container{
+
+        padding:
+            12px
+            10px
+            95px;
+    }
+
+    .section-title{
+
+        font-size:20px;
+    }
+
+    .deal-section{
+
+        padding:14px;
+
+        border-radius:20px;
+    }
+
+    .sale-banner{
+
+        min-height:130px;
+
+        padding:20px;
+
+        border-radius:18px;
+    }
+
+    .sale-banner h2{
+
+        font-size:21px;
+    }
+
+    .mobile-shop-nav{
+
+        display:flex;
+
+        position:fixed;
+
+        left:10px;
+
+        right:10px;
+
+        bottom:10px;
+
+        z-index:2000;
+
+        height:64px;
+
+        border-radius:22px;
+
+        background:
+            rgba(255,255,255,.96);
+
+        backdrop-filter:
+            blur(18px);
+
+        box-shadow:
+            0 8px 30px rgba(0,0,0,.18);
+
+        border:1px solid rgba(0,0,0,.06);
+
+        align-items:center;
+
+        justify-content:space-around;
+    }
+
+    .mobile-shop-nav a{
+
+        flex:1;
+
+        height:100%;
+
+        display:flex;
+
+        flex-direction:column;
+
+        align-items:center;
+
+        justify-content:center;
+
+        gap:3px;
+
+        color:#6b7280;
+
+        font-size:10px;
+
+        font-weight:700;
+    }
+
+    .mobile-shop-nav i{
+
+        font-size:20px;
+    }
+
+    .mobile-shop-nav a.active{
+
+        color:#2563eb;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media(max-width:500px){
+
+    .shop-header{
+
+        position:sticky;
+
+        top:0;
+    }
+
+    .shop-header-inner{
+
+        min-height:62px;
+
+        padding:
+            8px
+            10px;
+    }
+
+    .shop-logo{
+
+        display:none;
+    }
+
+    .shop-search{
+
+        width:100%;
+    }
+
+    .shop-search input{
+
+        height:43px;
+
+        padding-left:15px;
+
+        padding-right:45px;
+    }
+
+    .shop-container{
+
+        width:100%;
+
+        padding:
+            10px
+            8px
+            90px;
+    }
+
+    .hero-main{
+
+        min-height:220px;
+
+        padding:20px;
+
+        border-radius:18px;
+    }
+
+    .hero-main-content{
+
+        max-width:60%;
+    }
+
+    .hero-main h1{
+
+        font-size:25px;
+    }
+
+    .hero-main p{
+
+        font-size:13px;
+    }
+
+    .hero-product-image{
+
+        width:47%;
+    }
+
+    .hero-side{
+
+        gap:8px;
+    }
+
+    .hero-small{
+
+        min-height:112px;
+
+        padding:13px;
+    }
+
+    .hero-small h3{
+
+        font-size:14px;
+    }
+
+    .hero-small p{
+
+        font-size:11px;
+    }
+
+    .category-card{
+
+        flex-basis:105px;
+
+        min-height:100px;
+
+        border-radius:15px;
+    }
+
+    .category-icon{
+
+        width:42px;
+
+        height:42px;
+
+        font-size:18px;
+    }
+
+    .product-rail .product-card,
+    .deal-products .product-card{
+
+        flex-basis:158px;
+
+        border-radius:15px;
+    }
+
+    .product-info{
+
+        padding:9px;
+    }
+
+    .product-name{
+
+        font-size:13px;
+    }
+
+    .product-price{
+
+        font-size:15px;
+    }
+
+    .product-view{
+
+        font-size:11px;
+
+        padding:8px;
+    }
+
+    .all-products-grid{
+
+        grid-template-columns:
+            repeat(2,1fr);
+
+        gap:8px;
+    }
+
+}
+
+
+/* =========================================================
+   EDGE TO EDGE MOBILE OVERRIDE
+   ========================================================= */
+
+@media(max-width:768px){
+
+    html,
+    body{
+
+        width:100% !important;
+
+        max-width:100% !important;
+
+        margin:0 !important;
+
+        padding:0 !important;
+
+        overflow-x:hidden !important;
+    }
+
+    .shop-app{
+
+        width:100vw !important;
+
+        max-width:100vw !important;
+
+        margin:
+            0 !important;
+
+        padding:
+            0 0 80px 0 !important;
+    }
+
+    .shop-header{
+
+        width:100vw !important;
+
+        margin:
+            0 !important;
+    }
+
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.loading{
+
+    min-height:100px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#94a3b8;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="shop-app">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <header class="shop-header">
+
+        <div class="shop-header-inner">
+
+
+            <button
+                class="shop-menu"
+                type="button"
+                onclick="history.back()">
+
+                <i class="fas fa-arrow-left"></i>
+
+            </button>
+
+
+            <div class="shop-logo">
+
+                RECROOT<span>EARN</span>
+
+            </div>
+
+
+            <form
+                class="shop-search"
+                action="/shop/search"
+                method="GET">
+
+                <input
+                    type="search"
+                    name="q"
+                    placeholder="Search products or shops..."
+                    autocomplete="off"
+                >
+
+                <i class="fas fa-search"></i>
+
+            </form>
+
+
+            <div class="shop-header-actions">
+
+                <a
+                    href="/cart"
+                    class="shop-header-btn">
+
+                    <i class="fas fa-shopping-cart"></i>
+
+                    <span class="cart-count">
+                        <i class="fas fa-circle"></i>
+                    </span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <main class="shop-container">
+
+
+        <!-- =================================================
+             HERO
+             ================================================= -->
+
+        <section class="hero-section">
+
+
+            <div class="hero-main">
+
+                <div class="hero-main-content">
+
+                    <div
+                        style="
+                            font-size:13px;
+                            font-weight:800;
+                            margin-bottom:8px;
+                            opacity:.9;
+                        ">
+
+                        RECROOTEARN SHOP
+
+                    </div>
+
+
+                    <h1>
+
+                        Discover
+                        <br>
+                        Something
+                        <br>
+                        You’ll Love.
+
+                    </h1>
+
+
+                    <p>
+
+                        Explore products from businesses
+                        and discover amazing deals.
+
+                    </p>
+
+
+                    <a
+                        href="#products"
+                        class="hero-btn">
+
+                        Shop Now
+
+                        <i class="fas fa-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+
+                {% if promoted_products and promoted_products|length > 0 %}
+
+                {% set hero_product = promoted_products[0] %}
+
+                <div class="hero-product-image">
+
+                    {% if hero_product.images and hero_product.images|length > 0 %}
+
+                    <img
+                        src="/static/uploads/products/{{ hero_product.images[0].image }}"
+                        alt="{{ hero_product.name }}"
+                        onerror="
+                            if(!this.dataset.f1){
+                                this.dataset.f1='1';
+                                this.src='/static/product_images/{{ hero_product.images[0].image }}';
+                            }else if(!this.dataset.f2){
+                                this.dataset.f2='1';
+                                this.src='/static/uploads/{{ hero_product.images[0].image }}';
+                            }else{
+                                this.style.display='none';
+                            }
+                        "
+                    >
+
+                    {% endif %}
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="hero-side">
+
+
+                {% if promoted_products|length > 1 %}
+
+                {% set side_product = promoted_products[1] %}
+
+                <a
+                    href="/shop/product/{{ side_product.id }}"
+                    class="hero-small">
+
+                    <div class="hero-small-content">
+
+                        <h3>
+
+                            Featured Deal
+
+                        </h3>
+
+                        <p>
+
+                            {{ side_product.name }}
+
+                        </p>
+
+                    </div>
+
+
+                    {% if side_product.images and side_product.images|length > 0 %}
+
+                    <img
+                        src="/static/uploads/products/{{ side_product.images[0].image }}"
+                        alt="{{ side_product.name }}"
+                        onerror="
+                            if(!this.dataset.f1){
+                                this.dataset.f1='1';
+                                this.src='/static/product_images/{{ side_product.images[0].image }}';
+                            }else{
+                                this.style.display='none';
+                            }
+                        "
+                    >
+
+                    {% endif %}
+
+                </a>
+
+                {% else %}
+
+                <div class="hero-small">
+
+                    <div class="hero-small-content">
+
+                        <h3>
+
+                            Great Deals
+
+                        </h3>
+
+                        <p>
+
+                            Shop amazing products.
+
+                        </p>
 
                     </div>
 
                 </div>
 
-            </a>
-
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-    <!-- Promoted Products -->
-
-    {% if promoted_products %}
-
-    <h4 class="mt-5 mb-3">
-
-        ⭐ Promoted Products
-
-    </h4>
-
-    <div class="row">
-
-        {% for product in promoted_products %}
-
-        <div class="col-6 col-md-4 col-lg-3 mb-4">
-
-            <div class="card shadow-sm h-100">
-
-                {% if product.images %}
-
-                <img
-                    src="{{ url_for('static', filename='product_images/' + product.images[0].image) }}"
-                    class="card-img-top"
-                    style="height:200px;object-fit:cover;">
-
                 {% endif %}
 
-                <div class="card-body">
 
-                    <span class="badge bg-warning text-dark mb-2">
+                {% if promoted_products|length > 2 %}
 
-                        Promoted
+                {% set side_product2 = promoted_products[2] %}
 
-                    </span>
+                <a
+                    href="/shop/product/{{ side_product2.id }}"
+                    class="hero-small">
 
-                    <h6>
+                    <div class="hero-small-content">
 
-                        {{ product.name }}
+                        <h3>
 
-                    </h6>
+                            Trending
 
-                    <h5 class="text-success">
+                        </h3>
 
-                        ₹{{ product.sale_price or product.price }}
+                        <p>
 
-                    </h5>
+                            {{ side_product2.name }}
 
-                    <p class="text-muted small">
+                        </p>
 
-                        {{ product.seller.company_name }}
+                    </div>
 
-                    </p>
 
-                    <a href="/product/{{ product.id }}"
-                       class="btn btn-primary w-100">
+                    {% if side_product2.images and side_product2.images|length > 0 %}
 
-                        Buy Now
+                    <img
+                        src="/static/uploads/products/{{ side_product2.images[0].image }}"
+                        alt="{{ side_product2.name }}"
+                        onerror="
+                            if(!this.dataset.f1){
+                                this.dataset.f1='1';
+                                this.src='/static/product_images/{{ side_product2.images[0].image }}';
+                            }else{
+                                this.style.display='none';
+                            }
+                        "
+                    >
 
-                    </a>
+                    {% endif %}
+
+                </a>
+
+                {% else %}
+
+                <div class="hero-small">
+
+                    <div class="hero-small-content">
+
+                        <h3>
+
+                            New Arrivals
+
+                        </h3>
+
+                        <p>
+
+                            Fresh products added regularly.
+
+                        </p>
+
+                    </div>
 
                 </div>
 
+                {% endif %}
+
             </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             CATEGORIES
+             ================================================= -->
+
+        <section class="section">
+
+
+            <div class="section-header">
+
+                <h2 class="section-title">
+
+                    Shop by Category
+
+                </h2>
+
+            </div>
+
+
+            <div class="category-scroll">
+
+
+                {% for category in categories %}
+
+                <a
+                    href="/shop/category/{{ category.id }}"
+                    class="category-card">
+
+
+                    <div class="category-icon">
+
+                        {% if category.icon %}
+
+                        <i class="{{ category.icon }}"></i>
+
+                        {% else %}
+
+                        <i class="fas fa-layer-group"></i>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="category-name">
+
+                        {{ category.name }}
+
+                    </div>
+
+                </a>
+
+                {% endfor %}
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             SALE BANNER
+             ================================================= -->
+
+        <div class="sale-banner">
+
+            <h2>
+
+                🔥 Deals You Don't Want To Miss
+
+            </h2>
+
+            <p>
+
+                Discover great products at amazing prices.
+
+            </p>
 
         </div>
 
-        {% endfor %}
 
-    </div>
 
-    {% endif %}
+        <!-- =================================================
+             TOP DEALS
+             ================================================= -->
 
-    <!-- Latest Products -->
+        {% if promoted_products %}
 
-    <h4 class="mt-5 mb-3">
+        <section class="section deal-section">
 
-        🔥 Latest Products
 
-    </h4>
+            <div class="deal-header">
 
-    <div class="row">
+                <div>
 
-        {% for product in latest_products %}
+                    <div class="deal-title">
 
-        <div class="col-6 col-md-4 col-lg-3 mb-4">
+                        🔥 Top Deals
 
-            <div class="card shadow-sm h-100">
+                    </div>
 
-                {% if product.images %}
+                    <div class="deal-subtitle">
 
-                <img
-                    src="{{ url_for('static', filename='product_images/' + product.images[0].image) }}"
-                    class="card-img-top"
-                    style="height:200px;object-fit:cover;">
+                        Handpicked products for you
 
-                {% endif %}
-
-                <div class="card-body">
-
-                    <h6>
-
-                        {{ product.name }}
-
-                    </h6>
-
-                    <h5 class="text-success">
-
-                        ₹{{ product.sale_price or product.price }}
-
-                    </h5>
-
-                    <p class="text-muted small">
-
-                        {{ product.seller.company_name }}
-
-                    </p>
-
-                    <a href="/product/{{ product.id }}"
-                       class="btn btn-primary w-100">
-
-                        Buy Now
-
-                    </a>
+                    </div>
 
                 </div>
 
-            </div>
 
-        </div>
+                <a
+                    href="/shop/products"
+                    class="section-link">
 
-        {% else %}
+                    View All
 
-        <div class="col-12">
-
-            <div class="alert alert-info">
-
-                No products available.
+                </a>
 
             </div>
 
-        </div>
 
-        {% endfor %}
+            <div class="deal-products">
 
-    </div>
+
+                {% for product in promoted_products %}
+
+                <a
+                    href="/shop/product/{{ product.id }}"
+                    class="product-card">
+
+
+                    <div class="product-image">
+
+
+                        <span class="product-badge">
+
+                            DEAL
+
+                        </span>
+
+
+                        {% if product.images and product.images|length > 0 %}
+
+                        <img
+                            src="/static/uploads/products/{{ product.images[0].image }}"
+                            alt="{{ product.name }}"
+                            loading="lazy"
+                            onerror="
+                                if(!this.dataset.f1){
+                                    this.dataset.f1='1';
+                                    this.src='/static/product_images/{{ product.images[0].image }}';
+                                }else if(!this.dataset.f2){
+                                    this.dataset.f2='1';
+                                    this.src='/static/uploads/{{ product.images[0].image }}';
+                                }else{
+                                    this.style.display='none';
+                                    this.parentElement.querySelector('.image-placeholder').style.display='flex';
+                                }
+                            "
+                        >
+
+                        {% endif %}
+
+
+                        <div
+                            class="image-placeholder"
+                            style="
+                                {% if product.images and product.images|length > 0 %}
+                                display:none;
+                                {% endif %}
+                            ">
+
+                            <i class="fas fa-image"></i>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="product-info">
+
+
+                        <div class="product-name">
+
+                            {{ product.name }}
+
+                        </div>
+
+
+                        <div class="product-rating">
+
+                            ★★★★★
+
+                        </div>
+
+
+                        <div class="product-price">
+
+                            {% if product.sale_price %}
+
+                            ₹{{ "%.0f"|format(product.sale_price) }}
+
+                            <span class="product-old-price">
+
+                                ₹{{ "%.0f"|format(product.price) }}
+
+                            </span>
+
+                            {% else %}
+
+                            ₹{{ "%.0f"|format(product.price) }}
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="product-view">
+
+                            View Product
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+                {% endfor %}
+
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+
+
+        <!-- =================================================
+             LATEST PRODUCTS
+             ================================================= -->
+
+        <section
+            class="section"
+            id="products">
+
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2 class="section-title">
+
+                        ✨ Latest Products
+
+                    </h2>
+
+                </div>
+
+
+                <a
+                    href="/shop/products"
+                    class="section-link">
+
+                    See All
+
+                </a>
+
+            </div>
+
+
+            {% if latest_products %}
+
+            <div class="all-products-grid">
+
+
+                {% for product in latest_products %}
+
+                <a
+                    href="/shop/product/{{ product.id }}"
+                    class="product-card">
+
+
+                    <div class="product-image">
+
+
+                        {% if product.images and product.images|length > 0 %}
+
+                        <img
+                            src="/static/uploads/products/{{ product.images[0].image }}"
+                            alt="{{ product.name }}"
+                            loading="lazy"
+                            onerror="
+                                if(!this.dataset.f1){
+                                    this.dataset.f1='1';
+                                    this.src='/static/product_images/{{ product.images[0].image }}';
+                                }else if(!this.dataset.f2){
+                                    this.dataset.f2='1';
+                                    this.src='/static/uploads/{{ product.images[0].image }}';
+                                }else{
+                                    this.style.display='none';
+                                    this.parentElement.querySelector('.image-placeholder').style.display='flex';
+                                }
+                            "
+                        >
+
+                        {% endif %}
+
+
+                        <div
+                            class="image-placeholder"
+                            style="
+                                {% if product.images and product.images|length > 0 %}
+                                display:none;
+                                {% endif %}
+                            ">
+
+                            <i class="fas fa-image"></i>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="product-info">
+
+
+                        <div class="product-name">
+
+                            {{ product.name }}
+
+                        </div>
+
+
+                        <div class="product-rating">
+
+                            ★★★★★
+
+                        </div>
+
+
+                        <div class="product-price">
+
+                            {% if product.sale_price %}
+
+                            ₹{{ "%.0f"|format(product.sale_price) }}
+
+                            <span class="product-old-price">
+
+                                ₹{{ "%.0f"|format(product.price) }}
+
+                            </span>
+
+                            {% else %}
+
+                            ₹{{ "%.0f"|format(product.price) }}
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="product-view">
+
+                            View Product
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+                {% endfor %}
+
+
+            </div>
+
+
+            {% else %}
+
+            <div class="empty-shop">
+
+                <i class="fas fa-store"></i>
+
+                <h3>
+
+                    No Products Available
+
+                </h3>
+
+                <p>
+
+                    Products will appear here when sellers add them.
+
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         MOBILE NAV
+         ===================================================== -->
+
+    <nav class="mobile-shop-nav">
+
+
+        <a
+            href="/shop"
+            class="active">
+
+            <i class="fas fa-house"></i>
+
+            <span>
+
+                Home
+
+            </span>
+
+        </a>
+
+
+        <a
+            href="/shop/products">
+
+            <i class="fas fa-grid-2"></i>
+
+            <span>
+
+                Products
+
+            </span>
+
+        </a>
+
+
+        <a
+            href="/shop/products">
+
+            <i class="fas fa-fire"></i>
+
+            <span>
+
+                Deals
+
+            </span>
+
+        </a>
+
+
+        <a
+            href="/cart">
+
+            <i class="fas fa-cart-shopping"></i>
+
+            <span>
+
+                Cart
+
+            </span>
+
+        </a>
+
+
+        <a
+            href="/profile">
+
+            <i class="fas fa-user"></i>
+
+            <span>
+
+                Account
+
+            </span>
+
+        </a>
+
+
+    </nav>
+
 
 </div>
 
-{% endblock %}
+
+<script>
+
+/* =========================================================
+   IMAGE FALLBACK
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        document
+        .querySelectorAll(".product-image img, .hero-product-image img, .hero-small img")
+        .forEach(function(img){
+
+            img.addEventListener(
+                "error",
+                function(){
+
+                    /*
+                     * The inline fallback already tries
+                     * alternative product directories.
+                     *
+                     * This prevents broken-image icons.
+                     */
+
+                    if(
+                        !this.dataset.finalFallback
+                    ){
+
+                        this.dataset.finalFallback = "1";
+
+                        this.style.display = "none";
+
+                        const parent =
+                            this.parentElement;
+
+                        if(parent){
+
+                            const placeholder =
+                                parent.querySelector(
+                                    ".image-placeholder"
+                                );
+
+                            if(placeholder){
+
+                                placeholder.style.display =
+                                    "flex";
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
+
+        });
+
+    }
+);
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+const searchInput =
+    document.querySelector(
+        ".shop-search input"
+    );
+
+if(searchInput){
+
+    searchInput.addEventListener(
+        "keydown",
+        function(event){
+
+            if(event.key === "Enter"){
+
+                const value =
+                    this.value.trim();
+
+                if(!value){
+
+                    event.preventDefault();
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+</script>
+
+
+</body>
+</html>
