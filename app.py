@@ -15070,102 +15070,146 @@ def shop_home():
 
     # ==========================================
     # CATEGORIES
+    # ONLY SHOW CATEGORIES HAVING ACTIVE PRODUCTS
     # ==========================================
 
-    categories = ProductCategory.query.filter_by(
-        is_active=True
-    ).all()
+    categories = (
+        ProductCategory.query
+        .join(Product, Product.category_id == ProductCategory.id)
+        .filter(
+            ProductCategory.is_active == True,
+            Product.status == "active"
+        )
+        .distinct()
+        .all()
+    )
 
 
     # ==========================================
     # ADMIN CONTROLLED BANNERS
     # ==========================================
 
-    banners = HomepageBanner.query.filter_by(
-        is_active=True
-    ).order_by(
-        HomepageBanner.display_order.asc()
-    ).all()
+    banners = (
+        HomepageBanner.query
+        .filter_by(is_active=True)
+        .order_by(HomepageBanner.display_order.asc())
+        .all()
+    )
 
 
     # ==========================================
     # TOP DEALS
+    # ALWAYS SHOW LATEST 4
     # ==========================================
 
-    promoted_products = Product.query.filter_by(
-        is_promoted=True,
-        status="active"
-    ).order_by(
-        Product.promotion_priority.desc(),
-        Product.created_at.desc()
-    ).limit(10).all()
+    promoted_products = (
+        Product.query
+        .filter_by(
+            is_promoted=True,
+            status="active"
+        )
+        .order_by(
+            Product.created_at.desc()
+        )
+        .limit(4)
+        .all()
+    )
 
 
     # ==========================================
     # TRENDING NOW
+    # LATEST 4 IN THIS SECTION
     # ==========================================
 
-    trending_products = Product.query.filter_by(
-        status="active",
-        show_on_home=True,
-        home_section="Trending Now"
-    ).order_by(
-        Product.home_display_order.asc(),
-        Product.created_at.desc()
-    ).limit(20).all()
+    trending_products = (
+        Product.query
+        .filter_by(
+            status="active",
+            show_on_home=True,
+            home_section="Trending Now"
+        )
+        .order_by(
+            Product.created_at.desc()
+        )
+        .limit(4)
+        .all()
+    )
 
 
     # ==========================================
     # GREAT DEALS
+    # LATEST 4 IN THIS SECTION
     # ==========================================
 
-    deal_products = Product.query.filter_by(
-        status="active",
-        show_on_home=True,
-        home_section="Great Deals"
-    ).order_by(
-        Product.home_display_order.asc(),
-        Product.created_at.desc()
-    ).limit(20).all()
+    deal_products = (
+        Product.query
+        .filter_by(
+            status="active",
+            show_on_home=True,
+            home_section="Great Deals"
+        )
+        .order_by(
+            Product.created_at.desc()
+        )
+        .limit(4)
+        .all()
+    )
 
 
     # ==========================================
     # NEW ARRIVALS
+    # LATEST 4
     # ==========================================
 
-    new_arrival_products = Product.query.filter_by(
-        status="active",
-        show_on_home=True,
-        home_section="New Arrivals"
-    ).order_by(
-        Product.home_display_order.asc(),
-        Product.created_at.desc()
-    ).limit(20).all()
+    new_arrival_products = (
+        Product.query
+        .filter_by(
+            status="active",
+            show_on_home=True,
+            home_section="New Arrivals"
+        )
+        .order_by(
+            Product.created_at.desc()
+        )
+        .limit(4)
+        .all()
+    )
 
 
     # ==========================================
     # RECOMMENDED
+    # LATEST 4 IN THIS SECTION
     # ==========================================
 
-    recommended_products = Product.query.filter_by(
-        status="active",
-        show_on_home=True,
-        home_section="Recommended"
-    ).order_by(
-        Product.home_display_order.asc(),
-        Product.created_at.desc()
-    ).limit(20).all()
+    recommended_products = (
+        Product.query
+        .filter_by(
+            status="active",
+            show_on_home=True,
+            home_section="Recommended"
+        )
+        .order_by(
+            Product.created_at.desc()
+        )
+        .limit(4)
+        .all()
+    )
 
 
     # ==========================================
     # LATEST PRODUCTS
+    # LATEST 4 ONLY
     # ==========================================
 
-    latest_products = Product.query.filter_by(
-        status="active"
-    ).order_by(
-        Product.created_at.desc()
-    ).limit(20).all()
+    latest_products = (
+        Product.query
+        .filter_by(status="active")
+        .order_by(
+            Product.created_at.desc()
+        )
+        .limit(4)
+        .all()
+    )
 
 
     # ==========================================
