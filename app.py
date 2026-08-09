@@ -15236,6 +15236,29 @@ def shop_home():
         latest_products=latest_products
     )
 
+@app.route("/shop/all")
+@login_required
+def shop_all_products():
+
+    promoted_products = Product.query.filter_by(
+        is_promoted=True,
+        status="active"
+    ).order_by(
+        Product.created_at.desc()
+    ).all()
+
+    products = Product.query.filter_by(
+        status="active"
+    ).order_by(
+        Product.created_at.desc()
+    ).all()
+
+    return render_template(
+        "shop_all_products.html",
+        promoted_products=promoted_products,
+        products=products
+    )
+
 @app.route("/shop/category/<int:id>")
 @login_required
 def shop_category(id):

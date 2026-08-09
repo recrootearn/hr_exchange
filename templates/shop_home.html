@@ -1584,6 +1584,19 @@ input{
         font-size:20px;
     }
 
+    .section-link{
+        display:inline-flex;
+        align-items:center;
+        gap:5px;
+        white-space:nowrap;
+    }
+
+    .sale-banner-btn{
+        padding:9px 13px;
+        font-size:11px;
+        margin-top:10px;
+    }
+
     .deal-section{
 
         padding:14px;
@@ -2036,6 +2049,11 @@ input{
                     <p>{{ main_banner.subtitle }}</p>
                     {% endif %}
 
+                    <a href="/shop/all" class="admin-banner-btn">
+                        Shop Now
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+
                 </div>
 
             </div>
@@ -2074,6 +2092,11 @@ input{
                         {% if banner.subtitle %}
                         <p>{{ banner.subtitle }}</p>
                         {% endif %}
+
+                        <a href="/shop/all" class="admin-small-banner-button">
+                            Shop Now
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
 
                     </div>
 
@@ -2181,6 +2204,11 @@ input{
                 <p>
                     Discover great products at amazing prices.
                 </p>
+
+                <a href="/shop/all" class="sale-banner-btn">
+                    Shop Now
+                    <i class="fas fa-arrow-right"></i>
+                </a>
 
             </div>
 
