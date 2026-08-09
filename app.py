@@ -147,6 +147,32 @@ def generate_candidate_referral_code():
         ).first():
             return code
 
+def save_image(file, folder):
+    if not file or not file.filename:
+        return None
+
+    upload_folder = os.path.join(
+        app.config["UPLOAD_FOLDER"],
+        folder
+    )
+
+    os.makedirs(upload_folder, exist_ok=True)
+
+    filename = (
+        str(uuid.uuid4())
+        + "_"
+        + secure_filename(file.filename)
+    )
+
+    filepath = os.path.join(
+        upload_folder,
+        filename
+    )
+
+    file.save(filepath)
+
+    return filename
+
 # =========================
 # CONFIG & DB SETUP
 # =========================
