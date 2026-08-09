@@ -1044,6 +1044,56 @@ body{
     }
 }
 
+
+/* PUBLIC LAYOUT */
+.public-sidebar-menu{
+    display:none;
+}
+
+.public-login-btn{
+    background:#fff !important;
+    color:#2563eb !important;
+    min-width:72px;
+    text-align:center;
+}
+
+.public-bottom-nav{
+    gap:4px;
+}
+
+.public-bottom-nav .nav-btn{
+    flex:1;
+}
+
+@media(min-width:769px){
+    .public-sidebar-menu{
+        display:block;
+    }
+
+    .public-sidebar-menu a{
+        display:flex;
+        align-items:center;
+        gap:12px;
+        color:#fff;
+        text-decoration:none;
+        padding:14px;
+        border-radius:12px;
+        margin-bottom:10px;
+        font-size:15px;
+        font-weight:600;
+        background:rgba(255,255,255,.045);
+        border:1px solid rgba(255,255,255,.05);
+    }
+
+    .public-sidebar-menu a:hover{
+        background:rgba(255,255,255,.13);
+    }
+
+    .public-bottom-nav{
+        display:none !important;
+    }
+}
+
 </style>
 
 </head>
@@ -1139,6 +1189,34 @@ body{
         </span>
         {% endif %}
 
+    </a>
+
+</div>
+
+<div class="mobile-overlay"
+     onclick="toggleSidebar()"></div>
+
+{% else %}
+
+<!-- PUBLIC MOBILE HEADER -->
+<div class="mobile-topbar public-mobile-topbar">
+
+    <button class="menu-btn"
+            onclick="toggleSidebar()"
+            aria-label="Open menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="mobile-logo">
+        <img src="{{ url_for('static', filename='images/header_logo.png') }}"
+             alt="RecrootEarn">
+    </div>
+
+    <a href="/login"
+       class="mobile-credit public-login-btn"
+       style="text-decoration:none;">
+        <i class="fas fa-user"></i>
+        <span style="margin-left:4px;">Login</span>
     </a>
 
 </div>
@@ -1367,6 +1445,30 @@ body{
 
 {% endif %}
 
+{% if not session.get('candidate_id') and not current_user.is_authenticated %}
+
+<!-- PUBLIC SIDEBAR -->
+<div class="public-sidebar-menu">
+
+    <a href="/shop">
+        <i class="fas fa-store"></i>
+        Shop
+    </a>
+
+    <a href="/login">
+        <i class="fas fa-right-to-bracket"></i>
+        Login
+    </a>
+
+    <a href="/register">
+        <i class="fas fa-user-plus"></i>
+        Create Account
+    </a>
+
+</div>
+
+{% endif %}
+
 </div>
 
 <!-- MAIN -->
@@ -1502,6 +1604,33 @@ body{
     <i class="fas fa-user"></i>
     <span>Profile</span>
 </a>
+
+</div>
+
+{% else %}
+
+<!-- PUBLIC MOBILE NAV -->
+<div class="bottom-nav public-bottom-nav">
+
+    <a href="/shop" class="nav-btn">
+        <i class="fas fa-store"></i>
+        <span>Shop</span>
+    </a>
+
+    <a href="/login" class="nav-btn">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Cart</span>
+    </a>
+
+    <a href="/login" class="nav-btn">
+        <i class="fas fa-bag-shopping"></i>
+        <span>Orders</span>
+    </a>
+
+    <a href="/login" class="nav-btn">
+        <i class="fas fa-user"></i>
+        <span>Account</span>
+    </a>
 
 </div>
 
