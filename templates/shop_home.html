@@ -1729,8 +1729,10 @@ input{
         {% for store in stores %}
 
         <a
-          href="{{ url_for('company_share_shop', shop_slug=store.shop_slug) }}"
-          class="store-card"
+            href="{{ url_for('company_share_shop',
+                             seller_id=store.id,
+                             shop_slug=store.shop_slug) }}"
+           class="store-card"
         >
 
 
