@@ -16369,12 +16369,6 @@ def create_shipment(order_id):
 
     if not pickup:
 
-        flash("Pickup address missing.","danger")
-
-        return redirect(f"/order/{order.id}")
-
-    if not pickup.is_verified:
-
         flash("Pickup address not verified.","warning")
 
         return redirect(f"/order/{order.id}")
