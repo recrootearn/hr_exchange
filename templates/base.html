@@ -1328,6 +1328,39 @@ body{
     }
 }
 
+
+/* =========================================================
+   SIDEBAR CLOSED STATE FIX
+   ========================================================= */
+
+@media(max-width:768px){
+    .sidebar{
+        left:-310px !important;
+        transform:translateX(0) !important;
+        visibility:hidden;
+    }
+
+    .sidebar.active{
+        left:0 !important;
+        visibility:visible;
+    }
+}
+
+
+@media(max-width:768px){
+    .sidebar{
+        transition:
+            left .28s cubic-bezier(.22,.61,.36,1),
+            visibility 0s linear .28s;
+    }
+
+    .sidebar.active{
+        transition:
+            left .28s cubic-bezier(.22,.61,.36,1),
+            visibility 0s linear 0s;
+    }
+}
+
 </style>
 
 </head>
@@ -1541,7 +1574,7 @@ body{
     Dashboard
 </a>
 
-<a href="/leads" class="mobile-hide-hr">
+<a href="/leads">
     <i class="fas fa-users"></i>
     Leads
 </a>
@@ -1551,7 +1584,7 @@ body{
     Discover Candidates
 </a>
 
-<a href="/upload" class="mobile-hide-hr">
+<a href="/upload">
     <i class="fas fa-upload"></i>
     Upload Candidate
 </a>
