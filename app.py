@@ -1255,6 +1255,19 @@ class BusinessSettings(db.Model):
         default=7
     )
 
+    # ==========================
+    # DELHIVERY
+    # ==========================
+
+    delhivery_enabled = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    delhivery_api_token = db.Column(
+        db.String(500)
+    )
+
 class BoostCity(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -3035,6 +3048,18 @@ class Order(db.Model):
         backref="customer_orders"
     )
 
+    delhivery_waybill = db.Column(
+        db.String(120)
+    )
+
+    delhivery_reference = db.Column(
+        db.String(120)
+    )
+
+    delhivery_status = db.Column(
+        db.String(100)
+    )
+
     # ==================================
     # RELATIONSHIPS
     # ==================================
@@ -3681,6 +3706,433 @@ def get_shiprocket():
     shiprocket.login()
 
     return shiprocket
+
+# =========================================================
+# DELHIVERY SHIPPING SERVICE
+# =========================================================
+
+DELHIVERY_BASE_URL = "https://track.delhivery.com"
+
+
+class DelhiveryService:
+
+    def __init__(self, api_token):
+
+        self.api_token = api_token
+
+    # =====================================================
+    # HEADERS
+    # =====================================================
+
+    def headers(self):
+
+        return {
+            "Authorization": f"Token {self.api_token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
+
+    # =====================================================
+    # CREATE SHIPMENT
+    # =====================================================
+
+    def create_shipment(self, order):
+
+        # -------------------------------------------------
+        # GET SELLER
+        # -------------------------------------------------
+
+        seller = order.seller
+
+        if not seller:
+
+            raise Exception(
+                "Seller not found for this order."
+            )
+
+        # -------------------------------------------------
+        # GET SELLER PICKUP ADDRESS
+        # -------------------------------------------------
+
+        pickup = seller.pickup_address
+
+        if not pickup:
+
+            raise Exception(
+                "Seller pickup address is not configured."
+            )
+
+        # -------------------------------------------------
+        # GET CUSTOMER ADDRESS
+        # -------------------------------------------------
+
+        address = order.shipping_address
+
+        if not address:
+
+            raise Exception(
+                "Customer shipping address is missing."
+            )
+
+        # -------------------------------------------------
+        # SELLER NAME
+        # -------------------------------------------------
+
+        seller_name = (
+            pickup.company_name
+            or pickup.pickup_name
+            or seller.company
+            or seller.first_name
+            or f"Seller {seller.id}"
+        )
+
+        # -------------------------------------------------
+        # SELLER PHONE
+        # -------------------------------------------------
+
+        seller_phone = (
+            pickup.mobile
+            or seller.mobile
+            or ""
+        )
+
+        # -------------------------------------------------
+        # SELLER EMAIL
+        # -------------------------------------------------
+
+        seller_email = (
+            pickup.email
+            or seller.email
+            or ""
+        )
+
+        # -------------------------------------------------
+        # SELLER ADDRESS
+        # -------------------------------------------------
+
+        seller_address = (
+            pickup.address_line1
+            or ""
+        )
+
+        if pickup.address_line2:
+
+            seller_address += (
+                ", "
+                + pickup.address_line2
+            )
+
+        # -------------------------------------------------
+        # CUSTOMER NAME
+        # -------------------------------------------------
+
+        customer_name = (
+            address.full_name
+            or "Customer"
+        )
+
+        # -------------------------------------------------
+        # CUSTOMER ADDRESS
+        # -------------------------------------------------
+
+        customer_address = (
+            address.address_line1
+            or ""
+        )
+
+        if address.address_line2:
+
+            customer_address += (
+                ", "
+                + address.address_line2
+            )
+
+        # -------------------------------------------------
+        # PACKAGE DETAILS
+        # -------------------------------------------------
+
+        total_weight = 0
+
+        total_quantity = 0
+
+        for item in order.items:
+
+            total_quantity += (
+                item.quantity
+            )
+
+            if item.product:
+
+                total_weight += (
+                    (item.product.weight or 0.1)
+                    * item.quantity
+                )
+
+        if total_weight <= 0:
+
+            total_weight = 0.1
+
+        # Delhivery commonly expects weight
+        # in grams for shipment creation.
+
+        weight_grams = int(
+            round(
+                total_weight * 1000
+            )
+        )
+
+        # -------------------------------------------------
+        # PAYMENT MODE
+        # -------------------------------------------------
+
+        payment_mode = "Pre-paid"
+
+        if (
+            getattr(
+                order,
+                "payment_method",
+                ""
+            ).lower()
+            == "cod"
+        ):
+
+            payment_mode = "COD"
+
+        # -------------------------------------------------
+        # ORDER ITEMS
+        # -------------------------------------------------
+
+        products = []
+
+        for item in order.items:
+
+            products.append(
+                str(
+                    item.product_name
+                )
+            )
+
+        product_description = ", ".join(
+            products
+        )
+
+        # -------------------------------------------------
+        # DELHIVERY PAYLOAD
+        # -------------------------------------------------
+
+        payload = {
+
+            "shipments": [
+
+                {
+
+                    "name":
+                        customer_name,
+
+                    "add":
+                        customer_address,
+
+                    "city":
+                        address.city,
+
+                    "state":
+                        address.state,
+
+                    "country":
+                        address.country
+                        or "India",
+
+                    "pin":
+                        str(address.pincode),
+
+                    "phone":
+                        address.mobile,
+
+                    "order":
+                        order.order_number,
+
+                    "payment_mode":
+                        payment_mode,
+
+                    "products_desc":
+                        product_description,
+
+                    "quantity":
+                        total_quantity,
+
+                    "weight":
+                        weight_grams,
+
+                    "shipping_mode":
+                        "Surface",
+
+                    # Seller pickup information
+                    # is passed dynamically.
+
+                    "seller_name":
+                        seller_name,
+
+                    "seller_address":
+                        seller_address,
+
+                    "seller_city":
+                        pickup.city,
+
+                    "seller_state":
+                        pickup.state,
+
+                    "seller_pin":
+                        str(
+                            pickup.pincode
+                        ),
+
+                    "seller_phone":
+                        seller_phone,
+
+                    "seller_email":
+                        seller_email
+
+                }
+
+            ],
+
+            "pickup_location": {
+
+                "name":
+                    seller_name,
+
+                "add":
+                    seller_address,
+
+                "city":
+                    pickup.city,
+
+                "state":
+                    pickup.state,
+
+                "pin":
+                    str(
+                        pickup.pincode
+                    ),
+
+                "country":
+                    pickup.country
+                    or "India",
+
+                "phone":
+                    seller_phone
+
+            }
+
+        }
+
+        # -------------------------------------------------
+        # API REQUEST
+        # -------------------------------------------------
+
+        response = requests.post(
+
+            DELHIVERY_BASE_URL
+            + "/api/cmu/create.json",
+
+            headers=self.headers(),
+
+            json=payload,
+
+            timeout=30
+
+        )
+
+        # -------------------------------------------------
+        # ERROR HANDLING
+        # -------------------------------------------------
+
+        if response.status_code >= 400:
+
+            raise Exception(
+                "Delhivery shipment creation failed: "
+                + response.text
+            )
+
+        try:
+
+            data = response.json()
+
+        except Exception:
+
+            raise Exception(
+                "Invalid response from Delhivery: "
+                + response.text
+            )
+
+        return data
+
+    # =====================================================
+    # TRACK SHIPMENT
+    # =====================================================
+
+    def track_shipment(self, waybill):
+
+        if not waybill:
+
+            raise Exception(
+                "Delhivery waybill is required."
+            )
+
+        response = requests.get(
+
+            DELHIVERY_BASE_URL
+            + "/api/v1/packages/json/",
+
+            headers=self.headers(),
+
+            params={
+                "waybill": waybill
+            },
+
+            timeout=30
+
+        )
+
+        if response.status_code >= 400:
+
+            raise Exception(
+                "Delhivery tracking failed: "
+                + response.text
+            )
+
+        return response.json()
+
+
+# =========================================================
+# GET DELHIVERY INSTANCE
+# =========================================================
+
+def get_delhivery():
+
+    settings = get_business_settings()
+
+    if not settings:
+
+        raise Exception(
+            "Business settings not configured."
+        )
+
+    if not settings.delhivery_enabled:
+
+        raise Exception(
+            "Delhivery shipping is disabled."
+        )
+
+    if not settings.delhivery_api_token:
+
+        raise Exception(
+            "Delhivery API token is not configured."
+        )
+
+    return DelhiveryService(
+        settings.delhivery_api_token
+    )
 
 class SellerPickupAddress(db.Model):
     __tablename__ = "seller_pickup_addresses"
@@ -19320,6 +19772,170 @@ def owner_toggle_product(id):
             "manage_product",
             id=product.id
         )
+    )
+
+# =========================================================
+# CREATE DELHIVERY SHIPMENT
+# =========================================================
+
+@app.route(
+    "/create-delhivery-shipment/<int:order_id>"
+)
+@login_required
+def create_delhivery_shipment(order_id):
+
+    # -----------------------------------------------------
+    # ONLY SELLER OF THIS ORDER CAN SHIP IT
+    # -----------------------------------------------------
+
+    order = Order.query.filter_by(
+        id=order_id,
+        seller_id=current_user.id
+    ).first_or_404()
+
+    # -----------------------------------------------------
+    # SELLER PICKUP ADDRESS
+    # -----------------------------------------------------
+
+    pickup = SellerPickupAddress.query.filter_by(
+        seller_id=order.seller_id
+    ).first()
+
+    if not pickup:
+
+        flash(
+            "Please add your shop pickup address first.",
+            "warning"
+        )
+
+        return redirect(
+            f"/order/{order.id}"
+        )
+
+    # -----------------------------------------------------
+    # CREATE DELHIVERY SHIPMENT
+    # -----------------------------------------------------
+
+    try:
+
+        delhivery = get_delhivery()
+
+        data = delhivery.create_shipment(
+            order
+        )
+
+    except Exception as e:
+
+        flash(
+            "Delhivery shipment creation failed: "
+            + str(e),
+            "danger"
+        )
+
+        return redirect(
+            f"/order/{order.id}"
+        )
+
+    # -----------------------------------------------------
+    # GET WAYBILL
+    # -----------------------------------------------------
+
+    waybill = None
+
+    if isinstance(data, dict):
+
+        waybill = (
+            data.get("waybill")
+            or data.get("awb")
+            or data.get("AWB")
+        )
+
+        if not waybill:
+
+            packages = (
+                data.get("packages")
+                or data.get("Packages")
+                or []
+            )
+
+            if packages:
+
+                first_package = packages[0]
+
+                if isinstance(
+                    first_package,
+                    dict
+                ):
+
+                    waybill = (
+                        first_package.get(
+                            "waybill"
+                        )
+                        or first_package.get(
+                            "AWB"
+                        )
+                    )
+
+    # -----------------------------------------------------
+    # SAVE DELHIVERY DETAILS
+    # -----------------------------------------------------
+
+    if waybill:
+
+        order.delhivery_waybill = str(
+            waybill
+        )
+
+        order.tracking_id = str(
+            waybill
+        )
+
+        order.awb_code = str(
+            waybill
+        )
+
+        order.courier_name = (
+            "Delhivery"
+        )
+
+        order.shipping_status = (
+            "Packed"
+        )
+
+        order.order_status = (
+            "Packed"
+        )
+
+        db.session.add(
+            OrderStatusHistory(
+                order_id=order.id,
+                status="Packed",
+                remarks=(
+                    "Delhivery shipment created"
+                )
+            )
+        )
+
+        db.session.commit()
+
+        flash(
+            "Delhivery shipment created successfully.",
+            "success"
+        )
+
+    else:
+
+        db.session.commit()
+
+        flash(
+            "Delhivery response received, "
+            "but waybill was not found. "
+            "Please check the response.",
+            "warning"
+        )
+
+    return redirect(
+        f"/order/{order.id}"
     )
 
 # =========================

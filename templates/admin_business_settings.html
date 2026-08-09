@@ -587,30 +587,57 @@
         </div>
 
 
-        <!-- ====================================== -->
-        <!-- SHIPROCKET SHIPPING -->
-        <!-- ====================================== -->
+        <!-- ===================================================== -->
+<!-- MARKETPLACE SHIPPING -->
+<!-- ===================================================== -->
 
-        <div class="card mb-4">
+<div class="card mb-4">
+
+    <div class="card-header bg-primary text-white">
+        🚚 Marketplace Shipping
+    </div>
+
+    <div class="card-body">
+
+        <!-- ================================================= -->
+        <!-- SHIPROCKET -->
+        <!-- ================================================= -->
+
+        <div class="card mb-4 border">
 
             <div class="card-header bg-primary text-white">
-                🚚 Shiprocket Shipping
+                📦 Shiprocket
             </div>
 
             <div class="card-body">
 
                 <div class="alert alert-light border">
-                    <strong>Marketplace Shipping</strong><br>
-                    Configure the Shiprocket account used for marketplace
-                    order shipping and the default pickup location.
-                    Each seller's own pickup address can be used when
-                    creating that seller's shipment.
+
+                    <strong>Shiprocket Shipping</strong><br>
+
+                    Configure your Shiprocket account.
+                    Your existing Shiprocket integration will
+                    continue to work normally.
+
+                    <br><br>
+
+                    <small class="text-muted">
+                        Seller-specific pickup addresses can be
+                        used when creating shipments.
+                    </small>
+
                 </div>
+
 
                 <div class="row">
 
+                    <!-- SHIPROCKET EMAIL -->
+
                     <div class="col-md-4 mb-3">
-                        <label>Shiprocket Email</label>
+
+                        <label>
+                            Shiprocket Email
+                        </label>
 
                         <input
                             type="email"
@@ -618,11 +645,19 @@
                             name="shiprocket_email"
                             value="{{ settings.shiprocket_email or '' }}"
                             placeholder="Shiprocket login email"
-                            autocomplete="off">
+                            autocomplete="off"
+                        >
+
                     </div>
 
+
+                    <!-- SHIPROCKET PASSWORD -->
+
                     <div class="col-md-4 mb-3">
-                        <label>Shiprocket Password</label>
+
+                        <label>
+                            Shiprocket Password
+                        </label>
 
                         <div class="input-group">
 
@@ -633,21 +668,30 @@
                                 id="shiprocket_password"
                                 value="{{ settings.shiprocket_password or '' }}"
                                 placeholder="Shiprocket password"
-                                autocomplete="new-password">
+                                autocomplete="new-password"
+                            >
 
                             <button
                                 type="button"
                                 class="btn btn-outline-secondary"
                                 onclick="toggleShiprocketPassword()"
-                                title="Show/Hide Password">
+                                title="Show/Hide Password"
+                            >
                                 👁️
                             </button>
 
                         </div>
+
                     </div>
 
+
+                    <!-- SHIPROCKET DEFAULT PICKUP -->
+
                     <div class="col-md-4 mb-3">
-                        <label>Default Pickup Location</label>
+
+                        <label>
+                            Default Pickup Location
+                        </label>
 
                         <input
                             type="text"
@@ -655,11 +699,15 @@
                             name="shiprocket_pickup_location"
                             value="{{ settings.shiprocket_pickup_location or '' }}"
                             placeholder="Example: RECROOTEARN"
-                            maxlength="100">
+                            maxlength="100"
+                        >
 
                         <small class="text-muted">
-                            Default platform pickup location.
+                            Existing Shiprocket default pickup
+                            location. This does not affect
+                            Delhivery seller pickup locations.
                         </small>
+
                     </div>
 
                 </div>
@@ -668,17 +716,223 @@
 
         </div>
 
-        <script>
-        function toggleShiprocketPassword() {
-            const input = document.getElementById("shiprocket_password");
 
-            if (input.type === "password") {
-                input.type = "text";
-            } else {
-                input.type = "password";
-            }
-        }
-        </script>
+
+        <!-- ================================================= -->
+        <!-- DELHIVERY -->
+        <!-- ================================================= -->
+
+        <div class="card mb-4 border">
+
+            <div class="card-header bg-success text-white">
+                🚚 Delhivery
+            </div>
+
+            <div class="card-body">
+
+                <div class="alert alert-light border">
+
+                    <strong>Delhivery Shipping</strong><br>
+
+                    Enable Delhivery for marketplace orders.
+
+                    <br><br>
+
+                    <small class="text-muted">
+
+                        Delhivery shipments will use the
+                        <strong>pickup address of the seller
+                        who owns the order</strong>.
+
+                        There is no global/default pickup
+                        location for Delhivery.
+
+                    </small>
+
+                </div>
+
+
+                <div class="row">
+
+                    <!-- ENABLE DELHIVERY -->
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label">
+                            Delhivery Status
+                        </label>
+
+                        <div class="form-check form-switch mt-2">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                role="switch"
+                                name="delhivery_enabled"
+                                id="delhivery_enabled"
+
+                                {% if settings.delhivery_enabled %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                class="form-check-label fw-bold"
+                                for="delhivery_enabled"
+                            >
+
+                                Enable Delhivery
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DELHIVERY API TOKEN -->
+
+                    <div class="col-md-8 mb-3">
+
+                        <label>
+                            Delhivery API Token
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="password"
+                                class="form-control"
+                                name="delhivery_api_token"
+                                id="delhivery_api_token"
+                                value="{{ settings.delhivery_api_token or '' }}"
+                                placeholder="Enter Delhivery API Token"
+                                autocomplete="new-password"
+                            >
+
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary"
+                                onclick="toggleDelhiveryToken()"
+                                title="Show/Hide Token"
+                            >
+                                👁️
+                            </button>
+
+                        </div>
+
+                        <small class="text-muted">
+
+                            Enter the API token provided by
+                            Delhivery.
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- SELLER PICKUP EXPLANATION -->
+
+                <div class="alert alert-info mt-2 mb-0">
+
+                    <strong>
+                        📍 Seller-specific pickup
+                    </strong>
+
+                    <br>
+
+                    When an order is shipped through
+                    Delhivery, RecrootEarn will automatically
+                    use the pickup address saved by that
+                    particular seller.
+
+                    <br><br>
+
+                    Example:
+
+                    <br>
+
+                    <strong>Seller A</strong>
+                    → Seller A pickup address
+
+                    <br>
+
+                    <strong>Seller B</strong>
+                    → Seller B pickup address
+
+                    <br>
+
+                    <strong>Seller C</strong>
+                    → Seller C pickup address
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- SHIPPING SETTINGS JAVASCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+function toggleShiprocketPassword() {
+
+    const input =
+        document.getElementById(
+            "shiprocket_password"
+        );
+
+    if (!input) {
+        return;
+    }
+
+    if (input.type === "password") {
+
+        input.type = "text";
+
+    } else {
+
+        input.type = "password";
+
+    }
+
+}
+
+
+function toggleDelhiveryToken() {
+
+    const input =
+        document.getElementById(
+            "delhivery_api_token"
+        );
+
+    if (!input) {
+        return;
+    }
+
+    if (input.type === "password") {
+
+        input.type = "text";
+
+    } else {
+
+        input.type = "password";
+
+    }
+
+}
+
+</script>
 
         <button
             class="btn btn-success btn-lg w-100">

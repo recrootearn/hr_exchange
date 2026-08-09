@@ -1,159 +1,1210 @@
 {% extends "base.html" %}
-{% block title %}Order {{ order.order_number }}{% endblock %}
+
+{% block title %}
+Order {{ order.order_number }}
+{% endblock %}
+
 {% block content %}
+
 <style>
-html,body{margin:0!important;padding:0!important}
-.content{padding:0!important;background:#f5f7fb!important}
-.od-page{min-height:100vh;background:#f5f7fb;padding:22px 16px 50px}
-.od-wrap{max-width:1050px;margin:auto}
-.od-hero{background:linear-gradient(135deg,#2563eb,#1d4ed8,#3b82f6);color:#fff;border-radius:24px;padding:20px 22px;margin-bottom:15px;box-shadow:0 12px 30px rgba(37,99,235,.18)}
-.od-head{display:flex;align-items:center;gap:12px}.back{width:44px;height:44px;border-radius:13px;background:rgba(255,255,255,.15);color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none}
-.od-title{flex:1;min-width:0}.od-title h1{font-size:21px;font-weight:900;margin:0}.od-title p{font-size:12px;opacity:.8;margin:4px 0 0}
-.badge-status{padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.18);font-size:10px;font-weight:850;white-space:nowrap}
-.od-card{background:#fff;border-radius:20px;margin-bottom:14px;overflow:hidden;box-shadow:0 7px 24px rgba(20,35,70,.07)}
-.od-headline{padding:16px 19px;border-bottom:1px solid #edf0f5;font-weight:850;color:#172033}.od-body{padding:19px}
-.addr{background:#f8faff;border:1px solid #e5ebf5;border-radius:15px;padding:14px;line-height:1.7;color:#475569;font-size:13px}.addr strong{color:#172033;font-size:15px}
-.item{display:flex;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid #edf0f5}.item:last-child{border-bottom:0;padding-bottom:0}
-.item-img,.item-ph{width:70px;height:70px;flex:0 0 70px;border-radius:12px;object-fit:cover;background:#f1f5f9}.item-ph{display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:23px}
-.item-info{flex:1;min-width:0}.item-name{font-weight:850;color:#172033;font-size:14px}.item-meta{font-size:11px;color:#6b7280;margin-top:4px}.item-total{font-weight:900;color:#172033}
-.summary{display:grid;grid-template-columns:1fr 1fr;gap:9px}.sum{background:#f8faff;border:1px solid #e5ebf5;border-radius:13px;padding:12px}.sum small{display:block;color:#8a93a3;font-size:10px}.sum strong{display:block;color:#172033;margin-top:4px;font-size:13px}
-.total{margin-top:12px;border-radius:15px;background:#eef4ff;padding:15px;display:flex;justify-content:space-between;align-items:center}.total b{font-size:23px;color:#2563eb}
-.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.action{min-height:48px;border-radius:13px;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:850;border:1px solid #dfe5ef;background:#fff;color:#374151;cursor:pointer}.primary{background:#2563eb;color:#fff;border-color:#2563eb}.success{background:#16a34a;color:#fff;border-color:#16a34a}.danger{background:#dc2626;color:#fff;border-color:#dc2626}.warning{background:#f59e0b;color:#fff;border-color:#f59e0b}.dark{background:#111827;color:#fff;border-color:#111827}
-.timeline-row{display:flex;gap:11px;padding:10px 0}.dot{width:10px;height:10px;flex:0 0 10px;border-radius:50%;background:#2563eb;margin-top:5px}.timeline-row b{font-size:13px;color:#172033}.timeline-row small{display:block;color:#8a93a3;margin-top:2px}.timeline-row p{font-size:12px;color:#6b7280;margin:3px 0 0}
+
+html,
+body{
+    margin:0!important;
+    padding:0!important;
+}
+
+.content{
+    padding:0!important;
+    background:#f5f7fb!important;
+}
+
+.od-page{
+    min-height:100vh;
+    background:#f5f7fb;
+    padding:22px 16px 50px;
+}
+
+.od-wrap{
+    max-width:1050px;
+    margin:auto;
+}
+
+.od-hero{
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8,
+            #3b82f6
+        );
+
+    color:#fff;
+
+    border-radius:24px;
+
+    padding:20px 22px;
+
+    margin-bottom:15px;
+
+    box-shadow:
+        0 12px 30px rgba(37,99,235,.18);
+}
+
+.od-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.back{
+    width:44px;
+    height:44px;
+    border-radius:13px;
+    background:rgba(255,255,255,.15);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+}
+
+.od-title{
+    flex:1;
+    min-width:0;
+}
+
+.od-title h1{
+    font-size:21px;
+    font-weight:900;
+    margin:0;
+}
+
+.od-title p{
+    font-size:12px;
+    opacity:.8;
+    margin:4px 0 0;
+}
+
+.badge-status{
+    padding:8px 11px;
+    border-radius:999px;
+    background:rgba(255,255,255,.18);
+    font-size:10px;
+    font-weight:850;
+    white-space:nowrap;
+}
+
+.od-card{
+    background:#fff;
+    border-radius:20px;
+    margin-bottom:14px;
+    overflow:hidden;
+
+    box-shadow:
+        0 7px 24px rgba(20,35,70,.07);
+}
+
+.od-headline{
+    padding:16px 19px;
+    border-bottom:1px solid #edf0f5;
+    font-weight:850;
+    color:#172033;
+}
+
+.od-body{
+    padding:19px;
+}
+
+.addr{
+    background:#f8faff;
+    border:1px solid #e5ebf5;
+    border-radius:15px;
+    padding:14px;
+    line-height:1.7;
+    color:#475569;
+    font-size:13px;
+}
+
+.addr strong{
+    color:#172033;
+    font-size:15px;
+}
+
+.item{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding:13px 0;
+    border-bottom:1px solid #edf0f5;
+}
+
+.item:last-child{
+    border-bottom:0;
+    padding-bottom:0;
+}
+
+.item-img,
+.item-ph{
+    width:70px;
+    height:70px;
+    flex:0 0 70px;
+    border-radius:12px;
+    object-fit:cover;
+    background:#f1f5f9;
+}
+
+.item-ph{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#94a3b8;
+    font-size:23px;
+}
+
+.item-info{
+    flex:1;
+    min-width:0;
+}
+
+.item-name{
+    font-weight:850;
+    color:#172033;
+    font-size:14px;
+}
+
+.item-meta{
+    font-size:11px;
+    color:#6b7280;
+    margin-top:4px;
+}
+
+.item-total{
+    font-weight:900;
+    color:#172033;
+}
+
+.summary{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+}
+
+.sum{
+    background:#f8faff;
+    border:1px solid #e5ebf5;
+    border-radius:13px;
+    padding:12px;
+}
+
+.sum small{
+    display:block;
+    color:#8a93a3;
+    font-size:10px;
+}
+
+.sum strong{
+    display:block;
+    color:#172033;
+    margin-top:4px;
+    font-size:13px;
+}
+
+.total{
+    margin-top:12px;
+    border-radius:15px;
+    background:#eef4ff;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.total b{
+    font-size:23px;
+    color:#2563eb;
+}
+
+.actions{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:9px;
+}
+
+.action{
+    min-height:48px;
+    border-radius:13px;
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    font-size:12px;
+    font-weight:850;
+    border:1px solid #dfe5ef;
+    background:#fff;
+    color:#374151;
+    cursor:pointer;
+}
+
+.primary{
+    background:#2563eb;
+    color:#fff;
+    border-color:#2563eb;
+}
+
+.success{
+    background:#16a34a;
+    color:#fff;
+    border-color:#16a34a;
+}
+
+.danger{
+    background:#dc2626;
+    color:#fff;
+    border-color:#dc2626;
+}
+
+.warning{
+    background:#f59e0b;
+    color:#fff;
+    border-color:#f59e0b;
+}
+
+.dark{
+    background:#111827;
+    color:#fff;
+    border-color:#111827;
+}
+
+
+/* =========================================================
+   DELHIVERY
+   ========================================================= */
+
+.delhivery{
+    background:#f0fdf4;
+    border:1px solid #bbf7d0;
+    border-radius:15px;
+    padding:15px;
+    margin-bottom:15px;
+}
+
+.delhivery-title{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#166534;
+    font-weight:900;
+    font-size:14px;
+}
+
+.delhivery-title i{
+    font-size:18px;
+}
+
+.delhivery-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+    gap:9px;
+
+    margin-top:12px;
+}
+
+.delhivery-box{
+    background:#fff;
+    border:1px solid #dcfce7;
+    border-radius:11px;
+    padding:10px;
+}
+
+.delhivery-box small{
+    display:block;
+    color:#6b7280;
+    font-size:10px;
+}
+
+.delhivery-box strong{
+    display:block;
+    margin-top:4px;
+    color:#172033;
+    font-size:12px;
+    word-break:break-word;
+}
+
+.delhivery-status{
+    display:inline-flex;
+    align-items:center;
+    padding:5px 9px;
+    border-radius:999px;
+    background:#dcfce7;
+    color:#166534;
+    font-size:10px;
+    font-weight:900;
+}
+
+
+/* =========================================================
+   TIMELINE
+   ========================================================= */
+
+.timeline-row{
+    display:flex;
+    gap:11px;
+    padding:10px 0;
+}
+
+.dot{
+    width:10px;
+    height:10px;
+    flex:0 0 10px;
+    border-radius:50%;
+    background:#2563eb;
+    margin-top:5px;
+}
+
+.timeline-row b{
+    font-size:13px;
+    color:#172033;
+}
+
+.timeline-row small{
+    display:block;
+    color:#8a93a3;
+    margin-top:2px;
+}
+
+.timeline-row p{
+    font-size:12px;
+    color:#6b7280;
+    margin:3px 0 0;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
 @media(max-width:600px){
- .od-page{padding:0 0 35px}.od-hero{border-radius:0 0 22px 22px;margin-bottom:9px;padding:17px 14px 20px}.od-title h1{font-size:18px}.badge-status{font-size:9px;padding:7px 8px}
- .od-card{border-radius:17px;margin:8px 8px 0}.od-headline{padding:14px 15px}.od-body{padding:15px}.summary{gap:7px}.item-img,.item-ph{width:62px;height:62px;flex-basis:62px}.actions{grid-template-columns:1fr 1fr}
+
+    .od-page{
+        padding:0 0 35px;
+    }
+
+    .od-hero{
+        border-radius:0 0 22px 22px;
+        margin-bottom:9px;
+        padding:17px 14px 20px;
+    }
+
+    .od-title h1{
+        font-size:18px;
+    }
+
+    .badge-status{
+        font-size:9px;
+        padding:7px 8px;
+    }
+
+    .od-card{
+        border-radius:17px;
+        margin:8px 8px 0;
+    }
+
+    .od-headline{
+        padding:14px 15px;
+    }
+
+    .od-body{
+        padding:15px;
+    }
+
+    .summary{
+        gap:7px;
+    }
+
+    .item-img,
+    .item-ph{
+        width:62px;
+        height:62px;
+        flex-basis:62px;
+    }
+
+    .actions{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .delhivery-grid{
+        grid-template-columns:1fr;
+    }
+
 }
+
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
 @media print{
- body{background:#fff!important}.od-page{padding:0;background:#fff}.od-hero{box-shadow:none;border-radius:0}.no-print{display:none!important}.od-card{box-shadow:none;border:1px solid #ddd}
+
+    body{
+        background:#fff!important;
+    }
+
+    .od-page{
+        padding:0;
+        background:#fff;
+    }
+
+    .od-hero{
+        box-shadow:none;
+        border-radius:0;
+    }
+
+    .no-print{
+        display:none!important;
+    }
+
+    .od-card{
+        box-shadow:none;
+        border:1px solid #ddd;
+    }
+
 }
+
 </style>
 
+
 <div class="od-page">
- <div class="od-wrap">
-  <div class="od-hero">
-   <div class="od-head">
-    <a href="{% if current_user.id == order.seller_id %}{{ url_for('seller_orders') }}{% else %}{{ url_for('my_orders') }}{% endif %}" class="back"><i class="fas fa-arrow-left"></i></a>
-    <div class="od-title">
-     <h1>{{ order.order_number }}</h1>
-     <p>{{ order.created_at.strftime("%d %b %Y, %I:%M %p") }}</p>
+
+<div class="od-wrap">
+
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<div class="od-hero">
+
+    <div class="od-head">
+
+        <a
+            href="{% if current_user.id == order.seller_id %}
+                        {{ url_for('seller_orders') }}
+                  {% else %}
+                        {{ url_for('my_orders') }}
+                  {% endif %}"
+            class="back"
+        >
+
+            <i class="fas fa-arrow-left"></i>
+
+        </a>
+
+
+        <div class="od-title">
+
+            <h1>
+                {{ order.order_number }}
+            </h1>
+
+            <p>
+                {{ order.created_at.strftime(
+                    "%d %b %Y, %I:%M %p"
+                ) }}
+            </p>
+
+        </div>
+
+
+        <span class="badge-status">
+
+            {{ order.order_status }}
+
+        </span>
+
     </div>
-    <span class="badge-status">{{ order.order_status }}</span>
-   </div>
-  </div>
 
-  {% if current_user.id == order.seller_id %}
-  <div class="od-card">
-   <div class="od-headline"><i class="fas fa-user me-2 text-primary"></i>Customer</div>
-   <div class="od-body">
-    <div class="addr">
-     <strong>{{ order.customer.first_name }} {{ order.customer.last_name }}</strong><br>
-     {{ order.shipping_address.full_name }} · {{ order.shipping_address.mobile }}<br>
-     {{ order.shipping_address.address_line1 }}
-     {% if order.shipping_address.address_line2 %}, {{ order.shipping_address.address_line2 }}{% endif %}<br>
-     {{ order.shipping_address.city }}, {{ order.shipping_address.state }} - {{ order.shipping_address.pincode }}
-    </div>
-   </div>
-  </div>
-  {% else %}
-  <div class="od-card">
-   <div class="od-headline"><i class="fas fa-location-dot me-2 text-primary"></i>Delivery Address</div>
-   <div class="od-body">
-    <div class="addr">
-     <strong>{{ order.shipping_address.full_name }}</strong><br>
-     {{ order.shipping_address.address_line1 }}
-     {% if order.shipping_address.address_line2 %}, {{ order.shipping_address.address_line2 }}{% endif %}
-     {% if order.shipping_address.landmark %}<br>Near {{ order.shipping_address.landmark }}{% endif %}
-     <br>{{ order.shipping_address.city }}, {{ order.shipping_address.state }} - {{ order.shipping_address.pincode }}
-     <br><span class="text-primary fw-bold"><i class="fas fa-phone me-1"></i>{{ order.shipping_address.mobile }}</span>
-    </div>
-   </div>
-  </div>
-  {% endif %}
-
-  <div class="od-card">
-   <div class="od-headline"><i class="fas fa-bag-shopping me-2 text-primary"></i>Ordered Products</div>
-   <div class="od-body">
-    {% for item in order.items %}
-    <div class="item">
-     {% if item.product_image %}
-      <img class="item-img" src="{{ url_for('static', filename='product_images/' + item.product_image) }}" alt="{{ item.product_name }}">
-     {% else %}
-      <div class="item-ph"><i class="fas fa-image"></i></div>
-     {% endif %}
-     <div class="item-info">
-      <div class="item-name">{{ item.product_name }}</div>
-      {% if item.variant_name %}<div class="item-meta">Variant: {{ item.variant_name }}</div>{% endif %}
-      <div class="item-meta">Qty {{ item.quantity }} · ₹{{ "%.2f"|format(item.price) }} each</div>
-     </div>
-     <div class="item-total">₹{{ "%.2f"|format(item.total) }}</div>
-    </div>
-    {% endfor %}
-   </div>
-  </div>
-
-  <div class="od-card">
-   <div class="od-headline"><i class="fas fa-credit-card me-2 text-primary"></i>Payment & Total</div>
-   <div class="od-body">
-    <div class="summary">
-     <div class="sum"><small>Payment Status</small><strong>{{ order.payment_status }}</strong></div>
-     <div class="sum"><small>Payment Method</small><strong>{{ order.payment_method }}</strong></div>
-     <div class="sum"><small>Subtotal</small><strong>₹{{ "%.2f"|format(order.subtotal) }}</strong></div>
-     <div class="sum"><small>Shipping</small><strong>₹{{ "%.2f"|format(order.shipping_charge) }}</strong></div>
-    </div>
-    <div class="total"><span>Total Amount</span><b>₹{{ "%.2f"|format(order.total_amount) }}</b></div>
-   </div>
-  </div>
-
-  <div class="od-card">
-   <div class="od-headline"><i class="fas fa-route me-2 text-primary"></i>Order Status</div>
-   <div class="od-body">
-    {% for h in history %}
-    <div class="timeline-row">
-     <div class="dot"></div>
-     <div>
-      <b>{{ h.status }}</b>
-      <small>{{ h.created_at.strftime("%d %b %Y, %I:%M %p") }}</small>
-      {% if h.remarks %}<p>{{ h.remarks }}</p>{% endif %}
-     </div>
-    </div>
-    {% else %}
-    <span class="text-muted">No status updates yet.</span>
-    {% endfor %}
-   </div>
-  </div>
-
-  <div class="od-card no-print">
-   <div class="od-headline"><i class="fas fa-bolt me-2 text-primary"></i>Actions</div>
-   <div class="od-body">
-    <div class="actions">
-     {% if current_user.id == order.user_id %}
-      <a href="/download-order-invoice/{{ order.id }}" class="action primary"><i class="fas fa-download"></i> Download Invoice</a>
-     {% endif %}
-
-     {% if current_user.id == order.seller_id %}
-      {% if order.order_status == "Pending" %}
-       <a href="/seller/order/{{ order.id }}/accept" class="action success"><i class="fas fa-check"></i> Accept</a>
-       <a href="/seller/order/{{ order.id }}/reject" class="action danger"><i class="fas fa-xmark"></i> Reject</a>
-      {% endif %}
-
-      {% if order.order_status in ["Accepted", "Pending"] %}
-       <a href="/create-shipment/{{ order.id }}" class="action warning"><i class="fas fa-truck"></i> Create Shipment</a>
-      {% endif %}
-
-      <a href="/download-order-invoice/{{ order.id }}" class="action primary"><i class="fas fa-download"></i> Download Invoice</a>
-      <button type="button" class="action dark" onclick="printOrderInvoice()"><i class="fas fa-print"></i> Print Invoice</button>
-     {% endif %}
-    </div>
-   </div>
-  </div>
-
- </div>
 </div>
 
+
+
+<!-- =====================================================
+     CUSTOMER / DELIVERY ADDRESS
+     ===================================================== -->
+
+{% if current_user.id == order.seller_id %}
+
+<div class="od-card">
+
+    <div class="od-headline">
+
+        <i class="fas fa-user me-2 text-primary"></i>
+
+        Customer
+
+    </div>
+
+
+    <div class="od-body">
+
+        <div class="addr">
+
+            <strong>
+                {{ order.customer.first_name }}
+                {{ order.customer.last_name }}
+            </strong>
+
+            <br>
+
+            {{ order.shipping_address.full_name }}
+            ·
+            {{ order.shipping_address.mobile }}
+
+            <br>
+
+            {{ order.shipping_address.address_line1 }}
+
+            {% if order.shipping_address.address_line2 %}
+
+                ,
+                {{ order.shipping_address.address_line2 }}
+
+            {% endif %}
+
+            <br>
+
+            {{ order.shipping_address.city }},
+            {{ order.shipping_address.state }}
+            -
+            {{ order.shipping_address.pincode }}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% else %}
+
+<div class="od-card">
+
+    <div class="od-headline">
+
+        <i class="fas fa-location-dot me-2 text-primary"></i>
+
+        Delivery Address
+
+    </div>
+
+
+    <div class="od-body">
+
+        <div class="addr">
+
+            <strong>
+                {{ order.shipping_address.full_name }}
+            </strong>
+
+            <br>
+
+            {{ order.shipping_address.address_line1 }}
+
+            {% if order.shipping_address.address_line2 %}
+
+                ,
+                {{ order.shipping_address.address_line2 }}
+
+            {% endif %}
+
+            {% if order.shipping_address.landmark %}
+
+                <br>
+                Near {{ order.shipping_address.landmark }}
+
+            {% endif %}
+
+            <br>
+
+            {{ order.shipping_address.city }},
+            {{ order.shipping_address.state }}
+            -
+            {{ order.shipping_address.pincode }}
+
+            <br>
+
+            <span class="text-primary fw-bold">
+
+                <i class="fas fa-phone me-1"></i>
+
+                {{ order.shipping_address.mobile }}
+
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     ORDERED PRODUCTS
+     ===================================================== -->
+
+<div class="od-card">
+
+    <div class="od-headline">
+
+        <i class="fas fa-bag-shopping me-2 text-primary"></i>
+
+        Ordered Products
+
+    </div>
+
+
+    <div class="od-body">
+
+        {% for item in order.items %}
+
+        <div class="item">
+
+            {% if item.product_image %}
+
+            <img
+                class="item-img"
+                src="{{ url_for(
+                    'static',
+                    filename='product_images/' + item.product_image
+                ) }}"
+                alt="{{ item.product_name }}"
+            >
+
+            {% else %}
+
+            <div class="item-ph">
+
+                <i class="fas fa-image"></i>
+
+            </div>
+
+            {% endif %}
+
+
+            <div class="item-info">
+
+                <div class="item-name">
+
+                    {{ item.product_name }}
+
+                </div>
+
+
+                {% if item.variant_name %}
+
+                <div class="item-meta">
+
+                    Variant:
+                    {{ item.variant_name }}
+
+                </div>
+
+                {% endif %}
+
+
+                <div class="item-meta">
+
+                    Qty
+                    {{ item.quantity }}
+
+                    ·
+
+                    ₹{{ "%.2f"|format(item.price) }}
+
+                    each
+
+                </div>
+
+            </div>
+
+
+            <div class="item-total">
+
+                ₹{{ "%.2f"|format(item.total) }}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     PAYMENT & TOTAL
+     ===================================================== -->
+
+<div class="od-card">
+
+    <div class="od-headline">
+
+        <i class="fas fa-credit-card me-2 text-primary"></i>
+
+        Payment & Total
+
+    </div>
+
+
+    <div class="od-body">
+
+        <div class="summary">
+
+            <div class="sum">
+
+                <small>
+                    Payment Status
+                </small>
+
+                <strong>
+                    {{ order.payment_status }}
+                </strong>
+
+            </div>
+
+
+            <div class="sum">
+
+                <small>
+                    Payment Method
+                </small>
+
+                <strong>
+                    {{ order.payment_method }}
+                </strong>
+
+            </div>
+
+
+            <div class="sum">
+
+                <small>
+                    Subtotal
+                </small>
+
+                <strong>
+                    ₹{{ "%.2f"|format(order.subtotal) }}
+                </strong>
+
+            </div>
+
+
+            <div class="sum">
+
+                <small>
+                    Shipping
+                </small>
+
+                <strong>
+                    ₹{{ "%.2f"|format(order.shipping_charge) }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="total">
+
+            <span>
+                Total Amount
+            </span>
+
+            <b>
+                ₹{{ "%.2f"|format(order.total_amount) }}
+            </b>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     DELHIVERY SHIPMENT INFORMATION
+     ===================================================== -->
+
+{% if order.delhivery_waybill
+      or order.delhivery_reference
+      or order.delhivery_status %}
+
+<div class="od-card">
+
+    <div class="od-headline">
+
+        <i class="fas fa-truck-fast me-2 text-success"></i>
+
+        Delhivery Shipment
+
+    </div>
+
+
+    <div class="od-body">
+
+        <div class="delhivery">
+
+            <div class="delhivery-title">
+
+                <i class="fas fa-truck-fast"></i>
+
+                Delhivery Shipping
+
+            </div>
+
+
+            <div class="delhivery-grid">
+
+
+                {% if order.delhivery_waybill %}
+
+                <div class="delhivery-box">
+
+                    <small>
+                        Waybill / AWB
+                    </small>
+
+                    <strong>
+                        {{ order.delhivery_waybill }}
+                    </strong>
+
+                </div>
+
+                {% endif %}
+
+
+                {% if order.delhivery_reference %}
+
+                <div class="delhivery-box">
+
+                    <small>
+                        Reference
+                    </small>
+
+                    <strong>
+                        {{ order.delhivery_reference }}
+                    </strong>
+
+                </div>
+
+                {% endif %}
+
+
+                {% if order.delhivery_status %}
+
+                <div class="delhivery-box">
+
+                    <small>
+                        Status
+                    </small>
+
+                    <strong>
+
+                        <span class="delhivery-status">
+
+                            {{ order.delhivery_status }}
+
+                        </span>
+
+                    </strong>
+
+                </div>
+
+                {% endif %}
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     ORDER STATUS
+     ===================================================== -->
+
+<div class="od-card">
+
+    <div class="od-headline">
+
+        <i class="fas fa-route me-2 text-primary"></i>
+
+        Order Status
+
+    </div>
+
+
+    <div class="od-body">
+
+        {% for h in history %}
+
+        <div class="timeline-row">
+
+            <div class="dot"></div>
+
+            <div>
+
+                <b>
+                    {{ h.status }}
+                </b>
+
+                <small>
+                    {{ h.created_at.strftime(
+                        "%d %b %Y, %I:%M %p"
+                    ) }}
+                </small>
+
+                {% if h.remarks %}
+
+                <p>
+                    {{ h.remarks }}
+                </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <span class="text-muted">
+
+            No status updates yet.
+
+        </span>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     ACTIONS
+     ===================================================== -->
+
+<div class="od-card no-print">
+
+    <div class="od-headline">
+
+        <i class="fas fa-bolt me-2 text-primary"></i>
+
+        Actions
+
+    </div>
+
+
+    <div class="od-body">
+
+        <div class="actions">
+
+
+            <!-- CUSTOMER INVOICE -->
+
+            {% if current_user.id == order.user_id %}
+
+            <a
+                href="/download-order-invoice/{{ order.id }}"
+                class="action primary"
+            >
+
+                <i class="fas fa-download"></i>
+
+                Download Invoice
+
+            </a>
+
+            {% endif %}
+
+
+
+            <!-- SELLER ACTIONS -->
+
+            {% if current_user.id == order.seller_id %}
+
+
+                <!-- ACCEPT / REJECT -->
+
+                {% if order.order_status == "Pending" %}
+
+                <a
+                    href="/seller/order/{{ order.id }}/accept"
+                    class="action success"
+                >
+
+                    <i class="fas fa-check"></i>
+
+                    Accept
+
+                </a>
+
+
+                <a
+                    href="/seller/order/{{ order.id }}/reject"
+                    class="action danger"
+                >
+
+                    <i class="fas fa-xmark"></i>
+
+                    Reject
+
+                </a>
+
+                {% endif %}
+
+
+
+                <!-- =================================================
+                     EXISTING SHIPROCKET
+                     DO NOT TOUCH
+                     ================================================= -->
+
+                {% if order.order_status in ["Accepted", "Pending"] %}
+
+                <a
+                    href="/create-shipment/{{ order.id }}"
+                    class="action warning"
+                >
+
+                    <i class="fas fa-truck"></i>
+
+                    Create Shipment
+
+                </a>
+
+                {% endif %}
+
+
+
+                <!-- =================================================
+                     DELHIVERY SHIPMENT
+                     ================================================= -->
+
+                {% if order.order_status in ["Accepted", "Pending"] %}
+
+                    {% if not order.delhivery_waybill %}
+
+                    <a
+                        href="/create-delhivery-shipment/{{ order.id }}"
+                        class="action success"
+                        onclick="
+                            return confirm(
+                                'Create Delhivery shipment for this order?'
+                            );
+                        "
+                    >
+
+                        <i class="fas fa-truck-fast"></i>
+
+                        Create Delhivery Shipment
+
+                    </a>
+
+                    {% else %}
+
+                    <div
+                        class="action"
+                        style="
+                            background:#f0fdf4;
+                            color:#166534;
+                            border-color:#bbf7d0;
+                            cursor:default;
+                        "
+                    >
+
+                        <i class="fas fa-circle-check"></i>
+
+                        Delhivery Shipment Created
+
+                    </div>
+
+                    {% endif %}
+
+                {% endif %}
+
+
+
+                <!-- INVOICE -->
+
+                <a
+                    href="/download-order-invoice/{{ order.id }}"
+                    class="action primary"
+                >
+
+                    <i class="fas fa-download"></i>
+
+                    Download Invoice
+
+                </a>
+
+
+                <!-- PRINT -->
+
+                <button
+                    type="button"
+                    class="action dark"
+                    onclick="printOrderInvoice()"
+                >
+
+                    <i class="fas fa-print"></i>
+
+                    Print Invoice
+
+                </button>
+
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
 <script>
+
 function printOrderInvoice(){
+
     window.print();
+
 }
+
 </script>
+
+
 {% endblock %}
