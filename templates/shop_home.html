@@ -65,13 +65,9 @@ input{
    ========================================================= */
 
 .shop-app{
-
     width:100%;
-
     min-height:100vh;
-
     background:#f5f7fb;
-
     padding-bottom:80px;
 }
 
@@ -81,15 +77,10 @@ input{
    ========================================================= */
 
 .shop-header{
-
     position:sticky;
-
     top:0;
-
     z-index:1000;
-
     width:100%;
-
     background:
         linear-gradient(
             135deg,
@@ -97,29 +88,19 @@ input{
             #2563eb,
             #0b5ed7
         );
-
     color:#fff;
-
     box-shadow:
         0 5px 20px rgba(0,0,0,.14);
 }
 
 .shop-header-inner{
-
     width:100%;
-
     max-width:1250px;
-
     margin:auto;
-
     min-height:70px;
-
     display:flex;
-
     align-items:center;
-
     gap:18px;
-
     padding:10px 20px;
 }
 
@@ -127,18 +108,13 @@ input{
 /* LOGO */
 
 .shop-logo{
-
     font-size:28px;
-
     font-weight:900;
-
     letter-spacing:-1.5px;
-
     white-space:nowrap;
 }
 
 .shop-logo span{
-
     color:#19b957;
 }
 
@@ -146,27 +122,16 @@ input{
 /* MENU */
 
 .shop-menu{
-
     width:42px;
-
     height:42px;
-
     border:0;
-
     border-radius:50%;
-
     background:rgba(255,255,255,.12);
-
     color:white;
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
     font-size:21px;
-
     cursor:pointer;
 }
 
@@ -174,54 +139,32 @@ input{
 /* SEARCH */
 
 .shop-search{
-
     flex:1;
-
     max-width:650px;
-
     margin:auto;
-
     position:relative;
 }
 
 .shop-search input{
-
     width:100%;
-
     height:48px;
-
     border:0;
-
     outline:none;
-
     border-radius:14px;
-
-    padding:
-        0 52px
-        0 18px;
-
+    padding:0 52px 0 18px;
     font-size:16px;
-
     background:#fff;
-
     color:#222;
-
     box-shadow:
         0 4px 15px rgba(0,0,0,.12);
 }
 
 .shop-search i{
-
     position:absolute;
-
     right:18px;
-
     top:50%;
-
     transform:translateY(-50%);
-
     color:#2563eb;
-
     font-size:19px;
 }
 
@@ -229,61 +172,36 @@ input{
 /* HEADER ACTIONS */
 
 .shop-header-actions{
-
     display:flex;
-
     align-items:center;
-
     gap:8px;
 }
 
 .shop-header-btn{
-
     width:42px;
-
     height:42px;
-
     border-radius:50%;
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
     color:#fff;
-
     background:rgba(255,255,255,.12);
-
     position:relative;
 }
 
 .cart-count{
-
     position:absolute;
-
     top:-3px;
-
     right:-3px;
-
     min-width:19px;
-
     height:19px;
-
     padding:0 5px;
-
     background:#ef4444;
-
     border-radius:50px;
-
     font-size:10px;
-
     font-weight:800;
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
 }
 
@@ -293,253 +211,15 @@ input{
    ========================================================= */
 
 .shop-container{
-
     width:100%;
-
     max-width:1250px;
-
     margin:auto;
-
-    padding:
-        20px
-        20px
-        40px;
+    padding:20px 20px 40px;
 }
 
 
 /* =========================================================
-   HERO
-   ========================================================= */
-
-.hero-section{
-
-    width:100%;
-
-    display:grid;
-
-    grid-template-columns:
-        minmax(0,1.5fr)
-        minmax(280px,.8fr);
-
-    gap:15px;
-
-    margin-bottom:22px;
-}
-
-.hero-main{
-
-    min-height:285px;
-
-    border-radius:24px;
-
-    overflow:hidden;
-
-    position:relative;
-
-    background:
-        linear-gradient(
-            135deg,
-            #065bdc,
-            #4388f4
-        );
-
-    color:#fff;
-
-    display:flex;
-
-    align-items:center;
-
-    padding:35px;
-
-    box-shadow:
-        0 10px 30px rgba(37,99,235,.18);
-}
-
-.hero-main-content{
-
-    position:relative;
-
-    z-index:2;
-
-    max-width:55%;
-}
-
-.hero-main h1{
-
-    font-size:38px;
-
-    line-height:1.05;
-
-    font-weight:900;
-
-    margin-bottom:12px;
-}
-
-.hero-main p{
-
-    font-size:16px;
-
-    line-height:1.5;
-
-    opacity:.92;
-
-    margin-bottom:20px;
-}
-
-.hero-btn{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    padding:12px 20px;
-
-    border-radius:12px;
-
-    background:#fff;
-
-    color:#125bd7;
-
-    font-weight:800;
-
-    box-shadow:
-        0 5px 15px rgba(0,0,0,.15);
-}
-
-
-/* HERO PRODUCT IMAGE */
-
-.hero-product-image{
-
-    position:absolute;
-
-    right:0;
-
-    bottom:0;
-
-    width:48%;
-
-    height:100%;
-
-    display:flex;
-
-    align-items:flex-end;
-
-    justify-content:center;
-
-    z-index:1;
-}
-
-.hero-product-image img{
-
-    width:100%;
-
-    height:100%;
-
-    object-fit:contain;
-
-    object-position:center bottom;
-
-    filter:
-        drop-shadow(
-            0 15px 25px rgba(0,0,0,.2)
-        );
-}
-
-
-/* HERO SIDE */
-
-.hero-side{
-
-    display:grid;
-
-    grid-template-rows:1fr 1fr;
-
-    gap:15px;
-}
-
-.hero-small{
-
-    border-radius:20px;
-
-    overflow:hidden;
-
-    position:relative;
-
-    min-height:135px;
-
-    padding:20px;
-
-    color:#fff;
-
-    display:flex;
-
-    align-items:center;
-
-    background:
-        linear-gradient(
-            135deg,
-            #ff8a32,
-            #ffb347
-        );
-}
-
-.hero-small:nth-child(2){
-
-    background:
-        linear-gradient(
-            135deg,
-            #16a34a,
-            #6bdc75
-        );
-}
-
-.hero-small-content{
-
-    position:relative;
-
-    z-index:2;
-
-    width:55%;
-}
-
-.hero-small h3{
-
-    font-size:20px;
-
-    font-weight:900;
-
-    margin-bottom:6px;
-}
-
-.hero-small p{
-
-    font-size:13px;
-
-    opacity:.95;
-}
-
-.hero-small img{
-
-    position:absolute;
-
-    right:0;
-
-    bottom:0;
-
-    width:48%;
-
-    height:100%;
-
-    object-fit:contain;
-}
-
-
-
-/* =========================================================
-   ADMIN CONTROLLED HERO BANNERS
+   ADMIN BANNERS
    ========================================================= */
 
 .admin-banner-section{
@@ -570,12 +250,13 @@ input{
 .admin-banner-overlay{
     position:absolute;
     inset:0;
-    background:linear-gradient(
-        90deg,
-        rgba(0,0,0,.72) 0%,
-        rgba(0,0,0,.38) 48%,
-        rgba(0,0,0,.04) 100%
-    );
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.72) 0%,
+            rgba(0,0,0,.38) 48%,
+            rgba(0,0,0,.04) 100%
+        );
 }
 
 .admin-banner-content{
@@ -646,11 +327,12 @@ input{
 .admin-small-banner-overlay{
     position:absolute;
     inset:0;
-    background:linear-gradient(
-        90deg,
-        rgba(0,0,0,.66),
-        rgba(0,0,0,.12)
-    );
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.66),
+            rgba(0,0,0,.12)
+        );
 }
 
 .admin-small-banner-content{
@@ -686,6 +368,11 @@ input{
     font-weight:900;
 }
 
+
+/* =========================================================
+   FALLBACK HERO
+   ========================================================= */
+
 .hero-fallback{
     width:100%;
     min-height:285px;
@@ -694,8 +381,14 @@ input{
     overflow:hidden;
     position:relative;
     color:#fff;
-    background:linear-gradient(135deg,#0759d9,#4388f4);
-    box-shadow:0 10px 30px rgba(37,99,235,.18);
+    background:
+        linear-gradient(
+            135deg,
+            #0759d9,
+            #4388f4
+        );
+    box-shadow:
+        0 10px 30px rgba(37,99,235,.18);
 }
 
 .hero-fallback-content{
@@ -725,6 +418,39 @@ input{
     opacity:.92;
 }
 
+.hero-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 20px;
+    border-radius:12px;
+    background:#fff;
+    color:#125bd7;
+    font-weight:800;
+}
+
+
+/* =========================================================
+   SECTION
+   ========================================================= */
+
+.section{
+    margin-bottom:28px;
+}
+
+.section-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+}
+
+.section-title{
+    font-size:24px;
+    font-weight:900;
+    color:#171a21;
+}
+
 .section-subtitle{
     margin-top:4px;
     color:#6b7280;
@@ -732,18 +458,180 @@ input{
     line-height:1.35;
 }
 
-.colored-section{
-    padding:20px;
-    border-radius:24px;
+
+/* =========================================================
+   CATEGORY
+   ========================================================= */
+
+.category-scroll{
+    display:flex;
+    gap:12px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    padding:3px 2px 4px;
+    align-items:stretch;
+}
+
+.category-scroll::-webkit-scrollbar{
+    display:none;
+}
+
+.category-card{
+    flex:0 0 120px;
+    width:120px;
+    height:112px;
+    min-height:112px;
+    max-height:112px;
+    background:#fff;
+    border-radius:18px;
+    border:1px solid #e9edf4;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:12px 8px;
+    text-align:center;
+    box-shadow:
+        0 4px 14px rgba(15,23,42,.05);
+    transition:.2s;
+}
+
+.category-card:hover{
+    transform:translateY(-3px);
+    box-shadow:
+        0 8px 22px rgba(15,23,42,.1);
+}
+
+.category-icon{
+    width:48px;
+    height:48px;
+    border-radius:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#edf4ff;
+    color:#2563eb;
+    font-size:22px;
+    margin-bottom:8px;
+}
+
+.category-name{
+    font-size:13px;
+    font-weight:800;
+    line-height:1.25;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
     overflow:hidden;
 }
 
-.deals-blue{
-    background:linear-gradient(135deg,#eef6ff,#e1edff);
+
+/* =========================================================
+   SHOP BY STORE
+   ========================================================= */
+
+.store-section{
+    margin-bottom:28px;
 }
 
-.recommended-section{
-    background:linear-gradient(135deg,#fff3f5,#ffe8ed);
+.store-scroll{
+    display:flex;
+    gap:12px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scrollbar-width:none;
+    padding:3px 2px 6px;
+    -webkit-overflow-scrolling:touch;
+}
+
+.store-scroll::-webkit-scrollbar{
+    display:none;
+}
+
+.store-card{
+    flex:0 0 120px;
+    width:120px;
+    min-height:128px;
+    background:#fff;
+    border:1px solid #e9edf4;
+    border-radius:18px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:12px 8px;
+    text-align:center;
+    box-shadow:
+        0 4px 14px rgba(15,23,42,.05);
+    transition:
+        transform .2s,
+        box-shadow .2s;
+}
+
+.store-card:hover{
+    transform:translateY(-3px);
+    box-shadow:
+        0 8px 22px rgba(15,23,42,.10);
+}
+
+.store-image-wrap{
+    width:68px;
+    height:68px;
+    border-radius:50%;
+    overflow:hidden;
+    background:#edf4ff;
+    border:3px solid #f1f5ff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:9px;
+    flex-shrink:0;
+}
+
+.store-image{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+.store-placeholder{
+    color:#2563eb;
+    font-size:25px;
+}
+
+.store-name{
+    width:100%;
+    font-size:13px;
+    line-height:1.25;
+    font-weight:800;
+    color:#171a21;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+
+/* =========================================================
+   SALE BANNER
+   ========================================================= */
+
+.sale-banner{
+    width:100%;
+    min-height:145px;
+    border-radius:22px;
+    padding:25px 30px;
+    position:relative;
+    overflow:hidden;
+    background:
+        linear-gradient(
+            135deg,
+            #ff7a18,
+            #ffb347
+        );
+    color:#fff;
+    margin-bottom:28px;
 }
 
 .sale-banner-content{
@@ -761,6 +649,43 @@ input{
     opacity:.9;
 }
 
+.sale-banner h2{
+    font-size:27px;
+    font-weight:900;
+    position:relative;
+    z-index:2;
+}
+
+.sale-banner p{
+    margin-top:5px;
+    position:relative;
+    z-index:2;
+}
+
+.sale-banner-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:12px;
+    padding:10px 15px;
+    border-radius:10px;
+    background:#fff;
+    color:#ea6b12;
+    font-size:12px;
+    font-weight:900;
+}
+
+.sale-banner::after{
+    content:"";
+    position:absolute;
+    width:230px;
+    height:230px;
+    border-radius:50%;
+    background:rgba(255,255,255,.15);
+    right:-40px;
+    top:-80px;
+}
+
 .sale-banner-icon{
     position:absolute;
     right:35px;
@@ -769,6 +694,272 @@ input{
     opacity:.18;
     transform:rotate(-12deg);
 }
+
+
+/* =========================================================
+   PRODUCT RAIL
+   ========================================================= */
+
+.product-rail{
+    display:grid;
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+    gap:14px;
+}
+
+
+/* =========================================================
+   PRODUCT CARD
+   ========================================================= */
+
+.product-card{
+    min-width:0;
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid #e8ecf2;
+    box-shadow:
+        0 5px 18px rgba(15,23,42,.06);
+    transition:
+        transform .2s,
+        box-shadow .2s;
+    position:relative;
+}
+
+.product-card:hover{
+    transform:translateY(-4px);
+    box-shadow:
+        0 12px 28px rgba(15,23,42,.12);
+}
+
+
+/* IMAGE */
+
+.product-image{
+    width:100%;
+    aspect-ratio:1/1;
+    background:#f1f5f9;
+    overflow:hidden;
+    position:relative;
+}
+
+.product-image img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+    transition:.3s;
+}
+
+.product-card:hover .product-image img{
+    transform:scale(1.04);
+}
+
+
+/* PLACEHOLDER */
+
+.image-placeholder{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#a3afc2;
+    font-size:42px;
+}
+
+
+/* BADGE */
+
+.product-badge{
+    position:absolute;
+    top:9px;
+    left:9px;
+    z-index:2;
+    background:#ef4444;
+    color:#fff;
+    padding:5px 8px;
+    border-radius:8px;
+    font-size:10px;
+    font-weight:900;
+}
+
+
+/* INFO */
+
+.product-info{
+    padding:12px;
+}
+
+.product-name{
+    font-size:14px;
+    font-weight:750;
+    color:#171a21;
+    min-height:38px;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+.product-rating{
+    margin-top:6px;
+    font-size:11px;
+    color:#f59e0b;
+}
+
+.product-price{
+    margin-top:7px;
+    font-size:17px;
+    font-weight:900;
+    color:#2563eb;
+}
+
+.product-old-price{
+    margin-left:5px;
+    font-size:12px;
+    color:#9ca3af;
+    text-decoration:line-through;
+    font-weight:500;
+}
+
+.product-view{
+    display:block;
+    width:100%;
+    margin-top:10px;
+    text-align:center;
+    padding:9px;
+    border-radius:10px;
+    background:#edf4ff;
+    color:#2563eb;
+    font-size:12px;
+    font-weight:800;
+}
+
+
+/* =========================================================
+   DEAL SECTION
+   ========================================================= */
+
+.deal-section{
+    border-radius:24px;
+    padding:20px;
+    background:
+        linear-gradient(
+            135deg,
+            #eaffef,
+            #d9ffe4
+        );
+    overflow:hidden;
+}
+
+.deal-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:15px;
+}
+
+.deal-title{
+    font-size:24px;
+    font-weight:900;
+}
+
+.deal-subtitle{
+    font-size:13px;
+    color:#4b5563;
+}
+
+.deal-products{
+    display:grid;
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+    gap:14px;
+}
+
+
+/* =========================================================
+   COLORED SECTIONS
+   ========================================================= */
+
+.colored-section{
+    padding:20px;
+    border-radius:24px;
+    overflow:hidden;
+}
+
+.deals-blue{
+    background:
+        linear-gradient(
+            135deg,
+            #eef6ff,
+            #e1edff
+        );
+}
+
+.recommended-section{
+    background:
+        linear-gradient(
+            135deg,
+            #fff3f5,
+            #ffe8ed
+        );
+}
+
+
+/* =========================================================
+   ALL PRODUCTS
+   ========================================================= */
+
+.all-products-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+    gap:14px;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-shop{
+    background:#fff;
+    border-radius:22px;
+    padding:70px 20px;
+    text-align:center;
+    border:1px solid #e9edf4;
+}
+
+.empty-shop i{
+    font-size:55px;
+    color:#2563eb;
+    margin-bottom:15px;
+}
+
+.empty-shop h3{
+    font-size:22px;
+    font-weight:900;
+}
+
+.empty-shop p{
+    color:#6b7280;
+    margin-top:6px;
+}
+
+
+/* =========================================================
+   MOBILE NAV
+   ========================================================= */
+
+.mobile-shop-nav{
+    display:none;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
 
 @media(max-width:900px){
 
@@ -815,9 +1006,81 @@ input{
         font-size:16px;
     }
 
-    .colored-section{
+    .shop-header-inner{
+        padding:9px 14px;
+        gap:10px;
+    }
+
+    .shop-logo{
+        font-size:23px;
+    }
+
+    .shop-menu{
+        display:none;
+    }
+
+    .shop-header-actions{
+        display:none;
+    }
+
+    .shop-search{
+        order:2;
+    }
+
+    .shop-search input{
+        height:44px;
+        font-size:15px;
+        border-radius:12px;
+    }
+
+    .product-rail,
+    .deal-products{
+        display:flex;
+        overflow-x:auto;
+        gap:12px;
+        scrollbar-width:none;
+    }
+
+    .product-rail::-webkit-scrollbar,
+    .deal-products::-webkit-scrollbar{
+        display:none;
+    }
+
+    .product-rail .product-card,
+    .deal-products .product-card{
+        flex:0 0 175px;
+    }
+
+    .all-products-grid{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+        gap:10px;
+    }
+
+    .shop-container{
+        padding:
+            12px
+            10px
+            95px;
+    }
+
+    .section-title{
+        font-size:20px;
+    }
+
+    .deal-section{
         padding:14px;
         border-radius:20px;
+    }
+
+    .sale-banner{
+        min-height:130px;
+        padding:20px;
+        border-radius:18px;
+    }
+
+    .sale-banner h2{
+        font-size:21px;
     }
 
     .sale-banner-icon{
@@ -825,9 +1088,88 @@ input{
         right:20px;
         bottom:15px;
     }
+
+    .mobile-shop-nav{
+        display:flex;
+        position:fixed;
+        left:10px;
+        right:10px;
+        bottom:10px;
+        z-index:2000;
+        height:64px;
+        border-radius:22px;
+        background:
+            rgba(255,255,255,.96);
+        backdrop-filter:
+            blur(18px);
+        box-shadow:
+            0 8px 30px rgba(0,0,0,.18);
+        border:
+            1px solid rgba(0,0,0,.06);
+        align-items:center;
+        justify-content:space-around;
+    }
+
+    .mobile-shop-nav a{
+        flex:1;
+        height:100%;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:3px;
+        color:#6b7280;
+        font-size:10px;
+        font-weight:700;
+    }
+
+    .mobile-shop-nav i{
+        font-size:20px;
+    }
+
+    .mobile-shop-nav a.active{
+        color:#2563eb;
+    }
 }
 
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
 @media(max-width:500px){
+
+    .shop-header{
+        position:sticky;
+        top:0;
+    }
+
+    .shop-header-inner{
+        min-height:62px;
+        padding:8px 10px;
+    }
+
+    .shop-logo{
+        display:none;
+    }
+
+    .shop-search{
+        width:100%;
+    }
+
+    .shop-search input{
+        height:43px;
+        padding-left:15px;
+        padding-right:45px;
+    }
+
+    .shop-container{
+        width:100%;
+        padding:
+            10px
+            8px
+            90px;
+    }
 
     .admin-banner-main{
         min-height:220px;
@@ -894,8 +1236,93 @@ input{
         font-size:13px;
     }
 
+    .section{
+        margin-bottom:18px !important;
+    }
+
     .section-subtitle{
         font-size:11px;
+    }
+
+    .category-scroll{
+        padding-bottom:0;
+    }
+
+    .category-card{
+        flex-basis:105px;
+        width:105px;
+        height:100px;
+        min-height:100px;
+        max-height:100px;
+        border-radius:15px;
+    }
+
+    .category-icon{
+        width:42px;
+        height:42px;
+        font-size:18px;
+    }
+
+    .store-section{
+        margin-bottom:20px;
+    }
+
+    .store-scroll{
+        gap:10px;
+        margin-right:-8px;
+        padding-right:8px;
+    }
+
+    .store-card{
+        flex-basis:108px;
+        width:108px;
+        min-height:116px;
+        border-radius:16px;
+        padding:10px 7px;
+    }
+
+    .store-image-wrap{
+        width:62px;
+        height:62px;
+        margin-bottom:8px;
+    }
+
+    .store-name{
+        font-size:12px;
+    }
+
+    .product-rail .product-card,
+    .deal-products .product-card{
+        flex-basis:158px;
+        border-radius:15px;
+    }
+
+    .product-info{
+        padding:9px;
+    }
+
+    .product-name{
+        font-size:13px;
+    }
+
+    .product-price{
+        font-size:15px;
+    }
+
+    .product-view{
+        font-size:11px;
+        padding:8px;
+    }
+
+    .all-products-grid{
+        grid-template-columns:
+            repeat(2,1fr);
+        gap:8px;
+    }
+
+    .sale-banner{
+        margin-top:0;
+        margin-bottom:18px;
     }
 
     .sale-banner-icon{
@@ -904,1071 +1331,33 @@ input{
     }
 }
 
-/* =========================================================
-   SECTION
-   ========================================================= */
-
-.section{
-
-    margin-bottom:28px;
-}
-
-.section-header{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:14px;
-}
-
-.section-title{
-
-    font-size:24px;
-
-    font-weight:900;
-
-    color:#171a21;
-}
-
-.section-link{
-
-    color:#2563eb;
-
-    font-size:14px;
-
-    font-weight:800;
-}
-
 
 /* =========================================================
-   CATEGORY HORIZONTAL SCROLL
-   ========================================================= */
-
-.category-scroll{
-
-    display:flex;
-
-    gap:12px;
-
-    overflow-x:auto;
-
-    scrollbar-width:none;
-
-    padding-bottom:4px;
-}
-
-.category-scroll::-webkit-scrollbar{
-
-    display:none;
-}
-
-.category-card{
-
-    flex:0 0 120px;
-
-    min-height:112px;
-
-    background:#fff;
-
-    border-radius:18px;
-
-    border:1px solid #e9edf4;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:12px 8px;
-
-    text-align:center;
-
-    box-shadow:
-        0 4px 14px rgba(15,23,42,.05);
-
-    transition:.2s;
-}
-
-.category-card:hover{
-
-    transform:translateY(-3px);
-
-    box-shadow:
-        0 8px 22px rgba(15,23,42,.1);
-}
-
-.category-icon{
-
-    width:48px;
-
-    height:48px;
-
-    border-radius:15px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    background:#edf4ff;
-
-    color:#2563eb;
-
-    font-size:22px;
-
-    margin-bottom:8px;
-}
-
-.category-name{
-
-    font-size:13px;
-
-    font-weight:800;
-
-    line-height:1.25;
-
-    display:-webkit-box;
-
-    -webkit-line-clamp:2;
-
-    -webkit-box-orient:vertical;
-
-    overflow:hidden;
-}
-
-
-
-/* =========================================================
-   SHOP BY STORE
-   ========================================================= */
-
-.store-section{margin-bottom:28px;}
-
-.store-scroll{
-    display:flex;
-    gap:12px;
-    overflow-x:auto;
-    overflow-y:hidden;
-    scrollbar-width:none;
-    padding:3px 2px 6px;
-    -webkit-overflow-scrolling:touch;
-}
-.store-scroll::-webkit-scrollbar{display:none;}
-
-.store-card{
-    flex:0 0 120px;
-    width:120px;
-    min-height:128px;
-    background:#fff;
-    border:1px solid #e9edf4;
-    border-radius:18px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:12px 8px;
-    text-align:center;
-    box-shadow:0 4px 14px rgba(15,23,42,.05);
-    transition:transform .2s,box-shadow .2s;
-}
-.store-card:hover{
-    transform:translateY(-3px);
-    box-shadow:0 8px 22px rgba(15,23,42,.10);
-}
-.store-image-wrap{
-    width:68px;
-    height:68px;
-    border-radius:50%;
-    overflow:hidden;
-    background:#edf4ff;
-    border:3px solid #f1f5ff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-bottom:9px;
-    flex-shrink:0;
-}
-.store-image{width:100%;height:100%;object-fit:cover;display:block;}
-.store-placeholder{color:#2563eb;font-size:25px;}
-.store-name{
-    width:100%;
-    font-size:13px;
-    line-height:1.25;
-    font-weight:800;
-    color:#171a21;
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
-    overflow:hidden;
-}
-
-@media(max-width:500px){
-    .store-section{margin-bottom:20px;}
-    .store-scroll{gap:10px;margin-right:-8px;padding-right:8px;}
-    .store-card{
-        flex-basis:108px;
-        width:108px;
-        min-height:116px;
-        border-radius:16px;
-        padding:10px 7px;
-    }
-    .store-image-wrap{width:62px;height:62px;margin-bottom:8px;}
-    .store-name{font-size:12px;}
-}
-
-/* =========================================================
-   PRODUCT RAIL
-   ========================================================= */
-
-.product-rail{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(4,minmax(0,1fr));
-
-    gap:14px;
-}
-
-
-/* =========================================================
-   PRODUCT CARD
-   ========================================================= */
-
-.product-card{
-
-    min-width:0;
-
-    background:#fff;
-
-    border-radius:18px;
-
-    overflow:hidden;
-
-    border:1px solid #e8ecf2;
-
-    box-shadow:
-        0 5px 18px rgba(15,23,42,.06);
-
-    transition:
-        transform .2s,
-        box-shadow .2s;
-
-    position:relative;
-}
-
-.product-card:hover{
-
-    transform:translateY(-4px);
-
-    box-shadow:
-        0 12px 28px rgba(15,23,42,.12);
-}
-
-
-/* IMAGE */
-
-.product-image{
-
-    width:100%;
-
-    aspect-ratio:1/1;
-
-    background:#f1f5f9;
-
-    overflow:hidden;
-
-    position:relative;
-}
-
-.product-image img{
-
-    width:100%;
-
-    height:100%;
-
-    display:block;
-
-    object-fit:cover;
-
-    transition:.3s;
-}
-
-.product-card:hover
-.product-image img{
-
-    transform:scale(1.04);
-}
-
-
-/* FALLBACK */
-
-.image-placeholder{
-
-    width:100%;
-
-    height:100%;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    color:#a3afc2;
-
-    font-size:42px;
-}
-
-
-/* BADGE */
-
-.product-badge{
-
-    position:absolute;
-
-    top:9px;
-
-    left:9px;
-
-    z-index:2;
-
-    background:#ef4444;
-
-    color:#fff;
-
-    padding:5px 8px;
-
-    border-radius:8px;
-
-    font-size:10px;
-
-    font-weight:900;
-}
-
-
-/* INFO */
-
-.product-info{
-
-    padding:12px;
-}
-
-.product-name{
-
-    font-size:14px;
-
-    font-weight:750;
-
-    color:#171a21;
-
-    min-height:38px;
-
-    display:-webkit-box;
-
-    -webkit-line-clamp:2;
-
-    -webkit-box-orient:vertical;
-
-    overflow:hidden;
-}
-
-.product-rating{
-
-    margin-top:6px;
-
-    font-size:11px;
-
-    color:#f59e0b;
-}
-
-.product-price{
-
-    margin-top:7px;
-
-    font-size:17px;
-
-    font-weight:900;
-
-    color:#2563eb;
-}
-
-.product-old-price{
-
-    margin-left:5px;
-
-    font-size:12px;
-
-    color:#9ca3af;
-
-    text-decoration:line-through;
-
-    font-weight:500;
-}
-
-.product-view{
-
-    display:block;
-
-    width:100%;
-
-    margin-top:10px;
-
-    text-align:center;
-
-    padding:9px;
-
-    border-radius:10px;
-
-    background:#edf4ff;
-
-    color:#2563eb;
-
-    font-size:12px;
-
-    font-weight:800;
-}
-
-
-/* =========================================================
-   PROMOTED PRODUCT GRID
-   ========================================================= */
-
-.deal-section{
-
-    border-radius:24px;
-
-    padding:20px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #eaffef,
-            #d9ffe4
-        );
-
-    overflow:hidden;
-}
-
-.deal-header{
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    margin-bottom:15px;
-}
-
-.deal-title{
-
-    font-size:24px;
-
-    font-weight:900;
-}
-
-.deal-subtitle{
-
-    font-size:13px;
-
-    color:#4b5563;
-}
-
-.deal-products{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(4,minmax(0,1fr));
-
-    gap:14px;
-}
-
-
-/* =========================================================
-   BANNER STRIP
-   ========================================================= */
-
-.sale-banner{
-
-    width:100%;
-
-    min-height:145px;
-
-    border-radius:22px;
-
-    padding:25px 30px;
-
-    position:relative;
-
-    overflow:hidden;
-
-    background:
-        linear-gradient(
-            135deg,
-            #ff7a18,
-            #ffb347
-        );
-
-    color:#fff;
-
-    margin-bottom:28px;
-}
-
-.sale-banner h2{
-
-    font-size:27px;
-
-    font-weight:900;
-
-    position:relative;
-
-    z-index:2;
-}
-
-.sale-banner p{
-
-    margin-top:5px;
-
-    position:relative;
-
-    z-index:2;
-}
-
-.sale-banner::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:230px;
-
-    height:230px;
-
-    border-radius:50%;
-
-    background:rgba(255,255,255,.15);
-
-    right:-40px;
-
-    top:-80px;
-}
-
-
-/* =========================================================
-   ALL PRODUCTS
-   ========================================================= */
-
-.all-products-grid{
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(4,minmax(0,1fr));
-
-    gap:14px;
-}
-
-
-/* =========================================================
-   EMPTY STATE
-   ========================================================= */
-
-.empty-shop{
-
-    background:#fff;
-
-    border-radius:22px;
-
-    padding:70px 20px;
-
-    text-align:center;
-
-    border:1px solid #e9edf4;
-}
-
-.empty-shop i{
-
-    font-size:55px;
-
-    color:#2563eb;
-
-    margin-bottom:15px;
-}
-
-.empty-shop h3{
-
-    font-size:22px;
-
-    font-weight:900;
-}
-
-.empty-shop p{
-
-    color:#6b7280;
-
-    margin-top:6px;
-}
-
-
-/* =========================================================
-   MOBILE BOTTOM NAV
-   ========================================================= */
-
-.mobile-shop-nav{
-
-    display:none;
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media(max-width:900px){
-
-    .shop-header-inner{
-
-        padding:9px 14px;
-
-        gap:10px;
-    }
-
-    .shop-logo{
-
-        font-size:23px;
-    }
-
-    .shop-menu{
-
-        display:none;
-    }
-
-    .shop-header-actions{
-
-        display:none;
-    }
-
-    .shop-search{
-
-        order:2;
-    }
-
-    .shop-search input{
-
-        height:44px;
-
-        font-size:15px;
-
-        border-radius:12px;
-    }
-
-    .hero-section{
-
-        grid-template-columns:1fr;
-    }
-
-    .hero-main{
-
-        min-height:245px;
-
-        padding:25px;
-
-        border-radius:20px;
-    }
-
-    .hero-main h1{
-
-        font-size:30px;
-    }
-
-    .hero-main-content{
-
-        max-width:58%;
-    }
-
-    .hero-side{
-
-        grid-template-columns:1fr 1fr;
-
-        grid-template-rows:1fr;
-
-        gap:10px;
-    }
-
-    .hero-small{
-
-        min-height:125px;
-
-        padding:15px;
-
-        border-radius:17px;
-    }
-
-    .hero-small h3{
-
-        font-size:16px;
-    }
-
-    .product-rail,
-    .deal-products{
-
-        display:flex;
-
-        overflow-x:auto;
-
-        gap:12px;
-
-        scrollbar-width:none;
-    }
-
-    .product-rail::-webkit-scrollbar,
-    .deal-products::-webkit-scrollbar{
-
-        display:none;
-    }
-
-    .product-rail .product-card,
-    .deal-products .product-card{
-
-        flex:0 0 175px;
-    }
-
-    .all-products-grid{
-
-        grid-template-columns:
-            repeat(2,minmax(0,1fr));
-
-        gap:10px;
-    }
-
-    .shop-container{
-
-        padding:
-            12px
-            10px
-            95px;
-    }
-
-    .section-title{
-
-        font-size:20px;
-    }
-
-    .section-link{
-        display:inline-flex;
-        align-items:center;
-        gap:5px;
-        white-space:nowrap;
-    }
-
-    .sale-banner-btn{
-        padding:9px 13px;
-        font-size:11px;
-        margin-top:10px;
-    }
-
-    .deal-section{
-
-        padding:14px;
-
-        border-radius:20px;
-    }
-
-    .sale-banner{
-
-        min-height:130px;
-
-        padding:20px;
-
-        border-radius:18px;
-    }
-
-    .sale-banner h2{
-
-        font-size:21px;
-    }
-
-    .mobile-shop-nav{
-
-        display:flex;
-
-        position:fixed;
-
-        left:10px;
-
-        right:10px;
-
-        bottom:10px;
-
-        z-index:2000;
-
-        height:64px;
-
-        border-radius:22px;
-
-        background:
-            rgba(255,255,255,.96);
-
-        backdrop-filter:
-            blur(18px);
-
-        box-shadow:
-            0 8px 30px rgba(0,0,0,.18);
-
-        border:1px solid rgba(0,0,0,.06);
-
-        align-items:center;
-
-        justify-content:space-around;
-    }
-
-    .mobile-shop-nav a{
-
-        flex:1;
-
-        height:100%;
-
-        display:flex;
-
-        flex-direction:column;
-
-        align-items:center;
-
-        justify-content:center;
-
-        gap:3px;
-
-        color:#6b7280;
-
-        font-size:10px;
-
-        font-weight:700;
-    }
-
-    .mobile-shop-nav i{
-
-        font-size:20px;
-    }
-
-    .mobile-shop-nav a.active{
-
-        color:#2563eb;
-    }
-
-}
-
-
-/* =========================================================
-   SMALL PHONES
-   ========================================================= */
-
-@media(max-width:500px){
-
-    .shop-header{
-
-        position:sticky;
-
-        top:0;
-    }
-
-    .shop-header-inner{
-
-        min-height:62px;
-
-        padding:
-            8px
-            10px;
-    }
-
-    .shop-logo{
-
-        display:none;
-    }
-
-    .shop-search{
-
-        width:100%;
-    }
-
-    .shop-search input{
-
-        height:43px;
-
-        padding-left:15px;
-
-        padding-right:45px;
-    }
-
-    .shop-container{
-
-        width:100%;
-
-        padding:
-            10px
-            8px
-            90px;
-    }
-
-    .hero-main{
-
-        min-height:220px;
-
-        padding:20px;
-
-        border-radius:18px;
-    }
-
-    .hero-main-content{
-
-        max-width:60%;
-    }
-
-    .hero-main h1{
-
-        font-size:25px;
-    }
-
-    .hero-main p{
-
-        font-size:13px;
-    }
-
-    .hero-product-image{
-
-        width:47%;
-    }
-
-    .hero-side{
-
-        gap:8px;
-    }
-
-    .hero-small{
-
-        min-height:112px;
-
-        padding:13px;
-    }
-
-    .hero-small h3{
-
-        font-size:14px;
-    }
-
-    .hero-small p{
-
-        font-size:11px;
-    }
-
-    .category-card{
-
-        flex-basis:105px;
-
-        min-height:100px;
-
-        border-radius:15px;
-    }
-
-    .category-icon{
-
-        width:42px;
-
-        height:42px;
-
-        font-size:18px;
-    }
-
-    .product-rail .product-card,
-    .deal-products .product-card{
-
-        flex-basis:158px;
-
-        border-radius:15px;
-    }
-
-    .product-info{
-
-        padding:9px;
-    }
-
-    .product-name{
-
-        font-size:13px;
-    }
-
-    .product-price{
-
-        font-size:15px;
-    }
-
-    .product-view{
-
-        font-size:11px;
-
-        padding:8px;
-    }
-
-    .all-products-grid{
-
-        grid-template-columns:
-            repeat(2,1fr);
-
-        gap:8px;
-    }
-
-}
-
-
-/* =========================================================
-   EDGE TO EDGE MOBILE OVERRIDE
+   EDGE TO EDGE MOBILE
    ========================================================= */
 
 @media(max-width:768px){
 
     html,
     body{
-
         width:100% !important;
-
         max-width:100% !important;
-
         margin:0 !important;
-
         padding:0 !important;
-
         overflow-x:hidden !important;
     }
 
     .shop-app{
-
         width:100vw !important;
-
         max-width:100vw !important;
-
-        margin:
-            0 !important;
-
-        padding:
-            0 0 80px 0 !important;
+        margin:0 !important;
+        padding:0 0 80px 0 !important;
     }
 
     .shop-header{
-
         width:100vw !important;
-
-        margin:
-            0 !important;
+        margin:0 !important;
     }
-
 }
 
 
@@ -1977,40 +1366,11 @@ input{
    ========================================================= */
 
 .loading{
-
     min-height:100px;
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
     color:#94a3b8;
-}
-
-
-/* SHOP CATEGORY / SPACING FIX */
-.category-scroll{
-    height:auto !important;
-    min-height:0 !important;
-    align-items:stretch;
-}
-.category-card{
-    height:112px;
-    min-height:0 !important;
-    max-height:112px;
-    text-decoration:none;
-}
-@media (max-width:700px){
-    .section{margin-bottom:18px !important;}
-    .category-scroll{padding-bottom:0 !important;}
-    .category-card{
-        height:100px !important;
-        min-height:0 !important;
-        max-height:100px;
-    }
-    .sale-banner{margin-top:0 !important; margin-bottom:18px !important;}
 }
 
 </style>
@@ -2024,615 +1384,923 @@ input{
 <div class="shop-app">
 
 
-    <!-- =====================================================
-         HEADER
-         ===================================================== -->
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
 
-    <header class="shop-header">
+<header class="shop-header">
 
-        <div class="shop-header-inner">
+    <div class="shop-header-inner">
 
-
-            <button
-                class="shop-menu"
-                type="button"
-                onclick="history.back()">
-
-                <i class="fas fa-arrow-left"></i>
-
-            </button>
+        <button
+            class="shop-menu"
+            type="button"
+            onclick="history.back()"
+        >
+            <i class="fas fa-arrow-left"></i>
+        </button>
 
 
-            <div class="shop-logo">
-
-                RECROOT<span>EARN</span>
-
-            </div>
+        <div class="shop-logo">
+            RECROOT<span>EARN</span>
+        </div>
 
 
-            <form
-                class="shop-search"
-                action="/shop/search"
-                method="GET">
+        <form
+            class="shop-search"
+            action="/shop/search"
+            method="GET"
+        >
 
-                <input
-                    type="search"
-                    name="q"
-                    placeholder="Search products or shops..."
-                    autocomplete="off"
-                >
+            <input
+                type="search"
+                name="q"
+                placeholder="Search products or shops..."
+                autocomplete="off"
+            >
 
-                <i class="fas fa-search"></i>
+            <i class="fas fa-search"></i>
 
-            </form>
+        </form>
 
 
-            <div class="shop-header-actions">
+        <div class="shop-header-actions">
 
-                <a
-                    href="/cart"
-                    class="shop-header-btn">
+            <a
+                href="/cart"
+                class="shop-header-btn"
+            >
 
-                    <i class="fas fa-shopping-cart"></i>
+                <i class="fas fa-shopping-cart"></i>
 
-                    <span class="cart-count">
-                        <i class="fas fa-circle"></i>
-                    </span>
+                <span class="cart-count">
+                    <i class="fas fa-circle"></i>
+                </span>
 
-                </a>
-
-            </div>
+            </a>
 
         </div>
 
-    </header>
+    </div>
+
+</header>
 
 
 
+<!-- =====================================================
+     MAIN
+     ===================================================== -->
 
-    <main class="shop-container">
+<main class="shop-container">
 
-        {% if banners %}
 
-        <section class="admin-banner-section">
+<!-- =====================================================
+     ADMIN BANNERS
+     ===================================================== -->
 
-            {% set main_banner = banners[0] %}
+{% if banners %}
 
-            <div class="admin-banner-main">
+<section class="admin-banner-section">
 
-                {% if main_banner.image %}
-                <img
-                    class="admin-banner-image"
-                    src="/static/uploads/homepage_banners/{{ main_banner.image }}"
-                    alt="{{ main_banner.title }}"
-                    onerror="
-                        if(!this.dataset.f1){
-                            this.dataset.f1='1';
-                            this.src='/static/uploads/{{ main_banner.image }}';
-                        }else{
-                            this.style.display='none';
-                        }
-                    "
-                >
-                {% endif %}
+    {% set main_banner = banners[0] %}
 
-                <div class="admin-banner-overlay"></div>
 
-                <div class="admin-banner-content">
+    <!-- MAIN BANNER -->
 
-                    {% if main_banner.title %}
-                    <h1>{{ main_banner.title }}</h1>
-                    {% endif %}
+    <div class="admin-banner-main">
 
-                    {% if main_banner.subtitle %}
-                    <p>{{ main_banner.subtitle }}</p>
-                    {% endif %}
+        {% if main_banner.image %}
 
-                    <a href="/shop/all" class="admin-banner-btn">
-                        Shop Now
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
+        <img
+            class="admin-banner-image"
+            src="/static/uploads/homepage_banners/{{ main_banner.image }}"
+            alt="{{ main_banner.title or 'Shop Banner' }}"
+            onerror="
+                if(!this.dataset.f1){
+                    this.dataset.f1='1';
+                    this.src='/static/uploads/{{ main_banner.image }}';
+                }else{
+                    this.style.display='none';
+                }
+            "
+        >
 
-                </div>
+        {% endif %}
 
-            </div>
 
-            {% if banners|length > 1 %}
+        <div class="admin-banner-overlay"></div>
 
-            <div class="admin-banner-side">
 
-                {% for banner in banners[1:3] %}
+        <div class="admin-banner-content">
 
-                <div class="admin-small-banner">
+            {% if main_banner.title %}
 
-                    {% if banner.image %}
-                    <img
-                        src="/static/uploads/homepage_banners/{{ banner.image }}"
-                        alt="{{ banner.title }}"
-                        onerror="
-                            if(!this.dataset.f1){
-                                this.dataset.f1='1';
-                                this.src='/static/uploads/{{ banner.image }}';
-                            }else{
-                                this.style.display='none';
-                            }
-                        "
-                    >
-                    {% endif %}
-
-                    <div class="admin-small-banner-overlay"></div>
-
-                    <div class="admin-small-banner-content">
-
-                        {% if banner.title %}
-                        <h3>{{ banner.title }}</h3>
-                        {% endif %}
-
-                        {% if banner.subtitle %}
-                        <p>{{ banner.subtitle }}</p>
-                        {% endif %}
-
-                        <a href="/shop/all" class="admin-small-banner-button">
-                            Shop Now
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-
-                    </div>
-
-                </div>
-
-                {% endfor %}
-
-            </div>
+            <h1>
+                {{ main_banner.title }}
+            </h1>
 
             {% endif %}
 
-        </section>
 
-        {% else %}
+            {% if main_banner.subtitle %}
 
-        <section class="hero-fallback">
+            <p>
+                {{ main_banner.subtitle }}
+            </p>
 
-            <div class="hero-fallback-content">
-
-                <span>RECROOTEARN SHOP</span>
-
-                <h1>
-                    Discover
-                    <br>
-                    Something
-                    <br>
-                    You’ll Love.
-                </h1>
-
-                <p>
-                    Explore products from businesses
-                    and discover amazing deals.
-                </p>
-
-                <a href="/shop/products" class="hero-btn">
-                    Shop Now
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-
-            </div>
-
-        </section>
-
-        {% endif %}
+            {% endif %}
 
 
-        {% if categories %}
+            <a
+                href="/shop/all"
+                class="admin-banner-btn"
+            >
 
-        <section class="section">
+                Shop Now
 
-            <div class="section-header">
+                <i class="fas fa-arrow-right"></i>
 
-                <h2 class="section-title">
-                    Shop by Category
-                </h2>
-
-            </div>
-
-            <div class="category-scroll">
-
-                {% for category in categories %}
-
-                <a
-                    href="/shop/category/{{ category.id }}"
-                    class="category-card"
-                >
-
-                    <div class="category-icon">
-
-                        {% if category.icon %}
-                        <i class="{{ category.icon }}"></i>
-                        {% else %}
-                        <i class="fas fa-layer-group"></i>
-                        {% endif %}
-
-                    </div>
-
-                    <div class="category-name">
-                        {{ category.name }}
-                    </div>
-
-                </a>
-
-                {% endfor %}
-
-            </div>
-
-        </section>
-
-        {% endif %}
-
-
-        <div class="sale-banner">
-
-            <div class="sale-banner-content">
-
-                <span class="sale-eyebrow">
-                    RECROOTEARN SHOP
-                </span>
-
-                <h2>
-                    🔥 Deals You Don't Want To Miss
-                </h2>
-
-                <p>
-                    Discover great products at amazing prices.
-                </p>
-
-                <a href="/shop/all" class="sale-banner-btn">
-                    Shop Now
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-
-            </div>
-
-            <i class="fas fa-bag-shopping sale-banner-icon"></i>
+            </a>
 
         </div>
 
+    </div>
 
-        {% macro product_card(product, badge='') %}
 
-        <a
-            href="/product/{{ product.id }}"
-            class="product-card"
-        >
 
-            <div class="product-image">
+    <!-- SIDE BANNERS -->
 
-                {% if badge %}
-                <span class="product-badge">
-                    {{ badge }}
-                </span>
+    {% if banners|length > 1 %}
+
+    <div class="admin-banner-side">
+
+        {% for banner in banners[1:3] %}
+
+        <div class="admin-small-banner">
+
+            {% if banner.image %}
+
+            <img
+                src="/static/uploads/homepage_banners/{{ banner.image }}"
+                alt="{{ banner.title or 'Shop Banner' }}"
+                onerror="
+                    if(!this.dataset.f1){
+                        this.dataset.f1='1';
+                        this.src='/static/uploads/{{ banner.image }}';
+                    }else{
+                        this.style.display='none';
+                    }
+                "
+            >
+
+            {% endif %}
+
+
+            <div class="admin-small-banner-overlay"></div>
+
+
+            <div class="admin-small-banner-content">
+
+                {% if banner.title %}
+
+                <h3>
+                    {{ banner.title }}
+                </h3>
+
                 {% endif %}
 
-                {% if product.images and product.images|length > 0 %}
 
-                <img
-                    src="/static/uploads/products/{{ product.images[0].image }}"
-                    alt="{{ product.name }}"
-                    loading="lazy"
-                    onerror="
-                        if(!this.dataset.f1){
-                            this.dataset.f1='1';
-                            this.src='/static/product_images/{{ product.images[0].image }}';
-                        }else if(!this.dataset.f2){
-                            this.dataset.f2='1';
-                            this.src='/static/uploads/{{ product.images[0].image }}';
-                        }else{
-                            this.style.display='none';
-                            this.parentElement.querySelector('.image-placeholder').style.display='flex';
-                        }
-                    "
-                >
+                {% if banner.subtitle %}
+
+                <p>
+                    {{ banner.subtitle }}
+                </p>
 
                 {% endif %}
 
-                <div
-                    class="image-placeholder"
-                    style="
-                        {% if product.images and product.images|length > 0 %}
-                        display:none;
-                        {% endif %}
-                    "
+
+                <a
+                    href="/shop/all"
+                    class="admin-small-banner-button"
                 >
-                    <i class="fas fa-image"></i>
-                </div>
+
+                    Shop Now
+
+                    <i class="fas fa-arrow-right"></i>
+
+                </a>
 
             </div>
 
-            <div class="product-info">
+        </div>
 
-                <div class="product-name">
-                    {{ product.name }}
-                </div>
+        {% endfor %}
 
-                <div class="product-rating">
-                    ★★★★★
-                </div>
+    </div>
 
-                <div class="product-price">
+    {% endif %}
 
-                    {% if product.sale_price %}
+</section>
 
-                    ₹{{ "%.0f"|format(product.sale_price) }}
 
-                    <span class="product-old-price">
-                        ₹{{ "%.0f"|format(product.price) }}
-                    </span>
+{% else %}
 
-                    {% else %}
 
-                    ₹{{ "%.0f"|format(product.price) }}
+<!-- FALLBACK -->
 
-                    {% endif %}
+<section class="hero-fallback">
 
-                </div>
+    <div class="hero-fallback-content">
 
-                <div class="product-view">
-                    View Product
-                </div>
+        <span>
+            RECROOTEARN SHOP
+        </span>
+
+        <h1>
+            Discover
+            <br>
+            Something
+            <br>
+            You’ll Love.
+        </h1>
+
+        <p>
+            Explore products from businesses
+            and discover amazing deals.
+        </p>
+
+        <a
+            href="/shop/all"
+            class="hero-btn"
+        >
+
+            Shop Now
+
+            <i class="fas fa-arrow-right"></i>
+
+        </a>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     SHOP BY CATEGORY
+     ===================================================== -->
+
+{% if categories %}
+
+<section class="section">
+
+    <div class="section-header">
+
+        <h2 class="section-title">
+            Shop by Category
+        </h2>
+
+    </div>
+
+
+    <div class="category-scroll">
+
+        {% for category in categories %}
+
+        <a
+            href="/shop/category/{{ category.id }}"
+            class="category-card"
+        >
+
+            <div class="category-icon">
+
+                {% if category.icon %}
+
+                <i class="{{ category.icon }}"></i>
+
+                {% else %}
+
+                <i class="fas fa-layer-group"></i>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="category-name">
+
+                {{ category.name }}
 
             </div>
 
         </a>
 
-        {% endmacro %}
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
 
 
-        {% if promoted_products %}
 
-        <section class="section deal-section">
+<!-- =====================================================
+     SHOP BY STORE
+     ===================================================== -->
 
-            <div class="deal-header">
+{% if stores %}
 
-                <div>
+<section class="section store-section">
 
-                    <div class="deal-title">
-                        🔥 Top Deals
-                    </div>
+    <div class="section-header">
 
-                    <div class="deal-subtitle">
-                        Handpicked products for you
-                    </div>
+        <h2 class="section-title">
+            Shop by Store
+        </h2>
+
+    </div>
+
+
+    <div class="store-scroll">
+
+        {% for store in stores %}
+
+        <a
+            href="{{ url_for('company_share_shop', seller_id=store.id) }}"
+            class="store-card"
+        >
+
+
+            <!-- STORE IMAGE -->
+
+            <div class="store-image-wrap">
+
+                {% if store.profile_photo %}
+
+                <img
+                    src="/static/uploads/{{ store.profile_photo }}"
+                    class="store-image"
+                    alt="{{ store.company or store.first_name or store.username or 'Store' }}"
+                    loading="lazy"
+                    onerror="
+                        if(!this.dataset.f1){
+                            this.dataset.f1='1';
+                            this.src='/static/uploads/profile_photos/{{ store.profile_photo }}';
+                        }else if(!this.dataset.f2){
+                            this.dataset.f2='1';
+                            this.src='/static/uploads/users/{{ store.profile_photo }}';
+                        }else{
+                            this.style.display='none';
+                            this.parentElement.querySelector('.store-placeholder').style.display='flex';
+                        }
+                    "
+                >
+
+                {% else %}
+
+                <div class="store-placeholder">
+
+                    <i class="fas fa-store"></i>
 
                 </div>
 
-            </div>
-
-            <div class="deal-products">
-
-                {% for product in promoted_products %}
-                    {{ product_card(product, 'DEAL') }}
-                {% endfor %}
+                {% endif %}
 
             </div>
 
-        </section>
+
+            <!-- STORE NAME -->
+
+            <div class="store-name">
+
+                {{ store.company
+                   or store.first_name
+                   or store.username
+                   or 'Store'
+                }}
+
+            </div>
+
+        </a>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     DEALS BANNER
+     ===================================================== -->
+
+<div class="sale-banner">
+
+    <div class="sale-banner-content">
+
+        <span class="sale-eyebrow">
+            RECROOTEARN SHOP
+        </span>
+
+
+        <h2>
+            🔥 Deals You Don't Want To Miss
+        </h2>
+
+
+        <p>
+            Discover great products at amazing prices.
+        </p>
+
+
+        <a
+            href="/shop/all"
+            class="sale-banner-btn"
+        >
+
+            Shop Now
+
+            <i class="fas fa-arrow-right"></i>
+
+        </a>
+
+    </div>
+
+
+    <i class="fas fa-bag-shopping sale-banner-icon"></i>
+
+</div>
+
+
+
+<!-- =====================================================
+     PRODUCT CARD MACRO
+     ===================================================== -->
+
+{% macro product_card(product, badge='') %}
+
+<a
+    href="/product/{{ product.id }}"
+    class="product-card"
+>
+
+
+    <!-- PRODUCT IMAGE -->
+
+    <div class="product-image">
+
+
+        {% if badge %}
+
+        <span class="product-badge">
+            {{ badge }}
+        </span>
 
         {% endif %}
 
 
-        {% if trending_products %}
+        {% if product.images and product.images|length > 0 %}
 
-        <section class="section">
-
-            <div class="section-header">
-
-                <div>
-
-                    <h2 class="section-title">
-                        🔥 Trending Now
-                    </h2>
-
-                    <div class="section-subtitle">
-                        Products people are checking out
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="product-rail">
-
-                {% for product in trending_products %}
-                    {{ product_card(product, 'TRENDING') }}
-                {% endfor %}
-
-            </div>
-
-        </section>
+        <img
+            src="/static/uploads/products/{{ product.images[0].image }}"
+            alt="{{ product.name }}"
+            loading="lazy"
+            onerror="
+                if(!this.dataset.f1){
+                    this.dataset.f1='1';
+                    this.src='/static/product_images/{{ product.images[0].image }}';
+                }else if(!this.dataset.f2){
+                    this.dataset.f2='1';
+                    this.src='/static/uploads/{{ product.images[0].image }}';
+                }else{
+                    this.style.display='none';
+                    this.parentElement.querySelector('.image-placeholder').style.display='flex';
+                }
+            "
+        >
 
         {% endif %}
 
 
-        {% if deal_products %}
+        <div
+            class="image-placeholder"
+            style="
+                {% if product.images and product.images|length > 0 %}
+                    display:none;
+                {% endif %}
+            "
+        >
 
-        <section class="section colored-section deals-blue">
+            <i class="fas fa-image"></i>
 
-            <div class="section-header">
+        </div>
 
-                <div>
-
-                    <h2 class="section-title">
-                        💥 Great Deals
-                    </h2>
-
-                    <div class="section-subtitle">
-                        Amazing products at attractive prices
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="product-rail">
-
-                {% for product in deal_products %}
-                    {{ product_card(product, 'DEAL') }}
-                {% endfor %}
-
-            </div>
-
-        </section>
-
-        {% endif %}
+    </div>
 
 
-        {% if new_arrival_products %}
 
-        <section class="section">
+    <!-- PRODUCT INFO -->
 
-            <div class="section-header">
-
-                <div>
-
-                    <h2 class="section-title">
-                        ✨ New Arrivals
-                    </h2>
-
-                    <div class="section-subtitle">
-                        Fresh products added by sellers
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="product-rail">
-
-                {% for product in new_arrival_products %}
-                    {{ product_card(product, 'NEW') }}
-                {% endfor %}
-
-            </div>
-
-        </section>
-
-        {% endif %}
+    <div class="product-info">
 
 
-        {% if recommended_products %}
+        <div class="product-name">
 
-        <section class="section colored-section recommended-section">
+            {{ product.name }}
 
-            <div class="section-header">
-
-                <div>
-
-                    <h2 class="section-title">
-                        ❤️ Recommended For You
-                    </h2>
-
-                    <div class="section-subtitle">
-                        Handpicked products you may like
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="product-rail">
-
-                {% for product in recommended_products %}
-                    {{ product_card(product) }}
-                {% endfor %}
-
-            </div>
-
-        </section>
-
-        {% endif %}
+        </div>
 
 
-        <section class="section" id="products">
+        <div class="product-rating">
 
-            <div class="section-header">
+            ★★★★★
 
-                <div>
+        </div>
 
-                    <h2 class="section-title">
-                        🆕 Latest Products
-                    </h2>
 
-                    <div class="section-subtitle">
-                        Recently added products
-                    </div>
+        <div class="product-price">
 
-                </div>
+            {% if product.sale_price %}
 
-            </div>
+                ₹{{ "%.0f"|format(product.sale_price) }}
 
-            {% if latest_products %}
+                <span class="product-old-price">
 
-            <div class="all-products-grid">
+                    ₹{{ "%.0f"|format(product.price) }}
 
-                {% for product in latest_products %}
-                    {{ product_card(product) }}
-                {% endfor %}
-
-            </div>
+                </span>
 
             {% else %}
 
-            <div class="empty-shop">
-
-                <i class="fas fa-store"></i>
-
-                <h3>
-                    No Products Available
-                </h3>
-
-                <p>
-                    Products will appear here when sellers add them.
-                </p>
-
-            </div>
+                ₹{{ "%.0f"|format(product.price) }}
 
             {% endif %}
 
-        </section>
-
-    </main>
+        </div>
 
 
+        <div class="product-view">
+
+            View Product
+
+        </div>
+
+    </div>
+
+</a>
+
+{% endmacro %}
 
 
-    <!-- =====================================================
-         MOBILE NAV
-         ===================================================== -->
 
-    <nav class="mobile-shop-nav">
+<!-- =====================================================
+     TOP DEALS
+     ===================================================== -->
 
-    <a href="/shop" class="active">
+{% if promoted_products %}
+
+<section class="section deal-section">
+
+    <div class="deal-header">
+
+        <div>
+
+            <div class="deal-title">
+                🔥 Top Deals
+            </div>
+
+            <div class="deal-subtitle">
+                Handpicked products for you
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="deal-products">
+
+        {% for product in promoted_products %}
+
+            {{ product_card(product, 'DEAL') }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     TRENDING NOW
+     ===================================================== -->
+
+{% if trending_products %}
+
+<section class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2 class="section-title">
+                🔥 Trending Now
+            </h2>
+
+            <div class="section-subtitle">
+                Products people are checking out
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="product-rail">
+
+        {% for product in trending_products %}
+
+            {{ product_card(product, 'TRENDING') }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     GREAT DEALS
+     ===================================================== -->
+
+{% if deal_products %}
+
+<section class="section colored-section deals-blue">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2 class="section-title">
+                💥 Great Deals
+            </h2>
+
+            <div class="section-subtitle">
+                Amazing products at attractive prices
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="product-rail">
+
+        {% for product in deal_products %}
+
+            {{ product_card(product, 'DEAL') }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     NEW ARRIVALS
+     ===================================================== -->
+
+{% if new_arrival_products %}
+
+<section class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2 class="section-title">
+                ✨ New Arrivals
+            </h2>
+
+            <div class="section-subtitle">
+                Fresh products added by sellers
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="product-rail">
+
+        {% for product in new_arrival_products %}
+
+            {{ product_card(product, 'NEW') }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     RECOMMENDED
+     ===================================================== -->
+
+{% if recommended_products %}
+
+<section class="section colored-section recommended-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2 class="section-title">
+                ❤️ Recommended For You
+            </h2>
+
+            <div class="section-subtitle">
+                Handpicked products you may like
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="product-rail">
+
+        {% for product in recommended_products %}
+
+            {{ product_card(product) }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     LATEST PRODUCTS
+     ===================================================== -->
+
+<section
+    class="section"
+    id="products"
+>
+
+    <div class="section-header">
+
+        <div>
+
+            <h2 class="section-title">
+                🆕 Latest Products
+            </h2>
+
+            <div class="section-subtitle">
+                Recently added products
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {% if latest_products %}
+
+    <div class="all-products-grid">
+
+        {% for product in latest_products %}
+
+            {{ product_card(product) }}
+
+        {% endfor %}
+
+    </div>
+
+
+    {% else %}
+
+
+    <div class="empty-shop">
+
+        <i class="fas fa-store"></i>
+
+        <h3>
+            No Products Available
+        </h3>
+
+        <p>
+            Products will appear here when sellers add them.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     MOBILE BOTTOM NAVIGATION
+     ===================================================== -->
+
+<nav class="mobile-shop-nav">
+
+
+    <!-- HOME -->
+
+    <a
+        href="/shop"
+        class="active"
+    >
+
         <i class="fas fa-house"></i>
-        <span>Home</span>
+
+        <span>
+            Home
+        </span>
+
     </a>
+
+
+    <!-- CART -->
 
     <a href="/cart">
+
         <i class="fas fa-cart-shopping"></i>
-        <span>Cart</span>
+
+        <span>
+            Cart
+        </span>
+
     </a>
+
+
+    <!-- ORDERS -->
 
     <a href="/my-orders">
+
         <i class="fas fa-box-open"></i>
-        <span>My Orders</span>
+
+        <span>
+            My Orders
+        </span>
+
     </a>
 
-    <a href="{% if session.get('candidate_id') %}{{ url_for('candidate_profile') }}{% else %}{{ url_for('profile') }}{% endif %}">
+
+    <!-- ACCOUNT -->
+
+    <a
+        href="{% if session.get('candidate_id') %}
+                    {{ url_for('candidate_profile') }}
+              {% else %}
+                    {{ url_for('profile') }}
+              {% endif %}"
+    >
+
         <i class="fas fa-user"></i>
-        <span>Account</span>
+
+        <span>
+            Account
+        </span>
+
     </a>
 
 </nav>
 
 
 </div>
+
 
 
 <script>
@@ -2646,7 +2314,9 @@ document.addEventListener(
     function(){
 
         document
-        .querySelectorAll(".product-image img, .hero-product-image img, .hero-small img")
+        .querySelectorAll(
+            ".product-image img, .admin-banner-image, .admin-small-banner img, .store-image"
+        )
         .forEach(function(img){
 
             img.addEventListener(
@@ -2654,10 +2324,10 @@ document.addEventListener(
                 function(){
 
                     /*
-                     * The inline fallback already tries
-                     * alternative product directories.
+                     * Product image fallback is already
+                     * handled inline.
                      *
-                     * This prevents broken-image icons.
+                     * This prevents broken image icons.
                      */
 
                     if(
@@ -2668,15 +2338,18 @@ document.addEventListener(
 
                         this.style.display = "none";
 
+
                         const parent =
                             this.parentElement;
+
 
                         if(parent){
 
                             const placeholder =
                                 parent.querySelector(
-                                    ".image-placeholder"
+                                    ".image-placeholder, .store-placeholder"
                                 );
+
 
                             if(placeholder){
 
@@ -2707,6 +2380,7 @@ const searchInput =
         ".shop-search input"
     );
 
+
 if(searchInput){
 
     searchInput.addEventListener(
@@ -2717,6 +2391,7 @@ if(searchInput){
 
                 const value =
                     this.value.trim();
+
 
                 if(!value){
 
