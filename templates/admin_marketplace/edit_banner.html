@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Edit Homepage Banner | RecrootEarn</title>
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,body{
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    background:#f4f7fb;
+    color:#172033;
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+.page{
+    width:100%;
+    max-width:1100px;
+    margin:auto;
+    padding:24px;
+}
+
+.topbar{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:24px;
+}
+
+.back-btn{
+    width:44px;
+    height:44px;
+    flex-shrink:0;
+
+    border-radius:14px;
+
+    background:#fff;
+    border:1px solid #e5eaf2;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:#2563eb;
+
+    box-shadow:
+        0 4px 15px rgba(15,23,42,.06);
+}
+
+.page-title h1{
+    font-size:27px;
+    font-weight:900;
+}
+
+.page-title p{
+    margin-top:4px;
+    color:#718096;
+    font-size:14px;
+}
+
+.card{
+    background:#fff;
+
+    border-radius:24px;
+
+    padding:26px;
+
+    border:1px solid #e7ebf2;
+
+    box-shadow:
+        0 10px 35px rgba(15,23,42,.06);
+}
+
+.form-grid{
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:20px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.field.full{
+    grid-column:1/-1;
+}
+
+label{
+    font-size:14px;
+    font-weight:800;
+    color:#263247;
+}
+
+input,
+textarea{
+
+    width:100%;
+
+    border:1px solid #dce3ed;
+
+    border-radius:13px;
+
+    padding:13px 14px;
+
+    font-size:15px;
+
+    outline:none;
+
+    background:#fbfcfe;
+
+    transition:.2s;
+}
+
+input:focus,
+textarea:focus{
+
+    border-color:#2563eb;
+
+    background:#fff;
+
+    box-shadow:
+        0 0 0 4px rgba(37,99,235,.08);
+}
+
+textarea{
+    min-height:110px;
+    resize:vertical;
+}
+
+
+/* CURRENT IMAGE */
+
+.current-image-box{
+
+    border:1px solid #e3e8f0;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    background:#f5f7fa;
+}
+
+.current-image-box img{
+
+    display:block;
+
+    width:100%;
+
+    max-height:300px;
+
+    object-fit:cover;
+}
+
+.current-image-label{
+
+    padding:10px 13px;
+
+    background:#fff;
+
+    font-size:12px;
+
+    color:#64748b;
+
+    font-weight:700;
+}
+
+
+/* UPLOAD */
+
+.file-box{
+
+    border:2px dashed #d7deea;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    text-align:center;
+
+    background:#f8fafc;
+}
+
+.file-box i{
+
+    font-size:30px;
+
+    color:#2563eb;
+
+    margin-bottom:8px;
+}
+
+.file-box strong{
+
+    display:block;
+
+    margin-bottom:5px;
+}
+
+.file-box span{
+
+    color:#718096;
+
+    font-size:13px;
+
+    display:block;
+
+    margin-bottom:12px;
+}
+
+.file-box input{
+
+    border:0;
+
+    background:transparent;
+
+    padding:5px;
+}
+
+
+/* PREVIEW */
+
+.preview{
+
+    display:none;
+
+    margin-top:12px;
+
+    border-radius:16px;
+
+    overflow:hidden;
+
+    background:#eef2f7;
+}
+
+.preview img{
+
+    width:100%;
+
+    max-height:280px;
+
+    object-fit:cover;
+
+    display:block;
+}
+
+
+/* ACTIVE */
+
+.options{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-top:4px;
+}
+
+.options input{
+
+    width:20px;
+    height:20px;
+
+    accent-color:#2563eb;
+}
+
+
+/* BUTTONS */
+
+.actions{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:12px;
+
+    margin-top:26px;
+
+    padding-top:20px;
+
+    border-top:1px solid #edf0f5;
+}
+
+.btn{
+
+    border:0;
+
+    border-radius:13px;
+
+    padding:13px 20px;
+
+    font-size:14px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:7px;
+}
+
+.btn-cancel{
+
+    background:#eef2f7;
+
+    color:#475569;
+}
+
+.btn-save{
+
+    background:#2563eb;
+
+    color:#fff;
+
+    box-shadow:
+        0 8px 20px rgba(37,99,235,.25);
+}
+
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    .page{
+        padding:14px;
+    }
+
+    .card{
+        padding:18px;
+        border-radius:20px;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+        gap:16px;
+    }
+
+    .field.full{
+        grid-column:auto;
+    }
+
+    .page-title h1{
+        font-size:22px;
+    }
+
+    .page-title p{
+        font-size:13px;
+    }
+
+    .actions{
+        flex-direction:column-reverse;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- HEADER -->
+
+    <div class="topbar">
+
+        <a
+            href="/admin/marketplace/banners"
+            class="back-btn">
+
+            <i class="fas fa-arrow-left"></i>
+
+        </a>
+
+
+        <div class="page-title">
+
+            <h1>
+                Edit Homepage Banner
+            </h1>
+
+            <p>
+                Update how this banner appears on your public shop.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- FORM -->
+
+    <form
+        method="POST"
+        action="/admin/marketplace/banner/{{ banner.id }}/edit"
+        enctype="multipart/form-data"
+        class="card">
+
+
+        <div class="form-grid">
+
+
+            <!-- TITLE -->
+
+            <div class="field full">
+
+                <label>
+                    Banner Title
+                </label>
+
+                <input
+                    type="text"
+                    name="title"
+                    value="{{ banner.title or '' }}"
+                    placeholder="Great Freedom Sale"
+                    required
+                >
+
+            </div>
+
+
+            <!-- SUBTITLE -->
+
+            <div class="field full">
+
+                <label>
+                    Subtitle
+                </label>
+
+                <textarea
+                    name="subtitle"
+                    placeholder="Exciting offers..."
+                >{{ banner.subtitle or '' }}</textarea>
+
+            </div>
+
+
+            <!-- BUTTON TEXT -->
+
+            <div class="field">
+
+                <label>
+                    Button Text
+                </label>
+
+                <input
+                    type="text"
+                    name="button_text"
+                    value="{{ banner.button_text or '' }}"
+                    placeholder="Shop Now"
+                >
+
+            </div>
+
+
+            <!-- BUTTON LINK -->
+
+            <div class="field">
+
+                <label>
+                    Button Link
+                </label>
+
+                <input
+                    type="text"
+                    name="button_link"
+                    value="{{ banner.button_link or '' }}"
+                    placeholder="/shop/products"
+                >
+
+            </div>
+
+
+            <!-- DISPLAY ORDER -->
+
+            <div class="field">
+
+                <label>
+                    Display Order
+                </label>
+
+                <input
+                    type="number"
+                    name="display_order"
+                    value="{{ banner.display_order or 0 }}"
+                    min="0"
+                >
+
+            </div>
+
+
+            <!-- CURRENT IMAGE -->
+
+            <div class="field">
+
+                <label>
+                    Current Banner Image
+                </label>
+
+                {% if banner.image %}
+
+                <div class="current-image-box">
+
+                    <img
+                        src="/static/uploads/homepage_banners/{{ banner.image }}"
+                        alt="Current banner"
+                        onerror="
+                            if(!this.dataset.fallback){
+                                this.dataset.fallback='1';
+                                this.src='/static/uploads/{{ banner.image }}';
+                            }
+                        "
+                    >
+
+                    <div class="current-image-label">
+
+                        Current banner image
+
+                    </div>
+
+                </div>
+
+                {% else %}
+
+                <div class="current-image-box"
+                     style="padding:30px;text-align:center;">
+
+                    <i
+                        class="fas fa-image"
+                        style="font-size:35px;color:#94a3b8;">
+                    </i>
+
+                    <div class="current-image-label">
+
+                        No image uploaded
+
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- NEW IMAGE -->
+
+            <div class="field full">
+
+                <label>
+                    Replace Banner Image
+                </label>
+
+                <div class="file-box">
+
+                    <i class="fas fa-cloud-arrow-up"></i>
+
+                    <strong>
+                        Upload New Banner Image
+                    </strong>
+
+                    <span>
+                        Leave empty to keep the current image.
+                    </span>
+
+                    <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        onchange="previewBanner(this)"
+                    >
+
+                </div>
+
+
+                <div
+                    class="preview"
+                    id="imagePreview">
+
+                    <img
+                        id="previewImage"
+                        alt="New banner preview"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIVE -->
+
+            <div class="field full">
+
+                <div class="options">
+
+                    <input
+                        type="checkbox"
+                        name="is_active"
+                        id="is_active"
+
+                        {% if banner.is_active %}
+                        checked
+                        {% endif %}
+                    >
+
+                    <label for="is_active">
+
+                        Show this banner on the homepage
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="actions">
+
+            <a
+                href="/admin/marketplace/banners"
+                class="btn btn-cancel">
+
+                Cancel
+
+            </a>
+
+
+            <button
+                type="submit"
+                class="btn btn-save">
+
+                <i class="fas fa-save"></i>
+
+                Save Changes
+
+            </button>
+
+        </div>
+
+
+    </form>
+
+</div>
+
+
+
+<script>
+
+function previewBanner(input){
+
+    const preview =
+        document.getElementById("imagePreview");
+
+    const image =
+        document.getElementById("previewImage");
+
+
+    if(
+        input.files &&
+        input.files[0]
+    ){
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(e){
+
+                image.src =
+                    e.target.result;
+
+                preview.style.display =
+                    "block";
+
+            };
+
+
+        reader.readAsDataURL(
+            input.files[0]
+        );
+
+    }
+
+}
+
+</script>
+
+
+</body>
+</html>

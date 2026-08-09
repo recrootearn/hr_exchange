@@ -2490,6 +2490,29 @@ class Product(db.Model):
     hsn_code = db.Column(db.String(20))
     gst_percentage = db.Column(db.Float, default=0)
 
+    # ==========================================
+    # SHOP HOME SETTINGS
+    # ==========================================
+
+    show_on_home = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    home_section = db.Column(
+        db.String(100),
+        default="Trending Now"
+    )
+
+    home_tagline = db.Column(
+        db.String(255)
+    )
+
+    home_display_order = db.Column(
+        db.Integer,
+        default=0
+    )
+
 class ProductImage(db.Model):
     __tablename__ = "product_images"
 
@@ -15019,14 +15042,98 @@ def company_shop(seller_id):
 @login_required
 def shop_home():
 
+    # ==========================================
+    # CATEGORIES
+    # ==========================================
+
     categories = ProductCategory.query.filter_by(
         is_active=True
     ).all()
 
+
+    # ==========================================
+    # ADMIN CONTROLLED BANNERS
+    # ==========================================
+
+    banners = HomepageBanner.query.filter_by(
+        is_active=True
+    ).order_by(
+        HomepageBanner.display_order.asc()
+    ).all()
+
+
+    # ==========================================
+    # TOP DEALS
+    # ==========================================
+
     promoted_products = Product.query.filter_by(
         is_promoted=True,
         status="active"
+    ).order_by(
+        Product.promotion_priority.desc(),
+        Product.created_at.desc()
     ).limit(10).all()
+
+
+    # ==========================================
+    # TRENDING NOW
+    # ==========================================
+
+    trending_products = Product.query.filter_by(
+        status="active",
+        show_on_home=True,
+        home_section="Trending Now"
+    ).order_by(
+        Product.home_display_order.asc(),
+        Product.created_at.desc()
+    ).limit(20).all()
+
+
+    # ==========================================
+    # GREAT DEALS
+    # ==========================================
+
+    deal_products = Product.query.filter_by(
+        status="active",
+        show_on_home=True,
+        home_section="Great Deals"
+    ).order_by(
+        Product.home_display_order.asc(),
+        Product.created_at.desc()
+    ).limit(20).all()
+
+
+    # ==========================================
+    # NEW ARRIVALS
+    # ==========================================
+
+    new_arrival_products = Product.query.filter_by(
+        status="active",
+        show_on_home=True,
+        home_section="New Arrivals"
+    ).order_by(
+        Product.home_display_order.asc(),
+        Product.created_at.desc()
+    ).limit(20).all()
+
+
+    # ==========================================
+    # RECOMMENDED
+    # ==========================================
+
+    recommended_products = Product.query.filter_by(
+        status="active",
+        show_on_home=True,
+        home_section="Recommended"
+    ).order_by(
+        Product.home_display_order.asc(),
+        Product.created_at.desc()
+    ).limit(20).all()
+
+
+    # ==========================================
+    # LATEST PRODUCTS
+    # ==========================================
 
     latest_products = Product.query.filter_by(
         status="active"
@@ -15034,10 +15141,28 @@ def shop_home():
         Product.created_at.desc()
     ).limit(20).all()
 
+
+    # ==========================================
+    # SHOP HOMEPAGE
+    # ==========================================
+
     return render_template(
         "shop_home.html",
+
         categories=categories,
+
+        banners=banners,
+
         promoted_products=promoted_products,
+
+        trending_products=trending_products,
+
+        deal_products=deal_products,
+
+        new_arrival_products=new_arrival_products,
+
+        recommended_products=recommended_products,
+
         latest_products=latest_products
     )
 
