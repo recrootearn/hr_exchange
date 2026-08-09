@@ -5910,6 +5910,23 @@ def admin_business_settings():
             ).strip()
 
             # ======================================
+            # DELHIVERY SETTINGS
+            # ======================================
+
+            settings.delhivery_enabled = (
+                "delhivery_enabled" in request.form
+            )
+
+            delhivery_token = request.form.get(
+                "delhivery_api_token",
+                ""
+            ).strip()
+
+            # Only update token if a value was submitted
+            if delhivery_token:
+                settings.delhivery_api_token = delhivery_token
+
+            # ======================================
             # VALIDATIONS
             # ======================================
 
