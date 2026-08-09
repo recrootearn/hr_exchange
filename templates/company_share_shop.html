@@ -660,62 +660,39 @@ function getCompanyShopUrl(){
    NATIVE SHARE
    ========================================================= */
 
-function shareCompanyShop(){
+function shareCompanyShop() {
+    const shopUrl = window.location.href;
 
-    const shopUrl = getCompanyShopUrl();
-
-    if(navigator.share){
-
+    if (navigator.share) {
         navigator.share({
-            title: {{ (seller.company or seller.first_name or "Shop")|tojson }},
-            text: "Check out this shop on RecrootEarn.",
+            title: "{{ seller.company_name or seller.first_name or 'Shop' }}",
+            text: "Check out this shop on RecrootEarn!",
             url: shopUrl
-        }).catch(function(error){
-
-            if(error && error.name !== "AbortError"){
+        }).catch(function(error) {
+            if (error.name !== "AbortError") {
                 copyCompanyShopLink();
             }
-
         });
-
-        return;
+    } else {
+        copyCompanyShopLink();
     }
-
-    copyCompanyShopLink();
-
 }
-
 
 /* =========================================================
    COPY SHOP LINK
    ========================================================= */
 
-function copyCompanyShopLink(){
+function copyCompanyShopLink() {
+    const shopUrl = window.location.href;
 
-    const shopUrl = getCompanyShopUrl();
-
-    if(navigator.clipboard){
-
-        navigator.clipboard.writeText(shopUrl)
-            .then(function(){
-
-                alert("Shop link copied!");
-
-            })
-            .catch(function(){
-
-                fallbackCopyShopLink(shopUrl);
-
-            });
-
-    }else{
-
-        fallbackCopyShopLink(shopUrl);
-
-    }
-
+    navigator.clipboard.writeText(shopUrl)
+        .then(function() {
+            alert("Shop link copied!");
+        })
+        .catch(function() {
+            prompt("Copy your shop link:", shopUrl);
+        });
 }
-
 
 function fallbackCopyShopLink(url){
 
