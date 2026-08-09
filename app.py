@@ -15084,6 +15084,20 @@ def shop_home():
         .all()
     )
 
+    # ==========================================
+    # STORES WITH ACTIVE PRODUCTS
+    # ==========================================
+
+    store_seller_ids = db.session.query(
+        Product.seller_id
+    ).filter(
+        Product.status == "active",
+        Product.seller_id.isnot(None)
+    ).distinct().subquery()
+
+    stores = User.query.filter(
+        User.id.in_(store_seller_ids)
+    ).all()
 
     # ==========================================
     # ADMIN CONTROLLED BANNERS
@@ -15220,6 +15234,8 @@ def shop_home():
         "shop_home.html",
 
         categories=categories,
+
+        stores=stores,
 
         banners=banners,
 
