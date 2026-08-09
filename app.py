@@ -15259,8 +15259,8 @@ def shop_all_products():
         products=products
     )
 
-@app.route("/share-shop/<int:seller_id>")
-def company_share_shop(seller_id):
+@app.route("/share-shop/<int:seller_id>/<shop_slug>")
+def company_share_shop(seller_id, shop_slug):
 
     seller = User.query.get_or_404(seller_id)
 

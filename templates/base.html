@@ -1384,7 +1384,14 @@ body{
     <div class="more-items">
 
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('company_share_shop', seller_id=current_user.id) }}">
+        <a href="{{ url_for(
+        'company_share_shop',
+        seller_id=current_user.id,
+        shop_slug=(current_user.company or current_user.first_name or 'shop')
+            |lower
+            |replace(' ', '-')
+            |replace('&', 'and')
+    ) }}">
         <i class="fas fa-share-nodes"></i>
         My Shop
         </a>
