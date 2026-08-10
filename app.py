@@ -3718,7 +3718,6 @@ DELHIVERY_BASE_URL = "https://track.delhivery.com"
 class DelhiveryService:
 
     def __init__(self, api_token):
-
         self.api_token = api_token
 
     # =====================================================
@@ -3732,6 +3731,274 @@ class DelhiveryService:
             "Content-Type": "application/json",
             "Accept": "application/json"
         }
+
+
+    # =====================================================
+    # CREATE / REGISTER SELLER WAREHOUSE
+    # =====================================================
+
+    def create_warehouse(self, pickup, seller):
+
+        # -------------------------------------------------
+        # GENERATE A UNIQUE WAREHOUSE NAME
+        # -------------------------------------------------
+
+        warehouse_name = (
+            pickup.pickup_location_code
+            or f"RECROOTEARN_SELLER_{seller.id}"
+        )
+
+        # Save the generated warehouse name
+        # so the same name is used every time.
+
+        if not pickup.pickup_location_code:
+
+            pickup.pickup_location_code = warehouse_name
+
+            db.session.commit()
+
+
+        # -------------------------------------------------
+        # PICKUP ADDRESS
+        # -------------------------------------------------
+
+        address = (
+            pickup.address_line1
+            or ""
+        )
+
+        if pickup.address_line2:
+
+            address += (
+                ", "
+                + pickup.address_line2
+            )
+
+
+        # -------------------------------------------------
+        # RETURN ADDRESS
+        # -------------------------------------------------
+
+        return_address = address
+
+
+        # -------------------------------------------------
+        # EMAIL
+        # -------------------------------------------------
+
+        email = (
+            pickup.email
+            or seller.email
+            or "info@recrootearn.com"
+        )
+
+
+        # -------------------------------------------------
+        # PHONE
+        # -------------------------------------------------
+
+        phone = (
+            pickup.mobile
+            or seller.mobile
+            or ""
+        )
+
+
+        # -------------------------------------------------
+        # REGISTERED NAME
+        # -------------------------------------------------
+
+        registered_name = (
+            pickup.company_name
+            or pickup.pickup_name
+            or seller.company
+            or seller.first_name
+            or warehouse_name
+        )
+
+
+        # -------------------------------------------------
+        # WAREHOUSE PAYLOAD
+        # -------------------------------------------------
+
+        payload = {
+
+            "phone":
+                str(phone),
+
+            "city":
+                pickup.city,
+
+            "name":
+                warehouse_name,
+
+            "pin":
+                str(pickup.pincode),
+
+            "address":
+                address,
+
+            "country":
+                pickup.country or "India",
+
+            "email":
+                email,
+
+            "registered_name":
+                registered_name,
+
+            "return_address":
+                return_address,
+
+            "return_pin":
+                str(pickup.pincode),
+
+            "return_city":
+                pickup.city,
+
+            "return_state":
+                pickup.state,
+
+            "return_country":
+                pickup.country or "India"
+        }
+
+
+        # -------------------------------------------------
+        # CREATE WAREHOUSE
+        # -------------------------------------------------
+
+        response = requests.post(
+
+            DELHIVERY_BASE_URL
+            + "/api/backend/clientwarehouse/create/",
+
+            headers=self.headers(),
+
+            json=payload,
+
+            timeout=30
+        )
+
+
+        # -------------------------------------------------
+        # RESPONSE
+        # -------------------------------------------------
+
+        try:
+
+            data = response.json()
+
+        except Exception:
+
+            raise Exception(
+                "Invalid Delhivery warehouse response: "
+                + response.text
+            )
+
+
+        print(
+            "========== DELHIVERY WAREHOUSE ==========",
+            flush=True
+        )
+
+        print(
+            data,
+            flush=True
+        )
+
+        print(
+            "==========================================",
+            flush=True
+        )
+
+
+        # -------------------------------------------------
+        # HTTP ERROR
+        # -------------------------------------------------
+
+        if response.status_code >= 400:
+
+            response_text = response.text.lower()
+
+            # If warehouse already exists,
+            # we can safely continue using it.
+
+            if (
+                "already exist" in response_text
+                or
+                "already exists" in response_text
+                or
+                "duplicate" in response_text
+            ):
+
+                return {
+                    "success": True,
+                    "already_exists": True,
+                    "warehouse_name":
+                        warehouse_name
+                }
+
+
+            raise Exception(
+                "Delhivery warehouse creation failed: "
+                + response.text
+            )
+
+
+        # -------------------------------------------------
+        # DELHIVERY SUCCESS CHECK
+        # -------------------------------------------------
+
+        if isinstance(data, dict):
+
+            if data.get("success") is False:
+
+                message = str(
+                    data.get("error")
+                    or data.get("message")
+                    or data
+                ).lower()
+
+
+                # Warehouse already registered
+                # is not a fatal error.
+
+                if (
+                    "already exist" in message
+                    or
+                    "already exists" in message
+                    or
+                    "duplicate" in message
+                ):
+
+                    return {
+                        "success": True,
+                        "already_exists": True,
+                        "warehouse_name":
+                            warehouse_name
+                    }
+
+
+                raise Exception(
+                    "Delhivery warehouse creation failed: "
+                    + str(data)
+                )
+
+
+        return {
+
+            "success": True,
+
+            "already_exists": False,
+
+            "warehouse_name":
+                warehouse_name,
+
+            "response":
+                data
+        }
+
 
     # =====================================================
     # CREATE SHIPMENT
@@ -3751,6 +4018,7 @@ class DelhiveryService:
                 "Seller not found for this order."
             )
 
+
         # -------------------------------------------------
         # GET SELLER PICKUP ADDRESS
         # -------------------------------------------------
@@ -3762,6 +4030,21 @@ class DelhiveryService:
             raise Exception(
                 "Seller pickup address is not configured."
             )
+
+
+        # -------------------------------------------------
+        # REGISTER SELLER WAREHOUSE
+        # -------------------------------------------------
+
+        warehouse = self.create_warehouse(
+            pickup,
+            seller
+        )
+
+        warehouse_name = (
+            warehouse["warehouse_name"]
+        )
+
 
         # -------------------------------------------------
         # GET CUSTOMER ADDRESS
@@ -3775,46 +4058,52 @@ class DelhiveryService:
                 "Customer shipping address is missing."
             )
 
+
         # -------------------------------------------------
-        # SELLER NAME
+        # SELLER DETAILS
         # -------------------------------------------------
 
         seller_name = (
+
             pickup.company_name
+
             or pickup.pickup_name
+
             or seller.company
+
             or seller.first_name
+
             or f"Seller {seller.id}"
         )
 
-        # -------------------------------------------------
-        # SELLER PHONE
-        # -------------------------------------------------
 
         seller_phone = (
+
             pickup.mobile
+
             or seller.mobile
+
             or ""
         )
 
-        # -------------------------------------------------
-        # SELLER EMAIL
-        # -------------------------------------------------
 
         seller_email = (
+
             pickup.email
+
             or seller.email
+
             or ""
         )
 
-        # -------------------------------------------------
-        # SELLER ADDRESS
-        # -------------------------------------------------
 
         seller_address = (
+
             pickup.address_line1
+
             or ""
         )
+
 
         if pickup.address_line2:
 
@@ -3823,23 +4112,26 @@ class DelhiveryService:
                 + pickup.address_line2
             )
 
+
         # -------------------------------------------------
-        # CUSTOMER NAME
+        # CUSTOMER DETAILS
         # -------------------------------------------------
 
         customer_name = (
+
             address.full_name
+
             or "Customer"
         )
 
-        # -------------------------------------------------
-        # CUSTOMER ADDRESS
-        # -------------------------------------------------
 
         customer_address = (
+
             address.address_line1
+
             or ""
         )
+
 
         if address.address_line2:
 
@@ -3847,6 +4139,7 @@ class DelhiveryService:
                 ", "
                 + address.address_line2
             )
+
 
         # -------------------------------------------------
         # PACKAGE DETAILS
@@ -3856,31 +4149,36 @@ class DelhiveryService:
 
         total_quantity = 0
 
+
         for item in order.items:
 
             total_quantity += (
                 item.quantity
             )
 
+
             if item.product:
 
                 total_weight += (
+
                     (item.product.weight or 0.1)
+
                     * item.quantity
                 )
+
 
         if total_weight <= 0:
 
             total_weight = 0.1
 
-        # Delhivery commonly expects weight
-        # in grams for shipment creation.
 
         weight_grams = int(
+
             round(
                 total_weight * 1000
             )
         )
+
 
         # -------------------------------------------------
         # PAYMENT MODE
@@ -3888,34 +4186,43 @@ class DelhiveryService:
 
         payment_mode = "Pre-paid"
 
+
         if (
+
             getattr(
                 order,
                 "payment_method",
                 ""
             ).lower()
+
             == "cod"
+
         ):
 
             payment_mode = "COD"
 
+
         # -------------------------------------------------
-        # ORDER ITEMS
+        # PRODUCTS
         # -------------------------------------------------
 
         products = []
 
+
         for item in order.items:
 
             products.append(
+
                 str(
                     item.product_name
                 )
             )
 
+
         product_description = ", ".join(
             products
         )
+
 
         # -------------------------------------------------
         # DELHIVERY PAYLOAD
@@ -3944,7 +4251,9 @@ class DelhiveryService:
                         or "India",
 
                     "pin":
-                        str(address.pincode),
+                        str(
+                            address.pincode
+                        ),
 
                     "phone":
                         address.mobile,
@@ -3966,9 +4275,6 @@ class DelhiveryService:
 
                     "shipping_mode":
                         "Surface",
-
-                    # Seller pickup information
-                    # is passed dynamically.
 
                     "seller_name":
                         seller_name,
@@ -3992,15 +4298,18 @@ class DelhiveryService:
 
                     "seller_email":
                         seller_email
-
                 }
-
             ],
 
+
+            # IMPORTANT:
+            # This MUST be the exact warehouse
+            # registered in Delhivery.
+
             "pickup_location": {
+
                 "name":
-                    pickup.pickup_location_code
-                    or seller_name,
+                    warehouse_name,
 
                 "add":
                     seller_address,
@@ -4022,50 +4331,44 @@ class DelhiveryService:
 
                 "phone":
                     seller_phone
-
             }
-
         }
 
+
         # -------------------------------------------------
-        # API REQUEST
+        # CREATE SHIPMENT
         # -------------------------------------------------
 
         response = requests.post(
-            DELHIVERY_BASE_URL + "/api/cmu/create.json",
+
+            DELHIVERY_BASE_URL
+            + "/api/cmu/create.json",
+
             headers=self.headers(),
-            data={
-                "format": "json",
-                "data": json.dumps(payload)
-            },
+
+            json=payload,
+
             timeout=30
         )
 
+
         # -------------------------------------------------
-        # ERROR HANDLING
+        # ERROR
         # -------------------------------------------------
 
         if response.status_code >= 400:
 
             raise Exception(
+
                 "Delhivery shipment creation failed: "
+
                 + response.text
             )
 
-        print(
-            "========== DELHIVERY RAW RESPONSE ==========",
-            flush=True
-        )
 
-        print(
-            response.text,
-            flush=True
-        )
-
-        print(
-            "============================================",
-            flush=True
-        )
+        # -------------------------------------------------
+        # RESPONSE
+        # -------------------------------------------------
 
         try:
 
@@ -4074,11 +4377,31 @@ class DelhiveryService:
         except Exception:
 
             raise Exception(
+
                 "Invalid response from Delhivery: "
+
                 + response.text
             )
 
+
+        print(
+            "========== DELHIVERY SHIPMENT ==========",
+            flush=True
+        )
+
+        print(
+            data,
+            flush=True
+        )
+
+        print(
+            "=========================================",
+            flush=True
+        )
+
+
         return data
+
 
     # =====================================================
     # TRACK SHIPMENT
@@ -4092,6 +4415,7 @@ class DelhiveryService:
                 "Delhivery waybill is required."
             )
 
+
         response = requests.get(
 
             DELHIVERY_BASE_URL
@@ -4104,18 +4428,20 @@ class DelhiveryService:
             },
 
             timeout=30
-
         )
+
 
         if response.status_code >= 400:
 
             raise Exception(
+
                 "Delhivery tracking failed: "
+
                 + response.text
             )
 
-        return response.json()
 
+        return response.json()
 
 # =========================================================
 # GET DELHIVERY INSTANCE
