@@ -2,6 +2,24 @@
 
 {% block title %}
 Order {{ order.order_number }}
+
+<script>
+(function(){
+    const box=document.getElementById("seller-delhivery-pickup-info");
+    const raw={{ (order.tracking_json or "{}")|tojson }};
+    try{
+        const data=typeof raw === "string" ? JSON.parse(raw) : raw;
+        const p=data.pickup_date ? data : (data.pickup || {});
+        if(box && p.pickup_date){
+            box.innerHTML=`<div style="margin-top:12px;background:#fff;border:1px solid #dcfce7;border-radius:12px;padding:12px;"><div style="font-size:12px;font-weight:900;color:#166534;"><i class="fas fa-calendar-check me-1"></i>Pickup Scheduled</div><div style="font-size:12px;color:#374151;margin-top:5px;">${p.pickup_date}${p.pickup_time ? " · "+p.pickup_time : ""}</div>${p.pickup_location ? `<div style="font-size:11px;color:#6b7280;margin-top:3px;">Pickup location: ${p.pickup_location}</div>` : ""}</div>`;
+        }
+    }catch(e){}
+    {% if order.delhivery_waybill and order.shipping_status not in ["Delivered", "Cancelled", "RTO"] %}
+    setTimeout(function(){ window.location.reload(); },60000);
+    {% endif %}
+})();
+</script>
+
 {% endblock %}
 
 {% block content %}
@@ -860,81 +878,18 @@ body{
 
 
     <div class="od-body">
-
-        <div class="delhivery">
-
-            <div class="delhivery-title">
-
-                <i class="fas fa-truck-fast"></i>
-
-                Delhivery Shipping
-
-            </div>
-
-
-            <div class="delhivery-grid">
-
-
-                {% if order.delhivery_waybill %}
-
-                <div class="delhivery-box">
-
-                    <small>
-                        Waybill / AWB
-                    </small>
-
-                    <strong>
-                        {{ order.delhivery_waybill }}
-                    </strong>
-
-                </div>
-
-                {% endif %}
-
-
-                {% if order.delhivery_reference %}
-
-                <div class="delhivery-box">
-
-                    <small>
-                        Reference
-                    </small>
-
-                    <strong>
-                        {{ order.delhivery_reference }}
-                    </strong>
-
-                </div>
-
-                {% endif %}
-
-
-                {% if order.delhivery_status %}
-
-                <div class="delhivery-box">
-
-                    <small>
-                        Status
-                    </small>
-
-                    <strong>
-
-                        <span class="delhivery-status">
-
-                            {{ order.delhivery_status }}
-
-                        </span>
-
-                    </strong>
-
-                </div>
-
-                {% endif %}
-
-
-            </div>
-
-        </div>
+<div class="delhivery">
+<div class="delhivery-title"><i class="fas fa-truck-fast"></i>Delhivery Shipping</div>
+<div class="delhivery-grid">
+{% if order.delhivery_waybill %}<div class="delhivery-box"><small>Waybill / AWB</small><strong>{{ order.delhivery_waybill }}</strong></div>{% endif %}
+{% if order.delhivery_reference %}<div class="delhivery-box"><small>Reference</small><strong>{{ order.delhivery_reference }}</strong></div>{% endif %}
+<div class="delhivery-box"><small>Current Status</small><strong>{{ order.shipping_status or order.delhivery_status or "Pending" }}</strong></div>
+</div>
+<div id="seller-delhivery-pickup-info"></div>
+{% if order.tracking_url %}<a href="{{ order.tracking_url }}" target="_blank" rel="noopener" class="action primary" style="margin-top:12px;"><i class="fas fa-location-arrow"></i>Track Shipment</a>{% endif %}
+{% if order.last_tracking_sync %}<div style="font-size:10px;color:#8a93a3;margin-top:8px;">Last tracking sync: {{ order.last_tracking_sync.strftime("%d %b %Y, %I:%M %p") }}</div>{% endif %}
+</div>
+</div>
 
     </div>
 

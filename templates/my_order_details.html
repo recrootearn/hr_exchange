@@ -1,5 +1,26 @@
 {% extends "base.html" %}
-{% block title %}My Order{% endblock %}
+{% block title %}My Order
+<script>
+(function(){
+    const statusEl=document.getElementById("live-shipping-status");
+    const pickupEl=document.getElementById("delhivery-pickup-info");
+    const raw={{ (order.tracking_json or "{}")|tojson }};
+
+    try{
+        const data=typeof raw === "string" ? JSON.parse(raw) : raw;
+        const p=data.pickup_date ? data : (data.pickup || {});
+        if(pickupEl && p.pickup_date){
+            pickupEl.innerHTML=`<div class="delivery"><div class="truck"><i class="fas fa-calendar-check"></i></div><div><div class="dtitle">Pickup Scheduled</div><div class="dsub">${p.pickup_date}${p.pickup_time ? " · "+p.pickup_time : ""}</div>${p.pickup_location ? `<div class="dsub">Pickup location: ${p.pickup_location}</div>` : ""}</div></div>`;
+        }
+    }catch(e){}
+
+    {% if order.delhivery_waybill and order.shipping_status not in ["Delivered", "Cancelled", "RTO"] %}
+    setTimeout(function(){ window.location.reload(); },60000);
+    {% endif %}
+})();
+</script>
+
+{% endblock %}
 {% block content %}
 <style>
 html,body{margin:0!important;padding:0!important}.content{margin:0!important;padding:0!important;background:#f5f7fb!important}
@@ -21,7 +42,18 @@ html,body{margin:0!important;padding:0!important}.content{margin:0!important;pad
 <div class="card"><div class="head"><i class="fas fa-receipt"></i><h2>Order Information</h2></div><div class="body"><div class="meta-grid"><div class="meta"><small>Ordered On</small><strong>{{ order.created_at.strftime("%d %b %Y, %I:%M %p") if order.created_at else "-" }}</strong></div><div class="meta"><small>Order Status</small><strong>{{ order.order_status }}</strong></div><div class="meta"><small>Payment Status</small><strong>{{ order.payment_status }}</strong></div><div class="meta"><small>Payment Method</small><strong>{{ order.payment_method or "-" }}</strong></div></div></div></div>
 <div class="card"><div class="head"><i class="fas fa-box-open"></i><h2>What You Ordered</h2></div><div class="body">{% for item in order.items %}<div class="product">{% if item.product_image %}<img class="pimg" src="{{ url_for('static', filename='product_images/' + item.product_image) }}" alt="{{ item.product_name }}" onerror="this.onerror=null;this.style.display='none';">{% else %}<div class="placeholder"><i class="fas fa-image"></i></div>{% endif %}<div class="pinfo"><div class="pname">{{ item.product_name }}</div>{% if item.variant_name %}<div class="psub">Variant: {{ item.variant_name }}</div>{% endif %}<div class="psub">Qty {{ item.quantity }} · ₹{{ "%.2f"|format(item.price) }} each</div></div><div class="ptotal">₹{{ "%.2f"|format(item.total) }}</div></div>{% endfor %}</div></div>
 <div class="card"><div class="head"><i class="fas fa-credit-card"></i><h2>What You Paid</h2></div><div class="body"><div class="meta-grid"><div class="meta"><small>Payment Status</small><strong>{{ order.payment_status }}</strong></div><div class="meta"><small>Payment Method</small><strong>{{ order.payment_method or "-" }}</strong></div></div><div class="line"><span>Subtotal</span><strong>₹{{ "%.2f"|format(order.subtotal) }}</strong></div><div class="line"><span>Shipping</span><strong>₹{{ "%.2f"|format(order.shipping_charge) }}</strong></div><div class="total"><span>Total Paid</span><strong>₹{{ "%.2f"|format(order.total_amount) }}</strong></div></div></div>
-<div class="card"><div class="head"><i class="fas fa-truck"></i><h2>Delivery Status</h2></div><div class="body"><div class="delivery"><div class="truck"><i class="fas fa-truck-fast"></i></div><div><div class="dtitle">{{ order.order_status }}</div><div class="dsub">{% if order.tracking_id %}Tracking: {{ order.tracking_id }}{% elif order.courier_name %}Courier: {{ order.courier_name }}{% else %}Delivery updates will appear here.{% endif %}</div></div></div><div class="timeline">{% if history %}{% for h in history %}<div class="event"><div class="dot"></div><div><b>{{ h.status }}</b><div class="date">{{ h.created_at.strftime("%d %b %Y, %I:%M %p") }}</div>{% if h.remarks %}<div class="remarks">{{ h.remarks }}</div>{% endif %}</div></div>{% endfor %}{% else %}<span class="text-muted">Your order has been placed. Delivery updates will appear here.</span>{% endif %}</div></div></div>
+<div class="card"><div class="head"><i class="fas fa-truck"></i><h2>Delivery Status</h2></div><div class="body">
+{% if order.delhivery_waybill or order.tracking_id or order.courier_name %}
+<div class="delivery"><div class="truck"><i class="fas fa-truck-fast"></i></div><div><div class="dtitle">{{ order.courier_name or "Delhivery" }}</div><div class="dsub" id="live-shipping-status">{{ order.shipping_status or order.order_status or "Pending" }}</div></div></div>
+<div class="meta-grid" style="margin-bottom:15px;">
+<div class="meta"><small>AWB / Tracking</small><strong>{{ order.delhivery_waybill or order.tracking_id }}</strong></div>
+<div class="meta"><small>Courier</small><strong>{{ order.courier_name or "Delhivery" }}</strong></div>
+</div>
+<div id="delhivery-pickup-info"></div>
+{% endif %}
+<div class="timeline">{% if history %}{% for h in history %}<div class="event"><div class="dot"></div><div><b>{{ h.status }}</b><div class="date">{{ h.created_at.strftime("%d %b %Y, %I:%M %p") }}</div>{% if h.remarks %}<div class="remarks">{{ h.remarks }}</div>{% endif %}</div></div>{% endfor %}{% else %}<span class="text-muted">Your order has been placed. Delivery updates will appear here.</span>{% endif %}</div>
+{% if order.delhivery_waybill %}<div style="margin-top:12px;font-size:10px;color:#8a93a3;">Tracking updates are synchronized automatically.</div>{% endif %}
+</div></div></div><div class="timeline">{% if history %}{% for h in history %}<div class="event"><div class="dot"></div><div><b>{{ h.status }}</b><div class="date">{{ h.created_at.strftime("%d %b %Y, %I:%M %p") }}</div>{% if h.remarks %}<div class="remarks">{{ h.remarks }}</div>{% endif %}</div></div>{% endfor %}{% else %}<span class="text-muted">Your order has been placed. Delivery updates will appear here.</span>{% endif %}</div></div></div>
 <div class="card"><div class="body"><a class="invoice" href="/download-order-invoice/{{ order.id }}"><i class="fas fa-file-invoice"></i> Download Invoice</a></div></div>
 </div></div>
 {% endblock %}
