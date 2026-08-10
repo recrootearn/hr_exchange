@@ -114,6 +114,79 @@
     .ap-wrap{padding:24px 30px 0}
     .ap-hero{padding:25px 30px 28px}
 }
+
+/* ===== Delivery Charge Selection ===== */
+.delivery-choice-wrap{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.delivery-choice{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:14px;
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    background:#fff;
+    cursor:pointer;
+    transition:.18s ease;
+}
+
+.delivery-choice:hover{
+    border-color:#93b4ff;
+    background:#f8fbff;
+}
+
+.delivery-choice input{
+    width:18px;
+    height:18px;
+    margin-top:2px;
+    accent-color:#2563eb;
+    flex:0 0 auto;
+}
+
+.delivery-choice-content{
+    flex:1;
+}
+
+.delivery-choice-title{
+    color:#111827;
+    font-size:14px;
+    font-weight:850;
+}
+
+.delivery-choice-title i{
+    color:#2563eb;
+    width:18px;
+}
+
+.delivery-choice-text{
+    color:#6b7280;
+    font-size:11px;
+    line-height:1.5;
+    margin-top:4px;
+}
+
+.delivery-info{
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+    margin-top:12px;
+    padding:10px 12px;
+    border-radius:12px;
+    background:#eff6ff;
+    color:#475569;
+    font-size:11px;
+    line-height:1.5;
+}
+
+.delivery-info i{
+    color:#2563eb;
+    margin-top:2px;
+}
+
 </style>
 
 <div class="add-product-page">
@@ -683,6 +756,79 @@ Your product will be sent for admin approval before becoming visible in the mark
 
 </div>
 
+
+<!-- Delivery Charges -->
+<div class="card shadow-sm mt-4">
+    <div class="card-header">
+        <h5>
+            <i class="fas fa-truck"></i>
+            Delivery Charges
+        </h5>
+    </div>
+
+    <div class="card-body">
+
+        <label class="form-label">
+            Who will pay the delivery charges?
+        </label>
+
+        <div class="delivery-choice-wrap">
+
+            <label class="delivery-choice">
+                <input
+                    type="radio"
+                    name="delivery_charge_paid_by"
+                    value="customer"
+                    checked
+                >
+
+                <div class="delivery-choice-content">
+                    <div class="delivery-choice-title">
+                        <i class="fas fa-user"></i>
+                        Customer pays delivery
+                    </div>
+
+                    <div class="delivery-choice-text">
+                        Delhivery charges will be calculated at checkout
+                        based on the customer's delivery location and
+                        package weight/dimensions.
+                    </div>
+                </div>
+            </label>
+
+            <label class="delivery-choice">
+                <input
+                    type="radio"
+                    name="delivery_charge_paid_by"
+                    value="seller"
+                >
+
+                <div class="delivery-choice-content">
+                    <div class="delivery-choice-title">
+                        <i class="fas fa-gift"></i>
+                        Free Delivery — I pay
+                    </div>
+
+                    <div class="delivery-choice-text">
+                        The customer will not pay a separate delivery
+                        charge. Delivery cost will be paid by the seller.
+                    </div>
+                </div>
+            </label>
+
+        </div>
+
+        <div class="delivery-info">
+            <i class="fas fa-circle-info"></i>
+            The customer will always see the delivery charge before
+            completing payment. For paid delivery, the charge is
+            calculated using the seller's pickup location, customer's
+            delivery location and package details.
+        </div>
+
+    </div>
+</div>
+
 <!-- Product Variants -->
 
 <div class="card shadow-sm mt-4"
@@ -880,26 +1026,7 @@ Your product will be sent for admin approval before becoming visible in the mark
                 placeholder="gift, flower, bouquet">
 
         </div>
-
-        <div class="mb-3">
-
-            <label>
-
-                YouTube Video URL
-
-            </label>
-
-            <input
-
-                type="url"
-
-                class="form-control"
-
-                name="youtube_video">
-
-        </div>
-
-        <div class="mb-3">
+<div class="mb-3">
 
             <label>
 

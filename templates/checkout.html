@@ -942,8 +942,8 @@ main,
                                 Subtotal
                             </span>
 
-                            <strong>
-                                ₹{{ subtotal }}
+                            <strong id="subtotalAmount">
+                                ₹{{ "%.2f"|format(subtotal|float) }}
                             </strong>
 
                         </div>
@@ -955,10 +955,22 @@ main,
                                 Delivery
                             </span>
 
-                            <span class="delivery-price">
-                                ₹{{ shipping_charge }}
+                            <span class="delivery-price" id="deliveryPrice">
+                                {% if shipping_paid_by == "seller" or shipping_charge|float == 0 %}
+                                    Free
+                                {% else %}
+                                    ₹{{ "%.2f"|format(shipping_charge|float) }}
+                                {% endif %}
                             </span>
 
+                        </div>
+
+                        <div id="shippingStatus"
+                             style="display:none;margin:-4px 0 14px;color:#6b7280;font-size:11px;line-height:1.45;">
+                        </div>
+
+                        <div id="shippingError"
+                             style="display:none;margin:-2px 0 14px;padding:10px 11px;border-radius:10px;background:#fff5f5;border:1px solid #fecaca;color:#b91c1c;font-size:11px;line-height:1.45;">
                         </div>
 
 
@@ -971,8 +983,8 @@ main,
                                 Total
                             </span>
 
-                            <span class="total-amount">
-                                ₹{{ total }}
+                            <span class="total-amount" id="totalAmount">
+                                ₹{{ "%.2f"|format(total|float) }}
                             </span>
 
                         </div>
@@ -1014,45 +1026,6 @@ main,
 
 
 
-<script>
-(function(){
-
-    const payButton = document.getElementById("payButton");
-
-    if(!payButton) return;
-
-    function selectedAddress(){
-        return document.querySelector('input[name="address"]:checked');
-    }
-
-    function updatePaymentState(){
-
-        const selected = selectedAddress();
-
-        if(!selected){
-            payButton.disabled = true;
-            payButton.style.opacity = ".55";
-            payButton.style.cursor = "not-allowed";
-            payButton.title = "Please select a delivery address";
-        }else{
-            payButton.disabled = false;
-            payButton.style.opacity = "1";
-            payButton.style.cursor = "pointer";
-            payButton.title = "";
-        }
-    }
-
-    document
-        .querySelectorAll('input[name="address"]')
-        .forEach(function(input){
-            input.addEventListener("change", updatePaymentState);
-        });
-
-    updatePaymentState();
-
-})();
-</script>
-
 <!-- RAZORPAY -->
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -1061,53 +1034,135 @@ main,
 (function(){
 
     const payButton = document.getElementById("payButton");
+    const deliveryPrice = document.getElementById("deliveryPrice");
+    const totalAmount = document.getElementById("totalAmount");
+    const shippingStatus = document.getElementById("shippingStatus");
+    const shippingError = document.getElementById("shippingError");
+    const addressInputs = document.querySelectorAll('input[name="address"]');
 
     if(!payButton){
         return;
     }
 
     function selectedAddress(){
-
-        return document.querySelector(
-            'input[name="address"]:checked'
-        );
-
+        return document.querySelector('input[name="address"]:checked');
     }
 
-    function updatePaymentState(){
+    function setPayButton(enabled, title){
+        payButton.disabled = !enabled;
+        payButton.style.opacity = enabled ? "1" : ".55";
+        payButton.style.cursor = enabled ? "pointer" : "not-allowed";
+        payButton.title = title || "";
+    }
 
-        const selected = selectedAddress();
+    function setShippingLoading(message){
+        shippingStatus.textContent = message || "Calculating delivery...";
+        shippingStatus.style.display = "block";
+        shippingError.style.display = "none";
+    }
 
-        if(!selected){
+    function setShippingError(message){
+        shippingStatus.style.display = "none";
+        shippingError.textContent = message || "Unable to calculate delivery.";
+        shippingError.style.display = "block";
+        setPayButton(false, "Delivery charge could not be calculated");
+    }
 
-            payButton.disabled = true;
-            payButton.style.opacity = ".55";
-            payButton.style.cursor = "not-allowed";
-            payButton.title = "Please select a delivery address";
+    function clearShippingMessages(){
+        shippingStatus.style.display = "none";
+        shippingError.style.display = "none";
+    }
 
-        }else{
+    function formatRupees(value){
+        return "₹" + Number(value || 0).toFixed(2);
+    }
 
-            payButton.disabled = false;
-            payButton.style.opacity = "1";
-            payButton.style.cursor = "pointer";
-            payButton.title = "";
-
+    function updateShippingQuote(addressId){
+        if(!addressId){
+            setPayButton(false, "Please select a delivery address");
+            return Promise.resolve();
         }
 
+        setPayButton(false, "Calculating delivery charge...");
+        setShippingLoading("Calculating delivery charge...");
+
+        return fetch("/calculate-marketplace-shipping", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            body: JSON.stringify({
+                address_id: addressId,
+                payment_mode: "Pre-paid"
+            })
+        })
+        .then(function(response){
+            return response.json().then(function(data){
+                if(!response.ok){
+                    throw new Error(
+                        data.error || "Unable to calculate delivery charge."
+                    );
+                }
+                return data;
+            });
+        })
+        .then(function(data){
+
+            const shipping = Number(data.shipping_charge || 0);
+            const total = Number(data.total || 0);
+
+            if(data.shipping_paid_by === "seller" || shipping <= 0){
+                deliveryPrice.textContent = "Free";
+            }else{
+                deliveryPrice.textContent = formatRupees(shipping);
+            }
+
+            totalAmount.textContent = formatRupees(total);
+
+            clearShippingMessages();
+
+            if(data.shipping_paid_by === "seller"){
+                shippingStatus.textContent = "Free delivery — delivery charge is paid by the seller.";
+                shippingStatus.style.display = "block";
+            }else{
+                shippingStatus.textContent =
+                    "Delivery charge calculated from the seller's pickup location to your selected address.";
+                shippingStatus.style.display = "block";
+            }
+
+            setPayButton(true);
+
+            return data;
+        })
+        .catch(function(error){
+            console.error("Shipping quote error:", error);
+            setShippingError(
+                error.message || "Unable to calculate delivery charge. Please try again."
+            );
+            throw error;
+        });
     }
 
-    document
-        .querySelectorAll('input[name="address"]')
-        .forEach(function(input){
-
-            input.addEventListener(
-                "change",
-                updatePaymentState
-            );
-
+    addressInputs.forEach(function(input){
+        input.addEventListener("change", function(){
+            updateShippingQuote(this.value);
         });
+    });
 
-    updatePaymentState();
+    /*
+     * Calculate the live quote for the address already selected on page load.
+     * The Flask checkout route also provides an initial server-side quote,
+     * but this keeps the displayed amount synchronized with the same AJAX
+     * endpoint used when the customer changes address.
+     */
+    const initialAddress = selectedAddress();
+
+    if(initialAddress){
+        updateShippingQuote(initialAddress.value).catch(function(){});
+    }else{
+        setPayButton(false, "Please select a delivery address");
+    }
 
 
     payButton.addEventListener("click", function(){
@@ -1115,26 +1170,20 @@ main,
         const selected = selectedAddress();
 
         if(!selected){
-
             alert("Please select a delivery address.");
             return;
-
         }
 
         payButton.disabled = true;
-
         payButton.innerHTML =
             '<i class="fas fa-spinner fa-spin"></i> ' +
             'Preparing Payment...';
 
-
         /*
-         * Send the selected address to Flask.
-         *
-         * Flask calculates the amount again from the cart,
-         * so the browser cannot change the payable amount.
+         * Flask recalculates the shipping charge and total from the cart
+         * and selected address. The browser never controls the payable
+         * amount.
          */
-
         fetch("/create-marketplace-order", {
 
             method: "POST",
@@ -1145,7 +1194,8 @@ main,
             },
 
             body: JSON.stringify({
-                address_id: selected.value
+                address_id: selected.value,
+                payment_mode: "Pre-paid"
             })
 
         })
@@ -1176,11 +1226,28 @@ main,
         .then(function(order){
 
             if(!order.id || !order.amount){
-
                 throw new Error(
                     "Invalid Razorpay order received."
                 );
+            }
 
+            /*
+             * Keep the visible total synchronized with the exact amount
+             * returned by Flask before opening Razorpay.
+             */
+            if(typeof order.shipping_charge !== "undefined"){
+                const shipping = Number(order.shipping_charge || 0);
+
+                if(order.shipping_paid_by === "seller" || shipping <= 0){
+                    deliveryPrice.textContent = "Free";
+                }else{
+                    deliveryPrice.textContent = formatRupees(shipping);
+                }
+            }
+
+            if(typeof order.total !== "undefined"){
+                totalAmount.textContent =
+                    formatRupees(order.total);
             }
 
             const options = {
@@ -1322,6 +1389,15 @@ main,
                 '<i class="fas fa-lock"></i>' +
                 ' Continue To Payment ' +
                 '<i class="fas fa-arrow-right"></i>';
+
+            /*
+             * Re-enable only if a valid address is selected and the
+             * shipping quote is still available.
+             */
+            const selectedNow = selectedAddress();
+            if(selectedNow){
+                updateShippingQuote(selectedNow.value).catch(function(){});
+            }
 
         });
 
