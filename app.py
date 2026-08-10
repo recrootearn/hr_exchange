@@ -13,6 +13,7 @@ import subprocess
 import smtplib
 import secrets
 import resend
+import json
 from email.mime.text import MIMEText
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -3997,9 +3998,9 @@ class DelhiveryService:
             ],
 
             "pickup_location": {
-
                 "name":
-                    seller_name,
+                    pickup.pickup_location_code
+                    or seller_name,
 
                 "add":
                     seller_address,
@@ -4031,16 +4032,13 @@ class DelhiveryService:
         # -------------------------------------------------
 
         response = requests.post(
-
-            DELHIVERY_BASE_URL
-            + "/api/cmu/create.json",
-
+            DELHIVERY_BASE_URL + "/api/cmu/create.json",
             headers=self.headers(),
-
-            json=payload,
-
+            data={
+                "format": "json",
+                "data": json.dumps(payload)
+            },
             timeout=30
-
         )
 
         # -------------------------------------------------
