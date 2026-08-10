@@ -3734,6 +3734,127 @@ class DelhiveryService:
 
 
     # =====================================================
+    # CALCULATE SHIPPING COST
+    # =====================================================
+
+    def calculate_shipping_cost(
+        self,
+        origin_pincode,
+        destination_pincode,
+        weight_grams,
+        mode="S",
+        payment_type="Pre-paid"
+    ):
+        """Get the estimated shipping cost directly from Delhivery.
+
+        This uses Delhivery's production Invoice Shipping Charge API.
+        Shiprocket is intentionally not used here; its integration remains
+        available elsewhere in the application for future use.
+        """
+
+        if not origin_pincode:
+            raise Exception("Seller pickup pincode is required.")
+
+        if not destination_pincode:
+            raise Exception("Delivery pincode is required.")
+
+        try:
+            weight_grams = int(round(float(weight_grams)))
+        except (TypeError, ValueError):
+            raise Exception("Invalid shipment weight.")
+
+        if weight_grams <= 0:
+            weight_grams = 100
+
+        response = requests.get(
+            DELHIVERY_BASE_URL
+            + "/api/kinko/v1/invoice/charges/.json",
+            headers={
+                "Authorization": f"Token {self.api_token}",
+                "Accept": "application/json"
+            },
+            params={
+                "md": mode,
+                "ss": "Delivered",
+                "d_pin": str(destination_pincode),
+                "o_pin": str(origin_pincode),
+                "cgm": weight_grams,
+                "pt": payment_type
+            },
+            timeout=30
+        )
+
+        if response.status_code >= 400:
+            raise Exception(
+                "Delhivery shipping calculation failed: "
+                + response.text
+            )
+
+        try:
+            data = response.json()
+        except Exception:
+            raise Exception(
+                "Invalid response from Delhivery shipping calculator: "
+                + response.text
+            )
+
+        # Delhivery's total_amount is the estimated amount including the
+        # applicable tax values. Do not add our local shipping tax again.
+        amount = None
+
+        if isinstance(data, dict):
+            for key in (
+                "total_amount",
+                "total",
+                "amount"
+            ):
+                if data.get(key) is not None:
+                    amount = data.get(key)
+                    break
+
+            # Some responses may wrap the calculation inside data.
+            if amount is None and isinstance(data.get("data"), dict):
+                nested = data.get("data")
+                for key in (
+                    "total_amount",
+                    "total",
+                    "amount"
+                ):
+                    if nested.get(key) is not None:
+                        amount = nested.get(key)
+                        break
+
+        if amount is None:
+            error_message = None
+            if isinstance(data, dict):
+                error_message = (
+                    data.get("error")
+                    or data.get("message")
+                    or data.get("rmk")
+                )
+
+            raise Exception(
+                str(error_message)
+                if error_message
+                else "Delhivery did not return a shipping amount."
+            )
+
+        try:
+            amount = float(amount)
+        except (TypeError, ValueError):
+            raise Exception(
+                "Delhivery returned an invalid shipping amount."
+            )
+
+        if amount < 0:
+            raise Exception(
+                "Delhivery returned an invalid shipping amount."
+            )
+
+        return round(amount, 2)
+
+
+    # =====================================================
     # CREATE / REGISTER SELLER WAREHOUSE
     # =====================================================
 
@@ -17058,6 +17179,138 @@ def checkout():
         razorpay_key=RAZORPAY_KEY
     )
 
+
+# =========================================================
+# MARKETPLACE SHIPPING CALCULATION
+# =========================================================
+
+def calculate_marketplace_shipping_charge(cart, address):
+    """Calculate marketplace delivery charge using Delhivery only.
+
+    Shiprocket is intentionally kept in the application for future use,
+    but it is NOT called for the current checkout shipping calculation.
+    """
+
+    settings = get_business_settings()
+
+    subtotal = sum(
+        (item.price or 0) * item.quantity
+        for item in cart.items
+    )
+
+    free_shipping_amount = float(
+        getattr(settings, "free_shipping_amount", 999) or 0
+    )
+
+    if free_shipping_amount <= 0 or subtotal >= free_shipping_amount:
+        return 0.0
+
+    pickup = SellerPickupAddress.query.filter_by(
+        seller_id=cart.seller_id
+    ).first()
+
+    if not pickup or not pickup.pincode:
+        raise Exception("Seller pickup address/pincode is not configured.")
+
+    if not address.pincode:
+        raise Exception("Delivery pincode is required.")
+
+    # Product.weight is stored in kilograms in this application.
+    total_weight = sum(
+        (item.product.weight or 0.1) * item.quantity
+        for item in cart.items
+        if item.product
+    )
+
+    if total_weight <= 0:
+        total_weight = 0.1
+
+    weight_grams = int(round(total_weight * 1000))
+
+    # CURRENT PROVIDER: DELHIVERY
+    # Shiprocket remains available through get_shiprocket() and its existing
+    # service class, but must not be used for the live checkout calculation.
+    delhivery = get_delhivery()
+
+    shipping = delhivery.calculate_shipping_cost(
+        origin_pincode=pickup.pincode,
+        destination_pincode=address.pincode,
+        weight_grams=weight_grams,
+        mode="S",
+        payment_type="Pre-paid"
+    )
+
+    # Delhivery's total_amount already includes applicable tax values.
+    # Do not add shipping_tax_percent again or the customer could be double-taxed.
+    return round(shipping, 2)
+
+
+@app.route("/calculate-marketplace-shipping", methods=["POST"])
+@login_required
+def calculate_marketplace_shipping():
+    """Return the server-calculated delivery charge for checkout."""
+
+    cart = Cart.query.filter_by(
+        user_id=current_user.id
+    ).first_or_404()
+
+    data = request.get_json(silent=True) or request.form
+    address_id = data.get("address_id")
+
+    if not address_id:
+        return jsonify({
+            "success": False,
+            "error": "Please select a delivery address."
+        }), 400
+
+    try:
+        address_id = int(address_id)
+    except (TypeError, ValueError):
+        return jsonify({
+            "success": False,
+            "error": "Invalid delivery address."
+        }), 400
+
+    address = ShippingAddress.query.filter_by(
+        id=address_id,
+        user_id=current_user.id
+    ).first()
+
+    if not address:
+        return jsonify({
+            "success": False,
+            "error": "Invalid delivery address."
+        }), 400
+
+    try:
+        subtotal = round(sum(
+            (item.price or 0) * item.quantity
+            for item in cart.items
+        ), 2)
+
+        shipping_charge = calculate_marketplace_shipping_charge(
+            cart,
+            address
+        )
+
+        total = round(subtotal + shipping_charge, 2)
+
+        return jsonify({
+            "success": True,
+            "subtotal": subtotal,
+            "shipping_charge": shipping_charge,
+            "shipping": shipping_charge,
+            "delivery": shipping_charge,
+            "total": total
+        })
+
+    except Exception as e:
+        app.logger.exception("Marketplace shipping calculation failed")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 400
+
 # =========================================================
 # CUSTOMER SHIPPING ADDRESS MANAGEMENT
 # =========================================================
@@ -17321,9 +17574,18 @@ def create_marketplace_order():
         for item in cart.items
     )
 
-    shipping = 0
+    try:
+        shipping = calculate_marketplace_shipping_charge(
+            cart,
+            address
+        )
+    except Exception as e:
+        app.logger.exception("Marketplace shipping calculation failed")
+        return jsonify({
+            "error": str(e)
+        }), 400
 
-    total = subtotal + shipping
+    total = round(subtotal + shipping, 2)
 
     if total <= 0:
         return jsonify({
@@ -17340,6 +17602,8 @@ def create_marketplace_order():
     session["marketplace_payment"] = {
         "razorpay_order_id": razorpay_order["id"],
         "address_id": address.id,
+        "subtotal": subtotal,
+        "shipping_charge": shipping,
         "amount": total
     }
 
@@ -17467,10 +17731,14 @@ def marketplace_payment_success():
             item.quantity
         )
 
-    shipping = 0
+    # Use the server-generated shipping charge saved when the Razorpay order was created.
+    # Do not trust a browser value here.
+    shipping = round(
+        float(payment_data.get("shipping_charge", 0) or 0),
+        2
+    )
 
-    total = subtotal + shipping
-
+    total = round(subtotal + shipping, 2)
 
     # ---------------------------------------------------------
     # 7. VERIFY AMOUNT AGAINST PAYMENT SESSION
