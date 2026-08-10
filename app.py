@@ -4052,6 +4052,21 @@ class DelhiveryService:
                 + response.text
             )
 
+        print(
+            "========== DELHIVERY RAW RESPONSE ==========",
+            flush=True
+        )
+
+        print(
+            response.text,
+            flush=True
+        )
+
+        print(
+            "============================================",
+            flush=True
+        )
+
         try:
 
             data = response.json()
