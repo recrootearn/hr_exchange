@@ -4340,14 +4340,17 @@ class DelhiveryService:
         # -------------------------------------------------
 
         response = requests.post(
-
             DELHIVERY_BASE_URL
             + "/api/cmu/create.json",
-
-            headers=self.headers(),
-
-            json=payload,
-
+            headers={
+                "Authorization": f"Token {self.api_token}",
+                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data={
+                "format": "json",
+                "data": json.dumps(payload)
+            },
             timeout=30
         )
 
