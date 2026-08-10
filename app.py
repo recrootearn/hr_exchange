@@ -3798,52 +3798,68 @@ class DelhiveryService:
                 + response.text
             )
 
-        # Delhivery's total_amount is the estimated amount including the
-        # applicable tax values. Do not add our local shipping tax again.
-        amount = None
-
-        if isinstance(data, dict):
-            for key in (
-                "total_amount",
-                "total",
-                "amount"
-            ):
-                if data.get(key) is not None:
-                    amount = data.get(key)
-                    break
-
-            # Some responses may wrap the calculation inside data.
-            if amount is None and isinstance(data.get("data"), dict):
-                nested = data.get("data")
+        # Delhivery may return the final charge in different response
+        # structures. Check the final amount fields without changing
+        # any other checkout/order functionality.
+        def extract_amount(value):
+            if isinstance(value, dict):
+                # Prefer the final calculated amount.
                 for key in (
                     "total_amount",
-                    "total",
+                    "totalAmount",
+                    "shipping_charge",
+                    "shipping_charges",
+                    "freight_charge",
+                    "freight_charges",
+                    "chargeable_amount",
                     "amount"
                 ):
-                    if nested.get(key) is not None:
-                        amount = nested.get(key)
-                        break
+                    candidate = value.get(key)
+                    if candidate is not None and candidate != "":
+                        try:
+                            return float(candidate)
+                        except (TypeError, ValueError):
+                            pass
+
+                # Check common nested response containers.
+                for key in (
+                    "data",
+                    "result",
+                    "response",
+                    "charges",
+                    "charge"
+                ):
+                    nested = value.get(key)
+                    if nested is not None:
+                        found = extract_amount(nested)
+                        if found is not None:
+                            return found
+
+            elif isinstance(value, list):
+                for item in value:
+                    found = extract_amount(item)
+                    if found is not None:
+                        return found
+
+            return None
+
+        amount = extract_amount(data)
 
         if amount is None:
             error_message = None
+
             if isinstance(data, dict):
                 error_message = (
                     data.get("error")
                     or data.get("message")
                     or data.get("rmk")
+                    or data.get("remark")
                 )
 
             raise Exception(
                 str(error_message)
                 if error_message
                 else "Delhivery did not return a shipping amount."
-            )
-
-        try:
-            amount = float(amount)
-        except (TypeError, ValueError):
-            raise Exception(
-                "Delhivery returned an invalid shipping amount."
             )
 
         if amount < 0:
