@@ -21335,6 +21335,17 @@ def generate_delhivery_label(order_id):
     )
 
     try:
+        # IMPORTANT:
+        # Do NOT automatically follow Delhivery's redirect here.
+        #
+        # Delhivery can redirect the PDF to an AWS/S3 signed URL.
+        # That URL already contains its own authentication/signature.
+        # Sending our Delhivery Authorization header to S3 causes:
+        #
+        # "Only one auth mechanism allowed"
+        #
+        # So we first capture the redirect and then follow it WITHOUT
+        # the Delhivery Authorization header.
         label_response = requests.get(
             label_url,
             headers={
@@ -21342,7 +21353,8 @@ def generate_delhivery_label(order_id):
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             },
-            timeout=30
+            timeout=30,
+            allow_redirects=False
         )
 
     except requests.RequestException as e:
@@ -21351,83 +21363,27 @@ def generate_delhivery_label(order_id):
             "message": str(e)
         }), 502
 
-    if label_response.status_code >= 400:
-        return jsonify({
-            "error": "Delhivery shipping label generation failed.",
-            "message": label_response.text[:1000]
-        }), label_response.status_code
-
     # ---------------------------------------------------------
-    # Delhivery's PDF=True response may contain a PDF link
-    # rather than the PDF bytes themselves.
+    # CASE 1: Delhivery redirects directly to a signed PDF URL.
+    # Follow the Location WITHOUT the Delhivery Authorization header.
     # ---------------------------------------------------------
-    content_type = (
-        label_response.headers.get("Content-Type", "")
-        .lower()
-    )
+    if label_response.status_code in (301, 302, 303, 307, 308):
 
-    if "application/pdf" in content_type:
-        pdf_bytes = label_response.content
-
-    else:
-        try:
-            data = label_response.json()
-        except Exception:
-            return jsonify({
-                "error": "Delhivery returned an unexpected label response.",
-                "message": label_response.text[:1000]
-            }), 502
-
-        # Recursively find a likely PDF/link field.
-        def find_pdf_link(value):
-            if isinstance(value, dict):
-                for key in (
-                    "pdf_download_link",
-                    "pdf_url",
-                    "pdf_link",
-                    "download_url",
-                    "label_url",
-                    "url"
-                ):
-                    candidate = value.get(key)
-                    if isinstance(candidate, str) and candidate.startswith("http"):
-                        if (
-                            ".pdf" in candidate.lower()
-                            or "pdf" in key.lower()
-                            or "download" in key.lower()
-                            or "label" in key.lower()
-                        ):
-                            return candidate
-
-                for child in value.values():
-                    found = find_pdf_link(child)
-                    if found:
-                        return found
-
-            elif isinstance(value, list):
-                for child in value:
-                    found = find_pdf_link(child)
-                    if found:
-                        return found
-
-            return None
-
-        pdf_link = find_pdf_link(data)
+        pdf_link = label_response.headers.get("Location")
 
         if not pdf_link:
             return jsonify({
-                "error": "Delhivery did not return a PDF label link.",
-                "delhivery_response": data
+                "error": "Delhivery returned a redirect without a PDF URL."
             }), 502
 
         try:
             pdf_response = requests.get(
                 pdf_link,
                 headers={
-                    "Authorization": f"Token {api_token}",
                     "Accept": "application/pdf"
                 },
-                timeout=30
+                timeout=30,
+                allow_redirects=True
             )
         except requests.RequestException as e:
             return jsonify({
@@ -21442,6 +21398,109 @@ def generate_delhivery_label(order_id):
             }), pdf_response.status_code
 
         pdf_bytes = pdf_response.content
+
+    else:
+
+        if label_response.status_code >= 400:
+            return jsonify({
+                "error": "Delhivery shipping label generation failed.",
+                "message": label_response.text[:1000]
+            }), label_response.status_code
+
+        # -----------------------------------------------------
+        # CASE 2: Delhivery returns the PDF directly.
+        # -----------------------------------------------------
+        content_type = (
+            label_response.headers.get("Content-Type", "")
+            .lower()
+        )
+
+        if "application/pdf" in content_type:
+            pdf_bytes = label_response.content
+
+        else:
+            # -------------------------------------------------
+            # CASE 3: Delhivery returns JSON containing a
+            # signed PDF URL.
+            # -------------------------------------------------
+            try:
+                data = label_response.json()
+            except Exception:
+                return jsonify({
+                    "error": "Delhivery returned an unexpected label response.",
+                    "message": label_response.text[:1000]
+                }), 502
+
+            def find_pdf_link(value):
+                if isinstance(value, dict):
+                    for key in (
+                        "pdf_download_link",
+                        "pdf_url",
+                        "pdf_link",
+                        "download_url",
+                        "label_url",
+                        "url"
+                    ):
+                        candidate = value.get(key)
+
+                        if (
+                            isinstance(candidate, str)
+                            and candidate.startswith("http")
+                        ):
+                            if (
+                                ".pdf" in candidate.lower()
+                                or "pdf" in key.lower()
+                                or "download" in key.lower()
+                                or "label" in key.lower()
+                            ):
+                                return candidate
+
+                    for child in value.values():
+                        found = find_pdf_link(child)
+                        if found:
+                            return found
+
+                elif isinstance(value, list):
+                    for child in value:
+                        found = find_pdf_link(child)
+                        if found:
+                            return found
+
+                return None
+
+            pdf_link = find_pdf_link(data)
+
+            if not pdf_link:
+                return jsonify({
+                    "error": "Delhivery did not return a PDF label link.",
+                    "delhivery_response": data
+                }), 502
+
+            # IMPORTANT:
+            # Do NOT send the Delhivery Authorization header to the
+            # signed PDF URL. It may be an AWS/S3 signed URL.
+            try:
+                pdf_response = requests.get(
+                    pdf_link,
+                    headers={
+                        "Accept": "application/pdf"
+                    },
+                    timeout=30,
+                    allow_redirects=True
+                )
+            except requests.RequestException as e:
+                return jsonify({
+                    "error": "Could not download the Delhivery label PDF.",
+                    "message": str(e)
+                }), 502
+
+            if pdf_response.status_code >= 400:
+                return jsonify({
+                    "error": "Delhivery label PDF download failed.",
+                    "message": pdf_response.text[:1000]
+                }), pdf_response.status_code
+
+            pdf_bytes = pdf_response.content
 
     if not pdf_bytes:
         return jsonify({
@@ -21461,7 +21520,6 @@ def generate_delhivery_label(order_id):
             "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
         }
     )
-
 
 # =========================================================
 # DELHIVERY AUTOMATIC TRACKING SYNC
