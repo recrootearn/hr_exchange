@@ -16908,10 +16908,7 @@ def delete_product(id):
         "success"
     )
 
-    return redirect(
-        request.referrer or url_for("profile")
-    )
-
+    return redirect(url_for("profile"))
 
 @app.route("/shop/<int:seller_id>")
 def company_shop(seller_id):
