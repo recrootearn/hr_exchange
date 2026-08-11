@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 
 {% block title %}
-Shop Search
+    {% if keyword %}
+        Search results for {{ keyword }}
+    {% else %}
+        Shop Search
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -9,701 +13,412 @@ Shop Search
 <style>
 
 /* =========================================================
-   SHOP SEARCH RESULT PAGE
+   SHOP SEARCH PAGE
    ========================================================= */
-
-html,
-body {
-    margin: 0 !important;
-    padding: 0 !important;
-}
 
 .shop-search-page {
     width: 100%;
-    min-height: 100dvh;
-    background:
-        radial-gradient(
-            circle at 100% 0%,
-            rgba(37, 99, 235, .08),
-            transparent 28%
-        ),
-        #f5f7fb;
-    color: #0f172a;
-}
-
-/* =========================================================
-   EDGE TO EDGE MOBILE
-   ========================================================= */
-
-@media (max-width: 767px) {
-
-    .shop-search-page {
-        width: 100vw;
-        max-width: none;
-        margin-left: calc(50% - 50vw);
-        margin-right: calc(50% - 50vw);
-    }
-
-}
-
-/* =========================================================
-   MAIN CONTAINER
-   ========================================================= */
-
-.shop-search-shell {
-    width: min(1180px, 100%);
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 28px 22px 110px;
+    padding: 24px 18px 110px;
+    box-sizing: border-box;
 }
 
+
 /* =========================================================
-   HEADER
+   SEARCH HEADER
    ========================================================= */
 
-.search-hero {
-    position: relative;
-    overflow: hidden;
-    border-radius: 26px;
-    padding: 26px;
-    background:
-        linear-gradient(
-            135deg,
-            #0b5ed7 0%,
-            #2563eb 60%,
-            #155eef 100%
-        );
-    color: #fff;
-    box-shadow:
-        0 14px 35px rgba(37, 99, 235, .20);
+.search-heading {
+    margin-bottom: 28px;
 }
 
-.search-hero::after {
-    content: "";
-    position: absolute;
-    width: 190px;
-    height: 190px;
-    right: -70px;
-    top: -95px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.10);
-}
-
-.search-hero-content {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.search-hero-icon {
-    width: 52px;
-    height: 52px;
-    flex: 0 0 52px;
-
-    display: grid;
-    place-items: center;
-
-    border-radius: 16px;
-    background: rgba(255,255,255,.16);
-
-    font-size: 22px;
-}
-
-.search-hero h1 {
+.search-heading h1 {
     margin: 0;
-
-    font-size: 26px;
-    line-height: 1.15;
-    font-weight: 850;
-
-    letter-spacing: -.5px;
+    font-size: 30px;
+    font-weight: 900;
+    color: #111827;
+    letter-spacing: -0.5px;
 }
 
-.search-hero p {
+.search-heading p {
     margin: 7px 0 0;
-
-    color: rgba(255,255,255,.80);
-    font-size: 13px;
+    color: #6b7280;
+    font-size: 15px;
 }
 
-.search-query {
-    position: relative;
-    z-index: 1;
-
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-
-    margin-top: 18px;
-
-    padding: 8px 13px;
-
-    border-radius: 999px;
-
-    background: rgba(255,255,255,.15);
-
-    color: #fff;
-
-    font-size: 12px;
-    font-weight: 800;
+.search-heading strong {
+    color: #2563eb;
 }
+
 
 /* =========================================================
-   SEARCH SECTION
+   SECTION
    ========================================================= */
 
 .search-section {
-    margin-top: 24px;
+    margin-top: 30px;
 }
 
 .search-section-title {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    margin-bottom: 13px;
-}
-
-.search-section-title-left {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-}
-
-.search-section-icon {
-    width: 34px;
-    height: 34px;
-
-    display: grid;
-    place-items: center;
-
-    border-radius: 10px;
-
-    background: #eaf1ff;
-    color: #2563eb;
-
-    font-size: 14px;
+    margin-bottom: 16px;
 }
 
 .search-section-title h2 {
     margin: 0;
-
-    font-size: 19px;
-    font-weight: 850;
+    font-size: 22px;
+    font-weight: 900;
+    color: #111827;
 }
 
-.search-section-count {
-    color: #64748b;
-    font-size: 12px;
-    font-weight: 750;
-}
 
 /* =========================================================
-   STORES
+   STORE GRID
    ========================================================= */
 
 .store-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fill,
-            minmax(210px, 1fr)
-        );
-
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 15px;
 }
 
 .store-card {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-
-    padding: 15px;
-
-    background: #fff;
-
-    border: 1px solid #e7ebf2;
-    border-radius: 19px;
-
-    color: #111827;
+    display: block;
+    padding: 18px;
+    background: #ffffff;
+    border: 1px solid #e8ebf0;
+    border-radius: 22px;
     text-decoration: none;
-
-    box-shadow:
-        0 6px 20px rgba(15,23,42,.05);
-
+    color: #111827;
+    box-shadow: 0 6px 22px rgba(0,0,0,.05);
     transition:
-        transform .18s ease,
-        box-shadow .18s ease;
+        transform .2s ease,
+        box-shadow .2s ease;
 }
 
 .store-card:hover {
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 12px 28px rgba(15,23,42,.09);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.09);
 }
 
 .store-avatar {
-    width: 62px;
-    height: 62px;
-
-    flex: 0 0 62px;
-
-    overflow: hidden;
-
+    width: 76px;
+    height: 76px;
+    margin-bottom: 13px;
     border-radius: 50%;
-
-    background: #eef3ff;
-
+    overflow: hidden;
+    background: #eef4ff;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 3px solid #f1f5ff;
 }
 
 .store-avatar img {
     width: 100%;
     height: 100%;
-
     object-fit: cover;
 }
 
 .store-avatar i {
-    font-size: 24px;
+    font-size: 28px;
     color: #2563eb;
 }
 
-.store-details {
-    min-width: 0;
-}
-
-.store-name-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
 .store-name {
-    overflow: hidden;
-
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 850;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.verified-badge {
-    width: 17px;
-    height: 17px;
-
-    flex: 0 0 17px;
-
-    display: grid;
-    place-items: center;
-
-    border-radius: 50%;
-
-    background: #2563eb;
-    color: #fff;
-
-    font-size: 9px;
+    line-height: 1.3;
+    color: #111827;
 }
 
 .store-subtitle {
-    margin-top: 4px;
-
-    color: #64748b;
-
-    font-size: 12px;
-    font-weight: 650;
+    margin-top: 6px;
+    color: #6b7280;
+    font-size: 13px;
 }
 
+
 /* =========================================================
-   PRODUCTS
+   PRODUCT GRID
    ========================================================= */
 
 .product-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            3,
-            minmax(0, 1fr)
-        );
-
-    gap: 17px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
 }
 
 .product-card {
     display: block;
-
-    min-width: 0;
-
     overflow: hidden;
-
-    background: #fff;
-
-    border: 1px solid #e7ebf2;
+    background: #ffffff;
+    border: 1px solid #e6e9ee;
     border-radius: 20px;
-
-    color: #111827;
     text-decoration: none;
-
-    box-shadow:
-        0 7px 24px rgba(15,23,42,.06);
-
+    color: #111827;
+    box-shadow: 0 6px 22px rgba(0,0,0,.055);
     transition:
-        transform .18s ease,
-        box-shadow .18s ease;
+        transform .2s ease,
+        box-shadow .2s ease;
 }
 
 .product-card:hover {
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 13px 32px rgba(15,23,42,.10);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.10);
 }
+
 
 /* =========================================================
    PRODUCT IMAGE
+   IMPORTANT:
+   Actual Shop image path:
+   /static/uploads/products/<filename>
    ========================================================= */
 
 .product-image {
     position: relative;
-
     width: 100%;
-
-    aspect-ratio: 1 / .88;
-
+    aspect-ratio: 1 / 1;
+    background: #f4f6f8;
     overflow: hidden;
-
-    background: #eef2f7;
 }
 
 .product-image img {
+    display: block;
     width: 100%;
     height: 100%;
-
-    display: block;
-
     object-fit: cover;
 }
+
+
+/* Image placeholder */
 
 .product-image-placeholder {
     width: 100%;
     height: 100%;
-
     display: grid;
     place-items: center;
-
-    color: #94a3b8;
-
-    font-size: 40px;
+    color: #a0a7b1;
+    font-size: 35px;
+    background: #f3f4f6;
 }
+
 
 /* =========================================================
    PRODUCT INFO
    ========================================================= */
 
 .product-info {
-    padding: 15px;
-}
-
-.product-category {
-    margin-bottom: 6px;
-
-    color: #64748b;
-
-    font-size: 9px;
-    font-weight: 750;
-
-    text-transform: uppercase;
-    letter-spacing: .5px;
+    padding: 14px;
 }
 
 .product-name {
-    margin: 0;
-
-    color: #0f172a;
-
     font-size: 16px;
-    line-height: 1.3;
-
     font-weight: 850;
+    line-height: 1.3;
+    color: #111827;
 
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-
     overflow: hidden;
 }
 
-.product-price-row {
-    display: flex;
-    align-items: baseline;
-
-    gap: 7px;
-
-    margin-top: 8px;
-}
-
 .product-price {
-    color: #155eef;
-
+    margin-top: 8px;
     font-size: 18px;
     font-weight: 900;
+    color: #16804b;
 }
 
 .product-old-price {
-    color: #94a3b8;
-
-    font-size: 11px;
-    font-weight: 650;
-
+    margin-left: 5px;
+    color: #9ca3af;
+    font-size: 13px;
     text-decoration: line-through;
 }
 
-.product-store {
-    display: flex;
-    align-items: center;
-
-    gap: 6px;
-
-    margin-top: 11px;
-
-    padding-top: 10px;
-
-    border-top: 1px solid #eef1f5;
-
-    color: #64748b;
-
-    font-size: 11px;
-    font-weight: 650;
-}
-
-.product-store i {
-    color: #2563eb;
-}
-
-/* =========================================================
-   PAGINATION
-   ========================================================= */
-
-.pagination-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 7px;
-
-    margin-top: 25px;
-}
-
-.pagination-btn {
-    min-width: 40px;
-    height: 40px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0 12px;
-
-    border-radius: 11px;
-
-    background: #fff;
-
-    border: 1px solid #e2e8f0;
-
-    color: #334155;
-
-    text-decoration: none;
-
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.pagination-btn.active {
-    background: #2563eb;
-    border-color: #2563eb;
-
-    color: #fff;
-}
-
-.pagination-btn:hover {
-    border-color: #2563eb;
-    color: #2563eb;
-}
-
-.pagination-btn.active:hover {
-    color: #fff;
-}
 
 /* =========================================================
    NOT FOUND
    ========================================================= */
 
 .not-found {
-    margin-top: 35px;
-
+    margin-top: 50px;
     padding: 55px 20px;
-
     text-align: center;
-
-    background: #fff;
-
+    background: #ffffff;
     border: 1px solid #e7eaf0;
-
-    border-radius: 24px;
-
-    box-shadow:
-        0 7px 24px rgba(15,23,42,.04);
+    border-radius: 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.05);
 }
 
 .not-found-icon {
-    width: 70px;
-    height: 70px;
-
-    margin: 0 auto 15px;
-
-    display: grid;
-    place-items: center;
-
-    border-radius: 22px;
-
+    width: 74px;
+    height: 74px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: #f1f5f9;
-
     color: #94a3b8;
-
-    font-size: 27px;
+    font-size: 28px;
 }
 
 .not-found h2 {
     margin: 0;
-
-    font-size: 22px;
-    font-weight: 850;
+    font-size: 24px;
+    font-weight: 900;
+    color: #111827;
 }
 
 .not-found p {
-    margin: 8px 0 0;
-
-    color: #64748b;
-
-    font-size: 13px;
+    margin: 9px 0 0;
+    color: #6b7280;
+    font-size: 15px;
 }
 
-.not-found strong {
-    color: #334155;
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+.search-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 30px;
+    flex-wrap: wrap;
 }
+
+.search-pagination a,
+.search-pagination span {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.search-pagination a {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: #2563eb;
+}
+
+.search-pagination a:hover {
+    background: #eff6ff;
+}
+
+.search-pagination .current {
+    background: #2563eb;
+    color: #ffffff;
+    border: 1px solid #2563eb;
+}
+
 
 /* =========================================================
    MOBILE
    ========================================================= */
 
-@media (max-width: 950px) {
+@media (max-width: 900px) {
 
     .product-grid {
-        grid-template-columns:
-            repeat(
-                2,
-                minmax(0, 1fr)
-            );
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
 }
 
-@media (max-width: 767px) {
+@media (max-width: 600px) {
 
-    .shop-search-shell {
-        padding:
-            0
-            0
-            max(100px, calc(80px + env(safe-area-inset-bottom)));
+    /*
+       Override possible base.html container padding
+       so Shop Search uses the full mobile width.
+    */
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
     }
 
-    .search-hero {
-        border-radius: 0 0 25px 25px;
+    .shop-search-page {
+        position: relative;
+        left: 50%;
+        width: 100vw;
+        max-width: 100vw;
+        margin-left: -50vw;
+        margin-right: -50vw;
 
-        padding:
-            max(18px, env(safe-area-inset-top))
-            18px
-            22px;
+        padding: 20px 14px 110px;
+        box-sizing: border-box;
     }
 
-    .search-hero h1 {
-        font-size: 21px;
+    .search-heading {
+        margin-bottom: 22px;
     }
 
-    .search-hero-icon {
-        width: 45px;
-        height: 45px;
+    .search-heading h1 {
+        font-size: 25px;
+    }
 
-        flex-basis: 45px;
-
-        border-radius: 14px;
-
-        font-size: 19px;
+    .search-heading p {
+        font-size: 14px;
     }
 
     .search-section {
-        padding: 0 12px;
-
-        margin-top: 19px;
+        margin-top: 25px;
     }
 
     .search-section-title h2 {
-        font-size: 17px;
-    }
-
-    .store-grid {
-        grid-template-columns:
-            repeat(
-                2,
-                minmax(0, 1fr)
-            );
-
-        gap: 9px;
-    }
-
-    .store-card {
-        align-items: flex-start;
-
-        flex-direction: column;
-
-        padding: 13px;
-
-        border-radius: 17px;
-    }
-
-    .store-avatar {
-        width: 52px;
-        height: 52px;
-
-        flex-basis: 52px;
-    }
-
-    .store-avatar i {
         font-size: 20px;
     }
 
+
+    /* STORES */
+
+    .store-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .store-card {
+        padding: 14px;
+        border-radius: 18px;
+    }
+
+    .store-avatar {
+        width: 62px;
+        height: 62px;
+        margin-bottom: 10px;
+    }
+
     .store-name {
-        font-size: 13px;
+        font-size: 14px;
     }
 
     .store-subtitle {
-        font-size: 10px;
+        font-size: 12px;
     }
 
-    .product-grid {
-        grid-template-columns:
-            repeat(
-                2,
-                minmax(0, 1fr)
-            );
 
+    /* PRODUCTS */
+
+    .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
     }
 
@@ -711,17 +426,56 @@ body {
         border-radius: 17px;
     }
 
-    .product-image {
-        aspect-ratio: 1 / 1;
-    }
-
     .product-info {
         padding: 11px;
     }
 
-    .product-category {
-        font-size: 8px;
-        margin-bottom: 4px;
+    .product-name {
+        font-size: 14px;
+    }
+
+    .product-price {
+        margin-top: 6px;
+        font-size: 17px;
+    }
+
+
+    /* NOT FOUND */
+
+    .not-found {
+        margin-top: 35px;
+        padding: 45px 18px;
+        border-radius: 20px;
+    }
+
+    .not-found h2 {
+        font-size: 21px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 390px) {
+
+    .shop-search-page {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .product-grid {
+        gap: 8px;
+    }
+
+    .store-grid {
+        gap: 8px;
+    }
+
+    .product-info {
+        padding: 9px;
     }
 
     .product-name {
@@ -732,63 +486,6 @@ body {
         font-size: 16px;
     }
 
-    .product-old-price {
-        font-size: 9px;
-    }
-
-    .product-store {
-        margin-top: 8px;
-        padding-top: 8px;
-        font-size: 9px;
-    }
-
-    .not-found {
-        margin:
-            25px 12px 0;
-
-        padding:
-            45px 15px;
-
-        border-radius: 20px;
-    }
-
-}
-
-@media (max-width: 370px) {
-
-    .store-grid {
-        gap: 7px;
-    }
-
-    .product-grid {
-        gap: 8px;
-    }
-
-    .product-info {
-        padding: 9px;
-    }
-
-    .product-name {
-        font-size: 12px;
-    }
-
-    .product-price {
-        font-size: 15px;
-    }
-
-}
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    .store-card,
-    .product-card {
-        transition: none;
-    }
-
 }
 
 </style>
@@ -796,448 +493,308 @@ body {
 
 <div class="shop-search-page">
 
-    <div class="shop-search-shell">
+
+    <!-- =====================================================
+         SEARCH HEADING
+         ===================================================== -->
+
+    <div class="search-heading">
+
+        {% if keyword %}
+
+            <h1>Search Results</h1>
+
+            <p>
+                Results for
+                <strong>"{{ keyword }}"</strong>
+            </p>
+
+        {% else %}
+
+            <h1>Shop Search</h1>
+
+            <p>
+                Search for products or stores.
+            </p>
+
+        {% endif %}
+
+    </div>
 
 
-        <!-- =================================================
-             SEARCH HEADER
-             ================================================= -->
 
-        <header class="search-hero">
+    <!-- =====================================================
+         STORES
+         ===================================================== -->
 
-            <div class="search-hero-content">
+    {% if stores %}
 
-                <div class="search-hero-icon">
+        <section class="search-section">
 
-                    <i class="fas fa-search"></i>
+            <div class="search-section-title">
 
-                </div>
-
-
-                <div>
-
-                    {% if keyword %}
-
-                        <h1>
-                            Search Results
-                        </h1>
-
-                        <p>
-                            Stores and products matching your search
-                        </p>
-
-                    {% else %}
-
-                        <h1>
-                            Search Shop
-                        </h1>
-
-                        <p>
-                            Search for products or stores
-                        </p>
-
-                    {% endif %}
-
-                </div>
+                <h2>
+                    Stores
+                </h2>
 
             </div>
 
 
-            {% if keyword %}
+            <div class="store-grid">
 
-                <div class="search-query">
+                {% for store in stores %}
 
-                    <i class="fas fa-search"></i>
+                    <a
+                        href="{{ url_for(
+                            'company_shop',
+                            seller_id=store.id
+                        ) }}"
+                        class="store-card"
+                    >
 
-                    "{{ keyword }}"
+                        <!-- STORE IMAGE -->
 
-                </div>
+                        <div class="store-avatar">
 
-            {% endif %}
+                            {% if store.profile_photo %}
 
-        </header>
+                                <img
+                                    src="/static/uploads/{{ store.profile_photo }}"
+                                    alt="{{ store.company or store.first_name or store.username or 'Store' }}"
+                                    loading="lazy"
 
+                                    onerror="
+                                        if(!this.dataset.f1){
+                                            this.dataset.f1='1';
+                                            this.src='/static/uploads/profile_photos/{{ store.profile_photo }}';
+                                        }
+                                        else if(!this.dataset.f2){
+                                            this.dataset.f2='1';
+                                            this.src='/static/uploads/users/{{ store.profile_photo }}';
+                                        }
+                                        else{
+                                            this.style.display='none';
+                                            this.parentElement.querySelector('.store-placeholder').style.display='flex';
+                                        }
+                                    "
+                                >
 
-        <!-- =================================================
-             STORES
-             ================================================= -->
+                                <div
+                                    class="store-placeholder"
+                                    style="
+                                        display:none;
+                                        width:100%;
+                                        height:100%;
+                                        align-items:center;
+                                        justify-content:center;
+                                    "
+                                >
+                                    <i class="fas fa-store"></i>
+                                </div>
 
-        {% if stores %}
+                            {% else %}
 
-            <section class="search-section">
+                                <div
+                                    class="store-placeholder"
+                                    style="
+                                        width:100%;
+                                        height:100%;
+                                        display:flex;
+                                        align-items:center;
+                                        justify-content:center;
+                                    "
+                                >
+                                    <i class="fas fa-store"></i>
+                                </div>
 
-                <div class="search-section-title">
-
-                    <div class="search-section-title-left">
-
-                        <div class="search-section-icon">
-
-                            <i class="fas fa-store"></i>
+                            {% endif %}
 
                         </div>
 
-                        <h2>
-                            Stores
-                        </h2>
 
-                    </div>
+                        <!-- STORE NAME -->
 
+                        <div class="store-name">
 
-                    <div class="search-section-count">
-
-                        {{ stores|length }}
-                        {% if stores|length == 1 %}
-                            store
-                        {% else %}
-                            stores
-                        {% endif %}
-
-                    </div>
-
-                </div>
-
-
-                <div class="store-grid">
-
-                    {% for store in stores %}
-
-                        <a
-                            href="{{ url_for(
-                                'company_shop',
-                                seller_id=store.id
-                            ) }}"
-                            class="store-card"
-                        >
-
-                            <div class="store-avatar">
-
-                                {% if store.profile_photo %}
-
-                                    <img
-                                        src="{{ url_for(
-                                            'static',
-                                            filename='uploads/' ~ store.profile_photo
-                                        ) }}"
-                                        alt="{{
-                                            store.company
-                                            or store.first_name
-                                            or store.username
-                                            or 'Store'
-                                        }}"
-                                        loading="lazy"
-                                    >
-
-                                {% else %}
-
-                                    <i class="fas fa-store"></i>
-
-                                {% endif %}
-
-                            </div>
-
-
-                            <div class="store-details">
-
-                                <div class="store-name-row">
-
-                                    <div class="store-name">
-
-                                        {{
-                                            store.company
-                                            or store.first_name
-                                            or store.username
-                                            or "Store"
-                                        }}
-
-                                    </div>
-
-
-                                    {% if store.is_verified_seller %}
-
-                                        <span
-                                            class="verified-badge"
-                                            title="Verified Seller"
-                                        >
-
-                                            <i class="fas fa-check"></i>
-
-                                        </span>
-
-                                    {% endif %}
-
-                                </div>
-
-
-                                <div class="store-subtitle">
-
-                                    <i class="fas fa-store"></i>
-
-                                    Visit Store →
-
-                                </div>
-
-                            </div>
-
-                        </a>
-
-                    {% endfor %}
-
-                </div>
-
-            </section>
-
-        {% endif %}
-
-
-        <!-- =================================================
-             PRODUCTS
-             ================================================= -->
-
-        {% if products and products.items %}
-
-            <section class="search-section">
-
-                <div class="search-section-title">
-
-                    <div class="search-section-title-left">
-
-                        <div class="search-section-icon">
-
-                            <i class="fas fa-box"></i>
+                            {{
+                                store.company
+                                or store.first_name
+                                or store.username
+                                or "Store"
+                            }}
 
                         </div>
 
-                        <h2>
-                            Products
-                        </h2>
 
-                    </div>
+                        <div class="store-subtitle">
+                            Visit Store →
+                        </div>
 
+                    </a>
 
-                    <div class="search-section-count">
+                {% endfor %}
 
-                        {{ products.total }}
+            </div>
 
-                        {% if products.total == 1 %}
-                            product
-                        {% else %}
-                            products
-                        {% endif %}
+        </section>
 
-                    </div>
-
-                </div>
+    {% endif %}
 
 
-                <div class="product-grid">
 
-                    {% for product in products.items %}
+    <!-- =====================================================
+         PRODUCTS
+         ===================================================== -->
 
-                        <a
-                            href="{{ url_for(
-                                'product_details',
-                                id=product.id
-                            ) }}"
-                            class="product-card"
-                        >
+    {% if products and products.total > 0 %}
 
+        <section class="search-section">
 
-                            <!-- PRODUCT IMAGE -->
+            <div class="search-section-title">
 
-                            <div class="product-image">
+                <h2>
+                    Products
+                </h2>
 
-                                {% if product.images
-                                      and product.images|length > 0 %}
-
-                                    <img
-                                        src="{{ url_for(
-                                            'static',
-                                            filename='product_images/' ~ product.images[0].image
-                                        ) }}"
-                                        alt="{{ product.name }}"
-                                        loading="lazy"
-
-                                        onerror="
-                                            if(!this.dataset.fallback1){
-                                                this.dataset.fallback1='1';
-                                                this.src='/static/uploads/products/{{ product.images[0].image }}';
-                                            }
-                                            else if(!this.dataset.fallback2){
-                                                this.dataset.fallback2='1';
-                                                this.src='/static/uploads/{{ product.images[0].image }}';
-                                            }
-                                            else {
-                                                this.style.display='none';
-                                                this.nextElementSibling.style.display='grid';
-                                            }
-                                        "
-                                    >
+            </div>
 
 
-                                    <div
-                                        class="product-image-placeholder"
-                                        style="display:none;"
-                                    >
+            <div class="product-grid">
 
-                                        <i class="fas fa-image"></i>
+                {% for product in products %}
 
-                                    </div>
-
-                                {% else %}
-
-                                    <div class="product-image-placeholder">
-
-                                        <i class="fas fa-image"></i>
-
-                                    </div>
-
-                                {% endif %}
-
-                            </div>
+                    <a
+                        href="{{ url_for(
+                            'product_details',
+                            id=product.id
+                        ) }}"
+                        class="product-card"
+                    >
 
 
-                            <!-- PRODUCT INFORMATION -->
+                        <!-- PRODUCT IMAGE -->
 
-                            <div class="product-info">
+                        <div class="product-image">
 
+                            {% if product.images
+                                  and product.images|length > 0 %}
 
-                                {% if product.category %}
+                                <img
+                                    src="/static/uploads/products/{{ product.images[0].image }}"
+                                    alt="{{ product.name }}"
+                                    loading="lazy"
 
-                                    <div class="product-category">
+                                    onerror="
+                                        this.style.display='none';
+                                        this.nextElementSibling.style.display='grid';
+                                    "
+                                >
 
-                                        {{ product.category.name }}
+                                <div
+                                    class="product-image-placeholder"
+                                    style="display:none;"
+                                >
+                                    <i class="fas fa-image"></i>
+                                </div>
 
-                                    </div>
+                            {% else %}
 
-                                {% endif %}
+                                <div class="product-image-placeholder">
 
-
-                                <h3 class="product-name">
-
-                                    {{ product.name }}
-
-                                </h3>
-
-
-                                <!-- PRICE -->
-
-                                <div class="product-price-row">
-
-                                    {% if product.sale_price %}
-
-                                        <span class="product-price">
-
-                                            ₹{{ "%.0f"|format(
-                                                product.sale_price
-                                            ) }}
-
-                                        </span>
-
-
-                                        <span class="product-old-price">
-
-                                            ₹{{ "%.0f"|format(
-                                                product.price
-                                            ) }}
-
-                                        </span>
-
-                                    {% else %}
-
-                                        <span class="product-price">
-
-                                            ₹{{ "%.0f"|format(
-                                                product.price
-                                            ) }}
-
-                                        </span>
-
-                                    {% endif %}
+                                    <i class="fas fa-image"></i>
 
                                 </div>
 
+                            {% endif %}
 
-                                <!-- STORE -->
+                        </div>
 
-                                {% if product.seller %}
 
-                                    <div class="product-store">
 
-                                        <i class="fas fa-store"></i>
+                        <!-- PRODUCT INFORMATION -->
 
-                                        <span>
+                        <div class="product-info">
 
-                                            {{
-                                                product.seller.company
-                                                or product.seller.first_name
-                                                or product.seller.username
-                                                or "Store"
-                                            }}
+                            <div class="product-name">
+                                {{ product.name }}
+                            </div>
 
-                                        </span>
 
-                                    </div>
+                            <div class="product-price">
+
+                                {% if product.sale_price %}
+
+                                    ₹{{ "%.0f"|format(product.sale_price) }}
+
+                                    <span class="product-old-price">
+                                        ₹{{ "%.0f"|format(product.price) }}
+                                    </span>
+
+                                {% else %}
+
+                                    ₹{{ "%.0f"|format(product.price) }}
 
                                 {% endif %}
 
                             </div>
 
+                        </div>
+
+                    </a>
+
+                {% endfor %}
+
+            </div>
+
+
+
+            <!-- =================================================
+                 PAGINATION
+                 ================================================= -->
+
+            {% if products.pages > 1 %}
+
+                <div class="search-pagination">
+
+                    {% if products.has_prev %}
+
+                        <a
+                            href="{{ url_for(
+                                'shop_search',
+                                q=keyword,
+                                category=request.args.get('category'),
+                                min_price=request.args.get('min_price'),
+                                max_price=request.args.get('max_price'),
+                                rating=request.args.get('rating'),
+                                sort=request.args.get('sort'),
+                                verified=request.args.get('verified'),
+                                page=products.prev_num
+                            ) }}"
+                        >
+                            ←
                         </a>
 
-                    {% endfor %}
-
-                </div>
+                    {% endif %}
 
 
-                <!-- =================================================
-                     PAGINATION
-                     ================================================= -->
+                    {% for page_num in products.iter_pages(
+                        left_edge=1,
+                        right_edge=1,
+                        left_current=1,
+                        right_current=1
+                    ) %}
 
-                {% if products.pages > 1 %}
+                        {% if page_num %}
 
-                    <div class="pagination-wrap">
+                            {% if page_num == products.page %}
 
+                                <span class="current">
+                                    {{ page_num }}
+                                </span>
 
-                        {% if products.has_prev %}
-
-                            <a
-                                class="pagination-btn"
-                                href="{{ url_for(
-                                    'shop_search',
-                                    q=keyword,
-                                    category=request.args.get('category'),
-                                    min_price=request.args.get('min_price'),
-                                    max_price=request.args.get('max_price'),
-                                    rating=request.args.get('rating'),
-                                    sort=request.args.get('sort'),
-                                    verified=request.args.get('verified'),
-                                    page=products.prev_num
-                                ) }}"
-                            >
-
-                                <i class="fas fa-chevron-left"></i>
-
-                            </a>
-
-                        {% endif %}
-
-
-                        {% for page_num in products.iter_pages(
-                            left_edge=1,
-                            right_edge=1,
-                            left_current=1,
-                            right_current=1
-                        ) %}
-
-                            {% if page_num %}
+                            {% else %}
 
                                 <a
-                                    class="
-                                        pagination-btn
-                                        {% if page_num == products.page %}
-                                            active
-                                        {% endif %}
-                                    "
                                     href="{{ url_for(
                                         'shop_search',
                                         q=keyword,
@@ -1250,96 +807,86 @@ body {
                                         page=page_num
                                     ) }}"
                                 >
-
                                     {{ page_num }}
-
                                 </a>
-
-                            {% else %}
-
-                                <span
-                                    class="pagination-btn"
-                                    style="
-                                        border:0;
-                                        background:transparent;
-                                    "
-                                >
-                                    …
-                                </span>
 
                             {% endif %}
 
-                        {% endfor %}
+                        {% else %}
 
-
-                        {% if products.has_next %}
-
-                            <a
-                                class="pagination-btn"
-                                href="{{ url_for(
-                                    'shop_search',
-                                    q=keyword,
-                                    category=request.args.get('category'),
-                                    min_price=request.args.get('min_price'),
-                                    max_price=request.args.get('max_price'),
-                                    rating=request.args.get('rating'),
-                                    sort=request.args.get('sort'),
-                                    verified=request.args.get('verified'),
-                                    page=products.next_num
-                                ) }}"
-                            >
-
-                                <i class="fas fa-chevron-right"></i>
-
-                            </a>
+                            <span>
+                                …
+                            </span>
 
                         {% endif %}
 
-                    </div>
-
-                {% endif %}
-
-            </section>
-
-        {% endif %}
+                    {% endfor %}
 
 
-        <!-- =================================================
-             NOT FOUND
-             ================================================= -->
+                    {% if products.has_next %}
 
-        {% if not_found %}
+                        <a
+                            href="{{ url_for(
+                                'shop_search',
+                                q=keyword,
+                                category=request.args.get('category'),
+                                min_price=request.args.get('min_price'),
+                                max_price=request.args.get('max_price'),
+                                rating=request.args.get('rating'),
+                                sort=request.args.get('sort'),
+                                verified=request.args.get('verified'),
+                                page=products.next_num
+                            ) }}"
+                        >
+                            →
+                        </a>
 
-            <div class="not-found">
-
-                <div class="not-found-icon">
-
-                    <i class="fas fa-search"></i>
+                    {% endif %}
 
                 </div>
 
+            {% endif %}
 
-                <h2>
-                    Not found
-                </h2>
+        </section>
+
+    {% endif %}
 
 
-                <p>
 
-                    No store or product found for
+    <!-- =====================================================
+         NOT FOUND
+         ===================================================== -->
 
-                    <strong>
-                        "{{ keyword }}"
-                    </strong>.
+    {% if not_found %}
 
-                </p>
+        <div class="not-found">
+
+            <div class="not-found-icon">
+
+                <i class="fas fa-search"></i>
 
             </div>
 
-        {% endif %}
+
+            <h2>
+                Not found
+            </h2>
 
 
-    </div>
+            <p>
+
+                No store or product found for
+
+                <strong>
+                    "{{ keyword }}"
+                </strong>.
+
+            </p>
+
+        </div>
+
+    {% endif %}
+
 
 </div>
 
