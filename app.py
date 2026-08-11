@@ -14,6 +14,7 @@ import smtplib
 import secrets
 import resend
 import json
+from sqlalchemy import or_
 from email.mime.text import MIMEText
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -19530,48 +19531,74 @@ def verify_seller(id):
 @app.route("/shop/search")
 def shop_search():
 
-    keyword = request.args.get("q", "")
+    keyword = request.args.get("q", "").strip()
     category = request.args.get("category")
     min_price = request.args.get("min_price")
     max_price = request.args.get("max_price")
     rating = request.args.get("rating")
     sort = request.args.get("sort")
+    verified = request.args.get("verified")
+
+    # =========================================================
+    # PRODUCTS SEARCH
+    # =========================================================
 
     products = Product.query.filter(
-        Product.is_active == True
+        Product.is_active == True,
+        Product.status == "active"
     )
 
+    # Search by PRODUCT NAME
     if keyword:
         products = products.filter(
             Product.name.ilike(f"%{keyword}%")
         )
 
+    # Category
     if category:
         products = products.filter(
             Product.category_id == category
         )
 
+    # Minimum price
     if min_price:
-        products = products.filter(
-            Product.price >= float(min_price)
-        )
+        try:
+            products = products.filter(
+                Product.price >= float(min_price)
+            )
+        except (ValueError, TypeError):
+            pass
 
+    # Maximum price
     if max_price:
-        products = products.filter(
-            Product.price <= float(max_price)
-        )
+        try:
+            products = products.filter(
+                Product.price <= float(max_price)
+            )
+        except (ValueError, TypeError):
+            pass
 
+    # Rating
     if rating:
-        products = products.filter(
-            Product.average_rating >= float(rating)
-        )
+        try:
+            products = products.filter(
+                Product.average_rating >= float(rating)
+            )
+        except (ValueError, TypeError):
+            pass
 
-    verified = request.args.get("verified")
-
+    # Verified seller
     if verified:
-        products = products.join(User).filter(
+        products = products.join(
+            User,
+            Product.seller_id == User.id
+        ).filter(
             User.is_verified_seller == True
         )
+
+    # =========================================================
+    # SORTING
+    # =========================================================
 
     products = products.order_by(
         Product.is_promoted.desc(),
@@ -19579,33 +19606,98 @@ def shop_search():
     )
 
     if sort == "price_low":
+
         products = products.order_by(
             Product.price.asc()
         )
 
     elif sort == "price_high":
+
         products = products.order_by(
             Product.price.desc()
         )
 
     elif sort == "rating":
+
         products = products.order_by(
             Product.average_rating.desc()
         )
 
     elif sort == "latest":
+
         products = products.order_by(
             Product.created_at.desc()
         )
 
+    # =========================================================
+    # PAGINATION
+    # =========================================================
+
     products = products.paginate(
-        page=request.args.get("page", 1, type=int),
+        page=request.args.get(
+            "page",
+            1,
+            type=int
+        ),
         per_page=20
     )
 
+    # =========================================================
+    # STORE SEARCH
+    # =========================================================
+
+    stores = []
+
+    if keyword:
+
+        # Only sellers who actually have active products
+        active_shop_sellers = db.session.query(
+            Product.seller_id
+        ).filter(
+            Product.is_active == True,
+            Product.status == "active",
+            Product.seller_id.isnot(None)
+        ).distinct().subquery()
+
+        stores = User.query.filter(
+            User.id.in_(active_shop_sellers),
+            User.is_shop_active == True,
+            or_(
+                User.company.ilike(
+                    f"%{keyword}%"
+                ),
+                User.first_name.ilike(
+                    f"%{keyword}%"
+                ),
+                User.username.ilike(
+                    f"%{keyword}%"
+                )
+            )
+        ).order_by(
+            User.company.asc(),
+            User.first_name.asc()
+        ).all()
+
+    # =========================================================
+    # NOT FOUND
+    # =========================================================
+
+    not_found = (
+        bool(keyword)
+        and not stores
+        and products.total == 0
+    )
+
+    # =========================================================
+    # SEARCH RESULT PAGE
+    # =========================================================
+
     return render_template(
-        "shop_products.html",
-        products=products
+        "shop_search_result.html",
+        products=products,
+        stores=stores,
+        keyword=keyword,
+        not_found=not_found
     )
 
 @app.route("/seller/analytics")

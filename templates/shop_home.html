@@ -159,11 +159,23 @@ input{
         0 4px 15px rgba(0,0,0,.12);
 }
 
-.shop-search i{
+.shop-search-button{
     position:absolute;
-    right:18px;
-    top:50%;
-    transform:translateY(-50%);
+    right:0;
+    top:0;
+    width:52px;
+    height:48px;
+    border:0;
+    background:transparent;
+    color:#2563eb;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:19px;
+}
+
+.shop-search-button i{
     color:#2563eb;
     font-size:19px;
 }
@@ -1410,16 +1422,26 @@ input{
             class="shop-search"
             action="/shop/search"
             method="GET"
+            id="shopSearchForm"
         >
 
             <input
                 type="search"
                 name="q"
+                id="shopSearchInput"
                 placeholder="Search products or shops..."
                 autocomplete="off"
+                enterkeyhint="search"
+                aria-label="Search products or shops"
             >
 
-            <i class="fas fa-search"></i>
+            <button
+                type="submit"
+                aria-label="Search"
+                class="shop-search-button"
+            >
+                <i class="fas fa-search"></i>
+            </button>
 
         </form>
 
@@ -2379,32 +2401,30 @@ document.addEventListener(
    SEARCH
    ========================================================= */
 
+const searchForm =
+    document.getElementById("shopSearchForm");
+
 const searchInput =
-    document.querySelector(
-        ".shop-search input"
-    );
+    document.getElementById("shopSearchInput");
 
 
-if(searchInput){
+if(searchForm && searchInput){
 
-    searchInput.addEventListener(
-        "keydown",
+    searchForm.addEventListener(
+        "submit",
         function(event){
 
-            if(event.key === "Enter"){
+            const value =
+                searchInput.value.trim();
 
-                const value =
-                    this.value.trim();
+            if(!value){
 
-
-                if(!value){
-
-                    event.preventDefault();
-
-                }
-
+                event.preventDefault();
+                searchInput.focus();
+                return;
             }
 
+            searchInput.value = value;
         }
     );
 
