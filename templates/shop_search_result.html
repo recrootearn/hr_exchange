@@ -128,6 +128,19 @@
     color: #2563eb;
 }
 
+.store-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.store-placeholder i {
+    font-size: 28px;
+    color: #2563eb;
+}
+
 .store-name {
     font-size: 16px;
     font-weight: 850;
@@ -174,9 +187,6 @@
 
 /* =========================================================
    PRODUCT IMAGE
-   IMPORTANT:
-   Actual Shop image path:
-   /static/uploads/products/<filename>
    ========================================================= */
 
 .product-image {
@@ -194,14 +204,12 @@
     object-fit: cover;
 }
 
-
-/* Image placeholder */
-
 .product-image-placeholder {
     width: 100%;
     height: 100%;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #a0a7b1;
     font-size: 35px;
     background: #f3f4f6;
@@ -341,12 +349,8 @@
 
 }
 
-@media (max-width: 600px) {
 
-    /*
-       Override possible base.html container padding
-       so Shop Search uses the full mobile width.
-    */
+@media (max-width: 600px) {
 
     html,
     body {
@@ -455,10 +459,6 @@
 }
 
 
-/* =========================================================
-   SMALL PHONES
-   ========================================================= */
-
 @media (max-width: 390px) {
 
     .shop-search-page {
@@ -532,11 +532,7 @@
         <section class="search-section">
 
             <div class="search-section-title">
-
-                <h2>
-                    Stores
-                </h2>
-
+                <h2>Stores</h2>
             </div>
 
 
@@ -551,8 +547,6 @@
                         ) }}"
                         class="store-card"
                     >
-
-                        <!-- STORE IMAGE -->
 
                         <div class="store-avatar">
 
@@ -581,29 +575,14 @@
 
                                 <div
                                     class="store-placeholder"
-                                    style="
-                                        display:none;
-                                        width:100%;
-                                        height:100%;
-                                        align-items:center;
-                                        justify-content:center;
-                                    "
+                                    style="display:none;"
                                 >
                                     <i class="fas fa-store"></i>
                                 </div>
 
                             {% else %}
 
-                                <div
-                                    class="store-placeholder"
-                                    style="
-                                        width:100%;
-                                        height:100%;
-                                        display:flex;
-                                        align-items:center;
-                                        justify-content:center;
-                                    "
-                                >
+                                <div class="store-placeholder">
                                     <i class="fas fa-store"></i>
                                 </div>
 
@@ -612,17 +591,13 @@
                         </div>
 
 
-                        <!-- STORE NAME -->
-
                         <div class="store-name">
-
                             {{
                                 store.company
                                 or store.first_name
                                 or store.username
                                 or "Store"
                             }}
-
                         </div>
 
 
@@ -651,11 +626,7 @@
         <section class="search-section">
 
             <div class="search-section-title">
-
-                <h2>
-                    Products
-                </h2>
-
+                <h2>Products</h2>
             </div>
 
 
@@ -671,23 +642,19 @@
                         class="product-card"
                     >
 
-
-                        <!-- PRODUCT IMAGE -->
-
                         <div class="product-image">
 
-                            {% if product.images
-                                  and product.images|length > 0 %}
+                            {% if product.images and product.images|length > 0 %}
 
                                 <img
-                                    src="/static/uploads/products/{{ product.images[0].image }}"
+                                    class="search-product-image"
+                                    src="{{ url_for(
+                                        'static',
+                                        filename='uploads/products/' ~ product.images[0].image
+                                    ) }}"
                                     alt="{{ product.name }}"
                                     loading="lazy"
-
-                                    onerror="
-                                        this.style.display='none';
-                                        this.nextElementSibling.style.display='grid';
-                                    "
+                                    data-image-name="{{ product.images[0].image }}"
                                 >
 
                                 <div
@@ -700,18 +667,13 @@
                             {% else %}
 
                                 <div class="product-image-placeholder">
-
                                     <i class="fas fa-image"></i>
-
                                 </div>
 
                             {% endif %}
 
                         </div>
 
-
-
-                        <!-- PRODUCT INFORMATION -->
 
                         <div class="product-info">
 
@@ -814,9 +776,7 @@
 
                         {% else %}
 
-                            <span>
-                                …
-                            </span>
+                            <span>…</span>
 
                         {% endif %}
 
@@ -862,25 +822,14 @@
         <div class="not-found">
 
             <div class="not-found-icon">
-
                 <i class="fas fa-search"></i>
-
             </div>
 
-
-            <h2>
-                Not found
-            </h2>
-
+            <h2>Not found</h2>
 
             <p>
-
                 No store or product found for
-
-                <strong>
-                    "{{ keyword }}"
-                </strong>.
-
+                <strong>"{{ keyword }}"</strong>.
             </p>
 
         </div>
@@ -889,5 +838,163 @@
 
 
 </div>
+
+
+<!-- =========================================================
+     PRODUCT IMAGE FALLBACK SYSTEM
+     ========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const productImages =
+        document.querySelectorAll(".search-product-image");
+
+    productImages.forEach(function (img) {
+
+        const filename =
+            img.dataset.imageName;
+
+        if (!filename) {
+            showProductPlaceholder(img);
+            return;
+        }
+
+        /*
+         * Try the same locations used by the Shop page.
+         *
+         * 1. /static/uploads/products/
+         * 2. /static/product_images/
+         * 3. /static/uploads/
+         */
+
+        const paths = [
+
+            "/static/uploads/products/" + filename,
+
+            "/static/product_images/" + filename,
+
+            "/static/uploads/" + filename
+
+        ];
+
+        let currentIndex = 0;
+
+
+        function tryNextImage() {
+
+            currentIndex++;
+
+            if (currentIndex >= paths.length) {
+
+                showProductPlaceholder(img);
+
+                return;
+            }
+
+            img.src = paths[currentIndex];
+
+        }
+
+
+        img.addEventListener(
+            "error",
+            function () {
+
+                tryNextImage();
+
+            }
+        );
+
+    });
+
+
+    function showProductPlaceholder(img) {
+
+        img.style.display = "none";
+
+        const placeholder =
+            img.parentElement.querySelector(
+                ".product-image-placeholder"
+            );
+
+        if (placeholder) {
+
+            placeholder.style.display = "flex";
+
+        }
+
+    }
+
+});
+
+
+
+/* =========================================================
+   STORE IMAGE FALLBACK
+   ========================================================= */
+
+document.querySelectorAll(
+    ".store-avatar img"
+).forEach(function (img) {
+
+    const filename =
+        img.getAttribute("src");
+
+    if (!filename) {
+        return;
+    }
+
+    let attempt = 0;
+
+    const originalName =
+        filename.substring(
+            filename.lastIndexOf("/") + 1
+        );
+
+    const paths = [
+
+        "/static/uploads/" + originalName,
+
+        "/static/uploads/profile_photos/" + originalName,
+
+        "/static/uploads/users/" + originalName
+
+    ];
+
+
+    img.addEventListener(
+        "error",
+        function () {
+
+            attempt++;
+
+            if (attempt < paths.length) {
+
+                img.src = paths[attempt];
+
+            }
+            else {
+
+                img.style.display = "none";
+
+                const placeholder =
+                    img.parentElement.querySelector(
+                        ".store-placeholder"
+                    );
+
+                if (placeholder) {
+                    placeholder.style.display = "flex";
+                }
+
+            }
+
+        }
+    );
+
+});
+
+</script>
 
 {% endblock %}
