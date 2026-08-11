@@ -21250,6 +21250,218 @@ def update_delhivery_tracking(order_id):
         f"/order/{order.id}"
     )
 
+# =========================================================
+# DELHIVERY SHIPPING LABEL
+# Add this route to your Flask app.
+#
+# IMPORTANT:
+# - Keep the Delhivery API token on the server.
+# - This route uses the existing order.delhivery_waybill.
+# - It DOES NOT create another shipment/AWB.
+# - It generates/fetches the Delhivery PDF label and returns it
+#   to order_details.html.
+# =========================================================
+
+from flask import Response, jsonify
+import requests
+
+
+@app.route("/generate-delhivery-label/<int:order_id>", methods=["GET"])
+@login_required
+def generate_delhivery_label(order_id):
+
+    # ---------------------------------------------------------
+    # Load order
+    # ---------------------------------------------------------
+    order = Order.query.get_or_404(order_id)
+
+    # Only the seller of this order can generate its label.
+    if current_user.id != order.seller_id:
+        return jsonify({
+            "error": "You are not authorized to generate this shipping label."
+        }), 403
+
+    # ---------------------------------------------------------
+    # Validate Delhivery shipment
+    # ---------------------------------------------------------
+    waybill = (
+        order.delhivery_waybill
+        or order.tracking_id
+        or order.awb_code
+    )
+
+    if not waybill:
+        return jsonify({
+            "error": "Delhivery AWB/waybill is not available for this order."
+        }), 400
+
+    if str(order.shipping_provider or "").lower() != "delhivery":
+        return jsonify({
+            "error": "This order is not using Delhivery."
+        }), 400
+
+    # ---------------------------------------------------------
+    # Get existing Delhivery configuration
+    # ---------------------------------------------------------
+    settings = get_business_settings()
+
+    if not settings:
+        return jsonify({
+            "error": "Business settings are not configured."
+        }), 500
+
+    if not settings.delhivery_enabled:
+        return jsonify({
+            "error": "Delhivery shipping is disabled."
+        }), 400
+
+    api_token = settings.delhivery_api_token
+
+    if not api_token:
+        return jsonify({
+            "error": "Delhivery API token is not configured."
+        }), 500
+
+    # ---------------------------------------------------------
+    # Delhivery Package Slip / Shipping Label API
+    #
+    # pdf=True asks Delhivery for the PDF label.
+    # The AWB is the already-generated waybill.
+    # ---------------------------------------------------------
+    label_url = (
+        "https://track.delhivery.com/api/p/packing_slip"
+        "?wbns=" + requests.utils.quote(str(waybill), safe="")
+        + "&pdf=True"
+    )
+
+    try:
+        label_response = requests.get(
+            label_url,
+            headers={
+                "Authorization": f"Token {api_token}",
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            timeout=30
+        )
+
+    except requests.RequestException as e:
+        return jsonify({
+            "error": "Could not connect to Delhivery.",
+            "message": str(e)
+        }), 502
+
+    if label_response.status_code >= 400:
+        return jsonify({
+            "error": "Delhivery shipping label generation failed.",
+            "message": label_response.text[:1000]
+        }), label_response.status_code
+
+    # ---------------------------------------------------------
+    # Delhivery's PDF=True response may contain a PDF link
+    # rather than the PDF bytes themselves.
+    # ---------------------------------------------------------
+    content_type = (
+        label_response.headers.get("Content-Type", "")
+        .lower()
+    )
+
+    if "application/pdf" in content_type:
+        pdf_bytes = label_response.content
+
+    else:
+        try:
+            data = label_response.json()
+        except Exception:
+            return jsonify({
+                "error": "Delhivery returned an unexpected label response.",
+                "message": label_response.text[:1000]
+            }), 502
+
+        # Recursively find a likely PDF/link field.
+        def find_pdf_link(value):
+            if isinstance(value, dict):
+                for key in (
+                    "pdf_download_link",
+                    "pdf_url",
+                    "pdf_link",
+                    "download_url",
+                    "label_url",
+                    "url"
+                ):
+                    candidate = value.get(key)
+                    if isinstance(candidate, str) and candidate.startswith("http"):
+                        if (
+                            ".pdf" in candidate.lower()
+                            or "pdf" in key.lower()
+                            or "download" in key.lower()
+                            or "label" in key.lower()
+                        ):
+                            return candidate
+
+                for child in value.values():
+                    found = find_pdf_link(child)
+                    if found:
+                        return found
+
+            elif isinstance(value, list):
+                for child in value:
+                    found = find_pdf_link(child)
+                    if found:
+                        return found
+
+            return None
+
+        pdf_link = find_pdf_link(data)
+
+        if not pdf_link:
+            return jsonify({
+                "error": "Delhivery did not return a PDF label link.",
+                "delhivery_response": data
+            }), 502
+
+        try:
+            pdf_response = requests.get(
+                pdf_link,
+                headers={
+                    "Authorization": f"Token {api_token}",
+                    "Accept": "application/pdf"
+                },
+                timeout=30
+            )
+        except requests.RequestException as e:
+            return jsonify({
+                "error": "Could not download the Delhivery label PDF.",
+                "message": str(e)
+            }), 502
+
+        if pdf_response.status_code >= 400:
+            return jsonify({
+                "error": "Delhivery label PDF download failed.",
+                "message": pdf_response.text[:1000]
+            }), pdf_response.status_code
+
+        pdf_bytes = pdf_response.content
+
+    if not pdf_bytes:
+        return jsonify({
+            "error": "Delhivery returned an empty shipping label."
+        }), 502
+
+    # ---------------------------------------------------------
+    # Return PDF to browser.
+    # The HTML automatically downloads it and opens it for print.
+    # ---------------------------------------------------------
+    return Response(
+        pdf_bytes,
+        mimetype="application/pdf",
+        headers={
+            "Content-Disposition":
+                f'inline; filename="Delhivery-Shipping-Label-{waybill}.pdf"',
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+    )
+
 
 # =========================================================
 # DELHIVERY AUTOMATIC TRACKING SYNC
