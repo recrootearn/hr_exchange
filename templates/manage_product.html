@@ -1,387 +1,508 @@
 {% extends "base.html" %}
 
+{% block title %}{{ product.name }} · Product Management{% endblock %}
+
 {% block content %}
 
 <style>
+/* =========================================================
+   RECROOTEARN SHOP — PRODUCT MANAGEMENT
+   This page intentionally overrides base.html container
+   spacing on mobile and uses the full viewport width.
+   ========================================================= */
 
-.product-management {
-    max-width:700px;
-    margin:20px auto;
-    padding:0 15px;
+.product-management-page,
+.product-management-page * {
+    box-sizing: border-box;
 }
 
-.product-management-card {
-    background:#fff;
-    border-radius:20px;
-    overflow:hidden;
-    box-shadow:0 4px 18px rgba(0,0,0,.08);
+.product-management-page {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: #f5f7fb;
+    color: #172033;
 }
 
-.product-management-header {
-    position:relative;
-    background:#2563eb;
-    color:#fff;
-    padding:18px;
+.pm-shell {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 18px 16px 32px;
 }
 
-.product-management-header h2 {
-    margin:0;
-    font-size:22px;
-    font-weight:800;
+.pm-card {
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e7ebf3;
+    border-radius: 24px;
+    box-shadow: 0 12px 35px rgba(20, 35, 70, .08);
 }
 
-.product-status {
-    display:inline-block;
-    margin-top:8px;
-    padding:5px 12px;
-    border-radius:20px;
-    font-size:12px;
-    font-weight:800;
+.pm-hero {
+    position: relative;
+    padding: 20px;
+    color: #fff;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(255,255,255,.18), transparent 34%),
+        linear-gradient(135deg, #1264df 0%, #0b5ed7 55%, #0751bd 100%);
 }
 
-.product-status.active {
-    background:#dcfce7;
-    color:#15803d;
+.pm-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
-.product-status.inactive {
-    background:#fee2e2;
-    color:#dc2626;
+.pm-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 9px 13px;
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 13px;
+    color: #fff;
+    background: rgba(255,255,255,.10);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 800;
+    backdrop-filter: blur(8px);
 }
 
-.product-main-image {
-    width:100%;
-    aspect-ratio:1/1;
-    background:#f1f5f9;
+.pm-admin {
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.14);
+    font-size: 11px;
+    font-weight: 800;
 }
 
-.product-main-image img {
-    width:100%;
-    height:100%;
-    object-fit:cover;
+.pm-title-row {
+    margin-top: 22px;
 }
 
-.product-details {
-    padding:20px;
+.pm-title-row h1 {
+    margin: 0;
+    font-size: clamp(22px, 6vw, 30px);
+    line-height: 1.15;
+    font-weight: 900;
+    letter-spacing: -.4px;
 }
 
-.product-details h3 {
-    margin:0 0 8px;
-    font-size:23px;
-    font-weight:800;
-    color:#111827;
+.pm-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 11px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
 }
 
-.product-price {
-    font-size:22px;
-    font-weight:800;
-    color:#2563eb;
+.pm-status.active {
+    color: #166534;
+    background: #dcfce7;
 }
 
-.product-old-price {
-    margin-left:8px;
-    color:#9ca3af;
-    font-size:14px;
-    text-decoration:line-through;
+.pm-status.inactive {
+    color: #991b1b;
+    background: #fee2e2;
 }
 
-.product-description {
-    margin-top:18px;
-    color:#4b5563;
-    line-height:1.6;
+.pm-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #eef2f7;
 }
 
-.detail-grid {
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-    margin-top:20px;
+.pm-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.detail-box {
-    background:#f8fafc;
-    padding:12px;
-    border-radius:12px;
+.pm-no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #a1aaba;
+    font-size: 54px;
 }
 
-.detail-box small {
-    display:block;
-    color:#6b7280;
-    font-size:11px;
-    margin-bottom:4px;
+.pm-details {
+    padding: 22px 20px 8px;
 }
 
-.detail-box strong {
-    color:#111827;
+.pm-price-row {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-.management-actions {
-    padding:20px;
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-    border-top:1px solid #e5e7eb;
+.pm-price {
+    color: #0b5ed7;
+    font-size: 27px;
+    font-weight: 900;
 }
 
-.management-actions a,
-.management-actions button {
-    border:0;
-    border-radius:12px;
-    padding:13px;
-    font-size:14px;
-    font-weight:700;
-    text-align:center;
-    cursor:pointer;
-    text-decoration:none;
+.pm-old-price {
+    color: #9aa3b2;
+    font-size: 14px;
+    text-decoration: line-through;
 }
 
-.btn-edit {
-    background:#2563eb;
-    color:#fff;
+.pm-description {
+    margin-top: 14px;
+    color: #5d6675;
+    font-size: 14px;
+    line-height: 1.65;
 }
 
-.btn-toggle {
-    background:#f59e0b;
-    color:#fff;
+.pm-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 20px;
 }
 
-.btn-delete {
-    background:#dc2626;
-    color:#fff;
+.pm-detail {
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid #edf0f5;
+    border-radius: 15px;
+    background: #f8fafc;
 }
 
-.btn-back {
-    background:#f1f5f9;
-    color:#374151;
+.pm-detail small {
+    display: block;
+    margin-bottom: 5px;
+    color: #7a8494;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .5px;
 }
 
-.delete-form {
-    margin:0;
+.pm-detail strong {
+    display: block;
+    overflow: hidden;
+    color: #1d2635;
+    font-size: 14px;
+    font-weight: 850;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-@media(max-width:600px) {
+.pm-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 20px;
+    margin-top: 12px;
+    border-top: 1px solid #edf0f5;
+}
 
-    .product-management {
-        margin:10px auto;
-        padding:0 10px;
+.pm-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 12px 10px;
+    border: 0;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 850;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .15s ease, filter .15s ease;
+}
+
+.pm-action:active {
+    transform: scale(.98);
+}
+
+.pm-edit {
+    color: #fff;
+    background: #2563eb;
+}
+
+.pm-toggle {
+    color: #fff;
+    background: #f59e0b;
+}
+
+.pm-delete {
+    color: #fff;
+    background: #dc2626;
+}
+
+.pm-back-bottom {
+    color: #354052;
+    background: #eef2f7;
+}
+
+.pm-action.pm-full {
+    grid-column: 1 / -1;
+}
+
+@media (hover:hover) {
+    .pm-action:hover {
+        filter: brightness(.96);
+    }
+}
+
+/* Base.html may wrap {% block content %} inside a padded container.
+   On mobile, pull this shop page back to the physical viewport edges. */
+@media (max-width: 768px) {
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
     }
 
-    .detail-grid {
-        grid-template-columns:1fr 1fr;
+    .product-management-page {
+        position: relative;
+        left: 50%;
+        width: 100vw;
+        max-width: 100vw;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        padding: 0;
+        border-radius: 0;
     }
 
-    .management-actions {
-        grid-template-columns:1fr 1fr;
+    .pm-shell {
+        max-width: none;
+        padding: 0 0 28px;
     }
 
+    .pm-card {
+        min-height: calc(100vh - 1px);
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .pm-hero {
+        border-radius: 0;
+        padding: 18px 18px 22px;
+    }
+
+    .pm-details {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .pm-actions {
+        padding: 18px;
+    }
 }
 
+@media (max-width: 390px) {
+    .pm-grid {
+        gap: 8px;
+    }
+
+    .pm-detail {
+        padding: 11px;
+    }
+
+    .pm-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .pm-action.pm-full {
+        grid-column: auto;
+    }
+}
 </style>
 
+<div class="product-management-page">
+    <div class="pm-shell">
+        <section class="pm-card">
 
-<div class="product-management">
+            <header class="pm-hero">
+                <div class="pm-topline">
+                    <a href="/profile" class="pm-back">
+                        <i class="fas fa-arrow-left"></i>
+                        Back
+                    </a>
 
-    <div class="product-management-card">
-
-        <div class="product-management-header">
-
-            <h2>
-                Product Management
-            </h2>
-
-            {% if product.status == "active" %}
-
-                <span class="product-status active">
-                    ● ACTIVE
-                </span>
-
-            {% else %}
-
-                <span class="product-status inactive">
-                    ● INACTIVE
-                </span>
-
-            {% endif %}
-
-        </div>
-
-
-        <div class="product-main-image">
-
-            {% if product.images and product.images|length > 0 %}
-
-                <img
-                    src="/static/uploads/products/{{ product.images[0].image }}"
-                    alt="{{ product.name }}"
-                >
-
-            {% else %}
-
-                <div style="
-                    height:100%;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    color:#94a3b8;
-                    font-size:50px;
-                ">
-                    <i class="fas fa-image"></i>
+                    {% if current_user.is_admin or current_user.id == 1 %}
+                        <span class="pm-admin">
+                            <i class="fas fa-shield-alt"></i> ADMIN
+                        </span>
+                    {% endif %}
                 </div>
 
-            {% endif %}
+                <div class="pm-title-row">
+                    <h1>Product Management</h1>
 
-        </div>
+                    {% if product.status == "active" %}
+                        <span class="pm-status active">
+                            <i class="fas fa-circle" style="font-size:7px;"></i>
+                            ACTIVE
+                        </span>
+                    {% else %}
+                        <span class="pm-status inactive">
+                            <i class="fas fa-circle" style="font-size:7px;"></i>
+                            INACTIVE
+                        </span>
+                    {% endif %}
+                </div>
+            </header>
 
-
-        <div class="product-details">
-
-            <h3>
-                {{ product.name }}
-            </h3>
-
-
-            <div class="product-price">
-
-                {% if product.sale_price %}
-
-                    ₹{{ "%.0f"|format(product.sale_price) }}
-
-                    <span class="product-old-price">
-                        ₹{{ "%.0f"|format(product.price) }}
-                    </span>
-
+            <div class="pm-image">
+                {% if product.images and product.images|length > 0 %}
+                    <img
+                        src="/static/uploads/products/{{ product.images[0].image }}"
+                        alt="{{ product.name }}"
+                    >
                 {% else %}
-
-                    ₹{{ "%.0f"|format(product.price) }}
-
+                    <div class="pm-no-image">
+                        <i class="fas fa-image"></i>
+                    </div>
                 {% endif %}
+            </div>
+
+            <div class="pm-details">
+                <h2 style="margin:0 0 8px;font-size:22px;font-weight:900;">
+                    {{ product.name }}
+                </h2>
+
+                <div class="pm-price-row">
+                    {% if product.sale_price %}
+                        <span class="pm-price">
+                            ₹{{ "%.0f"|format(product.sale_price) }}
+                        </span>
+                        <span class="pm-old-price">
+                            ₹{{ "%.0f"|format(product.price) }}
+                        </span>
+                    {% else %}
+                        <span class="pm-price">
+                            ₹{{ "%.0f"|format(product.price) }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% if product.description %}
+                    <div class="pm-description">
+                        {{ product.description }}
+                    </div>
+                {% endif %}
+
+                <div class="pm-grid">
+                    <div class="pm-detail">
+                        <small>Stock</small>
+                        <strong>{{ product.stock }}</strong>
+                    </div>
+
+                    <div class="pm-detail">
+                        <small>Product Type</small>
+                        <strong>{{ product.product_type }}</strong>
+                    </div>
+
+                    <div class="pm-detail">
+                        <small>Views</small>
+                        <strong>{{ product.views }}</strong>
+                    </div>
+
+                    <div class="pm-detail">
+                        <small>Sold</small>
+                        <strong>{{ product.sold }}</strong>
+                    </div>
+
+                    {% if product.gst_percentage is not none %}
+                    <div class="pm-detail">
+                        <small>GST</small>
+                        <strong>{{ product.gst_percentage }}%</strong>
+                    </div>
+                    {% endif %}
+
+                    {% if product.weight %}
+                    <div class="pm-detail">
+                        <small>Weight</small>
+                        <strong>{{ product.weight }} kg</strong>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="pm-actions">
+
+                <a
+                    href="/shop/edit-product/{{ product.id }}"
+                    class="pm-action pm-edit"
+                >
+                    <i class="fas fa-pen"></i>
+                    Edit Product
+                </a>
+
+                <form
+                    method="POST"
+                    action="/shop/toggle-product/{{ product.id }}"
+                    style="margin:0;"
+                >
+                    {% if product.status == "active" %}
+                        <button
+                            type="submit"
+                            class="pm-action pm-toggle"
+                            style="width:100%;"
+                            onclick="return confirm('Deactivate this product?')"
+                        >
+                            <i class="fas fa-eye-slash"></i>
+                            Deactivate
+                        </button>
+                    {% else %}
+                        <button
+                            type="submit"
+                            class="pm-action pm-toggle"
+                            style="width:100%;"
+                        >
+                            <i class="fas fa-eye"></i>
+                            Activate
+                        </button>
+                    {% endif %}
+                </form>
+
+                <form
+                    method="POST"
+                    action="/shop/delete-product/{{ product.id }}"
+                    style="margin:0;"
+                    onsubmit="return confirm('Are you sure you want to permanently delete this product? This cannot be undone.')"
+                >
+                    <button
+                        type="submit"
+                        class="pm-action pm-delete"
+                        style="width:100%;"
+                    >
+                        <i class="fas fa-trash"></i>
+                        Delete Product
+                    </button>
+                </form>
+
+                <a
+                    href="/profile"
+                    class="pm-action pm-back-bottom"
+                >
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Profile
+                </a>
 
             </div>
 
-
-            {% if product.description %}
-
-                <div class="product-description">
-                    {{ product.description }}
-                </div>
-
-            {% endif %}
-
-
-            <div class="detail-grid">
-
-                <div class="detail-box">
-                    <small>Stock</small>
-                    <strong>{{ product.stock }}</strong>
-                </div>
-
-                <div class="detail-box">
-                    <small>Product Type</small>
-                    <strong>{{ product.product_type }}</strong>
-                </div>
-
-                <div class="detail-box">
-                    <small>Views</small>
-                    <strong>{{ product.views }}</strong>
-                </div>
-
-                <div class="detail-box">
-                    <small>Sold</small>
-                    <strong>{{ product.sold }}</strong>
-                </div>
-
-                {% if product.gst_percentage is not none %}
-                <div class="detail-box">
-                    <small>GST</small>
-                    <strong>{{ product.gst_percentage }}%</strong>
-                </div>
-                {% endif %}
-
-                {% if product.weight %}
-                <div class="detail-box">
-                    <small>Weight</small>
-                    <strong>{{ product.weight }} kg</strong>
-                </div>
-                {% endif %}
-
-            </div>
-
-        </div>
-
-
-        <div class="management-actions">
-
-            <a
-                href="/shop/edit-product/{{ product.id }}"
-                class="btn-edit"
-            >
-                <i class="fas fa-edit"></i>
-                Edit Product
-            </a>
-
-
-            <form
-                method="POST"
-                action="/shop/toggle-product/{{ product.id }}"
-                style="margin:0;"
-            >
-
-                {% if product.status == "active" %}
-
-                    <button
-                        type="submit"
-                        class="btn-toggle"
-                        onclick="return confirm('Deactivate this product?')"
-                    >
-                        <i class="fas fa-eye-slash"></i>
-                        Deactivate
-                    </button>
-
-                {% else %}
-
-                    <button
-                        type="submit"
-                        class="btn-toggle"
-                    >
-                        <i class="fas fa-eye"></i>
-                        Activate
-                    </button>
-
-                {% endif %}
-
-            </form>
-
-
-            <form
-                method="POST"
-                action="/shop/delete-product/{{ product.id }}"
-                class="delete-form"
-                onsubmit="return confirm('Are you sure you want to permanently delete this product? This cannot be undone.')"
-            >
-
-                <button
-                    type="submit"
-                    class="btn-delete"
-                >
-                    <i class="fas fa-trash"></i>
-                    Delete
-                </button>
-
-            </form>
-
-
-            <a
-                href="/profile"
-                class="btn-back"
-            >
-                <i class="fas fa-arrow-left"></i>
-                Back to Profile
-            </a>
-
-        </div>
-
+        </section>
     </div>
-
 </div>
 
 {% endblock %}
