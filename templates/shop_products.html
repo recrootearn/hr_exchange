@@ -1,85 +1,797 @@
-<h3>My Products</h3>
+{% extends "base.html" %}
 
-<a href="/shop/add-product"
-class="btn btn-primary mb-3">
+{% block title %}My Products{% endblock %}
 
-+ Add Product
+{% block content %}
 
-</a>
+<style>
+/* =========================================================
+   RECROOTEARN SHOP — MY PRODUCTS
+   Uses base.html, but overrides its content width/padding
+   so the page becomes true edge-to-edge on mobile.
+   ========================================================= */
 
-<table class="table">
+html,
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
 
-<tr>
+.shop-products-page {
+    width: 100%;
+    min-height: 100dvh;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(37,99,235,.10), transparent 28%),
+        #f5f7fb;
+    color: #0f172a;
+}
 
-<th>Image</th>
+/* Escape any centered/padded base.html content wrapper */
+@media (max-width: 767px) {
+    .shop-products-page {
+        width: 100vw;
+        max-width: none;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+    }
+}
 
-<th>Name</th>
+.shop-products-shell {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+    padding: 28px 22px 110px;
+}
 
-<th>Price</th>
+/* Header */
+.shop-products-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 26px;
+    padding: 25px;
+    background: linear-gradient(135deg, #0b5ed7 0%, #2563eb 60%, #155eef 100%);
+    color: #fff;
+    box-shadow: 0 14px 35px rgba(37, 99, 235, .20);
+}
 
-<th>Stock</th>
+.shop-products-hero::after {
+    content: "";
+    position: absolute;
+    width: 190px;
+    height: 190px;
+    right: -70px;
+    top: -95px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.10);
+}
 
-<th>Actions</th>
+.shop-products-hero-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
 
-</tr>
+.shop-products-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
 
-{% for p in products %}
+.shop-products-heading-icon {
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: rgba(255,255,255,.16);
+    font-size: 21px;
+}
 
-<tr>
+.shop-products-hero h1 {
+    margin: 0;
+    font-size: 25px;
+    line-height: 1.15;
+    font-weight: 850;
+    letter-spacing: -.5px;
+}
 
-<td>
+.shop-products-hero p {
+    margin: 6px 0 0;
+    color: rgba(255,255,255,.78);
+    font-size: 13px;
+}
 
-{% if p.images %}
+.shop-products-count {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.15);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
 
-<img
-src="{{ url_for('static',
-filename='product_images/' + p.images[0].image) }}"
-width="70">
+.add-product-btn {
+    position: relative;
+    z-index: 1;
+    margin-top: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 12px 17px;
+    border-radius: 14px;
+    background: #fff;
+    color: #155eef !important;
+    text-decoration: none !important;
+    font-size: 13px;
+    font-weight: 850;
+    box-shadow: 0 7px 18px rgba(0,0,0,.12);
+    transition: transform .16s ease;
+}
 
-{% endif %}
+.add-product-btn:active {
+    transform: scale(.97);
+}
 
-</td>
+/* Product grid */
+.products-section {
+    margin-top: 22px;
+}
 
-<td>
+.products-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
 
-{{ p.name }}
+.products-toolbar-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 850;
+    letter-spacing: -.25px;
+}
 
-</td>
+.products-toolbar-subtitle {
+    color: #64748b;
+    font-size: 12px;
+}
 
-<td>
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 17px;
+}
 
-₹{{ p.sale_price or p.price }}
+.product-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid #e7ebf2;
+    border-radius: 21px;
+    background: #fff;
+    box-shadow: 0 7px 24px rgba(15,23,42,.06);
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
 
-</td>
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 13px 32px rgba(15,23,42,.10);
+}
 
-<td>
+.product-image-wrap {
+    position: relative;
+    aspect-ratio: 1 / .82;
+    overflow: hidden;
+    background: #eef2f7;
+}
 
-{{ p.stock }}
+.product-image-wrap img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
 
-</td>
+.product-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: #94a3b8;
+    font-size: 44px;
+}
 
-<td>
+.product-stock-badge {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.94);
+    color: #15803d;
+    font-size: 10px;
+    font-weight: 850;
+    box-shadow: 0 4px 12px rgba(15,23,42,.12);
+}
 
-<a
-href="/shop/edit-product/{{ p.id }}"
-class="btn btn-warning btn-sm">
+.product-stock-badge.out {
+    color: #dc2626;
+}
 
-Edit
+.product-info {
+    padding: 16px;
+}
 
-</a>
+.product-category {
+    margin-bottom: 6px;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: .45px;
+}
 
-<a
-href="/shop/delete-product/{{ p.id }}"
-class="btn btn-danger btn-sm">
+.product-name {
+    margin: 0;
+    color: #0f172a;
+    font-size: 17px;
+    line-height: 1.25;
+    font-weight: 850;
+}
 
-Delete
+.product-pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 9px;
+}
 
-</a>
+.product-price {
+    color: #155eef;
+    font-size: 20px;
+    font-weight: 900;
+}
 
-</td>
+.product-old-price {
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 650;
+    text-decoration: line-through;
+}
 
-</tr>
+.product-meta {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
 
-{% endfor %}
+.product-meta-item {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 10px;
+    border-radius: 12px;
+    background: #f8fafc;
+}
 
-</table>
+.product-meta-item small {
+    display: block;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.product-meta-item strong {
+    display: block;
+    margin-top: 2px;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 850;
+}
+
+.product-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.product-action {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 0;
+    border-radius: 12px;
+    padding: 10px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 850;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+.product-edit {
+    background: #eaf1ff;
+    color: #155eef !important;
+}
+
+.product-delete {
+    background: #fff0f0;
+    color: #dc2626;
+}
+
+.product-action:active {
+    transform: scale(.97);
+}
+
+.delete-form {
+    margin: 0;
+}
+
+/* Empty state */
+.products-empty {
+    padding: 55px 20px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 22px;
+    background: rgba(255,255,255,.75);
+    text-align: center;
+}
+
+.products-empty-icon {
+    width: 62px;
+    height: 62px;
+    margin: 0 auto 13px;
+    display: grid;
+    place-items: center;
+    border-radius: 20px;
+    background: #eaf1ff;
+    color: #2563eb;
+    font-size: 25px;
+}
+
+.products-empty h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 850;
+}
+
+.products-empty p {
+    margin: 7px 0 18px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+@media (max-width: 950px) {
+    .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+
+    .shop-products-shell {
+        padding:
+            0
+            0
+            max(96px, calc(80px + env(safe-area-inset-bottom)));
+    }
+
+    .shop-products-hero {
+        border-radius: 0 0 25px 25px;
+        padding:
+            max(18px, env(safe-area-inset-top))
+            18px
+            22px;
+    }
+
+    .shop-products-hero h1 {
+        font-size: 21px;
+    }
+
+    .shop-products-heading-icon {
+        width: 45px;
+        height: 45px;
+        flex-basis: 45px;
+        border-radius: 14px;
+    }
+
+    .shop-products-count {
+        padding: 7px 9px;
+        font-size: 10px;
+    }
+
+    .add-product-btn {
+        width: 100%;
+        margin-top: 17px;
+    }
+
+    .products-section {
+        padding: 0 12px;
+        margin-top: 18px;
+    }
+
+    .products-toolbar {
+        padding: 0 3px;
+    }
+
+    .products-toolbar-title {
+        font-size: 17px;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .product-card {
+        border-radius: 17px;
+        box-shadow: 0 5px 17px rgba(15,23,42,.06);
+    }
+
+    .product-image-wrap {
+        aspect-ratio: 1 / 1;
+    }
+
+    .product-stock-badge {
+        left: 8px;
+        top: 8px;
+        padding: 5px 7px;
+        font-size: 8px;
+    }
+
+    .product-info {
+        padding: 11px;
+    }
+
+    .product-category {
+        font-size: 8px;
+        margin-bottom: 4px;
+    }
+
+    .product-name {
+        font-size: 14px;
+    }
+
+    .product-pricing {
+        margin-top: 6px;
+        gap: 5px;
+    }
+
+    .product-price {
+        font-size: 17px;
+    }
+
+    .product-old-price {
+        font-size: 10px;
+    }
+
+    .product-meta {
+        margin-top: 8px;
+        gap: 5px;
+    }
+
+    .product-meta-item {
+        padding: 7px;
+        border-radius: 9px;
+    }
+
+    .product-meta-item small {
+        font-size: 7px;
+    }
+
+    .product-meta-item strong {
+        font-size: 11px;
+    }
+
+    .product-actions {
+        margin-top: 9px;
+        gap: 5px;
+    }
+
+    .product-action {
+        min-height: 37px;
+        padding: 7px 4px;
+        border-radius: 9px;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 370px) {
+    .products-grid {
+        gap: 8px;
+    }
+
+    .product-info {
+        padding: 9px;
+    }
+
+    .product-name {
+        font-size: 13px;
+    }
+
+    .product-action {
+        font-size: 9px;
+    }
+}
+</style>
+
+
+<div class="shop-products-page">
+
+    <div class="shop-products-shell">
+
+        <!-- HEADER -->
+        <header class="shop-products-hero">
+
+            <div class="shop-products-hero-top">
+
+                <div class="shop-products-heading">
+
+                    <div class="shop-products-heading-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+
+                    <div>
+                        <h1>My Products</h1>
+                        <p>Manage the products in your shop</p>
+                    </div>
+
+                </div>
+
+                <div class="shop-products-count">
+                    <i class="fas fa-box"></i>
+                    {{ products|length }}
+                </div>
+
+            </div>
+
+            <a
+                href="{{ url_for('add_product') }}"
+                class="add-product-btn"
+            >
+                <i class="fas fa-plus"></i>
+                Add Product
+            </a>
+
+        </header>
+
+
+        <!-- PRODUCTS -->
+        <section class="products-section">
+
+            <div class="products-toolbar">
+
+                <div>
+                    <h2 class="products-toolbar-title">
+                        Your Products
+                    </h2>
+
+                    <div class="products-toolbar-subtitle">
+                        {{ products|length }} product{% if products|length != 1 %}s{% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+
+            {% if products %}
+
+            <div class="products-grid">
+
+                {% for product in products %}
+
+                <article class="product-card">
+
+                    <div class="product-image-wrap">
+
+                        {% if product.images and product.images|length > 0 %}
+
+                        <img
+                            src="{{ url_for('static', filename='product_images/' + product.images[0].image) }}"
+                            alt="{{ product.name }}"
+                            loading="lazy"
+                            onerror="
+                                if(!this.dataset.fallback1){
+                                    this.dataset.fallback1='1';
+                                    this.src='/static/uploads/products/{{ product.images[0].image }}';
+                                } else if(!this.dataset.fallback2){
+                                    this.dataset.fallback2='1';
+                                    this.src='/static/uploads/{{ product.images[0].image }}';
+                                } else {
+                                    this.style.display='none';
+                                    this.nextElementSibling.style.display='grid';
+                                }
+                            "
+                        >
+
+                        <div
+                            class="product-image-placeholder"
+                            style="display:none;"
+                        >
+                            <i class="fas fa-image"></i>
+                        </div>
+
+                        {% else %}
+
+                        <div class="product-image-placeholder">
+                            <i class="fas fa-image"></i>
+                        </div>
+
+                        {% endif %}
+
+
+                        {% if product.stock > 0 %}
+
+                        <span class="product-stock-badge">
+                            <i class="fas fa-circle"></i>
+                            In Stock
+                        </span>
+
+                        {% else %}
+
+                        <span class="product-stock-badge out">
+                            <i class="fas fa-circle"></i>
+                            Out of Stock
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="product-info">
+
+                        {% if product.category %}
+
+                        <div class="product-category">
+                            {{ product.category.name }}
+                        </div>
+
+                        {% endif %}
+
+
+                        <h3 class="product-name">
+                            {{ product.name }}
+                        </h3>
+
+
+                        <div class="product-pricing">
+
+                            {% if product.sale_price %}
+
+                            <span class="product-price">
+                                ₹{{ "%.0f"|format(product.sale_price) }}
+                            </span>
+
+                            <span class="product-old-price">
+                                ₹{{ "%.0f"|format(product.price) }}
+                            </span>
+
+                            {% else %}
+
+                            <span class="product-price">
+                                ₹{{ "%.0f"|format(product.price) }}
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="product-meta">
+
+                            <div class="product-meta-item">
+                                <small>Stock</small>
+                                <strong>{{ product.stock }}</strong>
+                            </div>
+
+                            <div class="product-meta-item">
+                                <small>Type</small>
+                                <strong>
+                                    {{ product.product_type|capitalize }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        <div class="product-actions">
+
+                            <a
+                                href="{{ url_for('edit_product', id=product.id) }}"
+                                class="product-action product-edit"
+                            >
+                                <i class="fas fa-pen"></i>
+                                Edit
+                            </a>
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('delete_product', id=product.id) }}"
+                                class="delete-form"
+                                onsubmit="return confirmDeleteProduct('{{ product.name|e }}');"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="product-action product-delete"
+                                    style="width:100%;"
+                                >
+                                    <i class="fas fa-trash"></i>
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+
+            <div class="products-empty">
+
+                <div class="products-empty-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+
+                <h3>No Products Yet</h3>
+
+                <p>
+                    Add your first product to start selling on RecrootEarn.
+                </p>
+
+                <a
+                    href="{{ url_for('add_product') }}"
+                    class="add-product-btn"
+                >
+                    <i class="fas fa-plus"></i>
+                    Add Your First Product
+                </a>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+    </div>
+
+</div>
+
+
+<script>
+function confirmDeleteProduct(productName) {
+
+    return confirm(
+        'Delete "' +
+        productName +
+        '" from your shop?\\n\\nThis action cannot be undone.'
+    );
+
+}
+</script>
+
+{% endblock %}
