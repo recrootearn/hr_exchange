@@ -16626,39 +16626,245 @@ def shop_products():
 @app.route("/shop/edit-product/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_product(id):
+    # SHOP ONLY:
+    # Product owner can edit their own product.
+    # Admin (including the primary admin user ID 1) can edit any shop product.
+    is_admin_user = (
+        bool(getattr(current_user, "is_admin", False))
+        or current_user.id == 1
+    )
 
-    product = Product.query.filter_by(
-        id=id,
-        seller_id=current_user.id
-    ).first_or_404()
+    if is_admin_user:
+        product = Product.query.get_or_404(id)
+    else:
+        product = Product.query.filter_by(
+            id=id,
+            seller_id=current_user.id
+        ).first_or_404()
 
     categories = ProductCategory.query.filter_by(
         is_active=True
     ).all()
 
     if request.method == "POST":
+        try:
+            # Only update fields that belong to the SHOP Product model.
+            # This intentionally does not touch candidate/job-posting data.
+            product.name = request.form.get(
+                "name",
+                product.name
+            ).strip()
 
-        product.name = request.form["name"].strip()
-        product.category_id = request.form["category_id"]
-        product.description = request.form["description"].strip()
-        product.price = float(request.form["price"])
-        product.sale_price = request.form.get("sale_price") or None
-        product.stock = int(request.form["stock"])
+            category_id = request.form.get("category_id")
+            if category_id:
+                product.category_id = int(category_id)
 
-        db.session.commit()
+            if "description" in request.form:
+                product.description = request.form.get(
+                    "description",
+                    ""
+                ).strip()
 
-        flash(
-            "Product updated successfully.",
-            "success"
-        )
+            if "price" in request.form:
+                product.price = float(
+                    request.form.get("price") or 0
+                )
 
-        return redirect("/shop/products")
+            if "sale_price" in request.form:
+                sale_price = request.form.get(
+                    "sale_price",
+                    ""
+                ).strip()
+                product.sale_price = (
+                    float(sale_price)
+                    if sale_price
+                    else None
+                )
+
+            if "stock" in request.form:
+                product.stock = int(
+                    request.form.get("stock") or 0
+                )
+
+            # Product model fields that were previously ignored.
+            numeric_product_fields = {
+                "gst_percent": "gst_percentage",
+                "weight": "weight",
+                "length": "length",
+                "width": "width",
+                "height": "height",
+            }
+
+            for form_name, model_name in numeric_product_fields.items():
+                if form_name in request.form and hasattr(product, model_name):
+                    raw_value = request.form.get(
+                        form_name,
+                        ""
+                    ).strip()
+
+                    setattr(
+                        product,
+                        model_name,
+                        float(raw_value) if raw_value else None
+                    )
+
+            if "hsn_code" in request.form:
+                product.hsn_code = request.form.get(
+                    "hsn_code",
+                    ""
+                ).strip() or None
+
+            if "product_type" in request.form:
+                product.product_type = request.form.get(
+                    "product_type"
+                ) or "simple"
+
+            # -------------------------------------------------
+            # PRODUCT IMAGES
+            # -------------------------------------------------
+            # Remove only the images explicitly selected by the seller/admin.
+            remove_image_ids = request.form.getlist("remove_images")
+
+            for image_id in remove_image_ids:
+                try:
+                    image = ProductImage.query.filter_by(
+                        id=int(image_id),
+                        product_id=product.id
+                    ).first()
+                except (ValueError, TypeError):
+                    image = None
+
+                if image:
+                    image_path = os.path.join(
+                        PRODUCT_UPLOAD_FOLDER,
+                        image.image
+                    )
+
+                    if os.path.exists(image_path):
+                        try:
+                            os.remove(image_path)
+                        except OSError:
+                            pass
+
+                    db.session.delete(image)
+
+            db.session.flush()
+
+            # Add newly uploaded images, while keeping the maximum
+            # total number of product images at 5.
+            new_images = [
+                image for image in request.files.getlist("images")
+                if image and image.filename
+            ]
+
+            existing_count = ProductImage.query.filter_by(
+                product_id=product.id
+            ).count()
+
+            allowed_extensions = {
+                "jpg",
+                "jpeg",
+                "png",
+                "webp"
+            }
+
+            remaining_slots = max(
+                0,
+                5 - existing_count
+            )
+
+            for image in new_images[:remaining_slots]:
+                if "." not in image.filename:
+                    continue
+
+                extension = image.filename.rsplit(
+                    ".",
+                    1
+                )[1].lower()
+
+                if extension not in allowed_extensions:
+                    continue
+
+                filename = (
+                    f"{uuid.uuid4()}.{extension}"
+                )
+
+                image.save(
+                    os.path.join(
+                        PRODUCT_UPLOAD_FOLDER,
+                        filename
+                    )
+                )
+
+                max_sort = db.session.query(
+                    db.func.max(ProductImage.sort_order)
+                ).filter(
+                    ProductImage.product_id == product.id
+                ).scalar() or 0
+
+                db.session.add(
+                    ProductImage(
+                        product_id=product.id,
+                        image=filename,
+                        sort_order=max_sort + 1
+                    )
+                )
+
+            db.session.commit()
+
+            flash(
+                "Product updated successfully.",
+                "success"
+            )
+
+            return redirect(
+                url_for(
+                    "manage_product",
+                    id=product.id
+                )
+            )
+
+        except (ValueError, TypeError):
+            db.session.rollback()
+
+            flash(
+                "Please enter valid product values.",
+                "danger"
+            )
+
+            return redirect(
+                url_for(
+                    "edit_product",
+                    id=product.id
+                )
+            )
+
+        except Exception:
+            db.session.rollback()
+            app.logger.exception(
+                "Shop product update failed for product %s",
+                product.id
+            )
+
+            flash(
+                "Product could not be updated. Please try again.",
+                "danger"
+            )
+
+            return redirect(
+                url_for(
+                    "edit_product",
+                    id=product.id
+                )
+            )
 
     return render_template(
         "edit_product.html",
         product=product,
-        categories=categories
+        categories=categories,
+        images=product.images
     )
+
 
 @app.route(
     "/shop/delete-product/<int:id>",
@@ -16666,24 +16872,35 @@ def edit_product(id):
 )
 @login_required
 def delete_product(id):
+    # SHOP ONLY:
+    # The owner can delete their own product.
+    # Admin (including user ID 1) can delete any shop product.
+    is_admin_user = (
+        bool(getattr(current_user, "is_admin", False))
+        or current_user.id == 1
+    )
 
-    product = Product.query.filter_by(
-        id=id,
-        seller_id=current_user.id
-    ).first_or_404()
+    if is_admin_user:
+        product = Product.query.get_or_404(id)
+    else:
+        product = Product.query.filter_by(
+            id=id,
+            seller_id=current_user.id
+        ).first_or_404()
 
-    for img in product.images:
-
+    for img in list(product.images):
         path = os.path.join(
             PRODUCT_UPLOAD_FOLDER,
             img.image
         )
 
         if os.path.exists(path):
-            os.remove(path)
+            try:
+                os.remove(path)
+            except OSError:
+                pass
 
     db.session.delete(product)
-
     db.session.commit()
 
     flash(
@@ -16691,7 +16908,10 @@ def delete_product(id):
         "success"
     )
 
-    return redirect("/shop/products")
+    return redirect(
+        request.referrer or url_for("shop_products")
+    )
+
 
 @app.route("/shop/<int:seller_id>")
 def company_shop(seller_id):
@@ -20733,16 +20953,27 @@ def seo_settings():
 @app.route("/shop/manage-product/<int:id>")
 @login_required
 def manage_product(id):
+    # SHOP ONLY:
+    # Owner can manage their own product.
+    # Admin can manage any shop product.
+    is_admin_user = (
+        bool(getattr(current_user, "is_admin", False))
+        or current_user.id == 1
+    )
 
-    product = Product.query.filter_by(
-        id=id,
-        seller_id=current_user.id
-    ).first_or_404()
+    if is_admin_user:
+        product = Product.query.get_or_404(id)
+    else:
+        product = Product.query.filter_by(
+            id=id,
+            seller_id=current_user.id
+        ).first_or_404()
 
     return render_template(
         "manage_product.html",
         product=product
     )
+
 
 @app.route(
     "/shop/toggle-product/<int:id>",
@@ -20750,14 +20981,21 @@ def manage_product(id):
 )
 @login_required
 def owner_toggle_product(id):
+    # Same SHOP ownership rule as edit/delete.
+    is_admin_user = (
+        bool(getattr(current_user, "is_admin", False))
+        or current_user.id == 1
+    )
 
-    product = Product.query.filter_by(
-        id=id,
-        seller_id=current_user.id
-    ).first_or_404()
+    if is_admin_user:
+        product = Product.query.get_or_404(id)
+    else:
+        product = Product.query.filter_by(
+            id=id,
+            seller_id=current_user.id
+        ).first_or_404()
 
     if product.status == "active":
-
         product.status = "inactive"
         product.is_active = False
 
@@ -20765,9 +21003,7 @@ def owner_toggle_product(id):
             "Product deactivated successfully.",
             "success"
         )
-
     else:
-
         product.status = "active"
         product.is_active = True
 
@@ -20784,6 +21020,7 @@ def owner_toggle_product(id):
             id=product.id
         )
     )
+
 
 # =========================================================
 # CREATE DELHIVERY SHIPMENT
