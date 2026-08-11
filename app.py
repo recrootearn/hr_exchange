@@ -16872,9 +16872,10 @@ def edit_product(id):
 )
 @login_required
 def delete_product(id):
+
     # SHOP ONLY:
-    # The owner can delete their own product.
-    # Admin (including user ID 1) can delete any shop product.
+    # Owner can delete their own product.
+    # Admin can delete any shop product.
     is_admin_user = (
         bool(getattr(current_user, "is_admin", False))
         or current_user.id == 1
@@ -16888,7 +16889,47 @@ def delete_product(id):
             seller_id=current_user.id
         ).first_or_404()
 
+    # ---------------------------------------------------------
+    # IMPORTANT:
+    # If this product already exists in an order,
+    # DO NOT physically delete it.
+    #
+    # Historical order_items.product_id is NOT NULL.
+    # ---------------------------------------------------------
+
+    existing_order = OrderItem.query.filter_by(
+        product_id=product.id
+    ).first()
+
+    if existing_order:
+
+        # Soft delete the product.
+        # This keeps old orders and invoices safe.
+        product.status = "deleted"
+        product.is_active = False
+        product.is_promoted = False
+
+        # Stop any active promotion.
+        product.promotion_end = None
+        product.promotion_expires_at = None
+
+        db.session.commit()
+
+        flash(
+            "Product removed from your shop successfully.",
+            "success"
+        )
+
+        # Always go directly to profile.
+        return redirect(url_for("profile"))
+
+    # ---------------------------------------------------------
+    # NO ORDERS:
+    # Safe to permanently delete.
+    # ---------------------------------------------------------
+
     for img in list(product.images):
+
         path = os.path.join(
             PRODUCT_UPLOAD_FOLDER,
             img.image
@@ -16908,6 +16949,7 @@ def delete_product(id):
         "success"
     )
 
+    # Always go directly to profile.
     return redirect(url_for("profile"))
 
 @app.route("/shop/<int:seller_id>")
