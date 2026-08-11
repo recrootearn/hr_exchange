@@ -16909,7 +16909,7 @@ def delete_product(id):
     )
 
     return redirect(
-        request.referrer or url_for("shop_products")
+        request.referrer or url_for("profile")
     )
 
 
