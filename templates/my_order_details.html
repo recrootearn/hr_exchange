@@ -53,7 +53,6 @@ html,body{margin:0!important;padding:0!important}.content{margin:0!important;pad
 {% endif %}
 <div class="timeline">{% if history %}{% for h in history %}<div class="event"><div class="dot"></div><div><b>{{ h.status }}</b><div class="date">{{ h.created_at.strftime("%d %b %Y, %I:%M %p") }}</div>{% if h.remarks %}<div class="remarks">{{ h.remarks }}</div>{% endif %}</div></div>{% endfor %}{% else %}<span class="text-muted">Your order has been placed. Delivery updates will appear here.</span>{% endif %}</div>
 {% if order.delhivery_waybill %}<div style="margin-top:12px;font-size:10px;color:#8a93a3;">Tracking updates are synchronized automatically.</div>{% endif %}
-</div></div></div><div class="timeline">{% if history %}{% for h in history %}<div class="event"><div class="dot"></div><div><b>{{ h.status }}</b><div class="date">{{ h.created_at.strftime("%d %b %Y, %I:%M %p") }}</div>{% if h.remarks %}<div class="remarks">{{ h.remarks }}</div>{% endif %}</div></div>{% endfor %}{% else %}<span class="text-muted">Your order has been placed. Delivery updates will appear here.</span>{% endif %}</div></div></div>
-<div class="card"><div class="body"><a class="invoice" href="/download-order-invoice/{{ order.id }}"><i class="fas fa-file-invoice"></i> Download Invoice</a></div></div>
+</div></div></div><div class="card"><div class="body"><a class="invoice" href="/download-order-invoice/{{ order.id }}"><i class="fas fa-file-invoice"></i> Download Invoice</a></div></div>
 </div></div>
 {% endblock %}
