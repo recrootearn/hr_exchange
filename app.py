@@ -19678,6 +19678,15 @@ def shop_search():
             User.first_name.asc()
         ).all()
 
+        # Generate shop slug for each search result
+        for store in stores:
+            store.generated_shop_slug = make_shop_slug(
+                store.company
+                or store.first_name
+                or store.username
+                or "store"
+            )
+
     # =========================================================
     # NOT FOUND
     # =========================================================
