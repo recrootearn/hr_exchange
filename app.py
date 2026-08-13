@@ -36,6 +36,20 @@ from flask import render_template
 from weasyprint import HTML, CSS
 from io import BytesIO
 from functools import wraps
+from io import BytesIO
+from flask import send_file
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_LEFT, TA_RIGHT, TA_CENTER
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle,
+    HRFlowable
+)
 
 IST = ZoneInfo("Asia/Kolkata")
 
@@ -22070,6 +22084,1145 @@ def internal_delhivery_sync():
         "checked": checked,
         "updated": updated
     })
+
+# =========================================================
+# CUSTOMER / SELLER INVOICE PDF
+# =========================================================
+
+@app.route("/download-order-invoice/<int:order_id>")
+@login_required
+def download_order_invoice(order_id):
+
+    # -----------------------------------------------------
+    # GET ORDER
+    # -----------------------------------------------------
+
+    order = Order.query.get_or_404(order_id)
+
+    # -----------------------------------------------------
+    # SECURITY
+    # Customer who placed the order OR seller of the order
+    # can download the invoice.
+    # -----------------------------------------------------
+
+    is_customer = (
+        current_user.id == order.user_id
+    )
+
+    is_seller = (
+        current_user.id == order.seller_id
+    )
+
+    is_admin = getattr(
+        current_user,
+        "is_admin",
+        False
+    )
+
+    if not (
+        is_customer
+        or is_seller
+        or is_admin
+    ):
+        return "Access Denied", 403
+
+    # -----------------------------------------------------
+    # CUSTOMER
+    # -----------------------------------------------------
+
+    customer = order.customer
+
+    customer_name = "Customer"
+
+    if order.shipping_address:
+        customer_name = (
+            order.shipping_address.full_name
+            or "Customer"
+        )
+    elif customer:
+        customer_name = (
+            f"{customer.first_name or ''} "
+            f"{customer.last_name or ''}"
+        ).strip() or "Customer"
+
+    customer_email = ""
+
+    if customer:
+        customer_email = (
+            customer.email
+            or ""
+        )
+
+    # -----------------------------------------------------
+    # SHIPPING ADDRESS
+    # -----------------------------------------------------
+
+    address = order.shipping_address
+
+    if address:
+
+        customer_phone = (
+            address.mobile
+            or ""
+        )
+
+        address_lines = [
+            address.address_line1 or ""
+        ]
+
+        if address.address_line2:
+            address_lines.append(
+                address.address_line2
+            )
+
+        if address.landmark:
+            address_lines.append(
+                "Landmark: " + address.landmark
+            )
+
+        address_lines.append(
+            f"{address.city}, "
+            f"{address.state} - "
+            f"{address.pincode}"
+        )
+
+        address_lines.append(
+            address.country or "India"
+        )
+
+    else:
+
+        customer_phone = ""
+
+        address_lines = [
+            "Shipping address not available"
+        ]
+
+    # -----------------------------------------------------
+    # SELLER
+    # -----------------------------------------------------
+
+    seller = order.seller
+
+    seller_name = "Seller"
+
+    if seller:
+
+        seller_name = (
+            getattr(
+                seller,
+                "company",
+                None
+            )
+            or getattr(
+                seller,
+                "first_name",
+                None
+            )
+            or f"Seller {seller.id}"
+        )
+
+    seller_email = ""
+
+    seller_phone = ""
+
+    seller_address_lines = []
+
+    # Seller pickup address if available
+    pickup = None
+
+    if seller:
+
+        pickup = getattr(
+            seller,
+            "pickup_address",
+            None
+        )
+
+    if pickup:
+
+        seller_email = (
+            getattr(
+                pickup,
+                "email",
+                None
+            )
+            or getattr(
+                seller,
+                "email",
+                None
+            )
+            or ""
+        )
+
+        seller_phone = (
+            getattr(
+                pickup,
+                "mobile",
+                None
+            )
+            or getattr(
+                seller,
+                "mobile",
+                None
+            )
+            or ""
+        )
+
+        if getattr(
+            pickup,
+            "address_line1",
+            None
+        ):
+            seller_address_lines.append(
+                pickup.address_line1
+            )
+
+        if getattr(
+            pickup,
+            "address_line2",
+            None
+        ):
+            seller_address_lines.append(
+                pickup.address_line2
+            )
+
+        city = getattr(
+            pickup,
+            "city",
+            None
+        )
+
+        state = getattr(
+            pickup,
+            "state",
+            None
+        )
+
+        pincode = getattr(
+            pickup,
+            "pincode",
+            None
+        )
+
+        location_parts = []
+
+        if city:
+            location_parts.append(city)
+
+        if state:
+            location_parts.append(state)
+
+        if pincode:
+            location_parts.append(
+                str(pincode)
+            )
+
+        if location_parts:
+            seller_address_lines.append(
+                ", ".join(location_parts)
+            )
+
+    else:
+
+        seller_email = (
+            getattr(
+                seller,
+                "email",
+                None
+            )
+            or ""
+        )
+
+        seller_phone = (
+            getattr(
+                seller,
+                "mobile",
+                None
+            )
+            or ""
+        )
+
+    # -----------------------------------------------------
+    # INVOICE NUMBER
+    # -----------------------------------------------------
+
+    invoice_number = (
+        getattr(
+            order,
+            "invoice_number",
+            None
+        )
+        or f"INV-{order.order_number}"
+    )
+
+    # Save invoice number if not already stored
+    if not getattr(
+        order,
+        "invoice_number",
+        None
+    ):
+
+        order.invoice_number = (
+            invoice_number
+        )
+
+        db.session.commit()
+
+    # -----------------------------------------------------
+    # PDF BUFFER
+    # -----------------------------------------------------
+
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=35,
+        leftMargin=35,
+        topMargin=35,
+        bottomMargin=35
+    )
+
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle(
+        "InvoiceTitle",
+        parent=styles["Title"],
+        fontSize=24,
+        leading=28,
+        textColor=colors.HexColor("#2563eb"),
+        alignment=TA_LEFT,
+        spaceAfter=4
+    )
+
+    subtitle_style = ParagraphStyle(
+        "InvoiceSubtitle",
+        parent=styles["Normal"],
+        fontSize=9,
+        textColor=colors.HexColor("#64748b"),
+        spaceAfter=4
+    )
+
+    section_style = ParagraphStyle(
+        "Section",
+        parent=styles["Heading2"],
+        fontSize=12,
+        leading=15,
+        textColor=colors.HexColor("#172033"),
+        spaceAfter=7
+    )
+
+    normal_style = ParagraphStyle(
+        "NormalInvoice",
+        parent=styles["Normal"],
+        fontSize=9,
+        leading=13,
+        textColor=colors.HexColor("#334155")
+    )
+
+    small_style = ParagraphStyle(
+        "SmallInvoice",
+        parent=styles["Normal"],
+        fontSize=8,
+        leading=11,
+        textColor=colors.HexColor("#64748b")
+    )
+
+    right_style = ParagraphStyle(
+        "RightInvoice",
+        parent=normal_style,
+        alignment=TA_RIGHT
+    )
+
+    center_style = ParagraphStyle(
+        "CenterInvoice",
+        parent=normal_style,
+        alignment=TA_CENTER
+    )
+
+    story = []
+
+    # =====================================================
+    # HEADER
+    # =====================================================
+
+    story.append(
+        Paragraph(
+            "RECROOTEARN",
+            title_style
+        )
+    )
+
+    story.append(
+        Paragraph(
+            "Marketplace Invoice",
+            subtitle_style
+        )
+    )
+
+    story.append(
+        HRFlowable(
+            width="100%",
+            thickness=1,
+            color=colors.HexColor("#dbe4f0"),
+            spaceBefore=5,
+            spaceAfter=15
+        )
+    )
+
+    # =====================================================
+    # INVOICE INFORMATION
+    # =====================================================
+
+    order_date = "-"
+
+    if order.created_at:
+        order_date = order.created_at.strftime(
+            "%d %b %Y, %I:%M %p"
+        )
+
+    invoice_info = Table(
+        [
+            [
+                Paragraph(
+                    "<b>Invoice Number</b><br/>"
+                    + str(invoice_number),
+                    normal_style
+                ),
+                Paragraph(
+                    "<b>Order Number</b><br/>"
+                    + str(order.order_number),
+                    normal_style
+                ),
+                Paragraph(
+                    "<b>Order Date</b><br/>"
+                    + order_date,
+                    normal_style
+                )
+            ]
+        ],
+        colWidths=[
+            170,
+            170,
+            170
+        ]
+    )
+
+    invoice_info.setStyle(
+        TableStyle(
+            [
+                (
+                    "BACKGROUND",
+                    (0, 0),
+                    (-1, -1),
+                    colors.HexColor("#f8faff")
+                ),
+                (
+                    "BOX",
+                    (0, 0),
+                    (-1, -1),
+                    0.7,
+                    colors.HexColor("#dbe4f0")
+                ),
+                (
+                    "INNERGRID",
+                    (0, 0),
+                    (-1, -1),
+                    0.5,
+                    colors.HexColor("#e5eaf2")
+                ),
+                (
+                    "VALIGN",
+                    (0, 0),
+                    (-1, -1),
+                    "TOP"
+                ),
+                (
+                    "LEFTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    10
+                ),
+                (
+                    "RIGHTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    10
+                ),
+                (
+                    "TOPPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    10
+                ),
+                (
+                    "BOTTOMPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    10
+                )
+            ]
+        )
+    )
+
+    story.append(invoice_info)
+
+    story.append(
+        Spacer(1, 18)
+    )
+
+    # =====================================================
+    # SELLER / BILL TO
+    # =====================================================
+
+    seller_text = (
+        f"<b>{seller_name}</b><br/>"
+        + "<br/>".join(
+            seller_address_lines
+        )
+    )
+
+    if seller_phone:
+        seller_text += (
+            "<br/>Phone: "
+            + str(seller_phone)
+        )
+
+    if seller_email:
+        seller_text += (
+            "<br/>Email: "
+            + str(seller_email)
+        )
+
+    customer_text = (
+        f"<b>{customer_name}</b><br/>"
+        + "<br/>".join(
+            address_lines
+        )
+    )
+
+    if customer_phone:
+        customer_text += (
+            "<br/>Phone: "
+            + str(customer_phone)
+        )
+
+    if customer_email:
+        customer_text += (
+            "<br/>Email: "
+            + str(customer_email)
+        )
+
+    address_table = Table(
+        [
+            [
+                Paragraph(
+                    "<b>SELLER</b><br/><br/>"
+                    + seller_text,
+                    normal_style
+                ),
+                Paragraph(
+                    "<b>BILL TO / SHIP TO</b><br/><br/>"
+                    + customer_text,
+                    normal_style
+                )
+            ]
+        ],
+        colWidths=[
+            255,
+            255
+        ]
+    )
+
+    address_table.setStyle(
+        TableStyle(
+            [
+                (
+                    "BACKGROUND",
+                    (0, 0),
+                    (-1, -1),
+                    colors.white
+                ),
+                (
+                    "BOX",
+                    (0, 0),
+                    (-1, -1),
+                    0.7,
+                    colors.HexColor("#dbe4f0")
+                ),
+                (
+                    "INNERGRID",
+                    (0, 0),
+                    (-1, -1),
+                    0.5,
+                    colors.HexColor("#e5eaf2")
+                ),
+                (
+                    "VALIGN",
+                    (0, 0),
+                    (-1, -1),
+                    "TOP"
+                ),
+                (
+                    "LEFTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    10
+                ),
+                (
+                    "RIGHTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    10
+                ),
+                (
+                    "TOPPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    10
+                ),
+                (
+                    "BOTTOMPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    10
+                )
+            ]
+        )
+    )
+
+    story.append(address_table)
+
+    story.append(
+        Spacer(1, 20)
+    )
+
+    # =====================================================
+    # ITEMS
+    # =====================================================
+
+    story.append(
+        Paragraph(
+            "Order Items",
+            section_style
+        )
+    )
+
+    item_rows = [
+        [
+            Paragraph(
+                "<b>#</b>",
+                center_style
+            ),
+            Paragraph(
+                "<b>Product</b>",
+                normal_style
+            ),
+            Paragraph(
+                "<b>Variant</b>",
+                normal_style
+            ),
+            Paragraph(
+                "<b>Qty</b>",
+                center_style
+            ),
+            Paragraph(
+                "<b>Price</b>",
+                right_style
+            ),
+            Paragraph(
+                "<b>Total</b>",
+                right_style
+            )
+        ]
+    ]
+
+    for index, item in enumerate(
+        order.items,
+        start=1
+    ):
+
+        variant = (
+            item.variant_name
+            or "-"
+        )
+
+        item_rows.append(
+            [
+                Paragraph(
+                    str(index),
+                    center_style
+                ),
+                Paragraph(
+                    str(
+                        item.product_name
+                        or "Product"
+                    ),
+                    normal_style
+                ),
+                Paragraph(
+                    str(variant),
+                    normal_style
+                ),
+                Paragraph(
+                    str(item.quantity),
+                    center_style
+                ),
+                Paragraph(
+                    f"₹{float(item.price or 0):.2f}",
+                    right_style
+                ),
+                Paragraph(
+                    f"₹{float(item.total or 0):.2f}",
+                    right_style
+                )
+            ]
+        )
+
+    items_table = Table(
+        item_rows,
+        colWidths=[
+            28,
+            190,
+            80,
+            38,
+            75,
+            89
+        ],
+        repeatRows=1
+    )
+
+    items_table.setStyle(
+        TableStyle(
+            [
+                (
+                    "BACKGROUND",
+                    (0, 0),
+                    (-1, 0),
+                    colors.HexColor("#2563eb")
+                ),
+                (
+                    "TEXTCOLOR",
+                    (0, 0),
+                    (-1, 0),
+                    colors.white
+                ),
+                (
+                    "GRID",
+                    (0, 0),
+                    (-1, -1),
+                    0.5,
+                    colors.HexColor("#dbe4f0")
+                ),
+                (
+                    "VALIGN",
+                    (0, 0),
+                    (-1, -1),
+                    "MIDDLE"
+                ),
+                (
+                    "ROWBACKGROUNDS",
+                    (0, 1),
+                    (-1, -1),
+                    [
+                        colors.white,
+                        colors.HexColor("#f8faff")
+                    ]
+                ),
+                (
+                    "TOPPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    7
+                ),
+                (
+                    "BOTTOMPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    7
+                ),
+                (
+                    "LEFTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    6
+                ),
+                (
+                    "RIGHTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    6
+                )
+            ]
+        )
+    )
+
+    story.append(items_table)
+
+    story.append(
+        Spacer(1, 15)
+    )
+
+    # =====================================================
+    # PAYMENT / TOTAL
+    # =====================================================
+
+    payment_method = (
+        order.payment_method
+        or "-"
+    )
+
+    payment_status = (
+        order.payment_status
+        or "-"
+    )
+
+    subtotal = float(
+        order.subtotal or 0
+    )
+
+    shipping = float(
+        order.shipping_charge or 0
+    )
+
+    total = float(
+        order.total_amount or 0
+    )
+
+    totals = Table(
+        [
+            [
+                Paragraph(
+                    "<b>Payment Method</b>",
+                    normal_style
+                ),
+                Paragraph(
+                    str(payment_method),
+                    right_style
+                )
+            ],
+            [
+                Paragraph(
+                    "<b>Payment Status</b>",
+                    normal_style
+                ),
+                Paragraph(
+                    str(payment_status),
+                    right_style
+                )
+            ],
+            [
+                Paragraph(
+                    "Subtotal",
+                    normal_style
+                ),
+                Paragraph(
+                    f"₹{subtotal:.2f}",
+                    right_style
+                )
+            ],
+            [
+                Paragraph(
+                    "Shipping",
+                    normal_style
+                ),
+                Paragraph(
+                    f"₹{shipping:.2f}",
+                    right_style
+                )
+            ],
+            [
+                Paragraph(
+                    "<b>TOTAL PAID</b>",
+                    normal_style
+                ),
+                Paragraph(
+                    f"<b>₹{total:.2f}</b>",
+                    right_style
+                )
+            ]
+        ],
+        colWidths=[
+            350,
+            170
+        ]
+    )
+
+    totals.setStyle(
+        TableStyle(
+            [
+                (
+                    "LINEABOVE",
+                    (0, 4),
+                    (-1, 4),
+                    1,
+                    colors.HexColor("#2563eb")
+                ),
+                (
+                    "BACKGROUND",
+                    (0, 4),
+                    (-1, 4),
+                    colors.HexColor("#eef4ff")
+                ),
+                (
+                    "LEFTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    8
+                ),
+                (
+                    "RIGHTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    8
+                ),
+                (
+                    "TOPPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    7
+                ),
+                (
+                    "BOTTOMPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    7
+                )
+            ]
+        )
+    )
+
+    story.append(totals)
+
+    story.append(
+        Spacer(1, 18)
+    )
+
+    # =====================================================
+    # SHIPPING INFORMATION
+    # =====================================================
+
+    story.append(
+        Paragraph(
+            "Shipping Information",
+            section_style
+        )
+    )
+
+    awb = (
+        getattr(
+            order,
+            "delhivery_waybill",
+            None
+        )
+        or getattr(
+            order,
+            "tracking_id",
+            None
+        )
+        or "-"
+    )
+
+    courier = (
+        getattr(
+            order,
+            "courier_name",
+            None
+        )
+        or "Delhivery"
+    )
+
+    shipping_status = (
+        getattr(
+            order,
+            "shipping_status",
+            None
+        )
+        or getattr(
+            order,
+            "delhivery_status",
+            None
+        )
+        or "-"
+    )
+
+    shipping_rows = [
+        [
+            Paragraph(
+                "<b>Courier</b>",
+                normal_style
+            ),
+            Paragraph(
+                str(courier),
+                right_style
+            )
+        ],
+        [
+            Paragraph(
+                "<b>AWB / Tracking</b>",
+                normal_style
+            ),
+            Paragraph(
+                str(awb),
+                right_style
+            )
+        ],
+        [
+            Paragraph(
+                "<b>Shipping Status</b>",
+                normal_style
+            ),
+            Paragraph(
+                str(shipping_status),
+                right_style
+            )
+        ]
+    ]
+
+    estimated = getattr(
+        order,
+        "estimated_delivery",
+        None
+    )
+
+    if estimated:
+
+        shipping_rows.append(
+            [
+                Paragraph(
+                    "<b>Estimated Delivery</b>",
+                    normal_style
+                ),
+                Paragraph(
+                    estimated.strftime(
+                        "%d %b %Y"
+                    ),
+                    right_style
+                )
+            ]
+        )
+
+    shipping_table = Table(
+        shipping_rows,
+        colWidths=[
+            350,
+            170
+        ]
+    )
+
+    shipping_table.setStyle(
+        TableStyle(
+            [
+                (
+                    "BOX",
+                    (0, 0),
+                    (-1, -1),
+                    0.7,
+                    colors.HexColor("#dbe4f0")
+                ),
+                (
+                    "INNERGRID",
+                    (0, 0),
+                    (-1, -1),
+                    0.5,
+                    colors.HexColor("#e5eaf2")
+                ),
+                (
+                    "ROWBACKGROUNDS",
+                    (0, 0),
+                    (-1, -1),
+                    [
+                        colors.white,
+                        colors.HexColor("#f8faff")
+                    ]
+                ),
+                (
+                    "LEFTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    8
+                ),
+                (
+                    "RIGHTPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    8
+                ),
+                (
+                    "TOPPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    7
+                ),
+                (
+                    "BOTTOMPADDING",
+                    (0, 0),
+                    (-1, -1),
+                    7
+                )
+            ]
+        )
+    )
+
+    story.append(
+        shipping_table
+    )
+
+    story.append(
+        Spacer(1, 22)
+    )
+
+    # =====================================================
+    # FOOTER
+    # =====================================================
+
+    story.append(
+        HRFlowable(
+            width="100%",
+            thickness=0.7,
+            color=colors.HexColor("#dbe4f0"),
+            spaceBefore=5,
+            spaceAfter=10
+        )
+    )
+
+    story.append(
+        Paragraph(
+            "Thank you for shopping with RecrootEarn.",
+            center_style
+        )
+    )
+
+    story.append(
+        Spacer(1, 4)
+    )
+
+    story.append(
+        Paragraph(
+            "This is a computer-generated invoice and does not require a signature.",
+            center_style
+        )
+    )
+
+    # -----------------------------------------------------
+    # BUILD PDF
+    # -----------------------------------------------------
+
+    doc.build(story)
+
+    buffer.seek(0)
+
+    filename = (
+        f"Invoice-{order.order_number}.pdf"
+    )
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="application/pdf"
+    )
 
 # =========================
 # SINGLE DEVICE LOGIN CHECK
