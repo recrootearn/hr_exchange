@@ -981,29 +981,6 @@ body{
 
         <div class="actions">
 
-            <!-- CUSTOMER INVOICE -->
-            {% if current_user.id == order.user_id %}
-
-            <a
-                href="/download-order-invoice/{{ order.id }}"
-                class="action primary"
-            >
-                <i class="fas fa-download"></i>
-                Download Invoice
-            </a>
-
-            <button
-                type="button"
-                class="action dark"
-                onclick="printOrderInvoice()"
-            >
-                <i class="fas fa-print"></i>
-                Print Invoice
-            </button>
-
-            {% endif %}
-
-
             <!-- SELLER ACTIONS -->
             {% if current_user.id == order.seller_id %}
 
@@ -1085,26 +1062,26 @@ body{
                 {% endif %}
 
 
-                <!-- SELLER INVOICE -->
-                <a
-                    href="/download-order-invoice/{{ order.id }}"
-                    class="action primary"
-                >
-                    <i class="fas fa-file-invoice"></i>
-                    Download Invoice
-                </a>
-
-                <!-- PRINT INVOICE -->
-                <button
-                    type="button"
-                    class="action dark"
-                    onclick="printOrderInvoice()"
-                >
-                    <i class="fas fa-print"></i>
-                    Print Invoice
-                </button>
-
             {% endif %}
+
+
+            <!-- INVOICE ACTIONS — SHOWN ONLY ONCE -->
+            <a
+                href="/download-order-invoice/{{ order.id }}"
+                class="action primary"
+            >
+                <i class="fas fa-file-invoice"></i>
+                Download Invoice
+            </a>
+
+            <button
+                type="button"
+                class="action dark"
+                onclick="printOrderInvoice()"
+            >
+                <i class="fas fa-print"></i>
+                Print Invoice
+            </button>
 
         </div>
 
