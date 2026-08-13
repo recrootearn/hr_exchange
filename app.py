@@ -19709,6 +19709,116 @@ def shop_search():
         not_found=not_found
     )
 
+@app.route("/shop/search-suggestions")
+def shop_search_suggestions():
+
+    keyword = request.args.get("q", "").strip()
+
+    # Don't search for empty / very short input
+    if len(keyword) < 1:
+        return jsonify([])
+
+    suggestions = []
+
+    # =========================================================
+    # PRODUCTS
+    # =========================================================
+
+    products = (
+        Product.query
+        .filter(
+            Product.is_active == True,
+            Product.status == "active",
+            Product.name.ilike(f"%{keyword}%")
+        )
+        .order_by(
+            Product.is_promoted.desc(),
+            Product.promotion_priority.desc(),
+            Product.created_at.desc()
+        )
+        .limit(6)
+        .all()
+    )
+
+    for product in products:
+
+        suggestions.append({
+            "type": "product",
+            "id": product.id,
+            "name": product.name,
+            "url": url_for(
+                "product_details",
+                id=product.id
+            )
+        })
+
+    # =========================================================
+    # STORES
+    # =========================================================
+
+    active_shop_sellers = db.session.query(
+        Product.seller_id
+    ).filter(
+        Product.is_active == True,
+        Product.status == "active",
+        Product.seller_id.isnot(None)
+    ).distinct().subquery()
+
+    stores = (
+        User.query
+        .filter(
+            User.id.in_(active_shop_sellers),
+            User.is_shop_active == True,
+            or_(
+                User.company.ilike(
+                    f"%{keyword}%"
+                ),
+                User.first_name.ilike(
+                    f"%{keyword}%"
+                ),
+                User.username.ilike(
+                    f"%{keyword}%"
+                )
+            )
+        )
+        .order_by(
+            User.company.asc(),
+            User.first_name.asc()
+        )
+        .limit(6)
+        .all()
+    )
+
+    for store in stores:
+
+        store_name = (
+            store.company
+            or store.first_name
+            or store.username
+            or "Store"
+        )
+
+        shop_slug = make_shop_slug(store_name)
+
+        suggestions.append({
+            "type": "store",
+            "id": store.id,
+            "name": store_name,
+            "url": url_for(
+                "company_share_shop",
+                seller_id=store.id,
+                shop_slug=shop_slug
+            )
+        })
+
+    # =========================================================
+    # LIMIT TOTAL SUGGESTIONS
+    # =========================================================
+
+    return jsonify(
+        suggestions[:10]
+    )
+
 @app.route("/seller/analytics")
 @login_required
 def seller_analytics():

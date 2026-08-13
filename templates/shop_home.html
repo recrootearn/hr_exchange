@@ -181,6 +181,114 @@ input{
 }
 
 
+/* =========================================================
+   LIVE SEARCH SUGGESTIONS
+   ========================================================= */
+
+.shop-search-suggestions{
+    position:absolute;
+    top:calc(100% + 8px);
+    left:0;
+    right:0;
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 15px 40px rgba(15,23,42,.18);
+    border:1px solid #e5e7eb;
+    overflow:hidden;
+    display:none;
+    z-index:9999;
+    max-height:420px;
+    overflow-y:auto;
+}
+
+.shop-suggestion{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:100%;
+    padding:13px 15px;
+    background:#fff;
+    border:0;
+    text-decoration:none;
+    color:#111827;
+    cursor:pointer;
+    transition:background .15s ease;
+}
+
+.shop-suggestion:hover{
+    background:#f5f7fb;
+}
+
+.shop-suggestion-icon{
+    width:40px;
+    height:40px;
+    flex:0 0 40px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#edf4ff;
+    color:#2563eb;
+    font-size:17px;
+}
+
+.shop-suggestion-content{
+    min-width:0;
+    flex:1;
+}
+
+.shop-suggestion-name{
+    font-size:14px;
+    font-weight:800;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.shop-suggestion-type{
+    margin-top:3px;
+    font-size:11px;
+    color:#6b7280;
+    font-weight:600;
+}
+
+.shop-suggestion-arrow{
+    color:#9ca3af;
+    font-size:13px;
+}
+
+.shop-search-loading,
+.shop-search-no-result{
+    padding:18px;
+    text-align:center;
+    color:#6b7280;
+    font-size:13px;
+}
+
+@media (max-width:600px){
+    .shop-search-suggestions{
+        top:calc(100% + 6px);
+        border-radius:14px;
+        max-height:60vh;
+        box-shadow:0 12px 30px rgba(15,23,42,.18);
+    }
+
+    .shop-suggestion{
+        padding:12px;
+    }
+
+    .shop-suggestion-icon{
+        width:38px;
+        height:38px;
+        flex-basis:38px;
+    }
+
+    .shop-suggestion-name{
+        font-size:13px;
+    }
+}
+
+
 /* HEADER ACTIONS */
 
 .shop-header-actions{
@@ -1435,6 +1543,11 @@ input{
                 aria-label="Search products or shops"
             >
 
+            <div
+                id="shopSearchSuggestions"
+                class="shop-search-suggestions"
+            ></div>
+
             <button
                 type="submit"
                 aria-label="Search"
@@ -2398,7 +2511,7 @@ document.addEventListener(
 
 
 /* =========================================================
-   SEARCH
+   SEARCH + LIVE SUGGESTIONS
    ========================================================= */
 
 const searchForm =
@@ -2407,28 +2520,153 @@ const searchForm =
 const searchInput =
     document.getElementById("shopSearchInput");
 
+const searchSuggestions =
+    document.getElementById("shopSearchSuggestions");
+
+let searchTimer = null;
+let searchController = null;
+
+function hideSearchSuggestions(){
+    if(searchSuggestions){
+        searchSuggestions.style.display = "none";
+        searchSuggestions.innerHTML = "";
+    }
+}
+
+function showSearchSuggestions(items){
+    if(!searchSuggestions) return;
+
+    searchSuggestions.innerHTML = "";
+
+    if(!items || items.length === 0){
+        searchSuggestions.innerHTML =
+            '<div class="shop-search-no-result">No products or shops found</div>';
+        searchSuggestions.style.display = "block";
+        return;
+    }
+
+    items.forEach(function(item){
+        const link = document.createElement("a");
+        link.href = item.url;
+        link.className = "shop-suggestion";
+
+        const icon = document.createElement("div");
+        icon.className = "shop-suggestion-icon";
+        icon.innerHTML = item.type === "store"
+            ? '<i class="fas fa-store"></i>'
+            : '<i class="fas fa-box"></i>';
+
+        const content = document.createElement("div");
+        content.className = "shop-suggestion-content";
+
+        const name = document.createElement("div");
+        name.className = "shop-suggestion-name";
+        name.textContent = item.name;
+
+        const type = document.createElement("div");
+        type.className = "shop-suggestion-type";
+        type.textContent = item.type === "store" ? "Store" : "Product";
+
+        content.appendChild(name);
+        content.appendChild(type);
+
+        const arrow = document.createElement("div");
+        arrow.className = "shop-suggestion-arrow";
+        arrow.innerHTML = '<i class="fas fa-chevron-right"></i>';
+
+        link.appendChild(icon);
+        link.appendChild(content);
+        link.appendChild(arrow);
+
+        searchSuggestions.appendChild(link);
+    });
+
+    searchSuggestions.style.display = "block";
+}
+
+async function loadSearchSuggestions(keyword){
+    if(!searchSuggestions) return;
+
+    if(!keyword){
+        hideSearchSuggestions();
+        return;
+    }
+
+    if(searchController){
+        searchController.abort();
+    }
+
+    searchController = new AbortController();
+
+    searchSuggestions.innerHTML =
+        '<div class="shop-search-loading"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+    searchSuggestions.style.display = "block";
+
+    try{
+        const response = await fetch(
+            "/shop/search-suggestions?q=" + encodeURIComponent(keyword),
+            {
+                method:"GET",
+                headers:{"Accept":"application/json"},
+                signal:searchController.signal
+            }
+        );
+
+        if(!response.ok){
+            throw new Error("Search request failed");
+        }
+
+        const data = await response.json();
+        showSearchSuggestions(data);
+    }catch(error){
+        if(error.name === "AbortError") return;
+        console.error("Search suggestions error:", error);
+        hideSearchSuggestions();
+    }
+}
+
+if(searchInput){
+    searchInput.addEventListener("input", function(){
+        const value = this.value.trim();
+        clearTimeout(searchTimer);
+
+        if(!value){
+            hideSearchSuggestions();
+            return;
+        }
+
+        searchTimer = setTimeout(function(){
+            loadSearchSuggestions(value);
+        }, 120);
+    });
+
+    searchInput.addEventListener("keydown", function(event){
+        if(event.key === "Escape"){
+            hideSearchSuggestions();
+        }
+    });
+}
 
 if(searchForm && searchInput){
+    searchForm.addEventListener("submit", function(event){
+        const value = searchInput.value.trim();
 
-    searchForm.addEventListener(
-        "submit",
-        function(event){
-
-            const value =
-                searchInput.value.trim();
-
-            if(!value){
-
-                event.preventDefault();
-                searchInput.focus();
-                return;
-            }
-
-            searchInput.value = value;
+        if(!value){
+            event.preventDefault();
+            searchInput.focus();
+            return;
         }
-    );
 
+        hideSearchSuggestions();
+        searchInput.value = value;
+    });
 }
+
+document.addEventListener("click", function(event){
+    if(searchForm && !searchForm.contains(event.target)){
+        hideSearchSuggestions();
+    }
+});
 
 </script>
 
