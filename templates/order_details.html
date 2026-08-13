@@ -981,88 +981,58 @@ body{
 
         <div class="actions">
 
-
             <!-- CUSTOMER INVOICE -->
-
             {% if current_user.id == order.user_id %}
 
             <a
                 href="/download-order-invoice/{{ order.id }}"
                 class="action primary"
             >
-
                 <i class="fas fa-download"></i>
-
                 Download Invoice
-
             </a>
+
+            <button
+                type="button"
+                class="action dark"
+                onclick="printOrderInvoice()"
+            >
+                <i class="fas fa-print"></i>
+                Print Invoice
+            </button>
 
             {% endif %}
 
 
-
             <!-- SELLER ACTIONS -->
-
             {% if current_user.id == order.seller_id %}
 
-
                 <!-- ACCEPT / REJECT -->
-
                 {% if order.order_status == "Pending" %}
 
                 <a
                     href="/seller/order/{{ order.id }}/accept"
                     class="action success"
                 >
-
                     <i class="fas fa-check"></i>
-
                     Accept
-
                 </a>
-
 
                 <a
                     href="/seller/order/{{ order.id }}/reject"
                     class="action danger"
                 >
-
                     <i class="fas fa-xmark"></i>
-
                     Reject
-
                 </a>
 
                 {% endif %}
-
-
-
-                <!-- =================================================
-                     EXISTING SHIPROCKET
-                     DO NOT TOUCH
-                     ================================================= -->
-
-                {% if order.order_status in ["Accepted", "Pending"] %}
-
-                <a
-                    href="/create-shipment/{{ order.id }}"
-                    class="action warning"
-                >
-
-                    <i class="fas fa-truck"></i>
-
-                    Create Shipment
-
-                </a>
-
-                {% endif %}
-
 
 
                 <!-- =================================================
                      DELHIVERY SHIPMENT
+                     SHIPROCKET REMOVED
                      ================================================= -->
-
                 {% if order.order_status in ["Accepted", "Pending"] %}
 
                     {% if not order.delhivery_waybill %}
@@ -1070,17 +1040,10 @@ body{
                     <a
                         href="/create-delhivery-shipment/{{ order.id }}"
                         class="action success"
-                        onclick="
-                            return confirm(
-                                'Create Delhivery shipment for this order?'
-                            );
-                        "
+                        onclick="return confirm('Create Delhivery shipment for this order?');"
                     >
-
                         <i class="fas fa-truck-fast"></i>
-
                         Create Delhivery Shipment
-
                     </a>
 
                     {% else %}
@@ -1094,11 +1057,8 @@ body{
                             cursor:default;
                         "
                     >
-
                         <i class="fas fa-circle-check"></i>
-
                         Delhivery Shipment Created
-
                     </div>
 
                     {% endif %}
@@ -1106,58 +1066,43 @@ body{
                 {% endif %}
 
 
-
                 <!-- =================================================
-                     DELHIVERY SHIPPING LABEL
+                     DOWNLOAD DELHIVERY SHIPPING LABEL
+                     ONLY AFTER DELHIVERY SHIPMENT IS CREATED
                      ================================================= -->
-
                 {% if order.delhivery_waybill
-                      and order.shipping_provider == "delhivery"
-                      and order.shipping_status not in ["Delivered", "Cancelled", "RTO"] %}
+                      and order.shipping_provider|lower == "delhivery" %}
 
-                <button
-                    type="button"
-                    id="delhivery-label-btn"
+                <a
+                    href="/generate-delhivery-label/{{ order.id }}"
                     class="action success"
-                    data-label-url="/generate-delhivery-label/{{ order.id }}"
-                    onclick="generateDownloadAndPrintDelhiveryLabel(this)"
+                    download="Delhivery-Shipping-Label-{{ order.delhivery_waybill }}.pdf"
                 >
-                    <i class="fas fa-print"></i>
-                    <span>Generate & Print Shipping Label</span>
-                </button>
+                    <i class="fas fa-download"></i>
+                    Download Shipping Label
+                </a>
 
                 {% endif %}
 
 
-
-                <!-- INVOICE -->
-
+                <!-- SELLER INVOICE -->
                 <a
                     href="/download-order-invoice/{{ order.id }}"
                     class="action primary"
                 >
-
-                    <i class="fas fa-download"></i>
-
+                    <i class="fas fa-file-invoice"></i>
                     Download Invoice
-
                 </a>
 
-
-                <!-- PRINT -->
-
+                <!-- PRINT INVOICE -->
                 <button
                     type="button"
                     class="action dark"
                     onclick="printOrderInvoice()"
                 >
-
                     <i class="fas fa-print"></i>
-
                     Print Invoice
-
                 </button>
-
 
             {% endif %}
 
@@ -1176,205 +1121,13 @@ body{
 
 <script>
 
+/* =========================================================
+   PRINT INVOICE
+   ========================================================= */
 function printOrderInvoice(){
     window.print();
 }
 
-
-/*
- * DELHIVERY SHIPPING LABEL
- *
- * The browser calls our Flask backend, not Delhivery directly.
- * This keeps the Delhivery API token private on the server.
- *
- * Backend endpoint expected:
- *   GET /generate-delhivery-label/<order_id>
- *
- * It must return the generated Delhivery label as application/pdf.
- *
- * Flow:
- *   1. Generate/fetch Delhivery label using the existing AWB.
- *   2. Download the PDF automatically.
- *   3. Open the PDF in a print window.
- *   4. Trigger the browser print dialog.
- */
-async function generateDownloadAndPrintDelhiveryLabel(button){
-
-    if(!button || button.dataset.busy === "1"){
-        return;
-    }
-
-    const labelUrl = button.dataset.labelUrl;
-
-    if(!labelUrl){
-        alert("Shipping label URL is not configured.");
-        return;
-    }
-
-    button.dataset.busy = "1";
-
-    const originalHtml = button.innerHTML;
-
-    button.disabled = true;
-    button.style.opacity = "0.75";
-    button.style.pointerEvents = "none";
-    button.innerHTML =
-        '<i class="fas fa-spinner fa-spin"></i>' +
-        '<span>Generating Shipping Label...</span>';
-
-    /*
-     * Open the print window immediately while this click is still a
-     * user gesture. This avoids popup blockers on many browsers.
-     */
-    let printWindow = null;
-
-    try{
-        printWindow = window.open("", "_blank");
-
-        if(printWindow){
-            printWindow.document.write(
-                '<!doctype html>' +
-                '<html><head><title>Shipping Label</title></head>' +
-                '<body style="margin:0;background:#fff;">' +
-                '<div style="font-family:Arial,sans-serif;padding:30px;text-align:center;">' +
-                'Generating shipping label...' +
-                '</div></body></html>'
-            );
-            printWindow.document.close();
-        }
-
-        const response = await fetch(labelUrl, {
-            method: "GET",
-            credentials: "same-origin",
-            headers: {
-                "Accept": "application/pdf"
-            }
-        });
-
-        if(!response.ok){
-            let message = "Unable to generate shipping label.";
-
-            try{
-                const contentType = response.headers.get("content-type") || "";
-
-                if(contentType.includes("application/json")){
-                    const data = await response.json();
-                    message = data.message || data.error || message;
-                }else{
-                    const text = await response.text();
-                    if(text){
-                        message = text.substring(0, 500);
-                    }
-                }
-            }catch(e){}
-
-            throw new Error(message);
-        }
-
-        const blob = await response.blob();
-
-        if(!blob || blob.size === 0){
-            throw new Error("Delhivery returned an empty shipping label.");
-        }
-
-        const pdfBlob = blob.type === "application/pdf"
-            ? blob
-            : new Blob([blob], {type:"application/pdf"});
-
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-
-        /*
-         * Automatic download.
-         */
-        const downloadLink = document.createElement("a");
-        downloadLink.href = pdfUrl;
-        downloadLink.download =
-            "Delhivery-Shipping-Label-{{ order.delhivery_waybill }}.pdf";
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        downloadLink.remove();
-
-        /*
-         * Load the PDF into the already-open print window and trigger
-         * printing once the PDF has loaded.
-         */
-        if(printWindow && !printWindow.closed){
-
-            printWindow.location.href = pdfUrl;
-
-            /*
-             * PDF viewer loading is browser-dependent. Give it a moment
-             * before calling print(). The user can still use the normal
-             * print dialog if the embedded viewer does not auto-print.
-             */
-            setTimeout(function(){
-
-                try{
-                    printWindow.focus();
-                    printWindow.print();
-                }catch(e){
-                    /*
-                     * Do not treat print-dialog limitations as a label
-                     * generation failure. The PDF has already downloaded.
-                     */
-                }
-
-            }, 1800);
-
-        }else{
-
-            /*
-             * Popup was blocked. The label is still downloaded.
-             * Open it in the current tab as a fallback.
-             */
-            window.open(pdfUrl, "_blank");
-
-        }
-
-        /*
-         * Keep the object URL alive while the print window is using it.
-         */
-        setTimeout(function(){
-            URL.revokeObjectURL(pdfUrl);
-        }, 120000);
-
-        button.innerHTML =
-            '<i class="fas fa-circle-check"></i>' +
-            '<span>Label Downloaded — Print Opened</span>';
-
-        setTimeout(function(){
-            button.innerHTML = originalHtml;
-            button.disabled = false;
-            button.style.opacity = "";
-            button.style.pointerEvents = "";
-            button.dataset.busy = "0";
-        }, 3500);
-
-    }catch(error){
-
-        if(printWindow && !printWindow.closed){
-            try{
-                printWindow.close();
-            }catch(e){}
-        }
-
-        console.error("Delhivery shipping label error:", error);
-
-        alert(
-            error && error.message
-                ? error.message
-                : "Unable to generate the Delhivery shipping label."
-        );
-
-        button.innerHTML = originalHtml;
-        button.disabled = false;
-        button.style.opacity = "";
-        button.style.pointerEvents = "";
-        button.dataset.busy = "0";
-    }
-}
-
 </script>
-
 
 {% endblock %}
