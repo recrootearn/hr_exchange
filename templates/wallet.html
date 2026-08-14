@@ -319,6 +319,26 @@
 
     </div>
 
+    <!-- LOCKED MARKETPLACE EARNINGS -->
+
+    <div style="
+        background:#fff7ed;
+        border:1px solid #fed7aa;
+        border-radius:22px;
+        padding:20px;
+        margin-bottom:25px;
+    ">
+        <div style="font-size:14px;color:#9a3412;font-weight:700;">
+            Marketplace Earnings on Hold
+        </div>
+        <div style="font-size:30px;font-weight:900;color:#c2410c;margin-top:5px;">
+            ₹{{ current_user.pending_marketplace_balance or 0 }}
+        </div>
+        <div style="font-size:13px;color:#7c2d12;margin-top:5px;">
+            These earnings are released to your withdrawable wallet only 7 days after the order is delivered.
+        </div>
+    </div>
+
     <!-- ACTIONS -->
 
     <div class="wallet-actions">

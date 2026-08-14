@@ -18169,23 +18169,29 @@ def marketplace_payment_success():
     # ---------------------------------------------------------
     # 12. CALCULATE PLATFORM COMMISSION
     # ---------------------------------------------------------
+    # Commission is charged ONLY on the product subtotal.
+    # Customer-paid delivery is not included in commission.
 
     settings = get_business_settings()
 
-    commission = (
-        order.total_amount *
-        settings.marketplace_commission
-    ) / 100
+    commission_percent = float(
+        getattr(settings, "marketplace_commission", 0) or 0
+    )
+    commission_percent = max(0.0, min(100.0, commission_percent))
 
-    seller_amount = (
-        order.total_amount -
-        commission
+    commission = round(
+        (float(order.subtotal or 0) * commission_percent) / 100,
+        2
+    )
+
+    # Seller settlement starts from product value only.
+    seller_amount = round(
+        float(order.subtotal or 0) - commission,
+        2
     )
 
     order.platform_commission = commission
-
     order.seller_amount = seller_amount
-
     order.wallet_released = False
 
 
@@ -20457,7 +20463,22 @@ def marketplace_settings():
 
         settings.marketplace_enabled = bool(request.form.get("marketplace_enabled"))
 
-        settings.marketplace_commission = float(request.form["marketplace_commission"])
+        try:
+            commission_percent = float(
+                request.form.get("marketplace_commission", 0)
+            )
+        except (TypeError, ValueError):
+            flash("Invalid platform commission percentage.", "danger")
+            return redirect(request.url)
+
+        if commission_percent < 0 or commission_percent > 100:
+            flash(
+                "Platform commission must be between 0% and 100%.",
+                "danger"
+            )
+            return redirect(request.url)
+
+        settings.marketplace_commission = commission_percent
 
         settings.seller_payment_hold_days = int(request.form["seller_payment_hold_days"])
 
