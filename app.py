@@ -13256,12 +13256,32 @@ def timeago(dt):
 @login_required
 def feed_post(id):
 
-    jobs = JobPost.query.filter_by(
-        hr_id=current_user.id
-    ).order_by(
-        JobPost.created_at.desc()
+    # ---------------------------------
+    # LOAD ONLY THE CLICKED POST
+    # ---------------------------------
+    job = JobPost.query.get_or_404(id)
+
+    # Mark active boost
+    job.active_boost = any(
+        boost.status == "Active"
+        for boost in job.boosts
+    )
+
+    # ---------------------------------
+    # APPLIED JOBS
+    # ---------------------------------
+    applications = JobApplication.query.filter_by(
+        applicant_hr_id=current_user.id
     ).all()
 
+    applied_jobs = [
+        app.job_id
+        for app in applications
+    ]
+
+    # ---------------------------------
+    # SPARKED JOBS
+    # ---------------------------------
     sparked_jobs = [
         s.job_id
         for s in Spark.query.filter_by(
@@ -13269,11 +13289,51 @@ def feed_post(id):
         ).all()
     ]
 
+    # ---------------------------------
+    # ENQUIRED JOBS
+    # ---------------------------------
+    enquired_jobs = [
+        e.post_id
+        for e in PostEnquiry.query.filter_by(
+            enquiry_hr_id=current_user.id
+        ).all()
+    ]
+
+    # ---------------------------------
+    # LOCATIONS
+    # ---------------------------------
+    locations = (
+        db.session.query(
+            func.lower(JobPost.location)
+        )
+        .filter(
+            JobPost.location.isnot(None),
+            JobPost.location != ""
+        )
+        .distinct()
+        .order_by(
+            func.lower(JobPost.location)
+        )
+        .all()
+    )
+
+    locations = [
+        loc[0].title()
+        for loc in locations
+    ]
+
+    # ---------------------------------
+    # SHOW ONLY THE CLICKED POST
+    # ---------------------------------
     return render_template(
-        'feed_post.html',
-        jobs=jobs,
-        selected_id=id,
-        sparked_jobs=sparked_jobs
+        "feed.html",
+        jobs=[job],
+        applied_jobs=applied_jobs,
+        sparked_jobs=sparked_jobs,
+        enquired_jobs=enquired_jobs,
+        locations=locations,
+        selected_location="",
+        selected_content="all"
     )
 
 @app.route('/candidate-logout')
