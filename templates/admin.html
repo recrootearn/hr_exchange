@@ -159,90 +159,6 @@
     }
 
 }
-
-/* =========================================================
-   MARKETPLACE ADMIN NAV BUTTONS
-   Same dashboard-style UI for every marketplace section
-   ========================================================= */
-.marketplace-admin-grid{
-    width:100%;
-    margin:24px 0 10px;
-}
-.marketplace-admin-btn{
-    position:relative;
-    width:100%;
-    min-height:72px;
-    padding:16px 18px;
-    border:0;
-    border-radius:16px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    color:#fff !important;
-    text-decoration:none !important;
-    font-size:15px;
-    font-weight:800;
-    box-shadow:0 8px 20px rgba(15,23,42,.12);
-    transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
-    overflow:hidden;
-}
-.marketplace-admin-btn::before{
-    content:"";
-    position:absolute;
-    width:95px;
-    height:95px;
-    border-radius:50%;
-    background:rgba(255,255,255,.10);
-    right:-30px;
-    top:-42px;
-}
-.marketplace-admin-btn i,
-.marketplace-admin-btn span{
-    position:relative;
-    z-index:2;
-}
-.marketplace-admin-btn i{
-    width:38px;
-    height:38px;
-    border-radius:11px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(255,255,255,.16);
-    font-size:17px;
-}
-.marketplace-admin-btn:hover{
-    color:#fff !important;
-    transform:translateY(-2px);
-    box-shadow:0 12px 26px rgba(15,23,42,.18);
-    filter:brightness(1.04);
-}
-.marketplace-admin-btn:active{transform:scale(.98)}
-.marketplace-blue{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
-.marketplace-green{background:linear-gradient(135deg,#16a34a,#15803d)}
-.marketplace-orange{background:linear-gradient(135deg,#f59e0b,#d97706)}
-.marketplace-red{background:linear-gradient(135deg,#ef4444,#dc2626)}
-.marketplace-dark{background:linear-gradient(135deg,#1f2937,#111827)}
-.marketplace-purple{background:linear-gradient(135deg,#7c3aed,#6d28d9)}
-.marketplace-teal{background:linear-gradient(135deg,#0891b2,#0e7490)}
-.marketplace-indigo{background:linear-gradient(135deg,#4f46e5,#4338ca)}
-
-@media(max-width:768px){
-    .marketplace-admin-btn{
-        min-height:64px;
-        padding:13px 15px;
-        border-radius:15px;
-        font-size:14px;
-    }
-    .marketplace-admin-btn i{
-        width:35px;
-        height:35px;
-        border-radius:10px;
-        font-size:16px;
-    }
-}
-
 </style>
 
 
@@ -482,84 +398,124 @@
 </div>
 
 
+<div class="col-md-3 mb-3 marketplace-banner-btn-wrap">
 
-<!-- =========================================================
-     MARKETPLACE MANAGEMENT
-     ========================================================= -->
-<div class="marketplace-admin-grid">
+    <a
+        href="/admin/marketplace/banners"
+        class="marketplace-banner-btn">
 
-    <h3 class="mb-3">
-        <i class="fas fa-store"></i>
-        Marketplace
-    </h3>
+        <i class="fas fa-images"></i>
 
-    <div class="row g-3">
+        <span>
+            Homepage Banners
+        </span>
 
-        <div class="col-md-3">
-            <a href="/admin/marketplace"
-               class="marketplace-admin-btn marketplace-blue">
-                <i class="fas fa-store"></i>
-                <span>Marketplace Dashboard</span>
-            </a>
-        </div>
+    </a>
 
-        <div class="col-md-3">
-            <a href="/admin/marketplace/sellers"
-               class="marketplace-admin-btn marketplace-green">
-                <i class="fas fa-store-alt"></i>
-                <span>Sellers</span>
-            </a>
-        </div>
-
-        <div class="col-md-3">
-            <a href="/admin/marketplace/products"
-               class="marketplace-admin-btn marketplace-orange">
-                <i class="fas fa-box"></i>
-                <span>Products</span>
-            </a>
-        </div>
-
-        <div class="col-md-3">
-            <a href="/admin/marketplace/orders"
-               class="marketplace-admin-btn marketplace-indigo">
-                <i class="fas fa-shopping-cart"></i>
-                <span>Orders</span>
-            </a>
-        </div>
-
-        <div class="col-md-3">
-            <a href="/admin/marketplace/returns"
-               class="marketplace-admin-btn marketplace-red">
-                <i class="fas fa-undo"></i>
-                <span>Returns</span>
-            </a>
-        </div>
-
-        <div class="col-md-3">
-            <a href="/admin/marketplace/withdrawals"
-               class="marketplace-admin-btn marketplace-dark">
-                <i class="fas fa-wallet"></i>
-                <span>Withdrawals</span>
-            </a>
-        </div>
-
-        <div class="col-md-3">
-            <a href="/admin/marketplace/analytics"
-               class="marketplace-admin-btn marketplace-purple">
-                <i class="fas fa-chart-line"></i>
-                <span>Analytics</span>
-            </a>
-        </div>
-
-        <div class="col-md-3">
-            <a href="/admin/marketplace/settings"
-               class="marketplace-admin-btn marketplace-teal">
-                <i class="fas fa-cogs"></i>
-                <span>Marketplace Settings</span>
-            </a>
-        </div>
-
-    </div>
 </div>
+
+<li>
+
+<a href="/admin/marketplace">
+
+<i class="fas fa-store"></i>
+
+Marketplace Dashboard
+
+</a>
+
+</li>
+
+<li>
+
+<a href="/admin/marketplace/sellers">
+
+<i class="fas fa-store-alt"></i>
+
+Sellers
+
+</a>
+
+</li>
+
+<li>
+
+<a href="/admin/marketplace/products">
+
+<i class="fas fa-box"></i>
+
+Products
+
+</a>
+
+</li>
+
+<li>
+
+<a href="/admin/marketplace/orders">
+
+<i class="fas fa-shopping-cart"></i>
+
+Orders
+
+</a>
+
+</li>
+
+<li>
+
+<a href="/admin/marketplace/returns">
+
+<i class="fas fa-undo"></i>
+
+Returns
+
+</a>
+
+</li>
+
+<li>
+
+<a href="/admin/marketplace/withdrawals">
+
+<i class="fas fa-wallet"></i>
+
+Withdrawals
+
+</a>
+
+</li>
+
+<li>
+
+<a href="/admin/marketplace/analytics">
+
+<i class="fas fa-chart-line"></i>
+
+Analytics
+
+</a>
+
+</li>
+
+<li>
+
+<a href="/admin/marketplace/payments">
+<i class="fas fa-money-bill-wave"></i> Payments &amp; Finance
+</a>
+
+</li>
+
+<li>
+
+<a href="/admin/marketplace/settings">
+
+<i class="fas fa-cogs"></i>
+
+Marketplace Settings
+
+</a>
+
+</li>
 
 {% endblock %}

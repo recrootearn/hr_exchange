@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Marketplace Payments{% endblock %}
+{% block content %}
+<style>
+.payment-page{max-width:1400px;margin:0 auto;padding:24px 18px 100px}.payment-header{margin-bottom:24px}.payment-header h1{margin:0;font-size:28px;font-weight:900}.payment-header p{margin:7px 0 0;color:#6b7280}.payment-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px}.payment-card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;padding:18px;box-shadow:0 5px 18px rgba(0,0,0,.05)}.label{color:#6b7280;font-size:13px;font-weight:700}.value{margin-top:7px;font-size:24px;font-weight:900}.sub{margin-top:5px;color:#9ca3af;font-size:12px}.payment-section{margin-top:24px;background:#fff;border:1px solid #e5e7eb;border-radius:20px;overflow:hidden;box-shadow:0 5px 18px rgba(0,0,0,.05)}.section-head{padding:18px 20px;border-bottom:1px solid #eef0f3}.section-head h2{margin:0;font-size:20px;font-weight:900}.section-head p{margin:5px 0 0;color:#6b7280;font-size:13px}.table-wrap{overflow-x:auto}.payment-table{width:100%;min-width:1000px;border-collapse:collapse}.payment-table th,.payment-table td{padding:13px 15px;border-bottom:1px solid #eef0f3;text-align:left;white-space:nowrap}.payment-table th{background:#f8fafc;color:#475569;font-size:12px;text-transform:uppercase}.payment-table td{font-size:14px}.amount{font-weight:800}.blue{color:#2563eb}.green{color:#15803d}.orange{color:#c2410c}.red{color:#dc2626}.shop-name{font-weight:800}.small{color:#6b7280;font-size:12px;margin-top:3px}.empty{padding:35px;text-align:center;color:#6b7280}.note{margin-top:18px;padding:14px 16px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;color:#64748b;font-size:13px;line-height:1.5}@media(max-width:1000px){.payment-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.payment-page{padding:18px 12px 90px}.payment-grid{grid-template-columns:1fr 1fr;gap:9px}.payment-card{padding:13px;border-radius:15px}.value{font-size:18px}}
+</style>
+<div class="payment-page">
+  <div class="payment-header"><h1>Marketplace Payments</h1><p>Complete payment, delivery, commission and seller-settlement overview.</p></div>
+  <div class="payment-grid">
+    <div class="payment-card"><div class="label">Total Customer Payments</div><div class="value">₹{{ "%.2f"|format(total_customer_payments) }}</div><div class="sub">{{ paid_order_count }} paid orders</div></div>
+    <div class="payment-card"><div class="label">Product Payments</div><div class="value blue">₹{{ "%.2f"|format(total_product_payments) }}</div><div class="sub">Product value collected</div></div>
+    <div class="payment-card"><div class="label">Delivery Payments</div><div class="value">₹{{ "%.2f"|format(total_delivery_payments) }}</div><div class="sub">Delivery charges collected</div></div>
+    <div class="payment-card"><div class="label">Platform Commission</div><div class="value green">₹{{ "%.2f"|format(total_platform_commission) }}</div><div class="sub">Marketplace commission</div></div>
+    <div class="payment-card"><div class="label">Seller Earnings on Hold</div><div class="value orange">₹{{ "%.2f"|format(total_seller_held) }}</div><div class="sub">Not yet withdrawable</div></div>
+    <div class="payment-card"><div class="label">Seller Earnings Released</div><div class="value green">₹{{ "%.2f"|format(total_seller_released) }}</div><div class="sub">Moved to seller wallet</div></div>
+    <div class="payment-card"><div class="label">Refunded Payments</div><div class="value red">₹{{ "%.2f"|format(total_refunded) }}</div><div class="sub">{{ refunded_order_count }} refunded orders</div></div>
+    <div class="payment-card"><div class="label">Payment Methods</div><div class="value">{{ payment_methods|length }}</div><div class="sub">Methods used for paid orders</div></div>
+  </div>
+  <div class="payment-section">
+    <div class="section-head"><h2>Shop-wise Payment Breakdown</h2><p>Product payments, delivery payments, total customer payments, commission and seller settlement for each shop.</p></div>
+    {% if shop_payments %}<div class="table-wrap"><table class="payment-table"><thead><tr><th>Shop</th><th>Orders</th><th>Product Payments</th><th>Delivery Payments</th><th>Total Customer Payments</th><th>Platform Commission</th><th>Seller Held</th><th>Seller Released</th></tr></thead><tbody>
+    {% for shop in shop_payments %}<tr><td><div class="shop-name">{{ shop.shop_name }}</div><div class="small">Seller ID: {{ shop.seller_id }}</div></td><td>{{ shop.order_count }}</td><td class="amount blue">₹{{ "%.2f"|format(shop.product_payments) }}</td><td class="amount">₹{{ "%.2f"|format(shop.delivery_payments) }}</td><td class="amount">₹{{ "%.2f"|format(shop.customer_payments) }}</td><td class="amount green">₹{{ "%.2f"|format(shop.commission) }}</td><td class="amount orange">₹{{ "%.2f"|format(shop.seller_held) }}</td><td class="amount green">₹{{ "%.2f"|format(shop.seller_released) }}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty">No paid marketplace orders yet.</div>{% endif %}
+  </div>
+  <div class="payment-section">
+    <div class="section-head"><h2>Payment Method Breakdown</h2></div>
+    {% if payment_methods %}<div class="table-wrap"><table class="payment-table"><thead><tr><th>Payment Method</th><th>Orders</th><th>Total Amount</th></tr></thead><tbody>{% for payment in payment_methods %}<tr><td class="shop-name">{{ payment.method }}</td><td>{{ payment.order_count }}</td><td class="amount">₹{{ "%.2f"|format(payment.amount) }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty">No payment data available.</div>{% endif %}
+  </div>
+  <div class="note"><strong>Delivery accounting:</strong> “Delivery Payments” is the delivery amount charged to customers and stored on each order. The current Order model does not store Delhivery's final wallet debit as a separate financial field, so this report does not incorrectly present the customer delivery charge as the actual Delhivery cost.</div>
+</div>
+{% endblock %}
