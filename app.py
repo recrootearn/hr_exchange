@@ -19946,6 +19946,42 @@ def admin_marketplace():
         Order.created_at.desc()
     ).limit(10).all()
 
+    # Dashboard tables
+    top_sellers = []
+    seller_rows = db.session.query(
+        User,
+        db.func.count(Order.id).label("order_count"),
+        db.func.coalesce(db.func.sum(Order.total_amount), 0).label("revenue")
+    ).join(
+        Order,
+        Order.seller_id == User.id
+    ).filter(
+        User.is_shop_owner == True
+    ).group_by(
+        User.id
+    ).order_by(
+        db.func.sum(Order.total_amount).desc()
+    ).limit(10).all()
+
+    for seller, order_count, revenue in seller_rows:
+        top_sellers.append(
+            (seller, float(revenue or 0), int(order_count or 0))
+        )
+
+    top_products = Product.query.order_by(
+        Product.purchase_count.desc(),
+        Product.revenue.desc(),
+        Product.created_at.desc()
+    ).limit(10).all()
+
+    low_stock = Product.query.filter(
+        Product.is_active == True,
+        Product.stock <= 5
+    ).order_by(
+        Product.stock.asc(),
+        Product.created_at.desc()
+    ).limit(10).all()
+
     return render_template(
         "admin_marketplace/dashboard.html",
 
@@ -19957,8 +19993,39 @@ def admin_marketplace():
         pending_returns=pending_returns,
         pending_withdrawals=pending_withdrawals,
         pending_shipments=pending_shipments,
-        latest_orders=latest_orders
+        latest_orders=latest_orders,
+        top_sellers=top_sellers,
+        top_products=top_products,
+        low_stock=low_stock
     )
+
+@app.route("/admin/marketplace/chart")
+@admin_required
+def marketplace_chart():
+    """Return monthly paid marketplace revenue for the admin dashboard."""
+    from sqlalchemy import extract
+
+    rows = db.session.query(
+        extract("month", Order.created_at).label("month"),
+        db.func.coalesce(db.func.sum(Order.total_amount), 0).label("revenue")
+    ).filter(
+        Order.payment_status == "Paid"
+    ).group_by(
+        extract("month", Order.created_at)
+    ).all()
+
+    monthly = [0.0] * 12
+
+    for month, revenue in rows:
+        try:
+            month_index = int(month) - 1
+            if 0 <= month_index < 12:
+                monthly[month_index] = round(float(revenue or 0), 2)
+        except (TypeError, ValueError):
+            continue
+
+    return jsonify(monthly)
+
 
 @app.route("/admin/marketplace/sellers")
 @admin_required
@@ -20314,6 +20381,67 @@ def update_payment_status(id):
 
     return redirect(request.referrer)
 
+@app.route("/admin/marketplace/analytics")
+@admin_required
+def marketplace_analytics():
+    """Marketplace-wide analytics page."""
+    paid_orders = Order.query.filter_by(payment_status="Paid")
+
+    total_orders = Order.query.count()
+    paid_orders_count = paid_orders.count()
+
+    total_sales = db.session.query(
+        db.func.coalesce(db.func.sum(Order.total_amount), 0)
+    ).filter(
+        Order.payment_status == "Paid"
+    ).scalar() or 0
+
+    total_commission = db.session.query(
+        db.func.coalesce(db.func.sum(Order.platform_commission), 0)
+    ).scalar() or 0
+
+    seller_payout = db.session.query(
+        db.func.coalesce(db.func.sum(Order.seller_amount), 0)
+    ).filter(
+        Order.wallet_released == True
+    ).scalar() or 0
+
+    pending_payout = db.session.query(
+        db.func.coalesce(db.func.sum(Order.seller_amount), 0)
+    ).filter(
+        Order.wallet_released == False
+    ).scalar() or 0
+
+    total_returns = ReturnRequest.query.count()
+
+    pending_returns_count = ReturnRequest.query.filter(
+        ReturnRequest.status.in_(["Pending", "Seller Approved", "Approved"])
+    ).count()
+
+    pending_withdrawals_count = Withdrawal.query.filter_by(
+        status="Pending"
+    ).count()
+
+    top_products = Product.query.order_by(
+        Product.purchase_count.desc(),
+        Product.revenue.desc()
+    ).limit(15).all()
+
+    return render_template(
+        "admin_marketplace/analytics.html",
+        total_orders=total_orders,
+        paid_orders_count=paid_orders_count,
+        total_sales=float(total_sales or 0),
+        total_commission=float(total_commission or 0),
+        seller_payout=float(seller_payout or 0),
+        pending_payout=float(pending_payout or 0),
+        total_returns=total_returns,
+        pending_returns_count=pending_returns_count,
+        pending_withdrawals_count=pending_withdrawals_count,
+        top_products=top_products
+    )
+
+
 @app.route("/admin/marketplace/finance")
 @admin_required
 def marketplace_finance():
@@ -20361,6 +20489,20 @@ def marketplace_finance():
         total_refunds=total_refunds
 
     )
+
+@app.route("/admin/marketplace/returns")
+@admin_required
+def marketplace_returns():
+    """Admin list of all marketplace return requests."""
+    returns = ReturnRequest.query.order_by(
+        ReturnRequest.created_at.desc()
+    ).all()
+
+    return render_template(
+        "admin_marketplace/returns.html",
+        returns=returns
+    )
+
 
 @app.route("/admin/marketplace/withdrawals")
 @admin_required
