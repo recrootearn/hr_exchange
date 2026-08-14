@@ -16972,19 +16972,24 @@ def company_shop(seller_id):
 
     seller = User.query.get_or_404(seller_id)
 
-    products = Product.query.filter_by(
-        seller_id=seller.id,
-        status="active"
-    ).order_by(
-        Product.created_at.desc()
-    ).all()
+    products = (
+        Product.query
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.seller_id == seller.id,
+            Product.is_active == True,
+            Product.status == "active",
+            User.is_shop_active == True
+        )
+        .order_by(Product.created_at.desc())
+        .all()
+    )
 
     return render_template(
         "company_shop.html",
         seller=seller,
         products=products
     )
-
 @app.route("/shop")
 @login_required
 def shop_home():
@@ -16992,36 +16997,43 @@ def shop_home():
     # ==========================================
     # CATEGORIES
     # ONLY SHOW CATEGORIES HAVING ACTIVE PRODUCTS
+    # FROM ENABLED SHOPS
     # ==========================================
-
     categories = (
         ProductCategory.query
         .join(Product, Product.category_id == ProductCategory.id)
+        .join(User, Product.seller_id == User.id)
         .filter(
             ProductCategory.is_active == True,
-            Product.status == "active"
+            Product.is_active == True,
+            Product.status == "active",
+            User.is_shop_active == True
         )
         .distinct()
         .all()
     )
 
     # ==========================================
-    # STORES WITH ACTIVE PRODUCTS
+    # STORES WITH AT LEAST ONE ACTIVE PRODUCT
+    # AND ENABLED SHOP
     # ==========================================
-
     store_seller_ids = db.session.query(
         Product.seller_id
+    ).join(
+        User, Product.seller_id == User.id
     ).filter(
+        Product.is_active == True,
         Product.status == "active",
-        Product.seller_id.isnot(None)
+        Product.seller_id.isnot(None),
+        User.is_shop_active == True
     ).distinct().subquery()
 
     stores = User.query.filter(
-        User.id.in_(store_seller_ids)
+        User.id.in_(store_seller_ids),
+        User.is_shop_active == True
     ).all()
 
     for store in stores:
-
         store.generated_shop_slug = make_shop_slug(
             store.company
             or store.first_name
@@ -17032,7 +17044,6 @@ def shop_home():
     # ==========================================
     # ADMIN CONTROLLED BANNERS
     # ==========================================
-
     banners = (
         HomepageBanner.query
         .filter_by(is_active=True)
@@ -17040,171 +17051,157 @@ def shop_home():
         .all()
     )
 
-
     # ==========================================
     # TOP DEALS
-    # ALWAYS SHOW LATEST 4
     # ==========================================
-
     promoted_products = (
         Product.query
-        .filter_by(
-            is_promoted=True,
-            status="active"
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.is_promoted == True,
+            Product.is_active == True,
+            Product.status == "active",
+            User.is_shop_active == True
         )
-        .order_by(
-            Product.created_at.desc()
-        )
+        .order_by(Product.created_at.desc())
         .limit(4)
         .all()
     )
-
 
     # ==========================================
     # TRENDING NOW
-    # LATEST 4 IN THIS SECTION
     # ==========================================
-
     trending_products = (
         Product.query
-        .filter_by(
-            status="active",
-            show_on_home=True,
-            home_section="Trending Now"
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.is_active == True,
+            Product.status == "active",
+            Product.show_on_home == True,
+            Product.home_section == "Trending Now",
+            User.is_shop_active == True
         )
-        .order_by(
-            Product.created_at.desc()
-        )
+        .order_by(Product.created_at.desc())
         .limit(4)
         .all()
     )
-
 
     # ==========================================
     # GREAT DEALS
-    # LATEST 4 IN THIS SECTION
     # ==========================================
-
     deal_products = (
         Product.query
-        .filter_by(
-            status="active",
-            show_on_home=True,
-            home_section="Great Deals"
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.is_active == True,
+            Product.status == "active",
+            Product.show_on_home == True,
+            Product.home_section == "Great Deals",
+            User.is_shop_active == True
         )
-        .order_by(
-            Product.created_at.desc()
-        )
+        .order_by(Product.created_at.desc())
         .limit(4)
         .all()
     )
-
 
     # ==========================================
     # NEW ARRIVALS
-    # LATEST 4
     # ==========================================
-
     new_arrival_products = (
         Product.query
-        .filter_by(
-            status="active",
-            show_on_home=True,
-            home_section="New Arrivals"
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.is_active == True,
+            Product.status == "active",
+            Product.show_on_home == True,
+            Product.home_section == "New Arrivals",
+            User.is_shop_active == True
         )
-        .order_by(
-            Product.created_at.desc()
-        )
+        .order_by(Product.created_at.desc())
         .limit(4)
         .all()
     )
-
 
     # ==========================================
     # RECOMMENDED
-    # LATEST 4 IN THIS SECTION
     # ==========================================
-
     recommended_products = (
         Product.query
-        .filter_by(
-            status="active",
-            show_on_home=True,
-            home_section="Recommended"
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.is_active == True,
+            Product.status == "active",
+            Product.show_on_home == True,
+            Product.home_section == "Recommended",
+            User.is_shop_active == True
         )
-        .order_by(
-            Product.created_at.desc()
-        )
+        .order_by(Product.created_at.desc())
         .limit(4)
         .all()
     )
-
 
     # ==========================================
     # LATEST PRODUCTS
-    # LATEST 4 ONLY
     # ==========================================
-
     latest_products = (
         Product.query
-        .filter_by(status="active")
-        .order_by(
-            Product.created_at.desc()
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.is_active == True,
+            Product.status == "active",
+            User.is_shop_active == True
         )
+        .order_by(Product.created_at.desc())
         .limit(4)
         .all()
     )
 
-
-    # ==========================================
-    # SHOP HOMEPAGE
-    # ==========================================
-
     return render_template(
         "shop_home.html",
-
         categories=categories,
-
         stores=stores,
-
         banners=banners,
-
         promoted_products=promoted_products,
-
         trending_products=trending_products,
-
         deal_products=deal_products,
-
         new_arrival_products=new_arrival_products,
-
         recommended_products=recommended_products,
-
         latest_products=latest_products
     )
-
 @app.route("/shop/all")
 @login_required
 def shop_all_products():
 
-    promoted_products = Product.query.filter_by(
-        is_promoted=True,
-        status="active"
-    ).order_by(
-        Product.created_at.desc()
-    ).all()
+    promoted_products = (
+        Product.query
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.is_promoted == True,
+            Product.is_active == True,
+            Product.status == "active",
+            User.is_shop_active == True
+        )
+        .order_by(Product.created_at.desc())
+        .all()
+    )
 
-    products = Product.query.filter_by(
-        status="active"
-    ).order_by(
-        Product.created_at.desc()
-    ).all()
+    products = (
+        Product.query
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.is_active == True,
+            Product.status == "active",
+            User.is_shop_active == True
+        )
+        .order_by(Product.created_at.desc())
+        .all()
+    )
 
     return render_template(
         "shop_all_products.html",
         promoted_products=promoted_products,
         products=products
     )
-
 @app.route(
     "/share-shop/<int:seller_id>/<shop_slug>",
     strict_slashes=False
@@ -17215,13 +17212,14 @@ def company_share_shop(seller_id, shop_slug):
 
     products = (
         Product.query
-        .filter_by(
-            seller_id=seller.id,
-            status="active"
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.seller_id == seller.id,
+            Product.is_active == True,
+            Product.status == "active",
+            User.is_shop_active == True
         )
-        .order_by(
-            Product.created_at.desc()
-        )
+        .order_by(Product.created_at.desc())
         .all()
     )
 
@@ -17230,27 +17228,38 @@ def company_share_shop(seller_id, shop_slug):
         seller=seller,
         products=products
     )
-
 @app.route("/shop/category/<int:id>")
 @login_required
 def shop_category(id):
 
     category = ProductCategory.query.get_or_404(id)
 
-    promoted_products = Product.query.filter_by(
-        category_id=id,
-        status="active",
-        is_promoted=True
-    ).order_by(
-        Product.created_at.desc()
-    ).all()
+    promoted_products = (
+        Product.query
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.category_id == id,
+            Product.is_active == True,
+            Product.status == "active",
+            Product.is_promoted == True,
+            User.is_shop_active == True
+        )
+        .order_by(Product.created_at.desc())
+        .all()
+    )
 
-    products = Product.query.filter_by(
-        category_id=id,
-        status="active"
-    ).order_by(
-        Product.created_at.desc()
-    ).all()
+    products = (
+        Product.query
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.category_id == id,
+            Product.is_active == True,
+            Product.status == "active",
+            User.is_shop_active == True
+        )
+        .order_by(Product.created_at.desc())
+        .all()
+    )
 
     return render_template(
         "shop_category.html",
@@ -17258,20 +17267,40 @@ def shop_category(id):
         promoted_products=promoted_products,
         products=products
     )
-
 @app.route("/product/<int:id>")
 def product_details(id):
 
-    product = Product.query.get_or_404(id)
+    # A product is publicly accessible only when:
+    # 1. Product is active
+    # 2. Product status is active
+    # 3. Seller's shop is enabled
+    product = (
+        Product.query
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.id == id,
+            Product.is_active == True,
+            Product.status == "active",
+            User.is_shop_active == True
+        )
+        .first_or_404()
+    )
 
-    related_products = Product.query.filter(
-        Product.category_id == product.category_id,
-        Product.id != product.id,
-        Product.status == "active"
-    ).limit(8).all()
+    related_products = (
+        Product.query
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.category_id == product.category_id,
+            Product.id != product.id,
+            Product.is_active == True,
+            Product.status == "active",
+            User.is_shop_active == True
+        )
+        .limit(8)
+        .all()
+    )
 
     product.views += 1
-
     db.session.commit()
 
     return render_template(
@@ -17279,12 +17308,21 @@ def product_details(id):
         product=product,
         related_products=related_products
     )
-
 @app.route("/cart/add/<int:product_id>", methods=["POST"])
 @login_required
 def add_to_cart(product_id):
 
-    product = Product.query.get_or_404(product_id)
+    product = (
+        Product.query
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.id == product_id,
+            Product.is_active == True,
+            Product.status == "active",
+            User.is_shop_active == True
+        )
+        .first_or_404()
+    )
 
     selected_variant = request.form.get("selected_variant")
 
@@ -19561,26 +19599,28 @@ def shop_search():
 
     # =========================================================
     # PRODUCTS SEARCH
+    # ONLY PRODUCTS FROM ENABLED SHOPS
     # =========================================================
-
-    products = Product.query.filter(
-        Product.is_active == True,
-        Product.status == "active"
+    products = (
+        Product.query
+        .join(User, Product.seller_id == User.id)
+        .filter(
+            Product.is_active == True,
+            Product.status == "active",
+            User.is_shop_active == True
+        )
     )
 
-    # Search by PRODUCT NAME
     if keyword:
         products = products.filter(
             Product.name.ilike(f"%{keyword}%")
         )
 
-    # Category
     if category:
         products = products.filter(
             Product.category_id == category
         )
 
-    # Minimum price
     if min_price:
         try:
             products = products.filter(
@@ -19589,7 +19629,6 @@ def shop_search():
         except (ValueError, TypeError):
             pass
 
-    # Maximum price
     if max_price:
         try:
             products = products.filter(
@@ -19598,7 +19637,6 @@ def shop_search():
         except (ValueError, TypeError):
             pass
 
-    # Rating
     if rating:
         try:
             products = products.filter(
@@ -19607,18 +19645,10 @@ def shop_search():
         except (ValueError, TypeError):
             pass
 
-    # Verified seller
     if verified:
-        products = products.join(
-            User,
-            Product.seller_id == User.id
-        ).filter(
+        products = products.filter(
             User.is_verified_seller == True
         )
-
-    # =========================================================
-    # SORTING
-    # =========================================================
 
     products = products.order_by(
         Product.is_promoted.desc(),
@@ -19626,79 +19656,50 @@ def shop_search():
     )
 
     if sort == "price_low":
-
-        products = products.order_by(
-            Product.price.asc()
-        )
-
+        products = products.order_by(Product.price.asc())
     elif sort == "price_high":
-
-        products = products.order_by(
-            Product.price.desc()
-        )
-
+        products = products.order_by(Product.price.desc())
     elif sort == "rating":
-
-        products = products.order_by(
-            Product.average_rating.desc()
-        )
-
+        products = products.order_by(Product.average_rating.desc())
     elif sort == "latest":
-
-        products = products.order_by(
-            Product.created_at.desc()
-        )
-
-    # =========================================================
-    # PAGINATION
-    # =========================================================
+        products = products.order_by(Product.created_at.desc())
 
     products = products.paginate(
-        page=request.args.get(
-            "page",
-            1,
-            type=int
-        ),
+        page=request.args.get("page", 1, type=int),
         per_page=20
     )
 
     # =========================================================
     # STORE SEARCH
+    # ONLY ENABLED SHOPS WITH AT LEAST ONE ACTIVE PRODUCT
     # =========================================================
-
     stores = []
 
     if keyword:
-
-        # Only sellers who actually have active products
         active_shop_sellers = db.session.query(
             Product.seller_id
+        ).join(
+            User, Product.seller_id == User.id
         ).filter(
             Product.is_active == True,
             Product.status == "active",
-            Product.seller_id.isnot(None)
+            Product.seller_id.isnot(None),
+            User.is_shop_active == True
         ).distinct().subquery()
 
         stores = User.query.filter(
             User.id.in_(active_shop_sellers),
             User.is_shop_active == True,
             or_(
-                User.company.ilike(
-                    f"%{keyword}%"
-                ),
-                User.first_name.ilike(
-                    f"%{keyword}%"
-                ),
-                User.username.ilike(
-                    f"%{keyword}%"
-                )
+                User.company.ilike(f"%{keyword}%"),
+                User.first_name.ilike(f"%{keyword}%"),
+                User.username.ilike(f"%{keyword}%")
             )
         ).order_by(
             User.company.asc(),
             User.first_name.asc()
         ).all()
 
-        # Generate shop slug for each search result
         for store in stores:
             store.generated_shop_slug = make_shop_slug(
                 store.company
@@ -19707,19 +19708,11 @@ def shop_search():
                 or "store"
             )
 
-    # =========================================================
-    # NOT FOUND
-    # =========================================================
-
     not_found = (
         bool(keyword)
         and not stores
         and products.total == 0
     )
-
-    # =========================================================
-    # SEARCH RESULT PAGE
-    # =========================================================
 
     return render_template(
         "shop_search_result.html",
@@ -19728,13 +19721,11 @@ def shop_search():
         keyword=keyword,
         not_found=not_found
     )
-
 @app.route("/shop/search-suggestions")
 def shop_search_suggestions():
 
     keyword = request.args.get("q", "").strip()
 
-    # Don't search for empty / very short input
     if len(keyword) < 1:
         return jsonify([])
 
@@ -19742,13 +19733,15 @@ def shop_search_suggestions():
 
     # =========================================================
     # PRODUCTS
+    # ONLY PRODUCTS FROM ENABLED SHOPS
     # =========================================================
-
     products = (
         Product.query
+        .join(User, Product.seller_id == User.id)
         .filter(
             Product.is_active == True,
             Product.status == "active",
+            User.is_shop_active == True,
             Product.name.ilike(f"%{keyword}%")
         )
         .order_by(
@@ -19761,7 +19754,6 @@ def shop_search_suggestions():
     )
 
     for product in products:
-
         suggestions.append({
             "type": "product",
             "id": product.id,
@@ -19774,14 +19766,17 @@ def shop_search_suggestions():
 
     # =========================================================
     # STORES
+    # ONLY ENABLED SHOPS WITH AT LEAST ONE ACTIVE PRODUCT
     # =========================================================
-
     active_shop_sellers = db.session.query(
         Product.seller_id
+    ).join(
+        User, Product.seller_id == User.id
     ).filter(
         Product.is_active == True,
         Product.status == "active",
-        Product.seller_id.isnot(None)
+        Product.seller_id.isnot(None),
+        User.is_shop_active == True
     ).distinct().subquery()
 
     stores = (
@@ -19790,15 +19785,9 @@ def shop_search_suggestions():
             User.id.in_(active_shop_sellers),
             User.is_shop_active == True,
             or_(
-                User.company.ilike(
-                    f"%{keyword}%"
-                ),
-                User.first_name.ilike(
-                    f"%{keyword}%"
-                ),
-                User.username.ilike(
-                    f"%{keyword}%"
-                )
+                User.company.ilike(f"%{keyword}%"),
+                User.first_name.ilike(f"%{keyword}%"),
+                User.username.ilike(f"%{keyword}%")
             )
         )
         .order_by(
@@ -19810,7 +19799,6 @@ def shop_search_suggestions():
     )
 
     for store in stores:
-
         store_name = (
             store.company
             or store.first_name
@@ -19831,14 +19819,7 @@ def shop_search_suggestions():
             )
         })
 
-    # =========================================================
-    # LIMIT TOTAL SUGGESTIONS
-    # =========================================================
-
-    return jsonify(
-        suggestions[:10]
-    )
-
+    return jsonify(suggestions[:10])
 @app.route("/seller/analytics")
 @login_required
 def seller_analytics():
@@ -19904,12 +19885,16 @@ def monthly_sales():
 @admin_required
 def admin_marketplace():
 
-    total_shops = User.query.filter_by(
-        is_shop_owner=True
-    ).count()
+    # A shop is counted only when the seller has at least one product.
+    # Enabled/disabled status does not affect admin visibility.
+    total_shops = (
+        db.session.query(User.id)
+        .join(Product, Product.seller_id == User.id)
+        .group_by(User.id)
+        .count()
+    )
 
     total_products = Product.query.count()
-
     total_orders = Order.query.count()
 
     total_sales = db.session.query(
@@ -19955,8 +19940,6 @@ def admin_marketplace():
     ).join(
         Order,
         Order.seller_id == User.id
-    ).filter(
-        User.is_shop_owner == True
     ).group_by(
         User.id
     ).order_by(
@@ -19984,7 +19967,6 @@ def admin_marketplace():
 
     return render_template(
         "admin_marketplace/dashboard.html",
-
         total_shops=total_shops,
         total_products=total_products,
         total_orders=total_orders,
@@ -19998,7 +19980,6 @@ def admin_marketplace():
         top_products=top_products,
         low_stock=low_stock
     )
-
 @app.route("/admin/marketplace/chart")
 @admin_required
 def marketplace_chart():
@@ -20030,17 +20011,22 @@ def marketplace_chart():
 @app.route("/admin/marketplace/sellers")
 @admin_required
 def marketplace_sellers():
-    sellers = User.query.filter(
-        User.is_shop_active == True
-    ).order_by(
-        User.created_at.desc()
-    ).all()
+
+    # Show every seller who has at least one product.
+    # Keep disabled shops visible here so admin can enable them again.
+    sellers = (
+        User.query
+        .join(Product, Product.seller_id == User.id)
+        .group_by(User.id)
+        .having(db.func.count(Product.id) >= 1)
+        .order_by(User.created_at.desc())
+        .all()
+    )
 
     return render_template(
         "admin_marketplace/sellers.html",
         sellers=sellers
     )
-
 @app.route("/admin/marketplace/seller/<int:id>")
 @admin_required
 def marketplace_seller(id):
