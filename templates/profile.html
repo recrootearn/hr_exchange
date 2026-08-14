@@ -797,6 +797,21 @@
 
     <button
         type="button"
+        class="profile-tab"
+        data-tab="videos"
+        onclick="switchProfileTab('videos')">
+
+        <i class="fas fa-video"></i>
+
+        <span>
+            Videos
+        </span>
+
+    </button>
+
+
+    <button
+        type="button"
         class="profile-tab active"
         data-tab="posts"
         onclick="switchProfileTab('posts')">
@@ -828,28 +843,36 @@
 
 
 <!-- =========================================================
-     POSTS TAB
+     VIDEOS TAB
      ========================================================= -->
 
 <div
-    id="profile-posts"
-    class="profile-tab-content active">
+    id="profile-videos"
+    class="profile-tab-content">
 
     <div class="post-grid">
 
+        {% set video_namespace = namespace(found=false) %}
+
         {% for job in jobs %}
 
-        <a
-            href="/feed/{{ job.id }}"
-            class="post-item">
+            {% set first_file = '' %}
 
             {% if job.images and job.images != "" %}
+                {% set first_file = job.images.split(',')[0]|trim %}
+            {% elif job.image and job.image != "" %}
+                {% set first_file = job.image|trim %}
+            {% endif %}
 
-                {% set first_file = job.images.split(',')[0] %}
+            {% if first_file and first_file.lower().endswith(
+                ('.mp4','.mov','.avi','.mkv','.webm')
+            ) %}
 
-                {% if first_file.lower().endswith(
-                    ('.mp4','.mov','.avi','.mkv','.webm')
-                ) %}
+                {% set video_namespace.found = true %}
+
+                <a
+                    href="/feed/{{ job.id }}"
+                    class="post-item">
 
                     {% set thumb =
                         first_file.rsplit('.',1)[0] + '.jpg'
@@ -869,11 +892,7 @@
                                 this.src='/static/uploads/video-placeholder.jpg';
                             "
                             loading="lazy"
-                            style="
-                                width:100%;
-                                height:100%;
-                                object-fit:cover;
-                            ">
+                            alt="Video">
 
                         <div
                             style="
@@ -898,34 +917,124 @@
 
                     </div>
 
-                {% else %}
-
-                    <img
-                        src="/static/uploads/{{ first_file }}"
-                        loading="lazy"
-                        alt="Post">
-
-                {% endif %}
-
-            {% elif job.image and job.image != "" %}
-
-                <img
-                    src="/static/uploads/{{ job.image }}"
-                    loading="lazy"
-                    alt="Post">
-
-            {% else %}
-
-                <img
-                    src="https://via.placeholder.com/500x500?text=JOB"
-                    loading="lazy"
-                    alt="Job">
+                </a>
 
             {% endif %}
 
-        </a>
+        {% endfor %}
 
-        {% else %}
+
+        {% if not video_namespace.found %}
+
+        <div
+            style="
+                grid-column:1/-1;
+                background:white;
+                padding:60px 20px;
+                text-align:center;
+            ">
+
+            <i
+                class="fas fa-video"
+                style="
+                    font-size:60px;
+                    color:#2563eb;
+                    margin-bottom:15px;
+                ">
+            </i>
+
+            <h4 class="fw-bold">
+                No Videos Yet
+            </h4>
+
+            <p class="text-muted">
+                Post your first video to show it here.
+            </p>
+
+            <a
+                href="/post-video"
+                class="btn btn-primary mt-2">
+
+                + Post Your First Video
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     POSTS TAB
+     ========================================================= -->
+
+<div
+    id="profile-posts"
+    class="profile-tab-content active">
+
+    <div class="post-grid">
+
+        {% set post_namespace = namespace(found=false) %}
+
+        {% for job in jobs %}
+
+            {% set first_file = '' %}
+
+            {% if job.images and job.images != "" %}
+                {% set first_file = job.images.split(',')[0]|trim %}
+            {% elif job.image and job.image != "" %}
+                {% set first_file = job.image|trim %}
+            {% endif %}
+
+            {% set is_video = first_file and first_file.lower().endswith(
+                ('.mp4','.mov','.avi','.mkv','.webm')
+            ) %}
+
+            {% if not is_video %}
+
+                {% set post_namespace.found = true %}
+
+                <a
+                    href="/feed/{{ job.id }}"
+                    class="post-item">
+
+                    {% if job.images and job.images != "" %}
+
+                        {% set first_file = job.images.split(',')[0]|trim %}
+
+                        <img
+                            src="/static/uploads/{{ first_file }}"
+                            loading="lazy"
+                            alt="Post">
+
+                    {% elif job.image and job.image != "" %}
+
+                        <img
+                            src="/static/uploads/{{ job.image }}"
+                            loading="lazy"
+                            alt="Post">
+
+                    {% else %}
+
+                        <img
+                            src="https://via.placeholder.com/500x500?text=JOB"
+                            loading="lazy"
+                            alt="Job">
+
+                    {% endif %}
+
+                </a>
+
+            {% endif %}
+
+        {% endfor %}
+
+
+        {% if not post_namespace.found %}
 
         <div
             style="
@@ -962,7 +1071,7 @@
 
         </div>
 
-        {% endfor %}
+        {% endif %}
 
     </div>
 
@@ -1145,6 +1254,7 @@
     {% endif %}
 
 </div>
+
 
 </div>
 
