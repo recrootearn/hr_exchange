@@ -20030,9 +20030,8 @@ def marketplace_chart():
 @app.route("/admin/marketplace/sellers")
 @admin_required
 def marketplace_sellers():
-
-    sellers = User.query.filter_by(
-        is_shop_owner=True
+    sellers = User.query.filter(
+        User.is_shop_active == True
     ).order_by(
         User.created_at.desc()
     ).all()
