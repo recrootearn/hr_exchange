@@ -6,503 +6,333 @@
 
 <div class="container-fluid">
 
-<h2 class="mb-4">
+    <h2 class="mb-4">
+        <i class="fas fa-cogs"></i>
+        Marketplace Settings
+    </h2>
 
-<i class="fas fa-cogs"></i>
+    <form method="POST">
 
-Marketplace Settings
+        <div class="row">
 
-</h2>
+            <!-- =====================================================
+                 MARKETPLACE
+                 ===================================================== -->
 
-<form method="POST">
+            <div class="col-lg-6">
 
-<div class="row">
+                <div class="card shadow-sm mb-4">
 
-<!-- Marketplace -->
+                    <div class="card-header">
+                        <strong>Marketplace</strong>
+                    </div>
 
-<div class="col-lg-6">
+                    <div class="card-body">
 
-<div class="card shadow-sm mb-4">
+                        <!-- Marketplace Enabled -->
 
-<div class="card-header">
+                        <div class="form-check form-switch mb-4">
+
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="marketplace_enabled"
+                                id="marketplace_enabled"
+                                {% if settings.marketplace_enabled %}checked{% endif %}
+                            >
 
-Marketplace
+                            <label
+                                class="form-check-label"
+                                for="marketplace_enabled"
+                            >
+                                Marketplace Enabled
+                            </label>
 
-</div>
+                        </div>
 
-<div class="card-body">
 
-<div class="form-check form-switch mb-3">
+                        <!-- Platform Commission -->
 
-<input class="form-check-input"
+                        <div class="mb-3">
 
-type="checkbox"
+                            <label
+                                for="marketplace_commission"
+                                class="form-label fw-semibold"
+                            >
+                                Platform Commission (%)
+                            </label>
 
-name="marketplace_enabled"
+                            <input
+                                type="number"
+                                id="marketplace_commission"
+                                name="marketplace_commission"
+                                class="form-control"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                required
+                                value="{{ settings.marketplace_commission if settings.marketplace_commission is not none else 5 }}"
+                            >
 
-{% if settings.marketplace_enabled %}checked{% endif %}>
+                            <div class="form-text">
+                                Commission deducted from the seller's product amount.
+                                Enter a value between 0% and 100%.
+                            </div>
 
-<label>
+                        </div>
 
-Marketplace Enabled
 
-</label>
+                        <!-- Seller Payment Hold -->
 
-</div>
+                        <div class="mb-3">
 
-<label>
+                            <label
+                                for="seller_payment_hold_days"
+                                class="form-label fw-semibold"
+                            >
+                                Seller Payment Hold Days
+                            </label>
 
-Platform Commission %
+                            <input
+                                type="number"
+                                id="seller_payment_hold_days"
+                                name="seller_payment_hold_days"
+                                class="form-control"
+                                min="0"
+                                step="1"
+                                required
+                                value="{{ settings.seller_payment_hold_days if settings.seller_payment_hold_days is not none else 7 }}"
+                            >
 
-</label>
+                            <div class="form-text">
+                                Seller earnings become withdrawable after the order
+                                is delivered and this hold period has passed.
+                            </div>
 
-<input
+                        </div>
 
-type="number"
 
-step="0.01"
+                        <!-- Free Shipping -->
 
-name="marketplace_commission"
+                        <div class="mb-3">
 
-class="form-control mb-3"
+                            <label
+                                for="free_shipping_amount"
+                                class="form-label fw-semibold"
+                            >
+                                Free Shipping Above (₹)
+                            </label>
 
-value="{{ settings.marketplace_commission }}">
+                            <input
+                                type="number"
+                                id="free_shipping_amount"
+                                name="free_shipping_amount"
+                                class="form-control"
+                                min="0"
+                                step="0.01"
+                                required
+                                value="{{ settings.free_shipping_amount if settings.free_shipping_amount is not none else 999 }}"
+                            >
 
-<label>
+                        </div>
 
-Seller Payment Hold Days
+                    </div>
 
-</label>
+                </div>
 
-<input
+            </div>
 
-type="number"
 
-name="seller_payment_hold_days"
+            <!-- =====================================================
+                 RETURNS
+                 ===================================================== -->
 
-class="form-control mb-3"
+            <div class="col-lg-6">
 
-value="{{ settings.seller_payment_hold_days }}">
+                <div class="card shadow-sm mb-4">
 
-<label>
+                    <div class="card-header">
+                        <strong>Returns</strong>
+                    </div>
 
-Minimum Order Amount
+                    <div class="card-body">
 
-</label>
+                        <!-- Return Window -->
 
-<input
+                        <div class="mb-3">
 
-type="number"
+                            <label
+                                for="return_window_days"
+                                class="form-label fw-semibold"
+                            >
+                                Return Window (Days)
+                            </label>
 
-name="minimum_order_amount"
+                            <input
+                                type="number"
+                                id="return_window_days"
+                                name="return_window_days"
+                                class="form-control"
+                                min="0"
+                                step="1"
+                                required
+                                value="{{ settings.return_window_days if settings.return_window_days is not none else 7 }}"
+                            >
 
-class="form-control mb-3"
+                        </div>
 
-value="{{ settings.minimum_order_amount }}">
 
-<label>
+                        <div class="alert alert-info mb-0">
 
-Maximum Order Amount
+                            <i class="fas fa-info-circle"></i>
 
-</label>
+                            The current marketplace settings route saves the
+                            return window, but does not process an exchange-window
+                            field.
 
-<input
+                        </div>
 
-type="number"
+                    </div>
 
-name="maximum_order_amount"
+                </div>
 
-class="form-control"
+            </div>
 
-value="{{ settings.maximum_order_amount }}">
 
-</div>
+            <!-- =====================================================
+                 PROMOTIONS
+                 ===================================================== -->
 
-</div>
+            <div class="col-lg-6">
 
-</div>
+                <div class="card shadow-sm mb-4">
 
-<!-- Shipping -->
+                    <div class="card-header">
+                        <strong>Promotions</strong>
+                    </div>
 
-<div class="col-lg-6">
+                    <div class="card-body">
 
-<div class="card shadow-sm mb-4">
+                        <!-- Product Promotion -->
 
-<div class="card-header">
+                        <div class="mb-3">
 
-Shipping
+                            <label
+                                for="product_promotion_price"
+                                class="form-label fw-semibold"
+                            >
+                                Product Promotion Price
+                            </label>
 
-</div>
+                            <input
+                                type="number"
+                                id="product_promotion_price"
+                                name="product_promotion_price"
+                                class="form-control"
+                                min="0"
+                                step="1"
+                                required
+                                value="{{ settings.product_promotion_price if settings.product_promotion_price is not none else 100 }}"
+                            >
 
-<div class="card-body">
+                        </div>
 
-<div class="form-check form-switch mb-3">
 
-<input
+                        <!-- Shop Promotion -->
 
-class="form-check-input"
+                        <div class="mb-3">
 
-type="checkbox"
+                            <label
+                                for="shop_promotion_price"
+                                class="form-label fw-semibold"
+                            >
+                                Shop Promotion Price
+                            </label>
 
-name="cod_enabled"
+                            <input
+                                type="number"
+                                id="shop_promotion_price"
+                                name="shop_promotion_price"
+                                class="form-control"
+                                min="0"
+                                step="1"
+                                required
+                                value="{{ settings.shop_promotion_price if settings.shop_promotion_price is not none else 500 }}"
+                            >
 
-{% if settings.cod_enabled %}checked{% endif %}>
+                        </div>
 
-<label>
+                    </div>
 
-Cash On Delivery
+                </div>
 
-</label>
+            </div>
 
-</div>
 
-<label>
+            <!-- =====================================================
+                 MAINTENANCE
+                 ===================================================== -->
 
-Free Shipping Above
+            <div class="col-lg-6">
 
-</label>
+                <div class="card shadow-sm mb-4">
 
-<input
+                    <div class="card-header bg-danger text-white">
+                        <strong>Maintenance</strong>
+                    </div>
 
-type="number"
+                    <div class="card-body">
 
-name="free_shipping_amount"
+                        <div class="form-check form-switch">
 
-class="form-control mb-3"
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="marketplace_maintenance"
+                                id="marketplace_maintenance"
+                                {% if settings.marketplace_maintenance %}checked{% endif %}
+                            >
 
-value="{{ settings.free_shipping_amount }}">
+                            <label
+                                class="form-check-label"
+                                for="marketplace_maintenance"
+                            >
+                                Marketplace Maintenance Mode
+                            </label>
 
-<label>
+                        </div>
 
-Shipping Tax %
+                        <p class="text-muted mt-2 mb-0">
+                            Customers will not be able to browse or place orders
+                            while maintenance mode is enabled.
+                        </p>
 
-</label>
+                    </div>
 
-<input
+                </div>
 
-type="number"
+            </div>
 
-step="0.01"
+        </div>
 
-name="shipping_tax_percent"
 
-class="form-control"
+        <!-- =====================================================
+             SAVE
+             ===================================================== -->
 
-value="{{ settings.shipping_tax_percent }}">
+        <div class="mt-3 mb-4 text-end">
 
-</div>
+            <button
+                type="submit"
+                class="btn btn-success btn-lg"
+            >
+                <i class="fas fa-save"></i>
+                Save Marketplace Settings
+            </button>
 
-</div>
+        </div>
 
-</div>
-
-<!-- Returns -->
-
-<div class="col-lg-6">
-
-<div class="card shadow-sm mb-4">
-
-<div class="card-header">
-
-Returns
-
-</div>
-
-<div class="card-body">
-
-<label>
-
-Return Window (Days)
-
-</label>
-
-<input
-
-type="number"
-
-name="return_window_days"
-
-class="form-control mb-3"
-
-value="{{ settings.return_window_days }}">
-
-<label>
-
-Exchange Window (Days)
-
-</label>
-
-<input
-
-type="number"
-
-name="exchange_window_days"
-
-class="form-control"
-
-value="{{ settings.exchange_window_days }}">
-
-</div>
-
-</div>
-
-</div>
-
-<!-- Wallet -->
-
-<div class="col-lg-6">
-
-<div class="card shadow-sm mb-4">
-
-<div class="card-header">
-
-Wallet
-
-</div>
-
-<div class="card-body">
-
-<label>
-
-Minimum Withdrawal
-
-</label>
-
-<input
-
-type="number"
-
-name="minimum_withdrawal"
-
-class="form-control mb-3"
-
-value="{{ settings.minimum_withdrawal }}">
-
-<label>
-
-Maximum Daily Withdrawal
-
-</label>
-
-<input
-
-type="number"
-
-name="maximum_daily_withdrawal"
-
-class="form-control"
-
-value="{{ settings.maximum_daily_withdrawal }}">
-
-</div>
-
-</div>
-
-</div>
-
-<!-- Promotions -->
-
-<div class="col-lg-6">
-
-<div class="card shadow-sm mb-4">
-
-<div class="card-header">
-
-Promotions
-
-</div>
-
-<div class="card-body">
-
-<label>
-
-Product Promotion Price
-
-</label>
-
-<input
-
-type="number"
-
-name="product_promotion_price"
-
-class="form-control mb-3"
-
-value="{{ settings.product_promotion_price }}">
-
-<label>
-
-Shop Promotion Price
-
-</label>
-
-<input
-
-type="number"
-
-name="shop_promotion_price"
-
-class="form-control mb-3"
-
-value="{{ settings.shop_promotion_price }}">
-
-<label>
-
-Homepage Banner Price
-
-</label>
-
-<input
-
-type="number"
-
-name="homepage_banner_price"
-
-class="form-control mb-3"
-
-value="{{ settings.homepage_banner_price }}">
-
-<label>
-
-Promotion Duration (Days)
-
-</label>
-
-<input
-
-type="number"
-
-name="promotion_duration_days"
-
-class="form-control"
-
-value="{{ settings.promotion_duration_days }}">
-
-</div>
-
-</div>
-
-</div>
-
-<!-- Search -->
-
-<div class="col-lg-6">
-
-<div class="card shadow-sm mb-4">
-
-<div class="card-header">
-
-Search
-
-</div>
-
-<div class="card-body">
-
-<label>
-
-Products Per Page
-
-</label>
-
-<input
-
-type="number"
-
-name="maximum_products_per_page"
-
-class="form-control mb-3"
-
-value="{{ settings.maximum_products_per_page }}">
-
-<div class="form-check form-switch">
-
-<input
-
-class="form-check-input"
-
-type="checkbox"
-
-name="enable_related_products"
-
-{% if settings.enable_related_products %}checked{% endif %}>
-
-<label>
-
-Enable Related Products
-
-</label>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- Maintenance -->
-
-<div class="col-lg-12">
-
-<div class="card shadow-sm">
-
-<div class="card-header bg-danger text-white">
-
-Maintenance
-
-</div>
-
-<div class="card-body">
-
-<div class="form-check form-switch">
-
-<input
-
-class="form-check-input"
-
-type="checkbox"
-
-name="marketplace_maintenance"
-
-{% if settings.marketplace_maintenance %}checked{% endif %}>
-
-<label>
-
-Marketplace Maintenance Mode
-
-</label>
-
-</div>
-
-<p class="text-muted mt-2">
-
-Customers will not be able to browse or place orders while maintenance mode is enabled.
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="mt-4 text-end">
-
-<button
-
-class="btn btn-success btn-lg">
-
-<i class="fas fa-save"></i>
-
-Save Marketplace Settings
-
-</button>
-
-</div>
-
-</form>
+    </form>
 
 </div>
 
