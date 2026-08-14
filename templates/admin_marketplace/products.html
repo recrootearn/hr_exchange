@@ -1,0 +1,61 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<style>
+.marketplace-page{padding-bottom:30px}
+.marketplace-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.marketplace-head h2{margin:0;font-weight:800}
+.marketplace-head .actions{display:flex;gap:8px;flex-wrap:wrap}
+.marketplace-card{border:0;border-radius:18px;box-shadow:0 6px 22px rgba(15,23,42,.08);overflow:hidden}
+.marketplace-card .card-header{background:#fff;border-bottom:1px solid #edf0f5;font-weight:800}
+.table thead th{white-space:nowrap;font-size:13px;color:#64748b}
+.table td{vertical-align:middle}
+.badge-soft{padding:7px 10px;border-radius:10px;font-weight:700}
+.action-btn{border-radius:10px!important;font-weight:700!important}
+.stat-card{border:0;border-radius:18px;box-shadow:0 6px 22px rgba(15,23,42,.08);height:100%}
+.stat-card h6{color:#64748b;font-weight:700}
+.stat-card h3{font-weight:850;margin:0}
+@media(max-width:700px){.marketplace-head{align-items:flex-start}.marketplace-head .actions{width:100%}.marketplace-head .actions a{flex:1}}
+</style>
+
+<div class="container-fluid marketplace-page">
+
+<div class="marketplace-head">
+  <div>
+    <h2><i class="fas fa-box text-success"></i> Marketplace Products</h2>
+    <div class="text-muted">Manage products listed by marketplace sellers.</div>
+  </div>
+  <div class="actions"><a href="/admin/marketplace" class="btn btn-primary action-btn"><i class="fas fa-chart-line"></i> Dashboard</a></div>
+</div>
+<div class="card marketplace-card">
+  <div class="card-header">All Products</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>Product</th><th>Seller</th><th>Price</th><th>Stock</th><th>Sold</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+      {% for product in products %}
+      <tr>
+        <td><strong>{{ product.name }}</strong></td>
+        <td>{{ product.seller.company if product.seller else ('Seller #' ~ product.seller_id) }}</td>
+        <td>₹{{ "{:,.2f}".format(product.sale_price if product.sale_price is not none else product.price or 0) }}</td>
+        <td>{{ product.stock or 0 }}</td>
+        <td>{{ product.sold or 0 }}</td>
+        <td>{% if product.is_active and product.status == 'active' %}<span class="badge bg-success badge-soft">Active</span>{% else %}<span class="badge bg-secondary badge-soft">Disabled</span>{% endif %}</td>
+        <td>
+          <a href="/admin/marketplace/product/{{ product.id }}" class="btn btn-info btn-sm action-btn"><i class="fas fa-eye"></i></a>
+          <a href="/admin/marketplace/product/{{ product.id }}/feature" class="btn btn-warning btn-sm action-btn"><i class="fas fa-star"></i></a>
+          <a href="/admin/marketplace/product/{{ product.id }}/toggle" class="btn btn-secondary btn-sm action-btn">{% if product.is_active %}Disable{% else %}Enable{% endif %}</a>
+          <a href="/admin/marketplace/product/{{ product.id }}/delete" class="btn btn-danger btn-sm action-btn" onclick="return confirm('Delete this product?')"><i class="fas fa-trash"></i></a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="text-center text-muted py-5">No products found.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+{% endblock %}

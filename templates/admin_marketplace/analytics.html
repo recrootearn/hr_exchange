@@ -1,0 +1,63 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<style>
+.marketplace-page{padding-bottom:30px}
+.marketplace-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.marketplace-head h2{margin:0;font-weight:800}
+.marketplace-head .actions{display:flex;gap:8px;flex-wrap:wrap}
+.marketplace-card{border:0;border-radius:18px;box-shadow:0 6px 22px rgba(15,23,42,.08);overflow:hidden}
+.marketplace-card .card-header{background:#fff;border-bottom:1px solid #edf0f5;font-weight:800}
+.table thead th{white-space:nowrap;font-size:13px;color:#64748b}
+.table td{vertical-align:middle}
+.badge-soft{padding:7px 10px;border-radius:10px;font-weight:700}
+.action-btn{border-radius:10px!important;font-weight:700!important}
+.stat-card{border:0;border-radius:18px;box-shadow:0 6px 22px rgba(15,23,42,.08);height:100%}
+.stat-card h6{color:#64748b;font-weight:700}
+.stat-card h3{font-weight:850;margin:0}
+@media(max-width:700px){.marketplace-head{align-items:flex-start}.marketplace-head .actions{width:100%}.marketplace-head .actions a{flex:1}}
+</style>
+
+<div class="container-fluid marketplace-page">
+
+<div class="marketplace-head">
+  <div>
+    <h2><i class="fas fa-chart-line text-primary"></i> Marketplace Analytics</h2>
+    <div class="text-muted">Marketplace sales, commission and payout overview.</div>
+  </div>
+  <div class="actions"><a href="/admin/marketplace" class="btn btn-primary action-btn"><i class="fas fa-store"></i> Dashboard</a></div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-3 col-md-6"><div class="card stat-card"><div class="card-body"><h6>Total Orders</h6><h3>{{ total_orders }}</h3></div></div></div>
+  <div class="col-lg-3 col-md-6"><div class="card stat-card"><div class="card-body"><h6>Paid Orders</h6><h3>{{ paid_orders_count }}</h3></div></div></div>
+  <div class="col-lg-3 col-md-6"><div class="card stat-card"><div class="card-body"><h6>Total Sales</h6><h3>₹{{ "{:,.2f}".format(total_sales) }}</h3></div></div></div>
+  <div class="col-lg-3 col-md-6"><div class="card stat-card"><div class="card-body"><h6>Platform Commission</h6><h3>₹{{ "{:,.2f}".format(total_commission) }}</h3></div></div></div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-3 col-md-6"><div class="card stat-card"><div class="card-body"><h6>Released Seller Payout</h6><h3>₹{{ "{:,.2f}".format(seller_payout) }}</h3></div></div></div>
+  <div class="col-lg-3 col-md-6"><div class="card stat-card"><div class="card-body"><h6>Pending Seller Payout</h6><h3>₹{{ "{:,.2f}".format(pending_payout) }}</h3></div></div></div>
+  <div class="col-lg-3 col-md-6"><div class="card stat-card"><div class="card-body"><h6>Total Returns</h6><h3>{{ total_returns }}</h3></div></div></div>
+  <div class="col-lg-3 col-md-6"><div class="card stat-card"><div class="card-body"><h6>Pending Withdrawals</h6><h3>{{ pending_withdrawals_count }}</h3></div></div></div>
+</div>
+
+<div class="card marketplace-card">
+  <div class="card-header">Top Products</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>Product</th><th>Views</th><th>Sold</th><th>Purchases</th><th>Revenue</th></tr></thead>
+      <tbody>
+      {% for product in top_products %}
+      <tr><td><strong>{{ product.name }}</strong></td><td>{{ product.total_views or product.views or 0 }}</td><td>{{ product.sold or 0 }}</td><td>{{ product.purchase_count or 0 }}</td><td>₹{{ "{:,.2f}".format(product.revenue or 0) }}</td></tr>
+      {% else %}
+      <tr><td colspan="5" class="text-center text-muted py-5">No product analytics available yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+{% endblock %}

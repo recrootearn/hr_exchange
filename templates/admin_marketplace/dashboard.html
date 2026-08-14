@@ -312,13 +312,13 @@
 
                         <td>
 
-                            {{ order.customer.name }}
+                            {{ order.customer.company or ((order.customer.first_name or '') ~ ' ' ~ (order.customer.last_name or '')) | trim or order.customer.username or ('User #' ~ order.customer.id) }}
 
                         </td>
 
                         <td>
 
-                            {{ order.seller.company_name }}
+                            {{ order.seller.company or ((order.seller.first_name or '') ~ ' ' ~ (order.seller.last_name or '')) | trim or order.seller.username or ('Seller #' ~ order.seller.id) }}
 
                         </td>
 
@@ -464,7 +464,7 @@
 
                 <td>
 
-                    {{ seller.company_name }}
+                    {{ seller.company or ((seller.first_name or '') ~ ' ' ~ (seller.last_name or '')) | trim or seller.username or ('Seller #' ~ seller.id) }}
 
                 </td>
 
@@ -620,7 +620,7 @@
 
                 <td>
 
-                    {{ product.seller.company_name }}
+                    {{ product.seller.company or ((product.seller.first_name or '') ~ ' ' ~ (product.seller.last_name or '')) | trim or product.seller.username or ('Seller #' ~ product.seller.id) }}
 
                 </td>
 

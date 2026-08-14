@@ -1,0 +1,56 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+<style>
+.marketplace-page{padding-bottom:30px}
+.marketplace-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.marketplace-head h2{margin:0;font-weight:800}
+.marketplace-head .actions{display:flex;gap:8px;flex-wrap:wrap}
+.marketplace-card{border:0;border-radius:18px;box-shadow:0 6px 22px rgba(15,23,42,.08);overflow:hidden}
+.marketplace-card .card-header{background:#fff;border-bottom:1px solid #edf0f5;font-weight:800}
+.table thead th{white-space:nowrap;font-size:13px;color:#64748b}
+.table td{vertical-align:middle}
+.badge-soft{padding:7px 10px;border-radius:10px;font-weight:700}
+.action-btn{border-radius:10px!important;font-weight:700!important}
+.stat-card{border:0;border-radius:18px;box-shadow:0 6px 22px rgba(15,23,42,.08);height:100%}
+.stat-card h6{color:#64748b;font-weight:700}
+.stat-card h3{font-weight:850;margin:0}
+@media(max-width:700px){.marketplace-head{align-items:flex-start}.marketplace-head .actions{width:100%}.marketplace-head .actions a{flex:1}}
+</style>
+
+<div class="container-fluid marketplace-page">
+
+<div class="marketplace-head">
+  <div>
+    <h2><i class="fas fa-shopping-cart text-warning"></i> Marketplace Orders</h2>
+    <div class="text-muted">View and manage all marketplace orders.</div>
+  </div>
+  <div class="actions"><a href="/admin/marketplace" class="btn btn-primary action-btn"><i class="fas fa-chart-line"></i> Dashboard</a></div>
+</div>
+<div class="card marketplace-card">
+  <div class="card-header">All Orders</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>Order</th><th>Customer</th><th>Seller</th><th>Amount</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+      {% for order in orders %}
+      <tr>
+        <td><strong>{{ order.order_number }}</strong><div class="small text-muted">{{ order.created_at.strftime('%d %b %Y, %I:%M %p') if order.created_at else '' }}</div></td>
+        <td>{{ order.customer.company or ((order.customer.first_name or '') ~ ' ' ~ (order.customer.last_name or ''))|trim or order.customer.username or ('User #' ~ order.user_id) if order.customer else ('User #' ~ order.user_id) }}</td>
+        <td>{{ order.seller.company or ((order.seller.first_name or '') ~ ' ' ~ (order.seller.last_name or ''))|trim or order.seller.username or ('Seller #' ~ order.seller_id) if order.seller else ('Seller #' ~ order.seller_id) }}</td>
+        <td>₹{{ "{:,.2f}".format(order.total_amount or 0) }}</td>
+        <td><span class="badge bg-success badge-soft">{{ order.payment_status or 'Pending' }}</span></td>
+        <td><span class="badge bg-primary badge-soft">{{ order.order_status or 'Pending' }}</span></td>
+        <td><a href="/admin/marketplace/order/{{ order.id }}" class="btn btn-info btn-sm action-btn"><i class="fas fa-eye"></i></a><a href="/admin/marketplace/order/{{ order.id }}/cancel" class="btn btn-danger btn-sm action-btn" onclick="return confirm('Cancel this order?')">Cancel</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="text-center text-muted py-5">No orders found.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+{% endblock %}
