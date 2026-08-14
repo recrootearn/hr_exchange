@@ -6377,7 +6377,26 @@ def release_wallet_amount():
             seller = User.query.get(order.seller_id)
 
             if seller:
-                seller.wallet_balance += order.seller_amount
+                amount = round(
+                    float(order.seller_amount or 0),
+                    2
+                )
+
+                seller.pending_marketplace_balance = round(
+                    max(
+                        0,
+                        float(seller.pending_marketplace_balance or 0)
+                        - amount
+                    ),
+                    2
+                )
+
+                seller.wallet_balance = round(
+                    float(seller.wallet_balance or 0)
+                    + amount,
+                    2
+                )
+
                 order.wallet_released = True
 
     db.session.commit()
@@ -18232,6 +18251,27 @@ def marketplace_payment_success():
     order.seller_amount = seller_amount
     order.wallet_released = False
 
+    # ---------------------------------------------------------
+    # 12A. HOLD SELLER EARNINGS
+    # ---------------------------------------------------------
+    # Seller earnings are held until delivery + the configured
+    # payment-hold period. Delivery charges are NOT seller earnings.
+    seller = User.query.get(order.seller_id)
+
+    if not seller:
+        db.session.rollback()
+        flash(
+            "Seller account could not be found. Order was not completed.",
+            "danger"
+        )
+        return redirect("/cart")
+
+    seller.pending_marketplace_balance = round(
+        float(seller.pending_marketplace_balance or 0)
+        + seller_amount,
+        2
+    )
+
 
     # ---------------------------------------------------------
     # 13. SAVE EVERYTHING
@@ -18355,6 +18395,14 @@ def accept_order(order_id):
         seller_id=current_user.id
     ).first_or_404()
 
+    # Only a pending order can be accepted.
+    if order.order_status != "Pending":
+        flash(
+            "Only pending orders can be accepted.",
+            "warning"
+        )
+        return redirect(f"/order/{order.id}")
+
     order.order_status = "Accepted"
 
     db.session.add(
@@ -18376,35 +18424,133 @@ def accept_order(order_id):
         f"/order/{order.id}"
     )
 
+
 @app.route("/seller/order/<int:order_id>/reject")
 @login_required
 def reject_order(order_id):
 
+    # =========================================================
+    # SELLER CAN ONLY REJECT THEIR OWN PENDING ORDER
+    # =========================================================
     order = Order.query.filter_by(
         id=order_id,
         seller_id=current_user.id
     ).first_or_404()
 
+    if order.order_status != "Pending":
+        flash(
+            "Only pending orders can be rejected.",
+            "warning"
+        )
+        return redirect(f"/order/{order.id}")
+
+    seller = User.query.get(order.seller_id)
+    customer = User.query.get(order.user_id)
+
+    if not seller or not customer:
+        flash(
+            "Seller or customer account could not be found. "
+            "Refund was not processed.",
+            "danger"
+        )
+        return redirect(f"/order/{order.id}")
+
+    # =========================================================
+    # FULL REFUND = PRODUCT + DELIVERY CHARGES
+    # =========================================================
+    refund_amount = round(
+        float(order.total_amount or 0),
+        2
+    )
+
+    # Seller earnings are only the product subtotal minus
+    # platform commission. Delivery is not seller income.
+    seller_hold_amount = round(
+        float(order.seller_amount or 0),
+        2
+    )
+
+    # =========================================================
+    # REMOVE SELLER'S HELD EARNINGS
+    # =========================================================
+    seller.pending_marketplace_balance = round(
+        max(
+            0,
+            float(seller.pending_marketplace_balance or 0)
+            - seller_hold_amount
+        ),
+        2
+    )
+
+    # =========================================================
+    # REFUND CUSTOMER'S COMPLETE PAYMENT
+    # =========================================================
+    customer.wallet_balance = round(
+        float(customer.wallet_balance or 0)
+        + refund_amount,
+        2
+    )
+
+    # =========================================================
+    # REVERSE THIS ORDER'S COMMISSION / SELLER SETTLEMENT
+    # =========================================================
+    order.platform_commission = 0
+    order.seller_amount = 0
+    order.wallet_released = True
+
+    # Full amount paid by customer is now refunded to wallet.
+    order.payment_status = "Refunded"
     order.order_status = "Rejected"
 
+    # =========================================================
+    # STATUS HISTORY
+    # =========================================================
     db.session.add(
         OrderStatusHistory(
             order_id=order.id,
             status="Rejected",
-            remarks="Rejected by seller"
+            remarks=(
+                "Rejected by seller. "
+                f"₹{refund_amount:.2f} refunded to customer wallet "
+                "(product + delivery charges)."
+            )
         )
     )
 
+    # =========================================================
+    # SAVE REFUND + SELLER REVERSAL TOGETHER
+    # =========================================================
     db.session.commit()
 
+    # =========================================================
+    # CUSTOMER NOTIFICATION
+    # =========================================================
+    try:
+        send_notification(
+            user_id=customer.id,
+            user_type="hr",
+            message=(
+                f"Your order #{order.order_number} was rejected by "
+                f"the seller. ₹{refund_amount:.2f} has been credited "
+                "back to your wallet."
+            ),
+            link=f"/order/{order.id}",
+            type="order"
+        )
+    except Exception:
+        # Notification failure must not undo the financial refund.
+        pass
+
     flash(
-        "Order rejected.",
+        f"Order rejected. ₹{refund_amount:.2f} has been refunded "
+        "to the customer's wallet.",
         "success"
     )
 
     return redirect(
         "/seller/orders"
     )
+
 
 @app.route("/cancel-order/<int:order_id>")
 @login_required
