@@ -20573,6 +20573,136 @@ def marketplace_analytics():
     )
 
 
+@app.route("/admin/marketplace/payments")
+@admin_required
+def marketplace_payments():
+    """Marketplace-wide payment and settlement report."""
+
+    paid_filter = Order.payment_status == "Paid"
+
+    total_customer_payments = db.session.query(
+        db.func.coalesce(db.func.sum(Order.total_amount), 0)
+    ).filter(paid_filter).scalar() or 0
+
+    total_product_payments = db.session.query(
+        db.func.coalesce(db.func.sum(Order.subtotal), 0)
+    ).filter(paid_filter).scalar() or 0
+
+    total_delivery_payments = db.session.query(
+        db.func.coalesce(db.func.sum(Order.shipping_charge), 0)
+    ).filter(paid_filter).scalar() or 0
+
+    total_platform_commission = db.session.query(
+        db.func.coalesce(db.func.sum(Order.platform_commission), 0)
+    ).filter(paid_filter).scalar() or 0
+
+    total_seller_held = db.session.query(
+        db.func.coalesce(db.func.sum(Order.seller_amount), 0)
+    ).filter(
+        paid_filter,
+        Order.wallet_released == False
+    ).scalar() or 0
+
+    total_seller_released = db.session.query(
+        db.func.coalesce(db.func.sum(Order.seller_amount), 0)
+    ).filter(
+        paid_filter,
+        Order.wallet_released == True
+    ).scalar() or 0
+
+    total_refunded = db.session.query(
+        db.func.coalesce(db.func.sum(Order.total_amount), 0)
+    ).filter(
+        Order.payment_status == "Refunded"
+    ).scalar() or 0
+
+    paid_order_count = Order.query.filter(paid_filter).count()
+    refunded_order_count = Order.query.filter(
+        Order.payment_status == "Refunded"
+    ).count()
+
+    shop_rows = db.session.query(
+        User.id.label("seller_id"),
+        User.company.label("company"),
+        User.first_name.label("first_name"),
+        User.last_name.label("last_name"),
+        db.func.count(Order.id).label("order_count"),
+        db.func.coalesce(db.func.sum(Order.subtotal), 0).label("product_payments"),
+        db.func.coalesce(db.func.sum(Order.shipping_charge), 0).label("delivery_payments"),
+        db.func.coalesce(db.func.sum(Order.total_amount), 0).label("customer_payments"),
+        db.func.coalesce(db.func.sum(Order.platform_commission), 0).label("commission"),
+        db.func.coalesce(db.func.sum(
+            db.case((Order.wallet_released == False, Order.seller_amount), else_=0)
+        ), 0).label("seller_held"),
+        db.func.coalesce(db.func.sum(
+            db.case((Order.wallet_released == True, Order.seller_amount), else_=0)
+        ), 0).label("seller_released")
+    ).join(
+        Order, Order.seller_id == User.id
+    ).filter(
+        Order.payment_status == "Paid"
+    ).group_by(
+        User.id, User.company, User.first_name, User.last_name
+    ).order_by(
+        db.func.sum(Order.total_amount).desc()
+    ).all()
+
+    shop_payments = []
+    for row in shop_rows:
+        shop_name = (
+            row.company
+            or " ".join(p for p in [row.first_name, row.last_name] if p).strip()
+            or f"Seller #{row.seller_id}"
+        )
+        shop_payments.append({
+            "seller_id": row.seller_id,
+            "shop_name": shop_name,
+            "order_count": int(row.order_count or 0),
+            "product_payments": float(row.product_payments or 0),
+            "delivery_payments": float(row.delivery_payments or 0),
+            "customer_payments": float(row.customer_payments or 0),
+            "commission": float(row.commission or 0),
+            "seller_held": float(row.seller_held or 0),
+            "seller_released": float(row.seller_released or 0)
+        })
+
+    payment_rows = db.session.query(
+        Order.payment_method,
+        db.func.count(Order.id).label("order_count"),
+        db.func.coalesce(db.func.sum(Order.total_amount), 0).label("amount")
+    ).filter(
+        Order.payment_status == "Paid"
+    ).group_by(
+        Order.payment_method
+    ).order_by(
+        db.func.sum(Order.total_amount).desc()
+    ).all()
+
+    payment_methods = [
+        {
+            "method": row.payment_method or "Unknown",
+            "order_count": int(row.order_count or 0),
+            "amount": float(row.amount or 0)
+        }
+        for row in payment_rows
+    ]
+
+    return render_template(
+        "admin_marketplace/payments.html",
+        total_customer_payments=float(total_customer_payments),
+        total_product_payments=float(total_product_payments),
+        total_delivery_payments=float(total_delivery_payments),
+        total_platform_commission=float(total_platform_commission),
+        total_seller_held=float(total_seller_held),
+        total_seller_released=float(total_seller_released),
+        total_refunded=float(total_refunded),
+        paid_order_count=paid_order_count,
+        refunded_order_count=refunded_order_count,
+        shop_payments=shop_payments,
+        payment_methods=payment_methods
+    )
+
+
 @app.route("/admin/marketplace/finance")
 @admin_required
 def marketplace_finance():
