@@ -293,6 +293,17 @@
 
 }
 
+
+.job-owner-menu{position:relative;margin-left:auto;flex-shrink:0}
+.job-owner-menu>button{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;cursor:pointer}
+.job-owner-menu>button:hover{background:rgba(255,255,255,.22)}
+.job-owner-dropdown{display:none;position:absolute;top:50px;right:0;min-width:190px;background:#fff;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.18);padding:7px;z-index:1000}
+.job-owner-menu.open .job-owner-dropdown{display:block}
+.job-owner-dropdown a{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:9px;color:#111827;text-decoration:none;font-size:14px;font-weight:600}
+.job-owner-dropdown a:hover{background:#f3f4f6}
+.job-owner-dropdown .delete-action{color:#dc2626}
+.job-owner-dropdown .boost-action{color:#7c3aed}
+
 </style>
 
 <div class="job-page">
@@ -372,8 +383,43 @@
 </div>
 
 </div>
-
 </div>
+
+
+{% if current_user.is_authenticated and job.hr_id == current_user.id %}
+<div class="job-owner-menu" id="jobOwnerMenu">
+    <button type="button" aria-label="Post options" onclick="toggleJobOwnerMenu(event)">
+        <i class="fas fa-ellipsis-v"></i>
+    </button>
+
+    <div class="job-owner-dropdown">
+        <a href="/edit-job/{{ job.id }}">
+            <i class="fas fa-pen"></i>
+            Edit Post
+        </a>
+
+        <a href="/delete-job/{{ job.id }}"
+           class="delete-action"
+           onclick="return confirm('Are you sure you want to delete this post?');">
+            <i class="fas fa-trash"></i>
+            Delete Post
+        </a>
+
+        {% set active_boost = job.boosts | selectattr("status", "equalto", "Active") | list %}
+        {% if active_boost %}
+        <a href="/manage-boost/{{ job.id }}" class="boost-action">
+            <i class="fas fa-chart-line"></i>
+            Manage Boost
+        </a>
+        {% else %}
+        <a href="/boost-post/{{ job.id }}" class="boost-action">
+            <i class="fas fa-rocket"></i>
+            Boost Post
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
 
 <div class="job-title">
 
@@ -781,5 +827,18 @@
 </div>
 </div>
 </div>
+
+
+<script>
+function toggleJobOwnerMenu(event){
+    event.stopPropagation();
+    const menu = document.getElementById("jobOwnerMenu");
+    if(menu) menu.classList.toggle("open");
+}
+document.addEventListener("click", function(){
+    const menu = document.getElementById("jobOwnerMenu");
+    if(menu) menu.classList.remove("open");
+});
+</script>
 
 {% endblock %}
