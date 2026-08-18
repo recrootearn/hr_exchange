@@ -10645,21 +10645,6 @@ def company_profile(id):
 
     hr = User.query.get_or_404(id)
 
-    # A candidate can have a linked User record because the
-    # platform uses the same User account infrastructure.
-    # Never render that candidate as an HR/company profile.
-    # If an old/incorrect link reaches /company/<id>, send the
-    # visitor to the candidate's public profile instead.
-    if getattr(hr, "account_type", "hr") == "candidate":
-        candidate = CandidateUser.query.filter_by(
-            user_id=hr.id
-        ).first()
-
-        if candidate:
-            return redirect(
-                url_for("view_candidates", id=candidate.id)
-            )
-
 
     # =====================================================
     # COMPANY POSTS
@@ -11261,6 +11246,12 @@ def view_candidates(id):
         followed_candidate_id=id
     ).count()
 
+    following_count = Follow.query.filter_by(
+        follower_candidate_id=id
+    ).count() + Follow.query.filter_by(
+        follower_hr_id=id
+    ).count()
+
     is_following = False
     contact_unlocked = False
     has_applied = False
@@ -11314,6 +11305,7 @@ def view_candidates(id):
         candidate_videos=candidate_videos,
         candidate_products=candidate_products,
         followers_count=followers_count,
+        following_count=following_count,
         is_following=is_following,
         contact_unlocked=contact_unlocked,
         has_applied=has_applied,
@@ -12510,12 +12502,7 @@ def discover_candidates():
     ).all()
 
     # HRS
-    # IMPORTANT:
-    # A candidate account may also have a linked User row.
-    # Do NOT show candidate User rows as HR profiles.
-    # Only real HR accounts belong in the HR section.
     hr_query = User.query.filter(
-        User.account_type == "hr",
         User.id != current_user.id
     )
 
