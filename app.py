@@ -10805,45 +10805,121 @@ def admin_boosts():
 @app.route('/company/<int:id>')
 def company_profile(id):
 
+    # =====================================================
+    # COMPANY / HR
+    # =====================================================
+
     hr = User.query.get_or_404(id)
 
-    jobs = JobPost.query.filter_by(
-        hr_id=id
-    ).order_by(
-        JobPost.created_at.desc()
-    ).all()
 
-    followers_count = Follow.query.filter_by(
-        followed_hr_id=id
-    ).count()
+    # =====================================================
+    # COMPANY POSTS
+    # =====================================================
+
+    jobs = (
+        JobPost.query
+        .filter_by(
+            hr_id=id
+        )
+        .order_by(
+            JobPost.created_at.desc()
+        )
+        .all()
+    )
+
+
+    # =====================================================
+    # FOLLOWERS
+    # =====================================================
+
+    followers_count = (
+        Follow.query
+        .filter_by(
+            followed_hr_id=id
+        )
+        .count()
+    )
+
+
+    # =====================================================
+    # FOLLOWING STATUS
+    # =====================================================
 
     is_following = False
 
+
+    # -----------------------------------------------------
+    # CANDIDATE LOGGED IN
+    # -----------------------------------------------------
+
     if 'candidate_id' in session:
 
-        existing_follow = Follow.query.filter_by(
-            follower_candidate_id=session['candidate_id'],
-            followed_hr_id=id
-        ).first()
+        existing_follow = (
+            Follow.query
+            .filter_by(
+                follower_candidate_id=session['candidate_id'],
+                followed_hr_id=id
+            )
+            .first()
+        )
 
         if existing_follow:
+
             is_following = True
+
+
+    # -----------------------------------------------------
+    # HR LOGGED IN
+    # -----------------------------------------------------
 
     elif current_user.is_authenticated:
 
-        existing_follow = Follow.query.filter_by(
-            follower_hr_id=current_user.id,
-            followed_hr_id=id
-        ).first()
+        existing_follow = (
+            Follow.query
+            .filter_by(
+                follower_hr_id=current_user.id,
+                followed_hr_id=id
+            )
+            .first()
+        )
 
         if existing_follow:
+
             is_following = True
+
+
+    # =====================================================
+    # COMPANY SHOP PRODUCTS
+    # =====================================================
+
+    products = (
+        Product.query
+        .filter_by(
+            seller_id=id,
+            status="active"
+        )
+        .order_by(
+            Product.created_at.desc()
+        )
+        .all()
+    )
+
+
+    # =====================================================
+    # RENDER PUBLIC COMPANY PROFILE
+    # =====================================================
 
     return render_template(
         'company_profile.html',
+
         hr=hr,
+
         jobs=jobs,
+
+        products=products,
+
         followers_count=followers_count,
+
         is_following=is_following
     )
 

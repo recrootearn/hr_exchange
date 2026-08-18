@@ -4,6 +4,10 @@
 
 <style>
 
+/* =========================================================
+   PAGE
+   ========================================================= */
+
 .content{
     padding:0 !important;
     background:#f5f7fb;
@@ -17,6 +21,11 @@
     min-height:100vh;
 }
 
+
+/* =========================================================
+   PROFILE HEADER
+   ========================================================= */
+
 .profile-header{
     background:linear-gradient(
         135deg,
@@ -24,12 +33,17 @@
         #1d4ed8,
         #3b82f6
     );
+
     color:white;
+
     padding:20px 20px 18px;
+
     border-bottom-left-radius:22px;
     border-bottom-right-radius:22px;
+
     box-shadow:0 10px 25px rgba(0,0,0,.12);
 }
+
 
 .profile-row{
     display:flex;
@@ -37,416 +51,1563 @@
     gap:18px;
 }
 
+
 .profile-pic{
     width:82px;
     height:82px;
+
     border-radius:50%;
+
     object-fit:cover;
+
     border:4px solid white;
+
     box-shadow:0 6px 18px rgba(0,0,0,.25);
 }
 
+
 .profile-stats{
     flex:1;
+
     display:flex;
+
     justify-content:space-around;
 }
+
 
 .profile-stats div{
     text-align:center;
 }
 
+
 .profile-stats strong{
     display:block;
+
     font-size:22px;
     font-weight:700;
 }
 
+
 .profile-stats small{
     display:block;
+
     margin-top:3px;
+
     font-size:13px;
+
     opacity:.9;
 }
 
+
+/* =========================================================
+   NAME
+   ========================================================= */
+
 .profile-name{
     margin-top:12px;
+
     font-size:24px;
+
     font-weight:700;
+
     text-align:center;
 }
+
 
 .company-name{
     text-align:center;
+
     font-size:17px;
+
     margin-top:5px;
+
     line-height:1.6;
 }
 
+
 .company-name small{
     color:#ececec;
+
     font-size:14px;
 }
 
+
+/* =========================================================
+   VERIFICATION
+   ========================================================= */
+
 .verify-row{
     display:flex;
+
     justify-content:center;
+
     gap:24px;
+
     flex-wrap:wrap;
+
     margin-top:14px;
+
     font-size:14px;
+
     font-weight:600;
 }
+
 
 .verify-ok{
     color:#8CFF9A;
 }
 
+
 .verify-no{
     color:#FFD6D6;
 }
+
+
+/* =========================================================
+   FOLLOW BUTTON
+   ========================================================= */
 
 .follow-btn{
     margin-top:18px;
 }
 
+
 .follow-btn .btn{
     width:100%;
+
     height:48px;
+
     border-radius:14px;
+
     font-weight:700;
+
     font-size:16px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:7px;
 }
 
-@media(max-width:768px){
 
-    .profile-row{
-        flex-direction:column;
-        text-align:center;
-    }
+/* =========================================================
+   PROFILE TABS
+   ========================================================= */
 
-    .profile-stats{
-        width:100%;
-        margin-top:10px;
-    }
+.profile-content-tabs{
 
-    .profile-pic{
-        width:82px;
-        height:82px;
-    }
-
-}
-
-.posts-tab{
     margin-top:15px;
+
     background:white;
-    text-align:center;
-    padding:14px;
-    font-weight:700;
-    letter-spacing:1px;
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
     border-radius:16px 16px 0 0;
+
+    overflow:hidden;
+
+    border-bottom:1px solid #e5e7eb;
 }
+
+
+.profile-tab{
+
+    border:0;
+
+    background:white;
+
+    color:#6b7280;
+
+    padding:15px 10px;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:7px;
+
+    transition:.2s;
+}
+
+
+.profile-tab:hover{
+    background:#f8fafc;
+}
+
+
+.profile-tab.active{
+
+    color:#2563eb;
+
+    background:#eff6ff;
+
+    box-shadow:
+        inset 0 -3px 0 #2563eb;
+}
+
+
+/* =========================================================
+   TAB CONTENT
+   ========================================================= */
+
+.profile-tab-content{
+    display:none;
+}
+
+
+.profile-tab-content.active{
+    display:block;
+}
+
+
+/* =========================================================
+   POST GRID
+   ========================================================= */
 
 .post-grid{
+
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+
+    grid-template-columns:
+        repeat(3,1fr);
+
     gap:2px;
+
     background:white;
 }
 
+
 .post-item{
+
     aspect-ratio:1/1;
+
     overflow:hidden;
+
     background:#eee;
+
     display:block;
+
     position:relative;
+
+    text-decoration:none;
 }
 
+
 .post-item img{
+
     width:100%;
+
     height:100%;
+
     object-fit:cover;
+
     transition:.3s;
 }
 
-.post-item img:hover{
+
+.post-item:hover img{
+
     transform:scale(1.05);
 }
 
-.no-image-post{
-    width:100%;
-    height:100%;
-    background:#f3f4f6;
+
+/* =========================================================
+   VIDEO PLAY ICON
+   ========================================================= */
+
+.video-play-icon{
+
+    position:absolute;
+
+    top:50%;
+
+    left:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    width:44px;
+
+    height:44px;
+
+    border-radius:50%;
+
+    background:
+        rgba(0,0,0,.45);
+
     display:flex;
+
     align-items:center;
+
     justify-content:center;
+
+    color:white;
+
+    font-size:18px;
+
+    pointer-events:none;
+}
+
+
+/* =========================================================
+   NO IMAGE
+   ========================================================= */
+
+.no-image-post{
+
+    width:100%;
+
+    height:100%;
+
+    background:#f3f4f6;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
     font-weight:600;
+
     color:#111827;
+}
+
+
+/* =========================================================
+   EMPTY TAB
+   ========================================================= */
+
+.empty-tab{
+
+    grid-column:1/-1;
+
+    background:white;
+
+    padding:60px 20px;
+
+    text-align:center;
+}
+
+
+.empty-tab i{
+
+    font-size:60px;
+
+    color:#2563eb;
+
+    margin-bottom:15px;
+}
+
+
+.empty-tab h4{
+
+    font-weight:700;
+
+    margin-bottom:10px;
+}
+
+
+.empty-tab p{
+
+    color:#6b7280;
+
+    margin-bottom:0;
+}
+
+
+/* =========================================================
+   SHOP
+   ========================================================= */
+
+.shop-profile-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:10px;
+
+    background:#f5f7fb;
+
+    padding:10px;
+}
+
+
+.shop-profile-product{
+
+    display:block;
+
+    background:white;
+
+    border-radius:14px;
+
+    overflow:hidden;
+
+    text-decoration:none;
+
+    color:inherit;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.06);
+
+    transition:.25s;
+}
+
+
+.shop-profile-product:hover{
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.10);
+
+    color:inherit;
+}
+
+
+/* =========================================================
+   PRODUCT IMAGE
+   ========================================================= */
+
+.shop-product-image{
+
+    width:100%;
+
+    aspect-ratio:1/1;
+
+    background:#f3f4f6;
+
+    overflow:hidden;
+
+    position:relative;
+}
+
+
+.shop-product-image img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+
+    transition:.3s;
+}
+
+
+.shop-profile-product:hover
+.shop-product-image img{
+
+    transform:scale(1.04);
+}
+
+
+.shop-product-placeholder{
+
+    width:100%;
+
+    height:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#9ca3af;
+
+    font-size:35px;
+}
+
+
+/* =========================================================
+   PRODUCT INFORMATION
+   ========================================================= */
+
+.shop-product-info{
+
+    padding:12px;
+}
+
+
+.shop-product-name{
+
+    font-size:14px;
+
+    font-weight:700;
+
+    color:#111827;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    margin-bottom:6px;
+}
+
+
+.shop-product-price{
+
+    font-size:16px;
+
+    font-weight:800;
+
+    color:#2563eb;
+}
+
+
+.shop-product-price span{
+
+    color:#9ca3af;
+
+    font-size:12px;
+
+    text-decoration:line-through;
+
+    margin-left:5px;
+
+    font-weight:500;
+}
+
+
+/* =========================================================
+   EMPTY SHOP
+   ========================================================= */
+
+.shop-empty{
+
+    background:white;
+
+    padding:60px 20px;
+
+    text-align:center;
+}
+
+
+.shop-empty i{
+
+    font-size:60px;
+
+    color:#2563eb;
+
+    margin-bottom:15px;
+}
+
+
+.shop-empty h4{
+
+    font-weight:700;
+
+    margin-bottom:10px;
+}
+
+
+.shop-empty p{
+
+    color:#6b7280;
+
+    margin-bottom:0;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:768px){
+
+    .profile-header{
+
+        padding:
+            18px
+            14px
+            16px;
+    }
+
+
+    .profile-row{
+
+        flex-direction:column;
+
+        text-align:center;
+    }
+
+
+    .profile-stats{
+
+        width:100%;
+
+        margin-top:10px;
+    }
+
+
+    .profile-pic{
+
+        width:82px;
+
+        height:82px;
+    }
+
+
+    .profile-name{
+
+        font-size:22px;
+    }
+
+
+    .company-name{
+
+        font-size:16px;
+    }
+
+
+    .profile-tab{
+
+        padding:
+            14px 8px;
+
+        font-size:13px;
+    }
+
+
+    .profile-tab i{
+
+        font-size:14px;
+    }
+
+
+    .shop-profile-grid{
+
+        grid-template-columns:
+            repeat(2,1fr);
+
+        gap:8px;
+
+        padding:8px;
+    }
+
+
+    .shop-product-info{
+
+        padding:9px;
+    }
+
+
+    .shop-product-name{
+
+        font-size:13px;
+    }
+
+
+    .shop-product-price{
+
+        font-size:14px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media(max-width:380px){
+
+    .profile-header{
+
+        padding:
+            16px 12px;
+    }
+
+
+    .profile-tab{
+
+        padding:
+            13px 5px;
+
+        font-size:12px;
+    }
+
+
+    .profile-tab i{
+
+        font-size:12px;
+    }
+
+
+    .shop-profile-grid{
+
+        gap:6px;
+
+        padding:6px;
+    }
+
+
+    .shop-product-name{
+
+        font-size:12px;
+    }
+
+
+    .shop-product-price{
+
+        font-size:13px;
+    }
+
 }
 
 </style>
 
+
 <div class="insta-profile">
+
+
+<!-- =========================================================
+     PROFILE HEADER
+     ========================================================= -->
 
 <div class="profile-header">
 
-<div class="profile-row">
+    <div class="profile-row">
 
-{% if hr.profile_photo %}
 
-<img
-src="/static/uploads/{{ hr.profile_photo }}"
-class="profile-pic">
+        <!-- PROFILE PHOTO -->
 
-{% else %}
+        {% if hr.profile_photo %}
 
-<div
-style="
-width:82px;
-height:82px;
-border-radius:50%;
-background:white;
-color:#2563eb;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:34px;
-font-weight:700;
-">
-
-{{ hr.first_name[0] }}
-
-</div>
-
-{% endif %}
-
-<div class="profile-stats">
-
-<div>
-<strong>{{ jobs|length }}</strong>
-<small>Posts</small>
-</div>
-
-<div>
-<strong>{{ followers_count }}</strong>
-<small>Followers</small>
-</div>
-
-</div>
-
-</div>
-
-<div class="profile-name">
-{{ hr.first_name }} {{ hr.last_name }}
-</div>
-
-<div class="company-name">
-
-{{ hr.company }}
-
-{% if hr.company_city %}
-<br>
-<small>
-<i class="fas fa-map-marker-alt"></i>
-{{ hr.company_city }}
-</small>
-{% endif %}
-
-</div>
-
-<div class="verify-row">
-
-<div>
-
-{% if hr.msme_certificate %}
-<span class="verify-ok">
-<i class="fas fa-check-circle"></i>
-MSME
-</span>
-{% else %}
-<span class="verify-no">
-<i class="fas fa-times-circle"></i>
-MSME
-</span>
-{% endif %}
-
-</div>
-
-<div>
-
-{% if hr.gumasta_certificate %}
-<span class="verify-ok">
-<i class="fas fa-check-circle"></i>
-Gumasta
-</span>
-{% else %}
-<span class="verify-no">
-<i class="fas fa-times-circle"></i>
-Gumasta
-</span>
-{% endif %}
-
-</div>
-
-</div>
-
-<div class="follow-btn">
-
-{% if session.get('candidate_id') %}
-
-<a href="/follow-hr/{{ hr.id }}?next={{ request.path }}"
-class="btn {% if is_following %}btn-success{% else %}btn-light{% endif %}">
-
-{% elif current_user.is_authenticated %}
-
-<a href="/follow-hr-user/{{ hr.id }}?next={{ request.path }}"
-class="btn {% if is_following %}btn-success{% else %}btn-light{% endif %}">
-
-{% endif %}
-
-{% if is_following %}
-✓ Following
-{% else %}
-<i class="fas fa-user-plus"></i>
-Follow
-{% endif %}
-
-</a>
-
-</div>
-
-</div>
-
-<div class="posts-tab">
-
-    <i class="fas fa-th"></i>
-
-    POSTS
-
-</div>
-
-<div class="post-grid">
-
-{% for job in jobs %}
-
-<a
-href="/candidate-feed?selected={{ job.id }}"
-class="post-item">
-
-{% if job.images and job.images != "" %}
-
-    {% set first_file = job.images.split(',')[0] %}
-
-    {% if first_file.lower().endswith(('.mp4','.mov','.avi','.mkv','.webm')) %}
-    {% set thumb = first_file.rsplit('.',1)[0] + '.jpg' %}
-    <div style="position:relative;width:100%;height:100%;">
         <img
-            src="/static/uploads/{{ thumb }}"
-            onerror="this.onerror=null;this.src='/static/uploads/video-placeholder.jpg';"
-            loading="lazy"
-            style="width:100%;height:100%;object-fit:cover;">
-        <div style="
-            position:absolute;
-            top:50%;
-            left:50%;
-            transform:translate(-50%,-50%);
-            width:44px;
-            height:44px;
-            border-radius:50%;
-            background:rgba(0,0,0,.45);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            color:#fff;
-            font-size:18px;
-        ">
-            ▶
+            src="/static/uploads/{{ hr.profile_photo }}"
+            class="profile-pic"
+            alt="{{ hr.company or 'Company' }}"
+        >
+
+        {% else %}
+
+        <div
+            class="profile-pic"
+            style="
+                background:white;
+                color:#2563eb;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                font-size:34px;
+                font-weight:700;
+            "
+        >
+
+            {{ hr.first_name[0] if hr.first_name else 'R' }}
+
         </div>
-    </div>
-{% else %}
-    <img
-        src="/static/uploads/{{ first_file }}"
-        loading="lazy">
-{% endif %}
 
-{% elif job.image and job.image != "" %}
+        {% endif %}
 
-    <img
-        src="/static/uploads/{{ job.image }}"
-        loading="lazy">
 
-{% else %}
+        <!-- PROFILE STATS -->
 
-        <div class="no-image-post">
+        <div class="profile-stats">
+
+
+            <!-- POSTS -->
 
             <div>
 
-                <i
-                class="fas fa-briefcase"
-                style="
-                font-size:30px;
-                color:#2563eb;
-                margin-bottom:8px;
-                ">
-                </i>
+                <strong>
+                    {{ jobs|length }}
+                </strong>
 
-                <br>
-
-                No Image
+                <small>
+                    Posts
+                </small>
 
             </div>
 
+
+            <!-- FOLLOWERS -->
+
+            <div>
+
+                <strong>
+                    {{ followers_count }}
+                </strong>
+
+                <small>
+                    Followers
+                </small>
+
+            </div>
+
+
+            <!-- PRODUCTS -->
+
+            <div>
+
+                <strong>
+                    {{ products|length }}
+                </strong>
+
+                <small>
+                    Products
+                </small>
+
+            </div>
+
+
         </div>
 
-{% endif %}
+    </div>
 
-</a>
 
-{% else %}
+    <!-- PERSON NAME -->
+
+    <div class="profile-name">
+
+        {{ hr.first_name or '' }}
+        {{ hr.last_name or '' }}
+
+    </div>
+
+
+    <!-- COMPANY -->
+
+    <div class="company-name">
+
+        {{ hr.company or 'Company' }}
+
+        {% if hr.company_city %}
+
+        <br>
+
+        <small>
+
+            <i class="fas fa-map-marker-alt"></i>
+
+            {{ hr.company_city }}
+
+        </small>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         VERIFICATION
+         ===================================================== -->
+
+    <div class="verify-row">
+
+
+        <!-- MSME -->
+
+        <div>
+
+            {% if hr.msme_certificate %}
+
+            <span class="verify-ok">
+
+                <i class="fas fa-check-circle"></i>
+
+                MSME
+
+            </span>
+
+            {% else %}
+
+            <span class="verify-no">
+
+                <i class="fas fa-times-circle"></i>
+
+                MSME
+
+            </span>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- GUMASTA -->
+
+        <div>
+
+            {% if hr.gumasta_certificate %}
+
+            <span class="verify-ok">
+
+                <i class="fas fa-check-circle"></i>
+
+                Gumasta
+
+            </span>
+
+            {% else %}
+
+            <span class="verify-no">
+
+                <i class="fas fa-times-circle"></i>
+
+                Gumasta
+
+            </span>
+
+            {% endif %}
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         FOLLOW
+         ===================================================== -->
+
+    {% if session.get('candidate_id') %}
+
+    <div class="follow-btn">
+
+        <a
+            href="/follow-hr/{{ hr.id }}?next={{ request.path }}"
+            class="btn {% if is_following %}btn-success{% else %}btn-light{% endif %}"
+        >
+
+            {% if is_following %}
+
+                ✓ Following
+
+            {% else %}
+
+                <i class="fas fa-user-plus"></i>
+
+                Follow
+
+            {% endif %}
+
+        </a>
+
+    </div>
+
+
+    {% elif current_user.is_authenticated %}
+
+    <div class="follow-btn">
+
+        <a
+            href="/follow-hr-user/{{ hr.id }}?next={{ request.path }}"
+            class="btn {% if is_following %}btn-success{% else %}btn-light{% endif %}"
+        >
+
+            {% if is_following %}
+
+                ✓ Following
+
+            {% else %}
+
+                <i class="fas fa-user-plus"></i>
+
+                Follow
+
+            {% endif %}
+
+        </a>
+
+    </div>
+
+    {% endif %}
+
+
+</div>
+
+
+<!-- =========================================================
+     PROFILE TABS
+     ========================================================= -->
+
+<div class="profile-content-tabs">
+
+
+    <!-- VIDEOS -->
+
+    <button
+        type="button"
+        class="profile-tab"
+        data-tab="videos"
+        onclick="switchProfileTab('videos')"
+    >
+
+        <i class="fas fa-video"></i>
+
+        <span>
+            Videos
+        </span>
+
+    </button>
+
+
+    <!-- POSTS -->
+
+    <button
+        type="button"
+        class="profile-tab active"
+        data-tab="posts"
+        onclick="switchProfileTab('posts')"
+    >
+
+        <i class="fas fa-th"></i>
+
+        <span>
+            Posts
+        </span>
+
+    </button>
+
+
+    <!-- SHOP -->
+
+    <button
+        type="button"
+        class="profile-tab"
+        data-tab="shop"
+        onclick="switchProfileTab('shop')"
+    >
+
+        <i class="fas fa-store"></i>
+
+        <span>
+            Shop
+        </span>
+
+    </button>
+
+
+</div>
+
+
+<!-- =========================================================
+     VIDEOS TAB
+     ========================================================= -->
 
 <div
-style="
-grid-column:1/-1;
-background:white;
-padding:60px 20px;
-text-align:center;
-">
+    id="profile-videos"
+    class="profile-tab-content"
+>
 
-<i
-class="fas fa-briefcase"
-style="
-font-size:60px;
-color:#2563eb;
-margin-bottom:15px;
-">
-</i>
 
-<h4
-style="
-font-weight:700;
-margin-bottom:10px;
-">
+    <div class="post-grid">
 
-No Posts Yet
 
-</h4>
+        {% set video_namespace =
+            namespace(found=false)
+        %}
 
-<p
-style="
-color:#6b7280;
-margin-bottom:25px;
-">
 
-This company hasn't posted any jobs yet.
+        {% for job in jobs %}
 
-</p>
+
+            {% set first_file = '' %}
+
+
+            {% if job.images and job.images != "" %}
+
+                {% set first_file =
+                    job.images.split(',')[0]|trim
+                %}
+
+            {% elif job.image and job.image != "" %}
+
+                {% set first_file =
+                    job.image|trim
+                %}
+
+            {% endif %}
+
+
+            {% if first_file and
+                first_file.lower().endswith(
+                    (
+                        '.mp4',
+                        '.mov',
+                        '.avi',
+                        '.mkv',
+                        '.webm'
+                    )
+                )
+            %}
+
+
+                {% set video_namespace.found = true %}
+
+
+                <a
+                    href="/candidate-feed?selected={{ job.id }}"
+                    class="post-item"
+                >
+
+
+                    {% set thumb =
+                        first_file.rsplit('.',1)[0]
+                        + '.jpg'
+                    %}
+
+
+                    <img
+                        src="/static/uploads/{{ thumb }}"
+                        onerror="
+                            this.onerror=null;
+                            this.src='/static/uploads/video-placeholder.jpg';
+                        "
+                        loading="lazy"
+                        alt="Video"
+                    >
+
+
+                    <div class="video-play-icon">
+
+                        ▶
+
+                    </div>
+
+
+                </a>
+
+
+            {% endif %}
+
+
+        {% endfor %}
+
+
+        {% if not video_namespace.found %}
+
+
+        <div class="empty-tab">
+
+
+            <i class="fas fa-video"></i>
+
+
+            <h4>
+                No Videos Yet
+            </h4>
+
+
+            <p>
+                This company hasn't posted any videos yet.
+            </p>
+
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
 
 </div>
 
-{% endfor %}
+
+<!-- =========================================================
+     POSTS TAB
+     ========================================================= -->
+
+<div
+    id="profile-posts"
+    class="profile-tab-content active"
+>
+
+
+    <div class="post-grid">
+
+
+        {% set post_namespace =
+            namespace(found=false)
+        %}
+
+
+        {% for job in jobs %}
+
+
+            {% set first_file = '' %}
+
+
+            {% if job.images and job.images != "" %}
+
+                {% set first_file =
+                    job.images.split(',')[0]|trim
+                %}
+
+            {% elif job.image and job.image != "" %}
+
+                {% set first_file =
+                    job.image|trim
+                %}
+
+            {% endif %}
+
+
+            {% set is_video =
+                first_file and
+                first_file.lower().endswith(
+                    (
+                        '.mp4',
+                        '.mov',
+                        '.avi',
+                        '.mkv',
+                        '.webm'
+                    )
+                )
+            %}
+
+
+            {% if not is_video %}
+
+
+                {% set post_namespace.found = true %}
+
+
+                <a
+                    href="/candidate-feed?selected={{ job.id }}"
+                    class="post-item"
+                >
+
+
+                    {% if job.images and
+                          job.images != "" %}
+
+
+                        {% set first_image =
+                            job.images.split(',')[0]|trim
+                        %}
+
+
+                        <img
+                            src="/static/uploads/{{ first_image }}"
+                            loading="lazy"
+                            alt="Post"
+                        >
+
+
+                    {% elif job.image and
+                            job.image != "" %}
+
+
+                        <img
+                            src="/static/uploads/{{ job.image }}"
+                            loading="lazy"
+                            alt="Post"
+                        >
+
+
+                    {% else %}
+
+
+                        <div class="no-image-post">
+
+
+                            <div>
+
+
+                                <i
+                                    class="fas fa-briefcase"
+                                    style="
+                                        font-size:30px;
+                                        color:#2563eb;
+                                        margin-bottom:8px;
+                                    "
+                                ></i>
+
+
+                                <br>
+
+
+                                No Image
+
+
+                            </div>
+
+
+                        </div>
+
+
+                    {% endif %}
+
+
+                </a>
+
+
+            {% endif %}
+
+
+        {% endfor %}
+
+
+        {% if not post_namespace.found %}
+
+
+        <div class="empty-tab">
+
+
+            <i class="fas fa-briefcase"></i>
+
+
+            <h4>
+                No Posts Yet
+            </h4>
+
+
+            <p>
+                This company hasn't posted any jobs yet.
+            </p>
+
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
 
 </div>
 
+
+<!-- =========================================================
+     SHOP TAB
+     ========================================================= -->
+
+<div
+    id="profile-shop"
+    class="profile-tab-content"
+>
+
+
+    {% if products %}
+
+
+    <div class="shop-profile-grid">
+
+
+        {% for product in products %}
+
+
+        <a
+            href="/product/{{ product.id }}"
+            class="shop-profile-product"
+        >
+
+
+            <!-- PRODUCT IMAGE -->
+
+            <div class="shop-product-image">
+
+
+                {% if product.images and
+                      product.images|length > 0 %}
+
+
+                <img
+                    src="{{ url_for(
+                        'static',
+                        filename='uploads/products/' +
+                        product.images[0].image
+                    ) }}"
+                    alt="{{ product.name }}"
+                    loading="lazy"
+                    onerror="
+                        this.onerror=null;
+                        this.src='{{ url_for(
+                            'static',
+                            filename='images/no-image.png'
+                        ) }}';
+                    "
+                >
+
+
+                {% else %}
+
+
+                <div class="shop-product-placeholder">
+
+                    <i class="fas fa-image"></i>
+
+                </div>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+            <!-- PRODUCT INFO -->
+
+            <div class="shop-product-info">
+
+
+                <div class="shop-product-name">
+
+                    {{ product.name }}
+
+                </div>
+
+
+                <div class="shop-product-price">
+
+
+                    {% if product.sale_price %}
+
+
+                        ₹{{ "%.0f"|format(
+                            product.sale_price
+                        ) }}
+
+
+                        <span>
+
+                            ₹{{ "%.0f"|format(
+                                product.price
+                            ) }}
+
+                        </span>
+
+
+                    {% else %}
+
+
+                        ₹{{ "%.0f"|format(
+                            product.price
+                        ) }}
+
+
+                    {% endif %}
+
+
+                </div>
+
+
+            </div>
+
+
+        </a>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+    {% else %}
+
+
+    <div class="shop-empty">
+
+
+        <i class="fas fa-store"></i>
+
+
+        <h4>
+            No Products Yet
+        </h4>
+
+
+        <p>
+            This company hasn't added any products yet.
+        </p>
+
+
+    </div>
+
+
+    {% endif %}
+
+
 </div>
+
+
+</div>
+
+
+<!-- =========================================================
+     TAB SWITCHING
+     ========================================================= -->
+
+<script>
+
+function switchProfileTab(tab){
+
+    /* ---------------------------------------------
+       UPDATE ACTIVE TAB
+       --------------------------------------------- */
+
+    document
+        .querySelectorAll('.profile-tab')
+        .forEach(function(button){
+
+            button.classList.toggle(
+                'active',
+                button.getAttribute('data-tab') === tab
+            );
+
+        });
+
+
+    /* ---------------------------------------------
+       HIDE ALL TAB CONTENT
+       --------------------------------------------- */
+
+    document
+        .querySelectorAll('.profile-tab-content')
+        .forEach(function(content){
+
+            content.classList.remove('active');
+
+        });
+
+
+    /* ---------------------------------------------
+       SHOW SELECTED TAB
+       --------------------------------------------- */
+
+    var selected =
+        document.getElementById(
+            'profile-' + tab
+        );
+
+
+    if(selected){
+
+        selected.classList.add('active');
+
+    }
+
+}
+
+</script>
 
 {% endblock %}
