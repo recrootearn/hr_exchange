@@ -11246,12 +11246,6 @@ def view_candidates(id):
         followed_candidate_id=id
     ).count()
 
-    following_count = Follow.query.filter_by(
-        follower_candidate_id=id
-    ).count() + Follow.query.filter_by(
-        follower_hr_id=id
-    ).count()
-
     is_following = False
     contact_unlocked = False
     has_applied = False
@@ -11305,7 +11299,6 @@ def view_candidates(id):
         candidate_videos=candidate_videos,
         candidate_products=candidate_products,
         followers_count=followers_count,
-        following_count=following_count,
         is_following=is_following,
         contact_unlocked=contact_unlocked,
         has_applied=has_applied,
