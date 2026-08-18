@@ -324,178 +324,6 @@
     line-height:1.9;
 }
 
-/* PROFILE TABS */
-
-.profile-tabs{
-    display:flex;
-    gap:0;
-    margin:0 -18px 20px;
-    background:#fff;
-    border-bottom:1px solid #e5e7eb;
-    position:sticky;
-    top:0;
-    z-index:20;
-}
-
-.profile-tab{
-    flex:1;
-    border:none;
-    background:transparent;
-    padding:16px 8px;
-    color:#6b7280;
-    font-weight:700;
-    font-size:14px;
-    cursor:pointer;
-    border-bottom:3px solid transparent;
-}
-
-.profile-tab.active{
-    color:#2563eb;
-    border-bottom-color:#2563eb;
-}
-
-.profile-panel{
-    display:none;
-}
-
-.profile-panel.active{
-    display:block;
-}
-
-.profile-action-row{
-    display:flex;
-    gap:10px;
-    margin-top:14px;
-}
-
-.profile-action-row .edit-btn{
-    margin-top:0;
-    flex:1;
-}
-
-.video-grid,
-.product-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:14px;
-}
-
-.video-card,
-.product-card{
-    background:#f8fafc;
-    border:1px solid #e5e7eb;
-    border-radius:16px;
-    overflow:hidden;
-}
-
-.video-card video{
-    width:100%;
-    aspect-ratio:16/9;
-    object-fit:cover;
-    display:block;
-    background:#111827;
-}
-
-.video-caption{
-    padding:10px 12px;
-    color:#374151;
-    font-size:13px;
-}
-
-.product-image{
-    width:100%;
-    aspect-ratio:1/1;
-    object-fit:cover;
-    background:#f3f4f6;
-}
-
-.product-info{
-    padding:12px;
-}
-
-.product-name{
-    font-weight:700;
-    color:#111827;
-}
-
-.product-price{
-    color:#2563eb;
-    font-weight:800;
-    margin-top:4px;
-}
-
-.shop-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    flex-wrap:wrap;
-    margin-bottom:16px;
-}
-
-.shop-name{
-    font-size:22px;
-    font-weight:800;
-    color:#111827;
-}
-
-.shop-owner-actions{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-}
-
-.shop-owner-actions .btn{
-    border-radius:12px;
-    font-weight:700;
-}
-
-.product-owner-actions{
-    display:flex;
-    gap:7px;
-    padding:0 12px 12px;
-    flex-wrap:wrap;
-}
-.product-owner-actions .btn{
-    flex:1;
-    min-width:80px;
-    border-radius:10px;
-    font-size:12px;
-    font-weight:700;
-}
-.video-owner-actions{
-    display:flex;
-    gap:7px;
-    padding:0 12px 12px;
-}
-.video-owner-actions .btn{
-    flex:1;
-    border-radius:10px;
-    font-size:12px;
-    font-weight:700;
-}
-
-.empty-state{
-    text-align:center;
-    padding:35px 15px;
-    color:#6b7280;
-    background:#f8fafc;
-    border-radius:16px;
-}
-
-@media(max-width:600px){
-    .video-grid,
-    .product-grid{
-        grid-template-columns:1fr 1fr;
-        gap:10px;
-    }
-
-    .profile-tab{
-        padding:14px 4px;
-        font-size:13px;
-    }
-}
-
 @media(max-width:768px){
 
 .content{
@@ -640,325 +468,392 @@ style="width:{{ profile_completion }}%;">
 
 </div>
 
-<div class="profile-action-row">
 <a
-    href="{{ url_for('edit_candidate_profile') }}"
-    class="btn edit-btn">
-    ✏ Edit Profile
-</a>
+href="{{ url_for('edit_candidate_profile') }}"
+class="btn edit-btn">
 
-<a
-    href="/post-video"
-    class="btn edit-btn"
-    style="background:#2563eb;color:#fff;">
-    <i class="fas fa-video me-2"></i> Add Video
+✏ Edit Profile
+
 </a>
-</div>
 
 </div>
 
 <div class="profile-body">
 
-    <div class="stats">
-        <div class="stat">
-            <h2>{{ followers_count }}</h2>
-            <p>Followers</p>
-        </div>
-        <div class="stat">
-            <h2>{{ following_count }}</h2>
-            <p>Following</p>
-        </div>
-    </div>
+<div class="stats">
 
-    <div class="profile-tabs">
-        <button type="button" class="profile-tab active" data-tab="videos">
-            <i class="fas fa-video me-1"></i> Videos
-        </button>
-        <button type="button" class="profile-tab" data-tab="details">
-            <i class="fas fa-user me-1"></i> Details
-        </button>
-        <button type="button" class="profile-tab" data-tab="shop">
-            <i class="fas fa-store me-1"></i> Shop
-        </button>
-    </div>
+<div class="stat">
 
-    <!-- VIDEOS -->
-    <div class="profile-panel active" id="panel-videos">
-        <div class="section">
-            <div class="section-title">🎥 Videos</div>
+<h2>{{ followers_count }}</h2>
 
-            {% if candidate_videos %}
-            <div class="video-grid">
-                {% for video in candidate_videos %}
-                <div class="video-card">
-                    {% if video.images %}
-                    <video controls preload="metadata"
-                           src="{{ url_for('static', filename='uploads/' + video.images) }}">
-                    </video>
-                    {% endif %}
-                    {% if video.description %}
-                    <div class="video-caption">{{ video.description }}</div>
-                    {% endif %}
-                    {% if is_owner %}
-                    <div class="video-owner-actions">
-                        <a href="/edit-candidate-video/{{ video.id }}" class="btn btn-outline-primary">
-                            <i class="fas fa-edit me-1"></i> Edit
-                        </a>
-                        <form method="POST" action="/delete-candidate-video/{{ video.id }}" style="flex:1;margin:0;" onsubmit="return confirm('Delete this video?');">
-                            <button type="submit" class="btn btn-outline-danger w-100">
-                                <i class="fas fa-trash me-1"></i> Delete
-                            </button>
-                        </form>
-                    </div>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="empty-state">
-                <div style="font-size:42px;">🎥</div>
-                <strong>No videos uploaded yet.</strong>
-                {% if is_owner %}
-                <div style="margin-top:12px;">
-                    <a href="/post-video" class="btn btn-primary" style="border-radius:12px;font-weight:700;">
-                        <i class="fas fa-plus me-1"></i> Add Video
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- DETAILS -->
-    <div class="profile-panel" id="panel-details">
-        <div class="section">
-            <div class="section-title">👤 Personal Details</div>
-
-            <div class="info-row">
-                <div class="info-label">Full Name</div>
-                <div class="info-value">{{ candidate.full_name or "Not Added" }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Email</div>
-                <div class="info-value">{{ candidate.email or "Not Added" }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Mobile</div>
-                <div class="info-value">{{ candidate.mobile or "Not Added" }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Date of Birth</div>
-                <div class="info-value">{{ candidate.dob or "Not Added" }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">City</div>
-                <div class="info-value">{{ candidate.city or "Not Added" }}</div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">💼 Professional Details</div>
-
-            <div class="info-row">
-                <div class="info-label">Qualification</div>
-                <div class="info-value">{{ candidate.qualification or "Not Added" }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Career Level</div>
-                <div class="info-value">{{ candidate.career_level or "Not Added" }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Company</div>
-                <div class="info-value">{{ candidate.company_name or "Not Added" }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Designation</div>
-                <div class="info-value">{{ candidate.designation or "Not Added" }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Experience</div>
-                <div class="info-value">
-                    {{ candidate.experience_from or "-" }}
-                    {% if candidate.experience_to %} → {{ candidate.experience_to }}{% else %} → Present{% endif %}
-                </div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Education</div>
-                <div class="info-value">{{ candidate.education or "Not Added" }}</div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">🛠 Skills</div>
-            {% if candidate.skills %}
-                {% for skill in candidate.skills.split(",") %}
-                    <span class="skill">{{ skill.strip() }}</span>
-                {% endfor %}
-            {% else %}
-                <div class="empty-state">Skills not added.</div>
-            {% endif %}
-        </div>
-
-        <div class="section">
-            <div class="section-title">🎯 Interested Fields</div>
-            {% if candidate.interested_fields %}
-                {% for field in candidate.interested_fields.split(",") %}
-                    <span class="field">{{ field.strip() }}</span>
-                {% endfor %}
-            {% else %}
-                <div class="empty-state">No interested fields selected.</div>
-            {% endif %}
-        </div>
-
-        <div class="section">
-            <div class="section-title">📝 About Me</div>
-            {% if candidate.about_me %}
-                <div class="about-card">{{ candidate.about_me }}</div>
-            {% else %}
-                <div class="empty-state">No description added yet.</div>
-            {% endif %}
-        </div>
-
-        <div class="section">
-            <div class="section-title">📄 Resume</div>
-            {% if candidate.resume_file %}
-            <div class="resume-card">
-                <div style="display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;">
-                    <div>
-                        <div style="font-size:18px;font-weight:700;color:#111827;">Resume Uploaded</div>
-                        <div style="color:#6b7280;margin-top:4px;font-size:14px;">Latest resume</div>
-                    </div>
-                    <a href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}"
-                       target="_blank"
-                       class="btn btn-success"
-                       style="min-width:190px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;">
-                        <i class="fas fa-download me-2"></i> Download Resume
-                    </a>
-                </div>
-            </div>
-            {% else %}
-            <div class="empty-state">Resume not uploaded.</div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- SHOP -->
-    <div class="profile-panel" id="panel-shop">
-        <div class="section">
-            <div class="shop-header">
-                <div>
-                    <div class="section-title" style="margin-bottom:4px;">🛍 Shop</div>
-                    <div class="shop-name">
-                        {{ linked_user.shop_name or (candidate.full_name ~ "'s Shop") }}
-                    </div>
-                </div>
-
-                {% if is_owner %}
-                <div class="shop-owner-actions">
-                    <button type="button"
-                            class="btn btn-outline-primary"
-                            onclick="document.getElementById('shopNameBox').style.display='block'">
-                        <i class="fas fa-pen me-1"></i> Shop Name
-                    </button>
-                    <a href="/shop/add-product" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i> Add Product
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-
-            {% if is_owner %}
-            <div id="shopNameBox" style="display:none;margin-bottom:18px;">
-                <form method="POST" action="/shop/set-name" class="d-flex gap-2">
-                    <input type="text"
-                           name="shop_name"
-                           class="form-control"
-                           maxlength="150"
-                           value="{{ linked_user.shop_name or '' }}"
-                           placeholder="Enter your shop name"
-                           required>
-                    <button class="btn btn-success" type="submit">Save</button>
-                </form>
-            </div>
-            {% endif %}
-
-            {% if candidate_products %}
-            <div class="product-grid">
-                {% for product in candidate_products %}
-                <a href="/product/{{ product.id }}" class="product-card" style="text-decoration:none;color:inherit;">
-                    {% if product.images and product.images|length > 0 %}
-                        <img class="product-image"
-                             src="{{ url_for('static', filename='uploads/' + product.images[0].image) }}"
-                             alt="{{ product.name }}">
-                    {% else %}
-                        <div class="product-image d-flex align-items-center justify-content-center" style="font-size:42px;">🛍️</div>
-                    {% endif %}
-                    <div class="product-info">
-                        <div class="product-name">{{ product.name }}</div>
-                        <div class="product-price">
-                            {% if product.sale_price %}
-                                ₹{{ product.sale_price }}
-                            {% else %}
-                                ₹{{ product.price }}
-                            {% endif %}
-                        </div>
-                    </div>
-                </a>
-                {% if is_owner %}
-                <div class="product-owner-actions">
-                    <a href="/shop/manage-product/{{ product.id }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-cog me-1"></i> Manage
-                    </a>
-                    <a href="/shop/edit-product/{{ product.id }}" class="btn btn-outline-primary">
-                        <i class="fas fa-edit me-1"></i> Edit
-                    </a>
-                    <form method="POST" action="/shop/delete-product/{{ product.id }}" style="flex:1;margin:0;" onsubmit="return confirm('Delete this product?');">
-                        <button type="submit" class="btn btn-outline-danger w-100">
-                            <i class="fas fa-trash me-1"></i> Delete
-                        </button>
-                    </form>
-                </div>
-                {% endif %}
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="empty-state">
-                <div style="font-size:42px;">🛍️</div>
-                <strong>No products uploaded yet.</strong>
-                {% if is_owner %}
-                <div style="margin-top:12px;">
-                    <a href="/shop/add-product" class="btn btn-primary" style="border-radius:12px;font-weight:700;">
-                        <i class="fas fa-plus me-1"></i> Add Product
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-            {% endif %}
-        </div>
-    </div>
+<p>Followers</p>
 
 </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-    const tabs = document.querySelectorAll(".profile-tab");
-    const panels = document.querySelectorAll(".profile-panel");
+<div class="stat">
 
-    tabs.forEach(tab => {
-        tab.addEventListener("click", function(){
-            const target = this.dataset.tab;
+<h2>{{ following_count }}</h2>
 
-            tabs.forEach(t => t.classList.remove("active"));
-            panels.forEach(p => p.classList.remove("active"));
+<p>Following</p>
 
-            this.classList.add("active");
-            const panel = document.getElementById("panel-" + target);
-            if(panel) panel.classList.add("active");
-        });
-    });
-});
-</script>
+</div>
+
+</div>
+
+<div class="section">
+
+    <div class="section-title">
+
+        💼 Career Details
+
+    </div>
+
+    <div class="info-row">
+
+        <div class="info-label">
+
+            Career Level
+
+        </div>
+
+        <div class="info-value">
+
+            {{ candidate.career_level or "Not Added" }}
+
+        </div>
+
+    </div>
+
+    {% if candidate.career_level and candidate.career_level|trim|lower == "experienced" %}
+
+    <div class="info-row">
+
+        <div class="info-label">
+
+            Company Name
+
+        </div>
+
+        <div class="info-value">
+
+            {{ candidate.company_name or "Not Added" }}
+
+        </div>
+
+    </div>
+
+    <div class="info-row">
+
+        <div class="info-label">
+
+            Designation
+
+        </div>
+
+        <div class="info-value">
+
+            {{ candidate.designation or "Not Added" }}
+
+        </div>
+
+    </div>
+
+    <div class="info-row">
+
+        <div class="info-label">
+
+            Experience
+
+        </div>
+
+        <div class="info-value">
+
+            {{ candidate.experience_from or "-" }}
+            →
+            {{ candidate.experience_to or "Present" }}
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+<div class="section">
+
+    <div class="section-title">
+
+        🎓 Education
+
+    </div>
+
+    {% if candidate.education %}
+
+    <div class="info-row">
+
+        <div class="info-label">
+
+            Qualification
+
+        </div>
+
+        <div class="info-value">
+
+            {{ candidate.education }}
+
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div
+    style="
+    color:#6b7280;
+    font-size:15px;
+    ">
+
+        Education details not added.
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+<div class="section">
+
+    <div class="section-title">
+
+        🛠 Skills
+
+    </div>
+
+    {% if candidate.skills %}
+
+        <div>
+
+            {% for skill in candidate.skills.split(",") %}
+
+                <span class="skill">
+
+                    {{ skill.strip() }}
+
+                </span>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div
+        style="
+        color:#6b7280;
+        font-size:15px;
+        ">
+
+            Skills not added.
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<div class="section">
+
+    <div class="section-title">
+
+        🎯 Interested Fields
+
+    </div>
+
+    {% if candidate.interested_fields %}
+
+        <div>
+
+            {% for field in candidate.interested_fields.split(",") %}
+
+                <span class="field">
+
+                    {{ field.strip() }}
+
+                </span>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div
+        style="
+        color:#6b7280;
+        font-size:15px;
+        ">
+
+            No interested fields selected.
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<div class="section">
+
+    <div class="section-title">
+
+        📝 About Me
+
+    </div>
+
+    {% if candidate.about_me %}
+
+        <div class="about-card">
+            {{ candidate.about_me }}
+        </div>
+
+    {% else %}
+
+        <div
+        style="
+        color:#6b7280;
+        font-size:15px;
+        ">
+
+            No description added yet.
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+<div class="section">
+
+    <div class="section-title">
+
+        📄 Resume
+
+    </div>
+
+    {% if candidate.resume_file %}
+
+    <div class="resume-card">
+
+        <div
+        style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:15px;
+        flex-wrap:wrap;
+        ">
+
+            <div>
+
+                <div
+                style="
+                font-size:18px;
+                font-weight:700;
+                color:#111827;
+                ">
+
+                    Resume Uploaded
+
+                </div>
+
+                <div
+                style="
+                color:#6b7280;
+                margin-top:4px;
+                font-size:14px;
+                ">
+
+                    Download your latest resume.
+
+                </div>
+
+            </div>
+
+            <a
+            href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}"
+            target="_blank"
+            class="btn btn-success"
+            style="
+            min-width:190px;
+            height:48px;
+            border-radius:12px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:700;
+            ">
+
+                <i class="fas fa-download me-2"></i>
+
+                Download Resume
+
+            </a>
+
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div class="resume-card">
+
+        <div
+        style="
+        text-align:center;
+        padding:10px 0;
+        ">
+
+            <div
+            style="
+            font-size:52px;
+            ">
+
+                📄
+
+            </div>
+
+            <div
+            style="
+            margin-top:10px;
+            font-size:18px;
+            font-weight:700;
+            color:#111827;
+            ">
+
+                Resume Not Uploaded
+
+            </div>
+
+            <div
+            style="
+            color:#6b7280;
+            margin-top:5px;
+            ">
+
+                Upload your resume to improve your profile.
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+</div>
+
 </div>
 
 {% endblock %}

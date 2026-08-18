@@ -216,10 +216,6 @@ class User(UserMixin, db.Model):
     __table_args__ = {'sqlite_autoincrement': True}
 
     id = db.Column(db.Integer, primary_key=True)
-
-    account_type = db.Column(db.String(20), default="hr", nullable=False)
-    shop_name = db.Column(db.String(150))
-
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
     mobile = db.Column(db.String(20), unique=True)
@@ -527,8 +523,6 @@ class CandidateUser(UserMixin, db.Model):
     __table_args__ = {'sqlite_autoincrement': True}
 
     id = db.Column(db.Integer, primary_key=True)
-
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), unique=True, nullable=True)
 
     full_name = db.Column(db.String(150))
 
@@ -5459,16 +5453,6 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-def is_candidate_account():
-    return (
-        current_user.is_authenticated
-        and getattr(current_user, "account_type", "hr") == "candidate"
-    )
-
-def hr_only_or_403():
-    if is_candidate_account():
-        abort(403)
-
 def admin_only():
 
     if (
@@ -6141,12 +6125,6 @@ def check_hr_profile():
     if current_user.is_admin:
         return
 
-    # Candidate accounts have their own profile-completion system
-    # stored on CandidateUser. Do not apply the HR/User completion
-    # gate (which checks company/MSME/Gumasta fields) to candidates.
-    if getattr(current_user, "account_type", "hr") == "candidate":
-        return
-
     # Routes allowed without profile completion
     allowed_routes = [
 
@@ -6155,10 +6133,6 @@ def check_hr_profile():
         "profile",
 
         "edit_profile",
-
-        # Candidate accounts use the unified login but complete
-        # their profile through the candidate profile form.
-        "edit_candidate_profile",
 
         "logout",
 
@@ -6220,16 +6194,15 @@ def check_candidate_profile():
         return
 
     if (candidate.profile_completion or 0) < 80:
-        # Never block the profile-edit route itself.
-        if request.endpoint != "edit_candidate_profile":
-            flash(
-                "Complete at least 80% of your profile to unlock all features.",
-                "warning"
-            )
 
-            return redirect(
-                url_for("edit_candidate_profile")
-            )
+        flash(
+            "Complete at least 80% of your profile to unlock all features.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("edit_candidate_profile")
+        )
 
 @app.before_request
 def update_last_login():
@@ -7629,8 +7602,6 @@ def admin_reset_password(user_id):
 @login_required
 def locked():
 
-    hr_only_or_403()
-
     designation = request.args.get('designation')
     city = request.args.get('city')
     industry = request.args.get('industry')
@@ -8372,8 +8343,6 @@ def package_order(id):
 @app.route('/leads')
 @login_required
 def leads():
-
-    hr_only_or_403()
 
     designation = request.args.get('designation')
     city = request.args.get('city')
@@ -9193,88 +9162,133 @@ def candidate_wallet():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        mobile = request.form['mobile'].strip()
-        password = request.form['password']
-        account_type = request.form.get('account_type', 'hr').strip().lower()
-        if account_type not in ('hr', 'candidate'):
-            account_type = 'hr'
 
-        entered_referral = request.form.get("referral_code", "").strip().upper()
+    if request.method == 'POST':
+
+        mobile = request.form['mobile'].strip()
+
+        password = request.form['password']
+
+        entered_referral = request.form.get(
+            "referral_code",
+            ""
+        ).strip().upper()
+
+        # VALIDATE MOBILE
 
         if not re.fullmatch(r"[6-9]\d{9}", mobile):
-            flash("Please enter a valid 10-digit Indian mobile number.", "danger")
-            return redirect('/register')
-        if not session.get("otp_verified"):
-            flash("Please verify your mobile number using OTP.", "danger")
-            return redirect('/register')
-        if session.get("otp_mobile") != mobile:
-            flash("OTP verification does not match the entered mobile number.", "danger")
+
+            flash(
+                "Please enter a valid 10-digit Indian mobile number.",
+                "danger"
+            )
+
             return redirect('/register')
 
-        existing_user = User.query.filter_by(mobile=mobile).first()
-        existing_candidate = CandidateUser.query.filter_by(mobile=mobile).first()
-        if existing_user or existing_candidate:
-            deleted = DeletedAccount.query.filter_by(mobile=mobile).first()
+        # OTP CHECK
+
+        if not session.get("otp_verified"):
+
+            flash(
+                "Please verify your mobile number using OTP.",
+                "danger"
+            )
+
+            return redirect('/register')
+
+        if session.get("otp_mobile") != mobile:
+
+            flash(
+                "OTP verification does not match the entered mobile number.",
+                "danger"
+            )
+
+            return redirect('/register')
+
+        # MOBILE EXISTS
+
+        existing_hr = User.query.filter_by(
+            mobile=mobile
+        ).first()
+
+        existing_candidate = CandidateUser.query.filter_by(
+            mobile=mobile
+        ).first()
+
+        if existing_hr or existing_candidate:
+
+            deleted = DeletedAccount.query.filter_by(
+                mobile=mobile
+            ).first()
+
             if not deleted:
-                flash("Mobile number already exists.", "danger")
+
+                flash(
+                    "Mobile number already exists.",
+                    "danger"
+                )
+
                 return redirect('/register')
 
-        referrer = User.query.filter_by(referral_code=entered_referral).first() if entered_referral else None
-        password_hash = generate_password_hash(password)
+        # REFERRAL
+
+        referrer = None
+
+        if entered_referral:
+
+            referrer = User.query.filter_by(
+                referral_code=entered_referral
+            ).first()
+
+        # CREATE USER
 
         user = User(
+
             mobile=mobile,
-            password=password_hash,
+
+            password=generate_password_hash(password),
+
             referral_code=generate_referral_code(),
-            referred_by=(referrer.referral_code if referrer else None),
+
+            referred_by=(
+                referrer.referral_code
+                if referrer
+                else None
+            ),
+
             is_approved=True,
-            profile_photo="default.png",
-            account_type=account_type
+
+            profile_photo="default.png"
+
         )
+
+        # ADMIN ACCOUNT
+        # Replace with your mobile number
+
         if mobile == "6261568334":
+
             user.is_admin = True
 
         db.session.add(user)
-        db.session.flush()
-
-        if account_type == 'candidate':
-            # Candidate accounts use the same User login account, but also
-            # have their own CandidateUser profile/session record.
-            initial_token = str(uuid.uuid4())
-            user.session_token = initial_token
-
-            candidate = CandidateUser(
-                user_id=user.id,
-                mobile=mobile,
-                password=password_hash,
-                session_token=initial_token,
-                candidate_referral_code=generate_candidate_referral_code(),
-                referred_by_hr_id=(referrer.id if referrer else None),
-                referred_by_hr_code=(referrer.referral_code if referrer else None),
-            )
-            db.session.add(candidate)
-            db.session.flush()
-
-            session["candidate_id"] = candidate.id
-            session["candidate_session_token"] = initial_token
-            session["session_token"] = initial_token
 
         if referrer:
+
             referrer.total_referrals += 1
 
         db.session.commit()
+
+        # CLEAR OTP SESSION
+
         session.pop("otp_verified", None)
         session.pop("otp_mobile", None)
-        login_user(user, remember=True)
 
-        if account_type == 'candidate':
-            flash("Candidate account created successfully. Complete your profile.", "success")
-            return redirect(url_for("edit_candidate_profile"))
+        return render_template(
+            "register_success.html"
+        )
 
-        return render_template("register_success.html")
-
-    return render_template("register.html")
+    return render_template(
+        "register.html"
+    )
 
 @app.route("/candidate-otp-success", methods=["POST"])
 def candidate_otp_success():
@@ -9290,68 +9304,247 @@ def candidate_otp_success():
 
 @app.route('/candidate-register', methods=['GET', 'POST'])
 def candidate_register():
-    return redirect(url_for('register'))
+
+    if request.method == 'POST':
+
+        # ==========================
+        # OTP VERIFICATION CHECK
+        # ==========================
+        if not session.get("candidate_otp_verified"):
+
+            flash(
+                "Please verify your mobile number first.",
+                "danger"
+            )
+
+            return redirect('/candidate-register')
+
+        # ==========================
+        # BASIC DETAILS
+        # ==========================
+
+        mobile = request.form['mobile'].strip()
+        password = request.form['password']
+
+        entered_code = request.form.get(
+            "referral_code",
+            ""
+        ).strip().upper()
+
+        # ==========================
+        # FIND REFERRER
+        # ==========================
+
+        referred_hr = User.query.filter_by(
+            referral_code=entered_code
+        ).first()
+
+        referred_candidate = None
+
+        if not referred_hr:
+
+            referred_candidate = CandidateUser.query.filter_by(
+                candidate_referral_code=entered_code
+            ).first()
+
+        # ==========================
+        # VALIDATE MOBILE
+        # ==========================
+
+        if not re.fullmatch(r"[6-9]\d{9}", mobile):
+
+            flash(
+                "Please enter a valid 10-digit Indian mobile number.",
+                "danger"
+            )
+
+            return redirect('/candidate-register')
+
+        # ==========================
+        # CHECK MOBILE
+        # ==========================
+
+        existing_hr_mobile = User.query.filter_by(
+            mobile=mobile
+        ).first()
+
+        existing_candidate_mobile = CandidateUser.query.filter_by(
+            mobile=mobile
+        ).first()
+
+        if existing_hr_mobile or existing_candidate_mobile:
+
+            deleted = DeletedAccount.query.filter_by(
+                mobile=mobile
+            ).first()
+
+            if not deleted:
+
+                flash(
+                    "Mobile number already exists.",
+                    "danger"
+                )
+
+                return redirect('/candidate-register')
+
+        # ==========================
+        # CREATE CANDIDATE
+        # ==========================
+
+        candidate = CandidateUser(
+
+            mobile=mobile,
+
+            password=generate_password_hash(password),
+
+            candidate_referral_code=generate_candidate_referral_code(),
+
+            referred_by_hr_id=(
+                referred_hr.id
+                if referred_hr
+                else None
+            ),
+
+            referred_by_hr_code=(
+                referred_hr.referral_code
+                if referred_hr
+                else None
+            ),
+
+            referred_by_candidate_code=(
+                referred_candidate.candidate_referral_code
+                if referred_candidate
+                else None
+            ),
+
+            referred_by_candidate_id=(
+                referred_candidate.id
+                if referred_candidate
+                else None
+            )
+
+        )
+
+        db.session.add(candidate)
+
+        db.session.commit()
+
+        # ==========================
+        # CLEAR OTP SESSION
+        # ==========================
+
+        session.pop("candidate_otp_mobile", None)
+        session.pop("candidate_otp_verified", None)
+        session.pop("candidate_mobile", None)
+
+        flash(
+            "Registration Successful. Please Login.",
+            "success"
+        )
+
+        return redirect('/candidate-login')
+
+    ref = request.args.get("ref", "").upper()
+
+    return render_template(
+        "candidate_register.html",
+        referral_code=ref
+    )
 
 @app.route('/candidate-login', methods=['GET', 'POST'])
 def candidate_login():
-    # Candidate login must process its POST directly.
-    if request.method == 'GET':
-        return render_template('login.html')
 
-    login_id = request.form.get('mobile', '').strip()
-    password = request.form.get('password', '').strip()
+    if request.method == 'POST':
 
-    user = User.query.filter_by(mobile=login_id).first()
+        import uuid
+        from datetime import date
 
-    if not user:
-        flash("Invalid Mobile Number or Password", "danger")
-        return redirect(url_for("candidate_login"))
+        mobile = request.form['mobile'].strip()
+        password = request.form['password']
 
-    if user.is_deleted:
-        flash("Your account has been deleted.", "danger")
-        return redirect(url_for("candidate_login"))
+        user = CandidateUser.query.filter_by(
+            mobile=mobile
+        ).first()
 
-    if user.failed_logins >= 5:
-        flash("Your account has been blocked. Contact Admin.", "danger")
-        return redirect(url_for("candidate_login"))
+        # (Optional) If candidates can also login with mobile
+        # if not user:
+        #     user = CandidateUser.query.filter_by(
+        #         mobile=login_id
+        #     ).first()
 
-    if not check_password_hash(user.password, password):
-        user.failed_logins = (user.failed_logins or 0) + 1
-        db.session.commit()
-        flash("Invalid Mobile Number or Password", "danger")
-        return redirect(url_for("candidate_login"))
+        # Candidate blocked by admin
+        if user and user.is_deleted:
 
-    if getattr(user, "account_type", "hr") != "candidate":
-        flash("This account is registered as HR. Please use HR Login.", "warning")
-        return redirect(url_for("candidate_login"))
+            flash(
+                'This account has been disabled by Admin. Please create a new account.',
+                'danger'
+            )
 
-    candidate = CandidateUser.query.filter_by(user_id=user.id).first()
-    if not candidate:
-        flash("Candidate profile not found. Please contact support.", "danger")
-        return redirect(url_for("candidate_login"))
+            return redirect('/candidate-register')
 
-    token = str(uuid.uuid4())
-    user.session_token = token
-    user.failed_logins = 0
-    user.last_login = india_time()
+        # Normal login
+        if user and check_password_hash(
+            user.password,
+            password
+        ):
 
-    candidate.session_token = token
-    candidate.last_login = india_time()
+            today = date.today()
 
-    if not user.app_token:
-        user.app_token = secrets.token_hex(64)
+            # Reset daily tasks on a new day
+            if user.last_streak_reset != today:
 
-    db.session.commit()
-    login_user(user, remember=True)
+                user.daily_login_completed = False
+                user.daily_apply_completed = False
+                user.daily_follow_completed = False
+                user.daily_referral_completed = False
+                user.daily_reward_claimed = False
 
-    session["candidate_id"] = candidate.id
-    session["candidate_session_token"] = token
-    session["session_token"] = token
+                user.last_streak_reset = today
 
-    if request.headers.get("X-App") == "RecrootEarn":
-        session.permanent = True
+            # Mark daily login completed
+            if not user.daily_login_completed:
 
-    return redirect(url_for("candidate_dashboard"))
+                user.daily_login_completed = True
+
+            # Check daily reward
+            check_daily_reward(user)
+
+            # Single device login
+            token = str(uuid.uuid4())
+
+            user.session_token = token
+
+            # Generate App Token if not already present
+            if not user.app_token:
+                user.app_token = secrets.token_hex(64)
+
+            user.last_login = india_time()
+
+            db.session.commit()
+
+            session.clear()
+
+            is_app = request.headers.get("X-App") == "RecrootEarn"
+
+            if is_app:
+                session.permanent = True
+
+            session["candidate_id"] = user.id
+            session["candidate_session_token"] = token
+
+            flash(
+                "Login Successful",
+                "success"
+            )
+
+            return redirect("/candidate-feed")
+
+        flash(
+            "Invalid Mobile Number or Password",
+            "danger"
+        )
+
+    return render_template("candidate_login.html")
 
 @app.route('/candidate-dashboard')
 def candidate_dashboard():
@@ -9868,32 +10061,18 @@ def candidate_profile():
 
         completion += 10
 
-    linked_user = User.query.get(candidate.user_id) if candidate.user_id else None
-
-    candidate_videos = []
-    candidate_products = []
-    is_owner = False
-
-    if linked_user:
-        candidate_videos = JobPost.query.filter_by(
-            hr_id=linked_user.id,
-            post_type="video"
-        ).order_by(JobPost.created_at.desc()).all()
-        candidate_products = Product.query.filter_by(
-            seller_id=linked_user.id
-        ).order_by(Product.created_at.desc()).all()
-        is_owner = current_user.is_authenticated and current_user.id == linked_user.id
-
     return render_template(
+
         'candidate_profile_view.html',
+
         candidate=candidate,
-        linked_user=linked_user,
-        candidate_videos=candidate_videos,
-        candidate_products=candidate_products,
-        is_owner=is_owner,
+
         followers_count=followers_count,
+
         following_count=following_count,
+
         profile_completion=completion
+
     )
 
 @app.route('/edit-candidate-profile', methods=['GET', 'POST'])
@@ -10046,19 +10225,6 @@ def edit_candidate_profile():
 
     # Save profile completion
     candidate.profile_completion = completion
-
-    # Keep the shared User record synchronized with the candidate profile.
-    if candidate.user_id:
-        linked_user = User.query.get(candidate.user_id)
-        if linked_user:
-            linked_user.account_type = "candidate"
-            name_parts = (candidate.full_name or "").strip().split(None, 1)
-            linked_user.first_name = name_parts[0] if name_parts else ""
-            linked_user.last_name = name_parts[1] if len(name_parts) > 1 else ""
-            linked_user.email = candidate.email
-
-            if candidate.profile_photo:
-                linked_user.profile_photo = candidate.profile_photo
 
     db.session.commit()
 
@@ -11240,77 +11406,40 @@ def check_email():
 def view_candidates(id):
 
     settings = get_business_settings()
+
     candidate = CandidateUser.query.get_or_404(id)
 
     followers_count = Follow.query.filter_by(
         followed_candidate_id=id
     ).count()
 
-    is_following = False
-    contact_unlocked = False
-    has_applied = False
+    is_following = Follow.query.filter_by(
+        follower_hr_id=current_user.id,
+        followed_candidate_id=id
+    ).first()
 
-    if getattr(current_user, "account_type", "hr") == "hr":
-        is_following = Follow.query.filter_by(
-            follower_hr_id=current_user.id,
-            followed_candidate_id=id
-        ).first()
+    contact_unlocked = CandidateContactUnlock.query.filter_by(
+        hr_id=current_user.id,
+        candidate_user_id=id
+    ).first()
 
-        contact_unlocked = bool(
-            CandidateContactUnlock.query.filter_by(
-                hr_id=current_user.id,
-                candidate_user_id=id
-            ).first()
-        )
-
-        has_applied = bool(
-            JobApplication.query.join(
-                JobPost,
-                JobPost.id == JobApplication.job_id
-            ).filter(
-                JobApplication.candidate_id == candidate.id,
-                JobPost.hr_id == current_user.id
-            ).first()
-        )
-
-    linked_user = User.query.get(candidate.user_id) if candidate.user_id else None
-
-    candidate_videos = []
-    candidate_products = []
-    is_owner = bool(
-        current_user.is_authenticated
-        and linked_user
-        and current_user.id == linked_user.id
-    ) if linked_user else False
-
-    if linked_user:
-        candidate_videos = JobPost.query.filter_by(
-            hr_id=linked_user.id,
-            post_type="video"
-        ).order_by(
-            JobPost.created_at.desc()
-        ).all()
-
-        candidate_products = Product.query.filter_by(
-            seller_id=linked_user.id
-        ).order_by(
-            Product.created_at.desc()
-        ).all()
+    has_applied = JobApplication.query.join(
+        JobPost,
+        JobPost.id == JobApplication.job_id
+    ).filter(
+        JobApplication.candidate_id == candidate.id,
+        JobPost.hr_id == current_user.id
+    ).first()
 
     return render_template(
         "candidate_view.html",
         candidate=candidate,
-        linked_user=linked_user,
-        candidate_videos=candidate_videos,
-        candidate_products=candidate_products,
         followers_count=followers_count,
         is_following=is_following,
         contact_unlocked=contact_unlocked,
         has_applied=has_applied,
-        settings=settings,
-        is_owner=is_owner
+        settings=settings
     )
-
 
 @app.route('/follow-hr/<int:id>')
 def follow_hr(id):
@@ -11653,9 +11782,6 @@ def follow_candidate(id):
 @app.route('/unlock-contact/<int:id>')
 @login_required
 def unlock_contact(id):
-    if getattr(current_user, "account_type", "hr") != "hr":
-        return "Access Denied", 403
-
 
     settings = get_business_settings()
 
@@ -11839,8 +11965,6 @@ def candidate_notifications():
 @app.route('/post-job', methods=['GET', 'POST'])
 @login_required
 def post_job():
-
-    hr_only_or_403()
 
     if request.method == 'POST':
 
@@ -13374,16 +13498,6 @@ def login():
 
             login_user(user, remember=True)
 
-            if getattr(user, "account_type", "hr") == "candidate":
-                candidate = CandidateUser.query.filter_by(user_id=user.id).first()
-                if candidate:
-                    candidate.session_token = token
-                    candidate.last_login = india_time()
-                    db.session.commit()
-
-                    session["candidate_id"] = candidate.id
-                    session["candidate_session_token"] = token
-
             is_app = (
                 request.headers.get("X-App")
                 == "RecrootEarn"
@@ -13402,18 +13516,8 @@ def login():
                     url_for("admin")
                 )
 
-            # CANDIDATE
-            if getattr(user, "account_type", "hr") == "candidate":
-                candidate = CandidateUser.query.filter_by(user_id=user.id).first()
-                if not candidate:
-                    logout_user()
-                    session.pop("candidate_id", None)
-                    flash("Candidate profile not found. Please contact support.", "danger")
-                    return redirect(url_for("login"))
-
-                return redirect(url_for("candidate_dashboard"))
-
             # NORMAL HR
+
             return redirect(
                 url_for("feed")
             )
@@ -13441,8 +13545,6 @@ def logout():
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
-
-    hr_only_or_403()
 
     if request.method == 'POST':
 
@@ -15102,9 +15204,6 @@ def export_unlocked():
 @login_required
 def profile():
 
-    if is_candidate_account():
-        return redirect(url_for('candidate_profile'))
-
     jobs = JobPost.query.filter_by(
         hr_id=current_user.id
     ).order_by(
@@ -15160,9 +15259,6 @@ def credits():
 @app.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-
-    if is_candidate_account():
-        return redirect(url_for('edit_candidate_profile'))
 
     if request.method == 'POST':
 
@@ -16352,19 +16448,6 @@ def admin_reported_comments():
         "admin_reported_comments.html",
         reported_comments=reported_comments
     )
-
-@app.route('/shop/set-name', methods=['POST'])
-@login_required
-def set_shop_name():
-    shop_name = request.form.get('shop_name', '').strip()
-    if not shop_name or len(shop_name) > 150:
-        flash('Please enter a valid shop name.', 'danger')
-        return redirect(request.referrer or url_for('profile'))
-    current_user.shop_name = shop_name
-    current_user.is_shop_active = True
-    db.session.commit()
-    flash('Shop name updated successfully.', 'success')
-    return redirect(request.referrer or url_for('profile'))
 
 @app.route("/shop/add-product", methods=["GET", "POST"])
 @login_required
@@ -23641,43 +23724,6 @@ def download_order_invoice(order_id):
         mimetype="application/pdf"
     )
 
-@app.route('/edit-candidate-video/<int:video_id>', methods=['GET', 'POST'])
-@login_required
-def edit_candidate_video(video_id):
-    job = JobPost.query.get_or_404(video_id)
-    if job.post_type != 'video' or job.hr_id != current_user.id:
-        return 'Access Denied', 403
-
-    if request.method == 'POST':
-        job.description = request.form.get('description', '').strip()
-        job.video_caption = request.form.get('video_caption', '').strip()
-        job.cta_type = request.form.get('cta_type')
-        job.cta_url = request.form.get('cta_url')
-        db.session.commit()
-        flash('Video updated successfully.', 'success')
-        return redirect(url_for('candidate_profile'))
-
-    return render_template('edit_candidate_video.html', video=job)
-
-@app.route('/delete-candidate-video/<int:video_id>', methods=['POST'])
-@login_required
-def delete_candidate_video(video_id):
-    job = JobPost.query.get_or_404(video_id)
-    if job.post_type != 'video' or job.hr_id != current_user.id:
-        return 'Access Denied', 403
-
-    if job.images:
-        path = os.path.join(app.config['UPLOAD_FOLDER'], job.images.split(',')[0].strip())
-        if os.path.exists(path):
-            try:
-                os.remove(path)
-            except OSError:
-                pass
-    db.session.delete(job)
-    db.session.commit()
-    flash('Video deleted successfully.', 'success')
-    return redirect(url_for('candidate_profile'))
-
 @app.route('/my-post/<int:job_id>')
 @login_required
 def my_post(job_id):
@@ -23755,58 +23801,6 @@ def verify_single_device():
         )
 
         return redirect(url_for("login"))
-
-def initialize_unified_account_schema():
-    """Prepare one login account for both HR and Candidate roles."""
-    with app.app_context():
-        db.create_all()
-        inspector = db.inspect(db.engine)
-        user_columns = {c["name"] for c in inspector.get_columns("user")}
-        candidate_columns = {c["name"] for c in inspector.get_columns("candidate_user")}
-
-        if "account_type" not in user_columns:
-            db.session.execute(db.text("ALTER TABLE user ADD COLUMN account_type VARCHAR(20) NOT NULL DEFAULT 'hr'"))
-        if "shop_name" not in user_columns:
-            db.session.execute(db.text("ALTER TABLE user ADD COLUMN shop_name VARCHAR(150) NULL"))
-        if "user_id" not in candidate_columns:
-            db.session.execute(db.text("ALTER TABLE candidate_user ADD COLUMN user_id INTEGER NULL"))
-        db.session.commit()
-
-        # Link existing candidate profiles to a common User login where there
-        # is no conflicting existing HR account.
-        for candidate in CandidateUser.query.all():
-            if candidate.user_id:
-                continue
-            user = User.query.filter_by(mobile=candidate.mobile).first()
-            if user and getattr(user, 'account_type', 'hr') == 'hr':
-                continue
-            if not user:
-                full_name = (candidate.full_name or '').strip()
-                parts = full_name.split(None, 1)
-                user = User(
-                    account_type='candidate',
-                    first_name=parts[0] if parts else '',
-                    last_name=parts[1] if len(parts) > 1 else '',
-                    mobile=candidate.mobile,
-                    email=candidate.email,
-                    username=candidate.username,
-                    password=candidate.password,
-                    profile_photo=candidate.profile_photo or 'default.png',
-                    wallet_balance=candidate.wallet_balance or 0,
-                    session_token=candidate.session_token,
-                    fcm_token=candidate.fcm_token,
-                    app_token=candidate.app_token,
-                    is_approved=True,
-                    referral_code=candidate.candidate_referral_code or generate_referral_code()
-                )
-                db.session.add(user)
-                db.session.flush()
-            else:
-                user.account_type = 'candidate'
-            candidate.user_id = user.id
-        db.session.commit()
-
-initialize_unified_account_schema()
 
 if __name__ == "__main__":
 

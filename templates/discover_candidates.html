@@ -446,8 +446,7 @@
 
     </div>
 
-    {# Candidate public profile — NEVER use /company/<id> here. #}
-    <a href="{{ url_for('view_candidates', id=candidate.id) }}"
+    <a href="/candidate/{{ candidate.id }}"
        class="btn-profile">
 
        View Profile

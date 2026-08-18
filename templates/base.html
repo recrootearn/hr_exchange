@@ -103,6 +103,7 @@ body{
 
 /* SIDEBAR */
 
+.sidebar{
 /* =========================================================
    MODERN SIDEBAR ENHANCEMENTS
    ========================================================= */
@@ -118,13 +119,6 @@ body{
     -webkit-overflow-scrolling:touch;
     scrollbar-width:thin;
     scrollbar-color:rgba(255,255,255,.28) transparent;
-    width:260px;
-    height:100vh;
-    position:fixed;
-    top:0;
-    left:0;
-    box-sizing:border-box;
-    z-index:9999;
 }
 
 .sidebar::-webkit-scrollbar{
@@ -233,6 +227,25 @@ body{
     .more-toggle{
         min-height:52px;
     }
+}
+
+
+    width:260px;
+    height:100vh;
+
+    position:fixed;
+
+    background:linear-gradient(
+    180deg,
+    #111827,
+    #1d4ed8
+    );
+
+    padding:20px;
+
+    overflow-y:auto;
+
+    z-index:9999;
 }
 
 .sidebar-logo{
@@ -672,7 +685,7 @@ body{
 
 .bottom-nav{
     position:fixed;
-    bottom:calc(15px + env(safe-area-inset-bottom));
+    bottom:15px;
     left:50%;
     transform:translateX(-50%);
     width:95%;
