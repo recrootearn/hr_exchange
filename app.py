@@ -6175,11 +6175,6 @@ def check_hr_profile():
     if request.endpoint in allowed_routes:
         return
 
-    # Candidate accounts use the candidate profile system.
-    # Do not apply the HR profile-completion gate to them.
-    if getattr(current_user, "account_type", "hr") == "candidate":
-        return
-
     # Check profile completion
     if (current_user.profile_completion or 0) < 80:
 
@@ -6225,15 +6220,16 @@ def check_candidate_profile():
         return
 
     if (candidate.profile_completion or 0) < 80:
+        # Never block the profile-edit route itself.
+        if request.endpoint != "edit_candidate_profile":
+            flash(
+                "Complete at least 80% of your profile to unlock all features.",
+                "warning"
+            )
 
-        flash(
-            "Complete at least 80% of your profile to unlock all features.",
-            "warning"
-        )
-
-        return redirect(
-            url_for("edit_candidate_profile")
-        )
+            return redirect(
+                url_for("edit_candidate_profile")
+            )
 
 @app.before_request
 def update_last_login():
@@ -9243,17 +9239,26 @@ def register():
         db.session.flush()
 
         if account_type == 'candidate':
+            # Candidate accounts use the same User login account, but also
+            # have their own CandidateUser profile/session record.
+            initial_token = str(uuid.uuid4())
+            user.session_token = initial_token
+
             candidate = CandidateUser(
                 user_id=user.id,
                 mobile=mobile,
                 password=password_hash,
+                session_token=initial_token,
                 candidate_referral_code=generate_candidate_referral_code(),
                 referred_by_hr_id=(referrer.id if referrer else None),
                 referred_by_hr_code=(referrer.referral_code if referrer else None),
             )
             db.session.add(candidate)
             db.session.flush()
+
             session["candidate_id"] = candidate.id
+            session["candidate_session_token"] = initial_token
+            session["session_token"] = initial_token
 
         if referrer:
             referrer.total_referrals += 1
@@ -9289,7 +9294,64 @@ def candidate_register():
 
 @app.route('/candidate-login', methods=['GET', 'POST'])
 def candidate_login():
-    return redirect(url_for('login'))
+    # Candidate login must process its POST directly.
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    login_id = request.form.get('mobile', '').strip()
+    password = request.form.get('password', '').strip()
+
+    user = User.query.filter_by(mobile=login_id).first()
+
+    if not user:
+        flash("Invalid Mobile Number or Password", "danger")
+        return redirect(url_for("candidate_login"))
+
+    if user.is_deleted:
+        flash("Your account has been deleted.", "danger")
+        return redirect(url_for("candidate_login"))
+
+    if user.failed_logins >= 5:
+        flash("Your account has been blocked. Contact Admin.", "danger")
+        return redirect(url_for("candidate_login"))
+
+    if not check_password_hash(user.password, password):
+        user.failed_logins = (user.failed_logins or 0) + 1
+        db.session.commit()
+        flash("Invalid Mobile Number or Password", "danger")
+        return redirect(url_for("candidate_login"))
+
+    if getattr(user, "account_type", "hr") != "candidate":
+        flash("This account is registered as HR. Please use HR Login.", "warning")
+        return redirect(url_for("candidate_login"))
+
+    candidate = CandidateUser.query.filter_by(user_id=user.id).first()
+    if not candidate:
+        flash("Candidate profile not found. Please contact support.", "danger")
+        return redirect(url_for("candidate_login"))
+
+    token = str(uuid.uuid4())
+    user.session_token = token
+    user.failed_logins = 0
+    user.last_login = india_time()
+
+    candidate.session_token = token
+    candidate.last_login = india_time()
+
+    if not user.app_token:
+        user.app_token = secrets.token_hex(64)
+
+    db.session.commit()
+    login_user(user, remember=True)
+
+    session["candidate_id"] = candidate.id
+    session["candidate_session_token"] = token
+    session["session_token"] = token
+
+    if request.headers.get("X-App") == "RecrootEarn":
+        session.permanent = True
+
+    return redirect(url_for("candidate_dashboard"))
 
 @app.route('/candidate-dashboard')
 def candidate_dashboard():
@@ -9771,8 +9833,6 @@ def candidate_profile():
             and candidate.designation
         ):
             completion += 10
-    else:
-        completion += 10
 
     if completion < 100:
 
@@ -9939,16 +9999,6 @@ def edit_candidate_profile():
 
             candidate.resume_file = filename
 
-        # SYNC UNIFIED LOGIN ACCOUNT
-        linked_user = User.query.filter_by(id=candidate.user_id).first() if candidate.user_id else None
-        if linked_user:
-            name_parts = (candidate.full_name or "").strip().split(None, 1)
-            linked_user.first_name = name_parts[0] if name_parts else ""
-            linked_user.last_name = name_parts[1] if len(name_parts) > 1 else ""
-            linked_user.email = candidate.email
-            if candidate.profile_photo:
-                linked_user.profile_photo = candidate.profile_photo
-
     # ----------------------------
     # PROFILE COMPLETION
     # ----------------------------
@@ -9997,10 +10047,18 @@ def edit_candidate_profile():
     # Save profile completion
     candidate.profile_completion = completion
 
-    # Keep the unified User account completion in sync.
-    linked_user = User.query.filter_by(id=candidate.user_id).first() if candidate.user_id else None
-    if linked_user:
-        linked_user.profile_completion = completion
+    # Keep the shared User record synchronized with the candidate profile.
+    if candidate.user_id:
+        linked_user = User.query.get(candidate.user_id)
+        if linked_user:
+            linked_user.account_type = "candidate"
+            name_parts = (candidate.full_name or "").strip().split(None, 1)
+            linked_user.first_name = name_parts[0] if name_parts else ""
+            linked_user.last_name = name_parts[1] if len(name_parts) > 1 else ""
+            linked_user.email = candidate.email
+
+            if candidate.profile_photo:
+                linked_user.profile_photo = candidate.profile_photo
 
     db.session.commit()
 
@@ -13279,6 +13337,10 @@ def login():
             if getattr(user, "account_type", "hr") == "candidate":
                 candidate = CandidateUser.query.filter_by(user_id=user.id).first()
                 if candidate:
+                    candidate.session_token = token
+                    candidate.last_login = india_time()
+                    db.session.commit()
+
                     session["candidate_id"] = candidate.id
                     session["candidate_session_token"] = token
 
@@ -13292,14 +13354,6 @@ def login():
 
             session["session_token"] = token
 
-            # CANDIDATE REDIRECT
-            if getattr(user, "account_type", "hr") == "candidate":
-                candidate = CandidateUser.query.filter_by(user_id=user.id).first()
-                if candidate:
-                    session["candidate_id"] = candidate.id
-                    session["candidate_session_token"] = token
-                    return redirect(url_for("candidate_feed"))
-
             # ADMIN REDIRECT
 
             if user.is_admin:
@@ -13308,8 +13362,18 @@ def login():
                     url_for("admin")
                 )
 
-            # NORMAL HR
+            # CANDIDATE
+            if getattr(user, "account_type", "hr") == "candidate":
+                candidate = CandidateUser.query.filter_by(user_id=user.id).first()
+                if not candidate:
+                    logout_user()
+                    session.pop("candidate_id", None)
+                    flash("Candidate profile not found. Please contact support.", "danger")
+                    return redirect(url_for("login"))
 
+                return redirect(url_for("candidate_dashboard"))
+
+            # NORMAL HR
             return redirect(
                 url_for("feed")
             )
