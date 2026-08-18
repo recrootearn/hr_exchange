@@ -11240,40 +11240,71 @@ def check_email():
 def view_candidates(id):
 
     settings = get_business_settings()
-
     candidate = CandidateUser.query.get_or_404(id)
 
     followers_count = Follow.query.filter_by(
         followed_candidate_id=id
     ).count()
 
-    is_following = Follow.query.filter_by(
-        follower_hr_id=current_user.id,
-        followed_candidate_id=id
-    ).first()
+    is_following = False
+    contact_unlocked = False
+    has_applied = False
 
-    contact_unlocked = CandidateContactUnlock.query.filter_by(
-        hr_id=current_user.id,
-        candidate_user_id=id
-    ).first()
+    if getattr(current_user, "account_type", "hr") == "hr":
+        is_following = Follow.query.filter_by(
+            follower_hr_id=current_user.id,
+            followed_candidate_id=id
+        ).first()
 
-    has_applied = JobApplication.query.join(
-        JobPost,
-        JobPost.id == JobApplication.job_id
-    ).filter(
-        JobApplication.candidate_id == candidate.id,
-        JobPost.hr_id == current_user.id
-    ).first()
+        contact_unlocked = bool(
+            CandidateContactUnlock.query.filter_by(
+                hr_id=current_user.id,
+                candidate_user_id=id
+            ).first()
+        )
+
+        has_applied = bool(
+            JobApplication.query.join(
+                JobPost,
+                JobPost.id == JobApplication.job_id
+            ).filter(
+                JobApplication.candidate_id == candidate.id,
+                JobPost.hr_id == current_user.id
+            ).first()
+        )
+
+    linked_user = User.query.get(candidate.user_id) if candidate.user_id else None
+
+    candidate_videos = []
+    candidate_products = []
+
+    if linked_user:
+        candidate_videos = JobPost.query.filter_by(
+            hr_id=linked_user.id,
+            post_type="video"
+        ).order_by(
+            JobPost.created_at.desc()
+        ).all()
+
+        candidate_products = Product.query.filter_by(
+            seller_id=linked_user.id
+        ).order_by(
+            Product.created_at.desc()
+        ).all()
 
     return render_template(
         "candidate_view.html",
         candidate=candidate,
+        linked_user=linked_user,
+        candidate_videos=candidate_videos,
+        candidate_products=candidate_products,
         followers_count=followers_count,
         is_following=is_following,
         contact_unlocked=contact_unlocked,
         has_applied=has_applied,
         settings=settings
     )
+
 
 @app.route('/follow-hr/<int:id>')
 def follow_hr(id):
@@ -11616,6 +11647,9 @@ def follow_candidate(id):
 @app.route('/unlock-contact/<int:id>')
 @login_required
 def unlock_contact(id):
+    if getattr(current_user, "account_type", "hr") != "hr":
+        return "Access Denied", 403
+
 
     settings = get_business_settings()
 
