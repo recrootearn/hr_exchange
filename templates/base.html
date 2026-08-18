@@ -1367,213 +1367,15 @@ body{
 
 <body>
 
-{% if session.get('candidate_id') %}
+{% if current_user.is_authenticated %}
 
-<div class="mobile-topbar">
-
-    <button class="menu-btn"
-            onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
-
-    <div class="mobile-logo">
-        <img
-        src="{{ url_for('static', filename='images/header_logo.png') }}"
-        alt="RecrootEarn"
-        loading="eager"
-        fetchpriority="high"
-        decoding="sync"
-        draggable="false"
-        style="display:block;">
-    </div>
-
-    <a href="/candidate-notifications"
-   class="mobile-credit"
-   style="text-decoration:none;position:relative;">
-
-    <i class="fas fa-bell"></i>
-
-    {% if unread_notifications|default(0) > 0 %}
-    <span style="
-        position:absolute;
-        top:-5px;
-        right:-5px;
-        background:red;
-        color:white;
-        border-radius:50%;
-        width:18px;
-        height:18px;
-        font-size:10px;
-        display:flex;
-        align-items:center;
-        justify-content:center;">
-        {{ unread_notifications }}
-    </span>
-    {% endif %}
-
-</a>
-
-</div>
-
-<div class="mobile-overlay"
-     onclick="toggleSidebar()"></div>
-
-{% elif current_user.is_authenticated %}
-
-<div class="mobile-topbar">
-
-    <button class="menu-btn"
-            onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
-
-    <div class="mobile-logo">
-        <img src="{{ url_for('static', filename='images/header_logo.png') }}"
-             alt="RecrootEarn">
-    </div>
-
-    <a href="/notifications"
-       class="mobile-credit"
-    style="text-decoration:none;position:relative;">
-
-         <i class="fas fa-bell"></i>
-
-         {% if unread_notifications|default(0) > 0 %}
-         <span style="
-             position:absolute;
-             top:-5px;
-             right:-5px;
-             background:red;
-             color:white;
-             border-radius:50%;
-             width:18px;
-             height:18px;
-             font-size:10px;
-             display:flex;
-             align-items:center;
-             justify-content:center;">
-             {{ unread_notifications }}
-        </span>
-        {% endif %}
-
-    </a>
-
-</div>
-
-<div class="mobile-overlay"
-     onclick="toggleSidebar()"></div>
-
-{% else %}
-
-<!-- PUBLIC MOBILE HEADER -->
-<div class="mobile-topbar public-mobile-topbar">
-
-    <button class="menu-btn"
-            onclick="toggleSidebar()"
-            aria-label="Open menu">
-        <i class="fas fa-bars"></i>
-    </button>
-
-    <div class="mobile-logo">
-        <img src="{{ url_for('static', filename='images/header_logo.png') }}"
-             alt="RecrootEarn">
-    </div>
-
-    <a href="/login"
-       class="mobile-credit public-login-btn"
-       style="text-decoration:none;">
-        <i class="fas fa-user"></i>
-        <span style="margin-left:4px;">Login</span>
-    </a>
-
-</div>
-
-<div class="mobile-overlay"
-     onclick="toggleSidebar()"></div>
-
-{% endif %}
-
-<!-- SIDEBAR --><div class="sidebar">
-<div class="sidebar-logo">
-
-    <img
-    src="{{ url_for('static', filename='images/sidebar_logo.png') }}"
-    alt="RecrootEarn">
-
-</div>
-
-{% if session.get('candidate_id') %}
-
-
-
-    <a href="/candidate-dashboard">
-        <i class="fas fa-home"></i>
-        Dashboard
-    </a>
-
-    <a href="/candidate-feed">
-        <i class="fas fa-briefcase"></i>
-        Job Feed
-    </a>
-
-    <a href="/applied-jobs">
-        <i class="fas fa-file-alt"></i>
-        Applied Jobs
-    </a>
-
-    <a href="/candidate-profile">
-        <i class="fas fa-user"></i>
-        My Profile
-    </a>
-
-
-
-<a href="/candidate-referral">
-    <i class="fas fa-gift"></i>
-    Refer & Earn
-</a>
-
-<a href="/candidate-withdraw">
-    <i class="fas fa-wallet"></i>
-    Wallet
-</a>
-
-<div class="more-section">
-    <div class="more-items">
-        <a href="/candidate-general-info">
-            <i class="fas fa-circle-info"></i>
-            General Info
-        </a>
-
-        <a href="/candidate-support">
-            <i class="fas fa-headset"></i>
-            Support
-        </a>
-
-        <a href="/candidate-logout">
-            <i class="fas fa-right-from-bracket"></i>
-            Logout
-        </a>
-    </div>
-
-    <button type="button"
-            class="more-toggle"
-            onclick="toggleMore(this)">
-        <i class="fas fa-ellipsis"></i>
-        More
-        <i class="fas fa-chevron-down more-chevron"></i>
-    </button>
-</div>
-
-{% else %}
-
-<!-- HR MENU -->
-
-<a href="/dashboard" class="mobile-hide-hr">
+<!-- UNIFIED AUTHENTICATED MENU -->
+<a href="{% if current_user.account_type == 'candidate' %}/candidate-dashboard{% else %}/dashboard{% endif %}">
     <i class="fas fa-chart-line"></i>
     Dashboard
 </a>
 
+{% if current_user.account_type != 'candidate' %}
 <a href="/leads">
     <i class="fas fa-users"></i>
     Leads
@@ -1588,13 +1390,19 @@ body{
     <i class="fas fa-upload"></i>
     Upload Candidate
 </a>
+{% else %}
+<a href="/discover-hr" class="mobile-hide-hr">
+    <i class="fas fa-compass"></i>
+    Discover HR
+</a>
+{% endif %}
 
 <a href="/feed" class="mobile-hide-hr">
     <i class="fas fa-briefcase"></i>
     Job Feed
 </a>
 
-<a href="/applied-jobs-hr">
+<a href="{% if current_user.account_type == 'candidate' %}/applied-jobs{% else %}/applied-jobs-hr{% endif %}">
     <i class="fas fa-file-signature"></i>
     Applied Jobs
 </a>
@@ -1604,7 +1412,7 @@ body{
     Wallet
 </a>
 
-<a href="/profile" class="mobile-hide-hr">
+<a href="{% if current_user.account_type == 'candidate' %}/candidate-profile{% else %}/profile{% endif %}" class="mobile-hide-hr">
     <i class="fas fa-user"></i>
     My Profile
 </a>
@@ -1614,14 +1422,13 @@ body{
     Buy Credits
 </a>
 
-<a href="/referrals">
+<a href="{% if current_user.account_type == 'candidate' %}/candidate-referral{% else %}/referrals{% endif %}">
     <i class="fas fa-user-plus"></i>
     Referrals
 </a>
 
 <!-- SELLER DASHBOARD -->
 <div class="more-section seller-dashboard-section">
-
     <button type="button"
             class="more-toggle"
             onclick="toggleMore(this)">
@@ -1631,20 +1438,27 @@ body{
     </button>
 
     <div class="more-items">
-
-        {% if current_user.is_authenticated %}
         <a href="{{ url_for(
-        'company_share_shop',
-        seller_id=current_user.id,
-        shop_slug=(current_user.company or current_user.first_name or 'shop')
-            |lower
-            |replace(' ', '-')
-            |replace('&', 'and')
-    ) }}">
-        <i class="fas fa-share-nodes"></i>
-        My Shop
+            'company_share_shop',
+            seller_id=current_user.id,
+            shop_slug=(current_user.shop_name or current_user.company or current_user.first_name or 'shop')
+                |lower
+                |replace(' ', '-')
+                |replace('&', 'and')
+        ) }}">
+            <i class="fas fa-share-nodes"></i>
+            My Shop
         </a>
-        {% endif %}
+
+        <a href="/shop/add-product">
+            <i class="fas fa-plus-circle"></i>
+            Add Product
+        </a>
+
+        <a href="/shop/products">
+            <i class="fas fa-box"></i>
+            My Products
+        </a>
 
         <a href="/seller/orders">
             <i class="fas fa-box-open"></i>
@@ -1655,23 +1469,18 @@ body{
             <i class="fas fa-warehouse"></i>
             Pickup Address
         </a>
-
     </div>
 </div>
 
 {% if current_user.is_admin %}
-
 <a href="/admin">
     <i class="fas fa-shield-alt"></i>
     Admin Panel
 </a>
-
 {% endif %}
 
 <div class="more-section">
-
     <div class="more-items">
-
         <a href="/general-info">
             <i class="fas fa-circle-info"></i>
             General Info
@@ -1686,7 +1495,6 @@ body{
             <i class="fas fa-right-from-bracket"></i>
             Logout
         </a>
-
     </div>
 
     <button type="button"
@@ -1696,12 +1504,10 @@ body{
         More
         <i class="fas fa-chevron-down more-chevron"></i>
     </button>
-
 </div>
 
-{% endif %}
+{% else %}
 
-{% if not session.get('candidate_id') and not current_user.is_authenticated %}
 
 <!-- PUBLIC SIDEBAR -->
 <div class="public-sidebar-menu">
@@ -1786,65 +1592,41 @@ body{
 
 <!-- MOBILE NAV -->
 
-{% if session.get('candidate_id') %}
+{% if current_user.is_authenticated %}
 
 <div class="bottom-nav">
 
-    <a href="/candidate-dashboard" class="nav-btn">
+    <a href="{% if current_user.account_type == 'candidate' %}/candidate-dashboard{% else %}/dashboard{% endif %}" class="nav-btn">
         <i class="fas fa-home"></i>
         <span>Home</span>
     </a>
 
-    <a href="/candidate-feed" class="nav-btn">
+    <a href="/feed" class="nav-btn">
         <i class="fas fa-briefcase"></i>
-        <span>Jobs</span>
+        <span>Feed</span>
     </a>
 
+    {% if current_user.account_type == 'candidate' %}
     <a href="/discover-hr" class="nav-btn">
         <i class="fas fa-compass"></i>
         <span>Discover</span>
     </a>
+    {% else %}
+    <a href="/discover-candidates" class="nav-btn">
+        <i class="fas fa-compass"></i>
+        <span>Discover</span>
+    </a>
+    {% endif %}
 
     <a href="/shop" class="nav-btn">
         <i class="fas fa-store"></i>
         <span>Shop</span>
     </a>
 
-    <a href="/candidate-profile" class="nav-btn">
+    <a href="{% if current_user.account_type == 'candidate' %}/candidate-profile{% else %}/profile{% endif %}" class="nav-btn">
         <i class="fas fa-user"></i>
         <span>Profile</span>
     </a>
-
-</div>
-
-{% elif current_user.is_authenticated %}
-
-<div class="bottom-nav">
-
-<a href="/dashboard" class="nav-btn">
-    <i class="fas fa-home"></i>
-    <span>Home</span>
-</a>
-
-<a href="/feed" class="nav-btn">
-    <i class="fas fa-briefcase"></i>
-   <span>Feed</span>
-</a>
-
-<a href="/discover-candidates" class="nav-btn">
-    <i class="fas fa-compass"></i>
-    <span>Discover</span>
-</a>
-
-<a href="/shop" class="nav-btn">
-    <i class="fas fa-store"></i>
-    <span>Shop</span>
-</a>
-
-<a href="/profile" class="nav-btn">
-    <i class="fas fa-user"></i>
-    <span>Profile</span>
-</a>
 
 </div>
 
