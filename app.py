@@ -6150,6 +6150,10 @@ def check_hr_profile():
 
         "edit_profile",
 
+        # Candidate accounts use the unified login but complete
+        # their profile through the candidate profile form.
+        "edit_candidate_profile",
+
         "logout",
 
         "notifications",
