@@ -23648,6 +23648,30 @@ def download_order_invoice(order_id):
         mimetype="application/pdf"
     )
 
+@app.route('/my-post/<int:job_id>')
+@login_required
+def my_post(job_id):
+
+    # Get ONLY the clicked post/video
+    job = JobPost.query.get_or_404(job_id)
+
+    # This page is only for the owner
+    if job.hr_id != current_user.id:
+        flash("You are not allowed to view this post here.", "danger")
+        return redirect('/profile')
+
+    # Check whether this post has an active boost
+    active_boost = BoostPost.query.filter_by(
+        job_id=job.id,
+        status="Active"
+    ).first()
+
+    return render_template(
+        'my_post.html',
+        job=job,
+        active_boost=active_boost
+    )
+
 # =========================
 # SINGLE DEVICE LOGIN CHECK
 # =========================
