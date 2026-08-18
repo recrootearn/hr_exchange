@@ -23678,7 +23678,7 @@ def my_post(job_id):
 
     # Render the EXISTING feed template
     return render_template(
-        'feed_post-23.html',
+        'feed_post.html',
         jobs=[job],
         sparked_jobs=sparked_jobs,
         enquired_jobs=enquired_jobs
