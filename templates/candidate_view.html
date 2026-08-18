@@ -1,320 +1,251 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <style>
-.profile-box{
-    max-width:950px;
-    margin:12px auto;
-    background:#fff;
-    border-radius:20px;
-    padding:20px;
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
-}
-.profile-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;}
-.profile-left{display:flex;gap:20px;flex:1;}
-.profile-pic{width:120px;height:120px;border-radius:50%;overflow:hidden;background:#f2f2f2;border:4px solid #0d6efd;flex-shrink:0;}
-.profile-pic img{width:100%;height:100%;object-fit:cover;}
-.profile-initial{width:100%;height:100%;display:flex;justify-content:center;align-items:center;font-size:48px;color:white;background:#2563eb;font-weight:bold;}
-.profile-info{flex:1;}
-.profile-name{font-size:30px;font-weight:700;color:#111827;}
-.profile-designation{font-size:18px;color:#666;margin-top:3px;}
-.profile-company,.profile-location{color:#777;margin-top:4px;}
-.stats{display:flex;gap:15px;margin-top:18px;}
-.stat-box{background:#f8fafc;border-radius:15px;padding:12px 18px;text-align:center;min-width:90px;}
-.stat-box h4{margin:0;color:#0d6efd;font-weight:700;}
-.stat-box small{color:#666;}
-.action-buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;}
-.action-buttons .btn{border-radius:10px;font-weight:600;}
-
-/* Keep the existing candidate-profile design, only add the three tabs. */
-.profile-tabs{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    margin-top:18px;
-    border-bottom:1px solid #ddd;
-    background:#fff;
-}
-.profile-tab{
-    border:0;
-    background:#fff;
-    color:#6b7280;
-    padding:14px 8px;
-    font-size:16px;
-    font-weight:700;
-    cursor:pointer;
-    border-bottom:3px solid transparent;
-}
-.profile-tab.active{color:#0d6efd;border-bottom-color:#0d6efd;}
-.profile-panel{display:none;}
-.profile-panel.active{display:block;}
-
-.section-card{margin-top:18px;border:none;border-radius:18px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.08);}
-.section-header{background:#0d6efd;color:white;padding:14px 20px;font-size:18px;font-weight:700;}
-.section-body{padding:20px;}
-.badge-skill{display:inline-block;padding:8px 14px;border-radius:30px;background:#0d6efd;color:white;margin:4px;}
-.badge-field{display:inline-block;padding:8px 14px;border-radius:30px;background:#198754;color:white;margin:4px;}
-
-/* Videos */
-.video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:18px;}
-.video-item{position:relative;aspect-ratio:1/1;overflow:hidden;background:#eee;display:block;}
-.video-item img{width:100%;height:100%;object-fit:cover;display:block;}
-.video-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;}
-.empty-content{text-align:center;padding:45px 20px;color:#777;}
-
-/* Shop */
-.shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;}
-.shop-card{display:block;text-decoration:none;color:#111827;background:#fff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.06);}
-.shop-image{width:100%;aspect-ratio:1/1;background:#f4f4f4;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.shop-image img{width:100%;height:100%;object-fit:cover;}
-.shop-placeholder{font-size:36px;color:#aaa;}
-.shop-info{padding:10px;}
-.shop-name{font-weight:700;font-size:14px;line-height:1.3;min-height:36px;}
-.shop-price{margin-top:6px;font-weight:800;color:#198754;}
-.shop-old{font-size:12px;color:#999;text-decoration:line-through;margin-left:4px;}
-
-@media(max-width:768px){
-    .profile-box{margin:6px;padding:15px;}
-    .profile-top{flex-direction:column;}
-    .profile-left{flex-direction:column;align-items:center;text-align:center;gap:12px;width:100%;}
-    .profile-name{font-size:24px;}
-    .profile-designation{font-size:16px;}
-    .stats{justify-content:center;gap:8px;margin-top:12px;}
-    .stat-box{min-width:0;flex:1;padding:10px 7px;}
-    .action-buttons{justify-content:center;margin-top:10px;width:100%;}
-    .action-buttons .btn{flex:1;min-width:140px;}
-    .profile-tabs{margin-top:14px;}
-    .profile-tab{font-size:14px;padding:13px 4px;}
-    .section-card{margin-top:12px;}
-    .section-body{padding:15px;}
-    .video-grid{grid-template-columns:repeat(3,1fr);margin-top:12px;}
-    .shop-grid{grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px;}
+.candidate-page{min-height:100vh;background:#f5f7fb;padding-bottom:90px}
+.candidate-hero{background:#fff;border-bottom:1px solid #e7ebf2;padding:28px 18px 22px;text-align:center}
+.candidate-photo{width:108px;height:108px;margin:0 auto;border-radius:50%;overflow:hidden;background:#eef4ff;border:4px solid #2563eb;box-shadow:0 5px 18px rgba(37,99,235,.18);display:flex;align-items:center;justify-content:center;color:#2563eb;font-size:40px;font-weight:800}
+.candidate-photo img{width:100%;height:100%;object-fit:cover}
+.candidate-name{margin-top:14px;color:#111827;font-size:27px;font-weight:800}
+.candidate-designation{margin-top:4px;color:#4b5563;font-size:16px;font-weight:600}
+.candidate-city{margin-top:7px;color:#6b7280;font-size:14px}
+.candidate-stats{display:flex;justify-content:center;gap:42px;margin-top:20px}
+.candidate-stat{min-width:70px}
+.candidate-stat strong{display:block;color:#111827;font-size:21px;line-height:1.1}
+.candidate-stat span{display:block;margin-top:4px;color:#6b7280;font-size:12px;font-weight:600}
+.candidate-follow{margin:20px auto 0;max-width:360px}
+.candidate-follow a{height:48px;border-radius:13px;background:#2563eb;color:#fff;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:800;box-shadow:0 5px 14px rgba(37,99,235,.22)}
+.candidate-follow a.following{background:#e8f0ff;color:#2563eb;box-shadow:none}
+.candidate-tabs{display:flex;background:#fff;margin-top:12px;border-top:1px solid #e7ebf2;border-bottom:1px solid #e7ebf2}
+.candidate-tab{flex:1;position:relative;border:0;background:#fff;padding:15px 8px;color:#6b7280;font-size:14px;font-weight:800;cursor:pointer}
+.candidate-tab i{margin-right:6px}
+.candidate-tab.active{color:#2563eb}
+.candidate-tab.active:after{content:"";position:absolute;bottom:-1px;left:18%;right:18%;height:3px;border-radius:4px 4px 0 0;background:#2563eb}
+.candidate-tab-content{display:none}
+.candidate-tab-content.active{display:block}
+.candidate-video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:#e5e7eb}
+.candidate-video{position:relative;aspect-ratio:1/1;overflow:hidden;background:#eef1f5;text-decoration:none}
+.candidate-video img{width:100%;height:100%;object-fit:cover}
+.candidate-video-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.48);color:#fff;display:flex;align-items:center;justify-content:center}
+.candidate-empty{background:#fff;text-align:center;padding:65px 20px;color:#6b7280}
+.candidate-empty .empty-icon{width:64px;height:64px;margin:0 auto 15px;border-radius:18px;background:#eaf1ff;color:#2563eb;display:flex;align-items:center;justify-content:center;font-size:28px}
+.candidate-empty h4{color:#111827;margin-bottom:6px;font-weight:800}
+.candidate-details{padding:12px}
+.detail-card{background:#fff;border-radius:16px;margin-bottom:12px;padding:18px;box-shadow:0 2px 9px rgba(15,23,42,.05);border:1px solid #edf0f5}
+.detail-title{display:flex;align-items:center;gap:9px;color:#111827;font-size:17px;font-weight:800;margin-bottom:14px}
+.detail-title .title-icon{width:34px;height:34px;border-radius:10px;background:#eaf1ff;color:#2563eb;display:flex;align-items:center;justify-content:center}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.info-item{background:#f8fafc;border-radius:12px;padding:12px}
+.info-label{color:#6b7280;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.info-value{margin-top:4px;color:#111827;font-size:14px;font-weight:700;word-break:break-word}
+.skill-pill,.field-pill{display:inline-flex;margin:3px 4px 3px 0;padding:7px 11px;border-radius:20px;font-size:12px;font-weight:700}
+.skill-pill{background:#eff6ff;border:1px solid #bfdbfe;color:#2563eb}
+.field-pill{background:#ecfdf5;border:1px solid #a7f3d0;color:#047857}
+.about-text{color:#374151;font-size:14px;line-height:1.75;white-space:pre-line}
+.resume-card{background:linear-gradient(135deg,#f8fbff,#eef5ff);border:1px solid #dbe8ff;border-radius:14px;padding:16px}
+.resume-status{color:#111827;font-size:15px;font-weight:800}
+.resume-sub{color:#6b7280;font-size:13px;margin-top:4px;margin-bottom:13px}
+.resume-button{width:100%;min-height:47px;border-radius:12px;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:800}
+.resume-unlock{background:#f59e0b;color:#fff}
+.resume-download{background:#198754;color:#fff}
+.resume-not-uploaded{text-align:center;color:#6b7280;padding:10px}
+@media(max-width:600px){
+ .candidate-hero{padding-top:24px}
+ .candidate-photo{width:96px;height:96px}
+ .candidate-name{font-size:24px}
+ .candidate-stats{gap:28px}
+ .info-grid{grid-template-columns:1fr}
+ .candidate-tab{font-size:13px}
 }
 </style>
 
-<div class="profile-box">
+<div class="candidate-page">
 
-    <div class="profile-top">
-        <div class="profile-left">
-            <div class="profile-pic">
-                {% if candidate.profile_photo %}
-                    <img src="{{ url_for('static', filename='uploads/' + candidate.profile_photo) }}">
-                {% else %}
-                    <div class="profile-initial">
-                        {{ candidate.full_name[0] if candidate.full_name else "C" }}
-                    </div>
-                {% endif %}
+    <section class="candidate-hero">
+        <div class="candidate-photo">
+            {% if candidate.profile_photo %}
+                <img src="{{ url_for('static', filename='uploads/' + candidate.profile_photo) }}" alt="{{ candidate.full_name }}">
+            {% else %}
+                {{ candidate.full_name[0] if candidate.full_name else "C" }}
+            {% endif %}
+        </div>
+
+        <div class="candidate-name">{{ candidate.full_name }}</div>
+        <div class="candidate-designation">{{ candidate.designation or "Candidate" }}</div>
+        <div class="candidate-city">
+            <i class="fas fa-map-marker-alt"></i>
+            {{ candidate.city or "City Not Added" }}
+        </div>
+
+        <div class="candidate-stats">
+            <div class="candidate-stat">
+                <strong>{{ candidate_videos|length }}</strong>
+                <span>Videos</span>
             </div>
-
-            <div class="profile-info">
-                <div class="profile-name">{{ candidate.full_name }}</div>
-                <div class="profile-designation">{{ candidate.designation or "Candidate" }}</div>
-
-                {% if candidate.company_name %}
-                    <div class="profile-company">🏢 {{ candidate.company_name }}</div>
-                {% endif %}
-
-                <div class="profile-location">📍 {{ candidate.city or "City Not Added" }}</div>
-
-                <div class="stats">
-                    <div class="stat-box">
-                        <h4>{{ candidate_videos|length }}</h4>
-                        <small>Videos</small>
-                    </div>
-                    <div class="stat-box">
-                        <h4>{{ followers_count }}</h4>
-                        <small>Followers</small>
-                    </div>
-                    <div class="stat-box">
-                        <h4>{{ following_count|default(0,true) }}</h4>
-                        <small>Following</small>
-                    </div>
-                </div>
-
-                <div class="action-buttons">
-                    {% if is_following %}
-                        <a href="/follow-candidate/{{ candidate.id }}" class="btn btn-success">Following ✓</a>
-                    {% else %}
-                        <a href="/follow-candidate/{{ candidate.id }}" class="btn btn-primary">Follow</a>
-                    {% endif %}
-
-                    {% if contact_unlocked %}
-                        <a href="tel:{{ candidate.mobile }}" class="btn btn-success">Call</a>
-                        <a href="https://wa.me/{{ candidate.mobile }}" target="_blank" class="btn btn-success">WhatsApp</a>
-                        <a href="mailto:{{ candidate.email }}" class="btn btn-info">Email</a>
-                        {% if candidate.resume_file %}
-                            <a href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}" target="_blank" class="btn btn-secondary">Resume</a>
-                        {% endif %}
-                    {% else %}
-                        <a href="/unlock-contact/{{ candidate.id }}" class="btn btn-warning">
-                            🔓 Unlock Contact ({{ settings.discover_unlock_credits }} Credits)
-                        </a>
-                    {% endif %}
-                </div>
+            <div class="candidate-stat">
+                <strong>{{ followers_count }}</strong>
+                <span>Followers</span>
+            </div>
+            <div class="candidate-stat">
+                <strong>{{ following_count }}</strong>
+                <span>Following</span>
             </div>
         </div>
-    </div>
 
-    <!-- ONLY THE TAB BAR IS NEW; the candidate profile design above remains the same. -->
-    <div class="profile-tabs">
-        <button type="button" class="profile-tab active" data-tab="videos">🎥 Videos</button>
-        <button type="button" class="profile-tab" data-tab="details">▣ Details</button>
-        <button type="button" class="profile-tab" data-tab="shop">🛍 Shop</button>
-    </div>
+        {% if current_user.account_type == "hr" %}
+        <div class="candidate-follow">
+            {% if is_following %}
+                <a href="/follow-candidate/{{ candidate.id }}" class="following">
+                    <i class="fas fa-user-check"></i> Following
+                </a>
+            {% else %}
+                <a href="/follow-candidate/{{ candidate.id }}">
+                    <i class="fas fa-user-plus"></i> Follow Candidate
+                </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
 
-    <!-- VIDEOS -->
-    <div id="tab-videos" class="profile-panel active">
+    <nav class="candidate-tabs">
+        <button type="button" class="candidate-tab active" data-tab="videos" onclick="switchCandidateTab('videos')">
+            <i class="fas fa-video"></i> Videos
+        </button>
+        <button type="button" class="candidate-tab" data-tab="details" onclick="switchCandidateTab('details')">
+            <i class="fas fa-id-card"></i> Details
+        </button>
+    </nav>
+
+    <section id="candidate-tab-videos" class="candidate-tab-content active">
         {% if candidate_videos %}
-            <div class="video-grid">
-                {% for video in candidate_videos %}
-                    {% set video_file = video.images %}
-                    {% set video_name = video_file.rsplit('.', 1)[0] if video_file and '.' in video_file else video_file %}
-                    <a href="/job-view/{{ video.id }}" class="video-item">
-                        {% if video_name %}
-                            <img src="{{ url_for('static', filename='uploads/' + video_name + '.jpg') }}"
-                                 alt="Video"
-                                 loading="lazy"
-                                 onerror="this.style.display='none';">
-                        {% endif %}
-                        <span class="video-play">▶</span>
-                    </a>
-                {% endfor %}
-            </div>
+        <div class="candidate-video-grid">
+            {% for post in candidate_videos %}
+                {% set first_file = post.images.split(',')[0]|trim if post.images else '' %}
+                <a href="/my-post/{{ post.id }}" class="candidate-video">
+                    {% if first_file %}
+                        {% set thumb = first_file.rsplit('.',1)[0] + '.jpg' %}
+                        <img src="/static/uploads/{{ thumb }}"
+                             onerror="this.onerror=null;this.src='/static/uploads/{{ first_file }}';"
+                             loading="lazy" alt="Candidate video">
+                    {% endif %}
+                    <span class="candidate-video-play"><i class="fas fa-play"></i></span>
+                </a>
+            {% endfor %}
+        </div>
         {% else %}
-            <div class="empty-content">
-                <h4>No Videos Yet</h4>
-                <p>This candidate hasn't posted any videos.</p>
-            </div>
+        <div class="candidate-empty">
+            <div class="empty-icon"><i class="fas fa-video"></i></div>
+            <h4>No Videos Yet</h4>
+            <div>This candidate hasn't posted any videos yet.</div>
+        </div>
         {% endif %}
-    </div>
+    </section>
 
-    <!-- DETAILS: original candidate details -->
-    <div id="tab-details" class="profile-panel">
+    <section id="candidate-tab-details" class="candidate-tab-content">
+        <div class="candidate-details">
 
-        <div class="section-card">
-            <div class="section-header">👤 Personal Information</div>
-            <div class="section-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3"><b>Full Name</b><br>{{ candidate.full_name }}</div>
-                    <div class="col-md-6 mb-3"><b>Qualification</b><br>{{ candidate.qualification or "Not Added" }}</div>
-                    <div class="col-md-6 mb-3"><b>Date of Birth</b><br>{{ candidate.dob.strftime('%d %b %Y') if candidate.dob else "Not Added" }}</div>
-                    <div class="col-md-6 mb-3"><b>City</b><br>{{ candidate.city or "Not Added" }}</div>
+            <div class="detail-card">
+                <div class="detail-title"><span class="title-icon"><i class="fas fa-user"></i></span>Personal Information</div>
+                <div class="info-grid">
+                    <div class="info-item"><div class="info-label">Full Name</div><div class="info-value">{{ candidate.full_name }}</div></div>
+                    <div class="info-item"><div class="info-label">Qualification</div><div class="info-value">{{ candidate.qualification or "Not Added" }}</div></div>
+                    <div class="info-item"><div class="info-label">Date of Birth</div><div class="info-value">{{ candidate.dob.strftime('%d %b %Y') if candidate.dob else "Not Added" }}</div></div>
+                    <div class="info-item"><div class="info-label">City</div><div class="info-value">{{ candidate.city or "Not Added" }}</div></div>
                 </div>
             </div>
-        </div>
 
-        <div class="section-card">
-            <div class="section-header" style="background:#198754;">💼 Career Details</div>
-            <div class="section-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3"><b>Career Level</b><br>{{ candidate.career_level or "Not Added" }}</div>
+            <div class="detail-card">
+                <div class="detail-title"><span class="title-icon"><i class="fas fa-briefcase"></i></span>Career Details</div>
+                <div class="info-grid">
+                    <div class="info-item"><div class="info-label">Career Level</div><div class="info-value">{{ candidate.career_level or "Not Added" }}</div></div>
                     {% if candidate.career_level and candidate.career_level|trim|lower == "experienced" %}
-                        <div class="col-md-6 mb-3"><b>Company Name</b><br>{{ candidate.company_name or "Not Added" }}</div>
-                        <div class="col-md-6 mb-3"><b>Designation</b><br>{{ candidate.designation or "Not Added" }}</div>
-                        <div class="col-md-6 mb-3"><b>Experience</b><br>{{ candidate.experience_from or "-" }} → {{ candidate.experience_to or "Present" }}</div>
+                    <div class="info-item"><div class="info-label">Company</div><div class="info-value">{{ candidate.company_name or "Not Added" }}</div></div>
+                    <div class="info-item"><div class="info-label">Designation</div><div class="info-value">{{ candidate.designation or "Not Added" }}</div></div>
+                    <div class="info-item"><div class="info-label">Experience</div><div class="info-value">{{ candidate.experience_from or "-" }} → {{ candidate.experience_to or "Present" }}</div></div>
                     {% endif %}
                 </div>
             </div>
-        </div>
 
-        <div class="section-card">
-            <div class="section-header" style="background:#0dcaf0;">🎓 Education</div>
-            <div class="section-body">{{ candidate.education or "Education Not Added" }}</div>
-        </div>
+            <div class="detail-card">
+                <div class="detail-title"><span class="title-icon"><i class="fas fa-graduation-cap"></i></span>Education</div>
+                <div class="about-text">{{ candidate.education or "Education details not added." }}</div>
+            </div>
 
-        <div class="section-card">
-            <div class="section-header" style="background:#ffc107;color:#111;">🛠 Skills</div>
-            <div class="section-body">
+            <div class="detail-card">
+                <div class="detail-title"><span class="title-icon"><i class="fas fa-tools"></i></span>Skills</div>
                 {% if candidate.skills %}
-                    {% for skill in candidate.skills.split(',') %}
-                        <span class="badge-skill">{{ skill.strip() }}</span>
+                    {% for skill in candidate.skills.split(",") %}
+                        <span class="skill-pill">{{ skill.strip() }}</span>
                     {% endfor %}
                 {% else %}
-                    Skills Not Added
+                    <div class="about-text">Skills not added.</div>
                 {% endif %}
             </div>
-        </div>
 
-        <div class="section-card">
-            <div class="section-header" style="background:#6c757d;">🎯 Interested Fields</div>
-            <div class="section-body">
+            <div class="detail-card">
+                <div class="detail-title"><span class="title-icon"><i class="fas fa-bullseye"></i></span>Interested Fields</div>
                 {% if candidate.interested_fields %}
-                    {% for field in candidate.interested_fields.split(',') %}
-                        <span class="badge-field">{{ field.strip() }}</span>
+                    {% for field in candidate.interested_fields.split(",") %}
+                        <span class="field-pill">{{ field.strip() }}</span>
                     {% endfor %}
                 {% else %}
-                    Interested Fields Not Added
+                    <div class="about-text">No interested fields selected.</div>
                 {% endif %}
             </div>
-        </div>
 
-        <div class="section-card">
-            <div class="section-header" style="background:#212529;">📝 About Me</div>
-            <div class="section-body">{{ candidate.about_me or "No description added yet." }}</div>
-        </div>
+            <div class="detail-card">
+                <div class="detail-title"><span class="title-icon"><i class="fas fa-comment-alt"></i></span>About Me</div>
+                <div class="about-text">{{ candidate.about_me or "No description added yet." }}</div>
+            </div>
 
-        <div class="section-card">
-            <div class="section-header">📄 Resume</div>
-            <div class="section-body text-center">
-                {% if contact_unlocked and candidate.resume_file %}
-                    <a href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}" target="_blank" class="btn btn-success">Download Resume</a>
-                {% elif candidate.resume_file %}
-                    <a href="/unlock-contact/{{ candidate.id }}" class="btn btn-warning">🔒 Unlock Resume (2 Credits)</a>
+            <div class="detail-card">
+                <div class="detail-title"><span class="title-icon"><i class="fas fa-file-pdf"></i></span>Resume</div>
+
+                {% if candidate.resume_file %}
+                    <div class="resume-card">
+                        {% if contact_unlocked %}
+                            <div class="resume-status">Resume unlocked</div>
+                            <div class="resume-sub">You can download the candidate's resume.</div>
+                            <a href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}"
+                               target="_blank" class="resume-button resume-download">
+                                <i class="fas fa-download"></i> Download Resume
+                            </a>
+                        {% elif current_user.account_type == "hr" %}
+                            <div class="resume-status">Resume Available</div>
+                            <div class="resume-sub">Unlock this candidate to access the resume.</div>
+                            <a href="/unlock-contact/{{ candidate.id }}" class="resume-button resume-unlock">
+                                <i class="fas fa-lock"></i>
+                                Unlock Resume ({{ settings.discover_unlock_credits }} Credits)
+                            </a>
+                        {% else %}
+                            <div class="resume-not-uploaded">Resume access is available to recruiters after unlock.</div>
+                        {% endif %}
+                    </div>
                 {% else %}
-                    Resume Not Uploaded
+                    <div class="resume-not-uploaded">
+                        <i class="fas fa-file-alt" style="font-size:38px;"></i>
+                        <div style="font-weight:800;margin-top:8px;color:#374151;">Resume Not Uploaded</div>
+                    </div>
                 {% endif %}
             </div>
+
         </div>
-
-    </div>
-
-    <!-- SHOP -->
-    <div id="tab-shop" class="profile-panel">
-        {% if candidate_products %}
-            <div class="shop-grid">
-                {% for product in candidate_products %}
-                    <a href="/shop/{{ linked_user.id }}" class="shop-card">
-                        <div class="shop-image">
-                            {% if product.images and product.images|length > 0 %}
-                                <img src="{{ url_for('static', filename='uploads/products/' + product.images[0].image) }}" alt="{{ product.name }}" loading="lazy">
-                            {% else %}
-                                <div class="shop-placeholder"><i class="fas fa-image"></i></div>
-                            {% endif %}
-                        </div>
-                        <div class="shop-info">
-                            <div class="shop-name">{{ product.name }}</div>
-                            <div class="shop-price">
-                                ₹{{ "%.0f"|format(product.sale_price if product.sale_price else product.price) }}
-                                {% if product.sale_price %}<span class="shop-old">₹{{ "%.0f"|format(product.price) }}</span>{% endif %}
-                            </div>
-                        </div>
-                    </a>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="empty-content">
-                <h4>No Products Yet</h4>
-                <p>This candidate hasn't added any products to the shop.</p>
-            </div>
-        {% endif %}
-    </div>
-
+    </section>
 </div>
 
 <script>
-(function(){
-    var tabs = document.querySelectorAll('.profile-tab');
-    tabs.forEach(function(tab){
-        tab.addEventListener('click', function(){
-            var target = this.getAttribute('data-tab');
-            tabs.forEach(function(t){ t.classList.remove('active'); });
-            document.querySelectorAll('.profile-panel').forEach(function(p){ p.classList.remove('active'); });
-            this.classList.add('active');
-            var panel = document.getElementById('tab-' + target);
-            if(panel){ panel.classList.add('active'); }
-        });
+function switchCandidateTab(tab){
+    document.querySelectorAll(".candidate-tab").forEach(function(button){
+        button.classList.toggle("active", button.getAttribute("data-tab") === tab);
     });
-})();
+
+    document.querySelectorAll(".candidate-tab-content").forEach(function(section){
+        section.classList.remove("active");
+    });
+
+    var selected = document.getElementById("candidate-tab-" + tab);
+    if(selected){ selected.classList.add("active"); }
+}
 </script>
 
 {% endblock %}
