@@ -35,26 +35,87 @@
         {% endif %}
 
         <div class="dropdown">
-            <button class="btn btn-sm border-0" data-bs-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <a class="dropdown-item text-danger" href="/delete-job/{{ job.id }}" onclick="return confirm('Delete this post?')">
-                        <i class="fas fa-trash me-2"></i>Delete Post
+
+    <button
+        class="btn btn-sm border-0"
+        type="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+    >
+        <i class="fas fa-ellipsis-v"></i>
+    </button>
+
+    <ul class="dropdown-menu dropdown-menu-end">
+
+        {% if job.hr_id == current_user.id %}
+
+            <!-- EDIT POST -->
+            <li>
+                <a
+                    class="dropdown-item"
+                    href="/edit-job/{{ job.id }}"
+                >
+                    <i class="fas fa-pen me-2"></i>
+                    Edit Post
+                </a>
+            </li>
+
+            <!-- DELETE POST -->
+            <li>
+                <a
+                    class="dropdown-item text-danger"
+                    href="/delete-job/{{ job.id }}"
+                    onclick="return confirm('Delete this post?')"
+                >
+                    <i class="fas fa-trash me-2"></i>
+                    Delete Post
+                </a>
+            </li>
+
+            <!-- BOOST POST -->
+            <li>
+                {% if active_boost %}
+
+                    <a
+                        class="dropdown-item"
+                        href="/manage-boost/{{ job.id }}"
+                    >
+                        <i class="fas fa-chart-line me-2"></i>
+                        Manage Boost
                     </a>
-                </li>
-                <li>
-                    {% if active_boost %}
-                    <a class="dropdown-item" href="/manage-boost/{{ job.id }}">
-                        <i class="fas fa-chart-line me-2"></i>Manage Boost
+
+                {% else %}
+
+                    <a
+                        class="dropdown-item"
+                        href="/boost-post/{{ job.id }}"
+                    >
+                        <i class="fas fa-rocket me-2"></i>
+                        Boost Now
                     </a>
-                    {% else %}
-                    <a class="dropdown-item" href="/boost-post/{{ job.id }}">
-                        <i class="fas fa-rocket me-2"></i>Boost Now
-                    </a>
-                    {% endif %}
-                </li>
-            </ul>
-        </div>
+
+                {% endif %}
+            </li>
+
+        {% else %}
+
+            <!-- REPORT POST -->
+            <li>
+                <button
+                    type="button"
+                    class="dropdown-item"
+                    onclick="openReportModal({{ job.id }})"
+                >
+                    <i class="fas fa-flag me-2"></i>
+                    Report Post
+                </button>
+            </li>
+
+        {% endif %}
+
+    </ul>
+
+</div>
     </div>
 </div>
 

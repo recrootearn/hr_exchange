@@ -23652,24 +23652,36 @@ def download_order_invoice(order_id):
 @login_required
 def my_post(job_id):
 
-    # Get ONLY the clicked post/video
+    # Get the exact post clicked from profile
     job = JobPost.query.get_or_404(job_id)
 
-    # This page is only for the owner
+    # Only the owner can open this version
     if job.hr_id != current_user.id:
-        flash("You are not allowed to view this post here.", "danger")
+        flash("Access denied.", "danger")
         return redirect('/profile')
 
-    # Check whether this post has an active boost
-    active_boost = BoostPost.query.filter_by(
-        job_id=job.id,
-        status="Active"
-    ).first()
+    # Sparked status
+    sparked_jobs = [
+        s.job_id
+        for s in Spark.query.filter_by(
+            hr_id=current_user.id
+        ).all()
+    ]
 
+    # Enquiries
+    enquired_jobs = [
+        e.post_id
+        for e in PostEnquiry.query.filter_by(
+            enquiry_hr_id=current_user.id
+        ).all()
+    ]
+
+    # Render the EXISTING feed template
     return render_template(
-        'my_post.html',
-        job=job,
-        active_boost=active_boost
+        'feed_post-23.html',
+        jobs=[job],
+        sparked_jobs=sparked_jobs,
+        enquired_jobs=enquired_jobs
     )
 
 # =========================
