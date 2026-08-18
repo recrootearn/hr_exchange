@@ -6141,6 +6141,12 @@ def check_hr_profile():
     if current_user.is_admin:
         return
 
+    # Candidate accounts have their own profile-completion system
+    # stored on CandidateUser. Do not apply the HR/User completion
+    # gate (which checks company/MSME/Gumasta fields) to candidates.
+    if getattr(current_user, "account_type", "hr") == "candidate":
+        return
+
     # Routes allowed without profile completion
     allowed_routes = [
 
