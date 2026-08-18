@@ -6175,6 +6175,11 @@ def check_hr_profile():
     if request.endpoint in allowed_routes:
         return
 
+    # Candidate accounts use the candidate profile system.
+    # Do not apply the HR profile-completion gate to them.
+    if getattr(current_user, "account_type", "hr") == "candidate":
+        return
+
     # Check profile completion
     if (current_user.profile_completion or 0) < 80:
 
@@ -9766,6 +9771,8 @@ def candidate_profile():
             and candidate.designation
         ):
             completion += 10
+    else:
+        completion += 10
 
     if completion < 100:
 
@@ -9932,6 +9939,16 @@ def edit_candidate_profile():
 
             candidate.resume_file = filename
 
+        # SYNC UNIFIED LOGIN ACCOUNT
+        linked_user = User.query.filter_by(id=candidate.user_id).first() if candidate.user_id else None
+        if linked_user:
+            name_parts = (candidate.full_name or "").strip().split(None, 1)
+            linked_user.first_name = name_parts[0] if name_parts else ""
+            linked_user.last_name = name_parts[1] if len(name_parts) > 1 else ""
+            linked_user.email = candidate.email
+            if candidate.profile_photo:
+                linked_user.profile_photo = candidate.profile_photo
+
     # ----------------------------
     # PROFILE COMPLETION
     # ----------------------------
@@ -9979,6 +9996,11 @@ def edit_candidate_profile():
 
     # Save profile completion
     candidate.profile_completion = completion
+
+    # Keep the unified User account completion in sync.
+    linked_user = User.query.filter_by(id=candidate.user_id).first() if candidate.user_id else None
+    if linked_user:
+        linked_user.profile_completion = completion
 
     db.session.commit()
 
@@ -13269,6 +13291,14 @@ def login():
                 session.permanent = True
 
             session["session_token"] = token
+
+            # CANDIDATE REDIRECT
+            if getattr(user, "account_type", "hr") == "candidate":
+                candidate = CandidateUser.query.filter_by(user_id=user.id).first()
+                if candidate:
+                    session["candidate_id"] = candidate.id
+                    session["candidate_session_token"] = token
+                    return redirect(url_for("candidate_feed"))
 
             # ADMIN REDIRECT
 
