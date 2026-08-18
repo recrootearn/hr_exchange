@@ -23,6 +23,16 @@
 .candidate-tab.active:after{content:"";position:absolute;bottom:-1px;left:18%;right:18%;height:3px;border-radius:4px 4px 0 0;background:#2563eb}
 .candidate-tab-content{display:none}
 .candidate-tab-content.active{display:block}
+.candidate-shop{padding:12px}
+.candidate-shop-header{background:#fff;border:1px solid #edf0f5;border-radius:16px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.candidate-shop-title{font-size:19px;font-weight:800;color:#111827}
+.candidate-shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.candidate-shop-card{background:#fff;border:1px solid #edf0f5;border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 2px 8px rgba(15,23,42,.04)}
+.candidate-shop-card img,.candidate-shop-image{width:100%;aspect-ratio:1/1;object-fit:cover;background:#f3f4f6;display:block}
+.candidate-shop-info{padding:11px}
+.candidate-shop-name{font-weight:800;color:#111827}
+.candidate-shop-price{margin-top:4px;color:#2563eb;font-weight:800}
+@media(max-width:600px){.candidate-shop-grid{grid-template-columns:1fr 1fr}}
 .candidate-video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:#e5e7eb}
 .candidate-video{position:relative;aspect-ratio:1/1;overflow:hidden;background:#eef1f5;text-decoration:none}
 .candidate-video img{width:100%;height:100%;object-fit:cover}
@@ -114,6 +124,9 @@
         <button type="button" class="candidate-tab" data-tab="details" onclick="switchCandidateTab('details')">
             <i class="fas fa-id-card"></i> Details
         </button>
+        <button type="button" class="candidate-tab" data-tab="shop" onclick="switchCandidateTab('shop')">
+            <i class="fas fa-store"></i> Shop
+        </button>
     </nav>
 
     <section id="candidate-tab-videos" class="candidate-tab-content active">
@@ -149,6 +162,8 @@
                 <div class="info-grid">
                     <div class="info-item"><div class="info-label">Full Name</div><div class="info-value">{{ candidate.full_name }}</div></div>
                     <div class="info-item"><div class="info-label">Qualification</div><div class="info-value">{{ candidate.qualification or "Not Added" }}</div></div>
+                    <div class="info-item"><div class="info-label">Email</div><div class="info-value">{{ candidate.email if contact_unlocked else "Unlock resume to view" }}</div></div>
+                    <div class="info-item"><div class="info-label">Mobile</div><div class="info-value">{{ candidate.mobile if contact_unlocked else "Unlock resume to view" }}</div></div>
                     <div class="info-item"><div class="info-label">Date of Birth</div><div class="info-value">{{ candidate.dob.strftime('%d %b %Y') if candidate.dob else "Not Added" }}</div></div>
                     <div class="info-item"><div class="info-label">City</div><div class="info-value">{{ candidate.city or "Not Added" }}</div></div>
                 </div>
@@ -229,6 +244,39 @@
                 {% endif %}
             </div>
 
+        </div>
+    </section>
+
+    <!-- SHOP -->
+    <section id="candidate-tab-shop" class="candidate-tab-content">
+        <div class="candidate-shop">
+            <div class="candidate-shop-header">
+                <div class="candidate-shop-title">🛍 {{ linked_user.shop_name or (candidate.full_name ~ "'s Shop") }}</div>
+                <span style="color:#6b7280;font-size:13px;font-weight:700;">{{ candidate_products|length }} Products</span>
+            </div>
+            {% if candidate_products %}
+            <div class="candidate-shop-grid">
+                {% for product in candidate_products %}
+                <a href="/product/{{ product.id }}" class="candidate-shop-card">
+                    {% if product.images and product.images|length > 0 %}
+                        <img src="{{ url_for('static', filename='uploads/' + product.images[0].image) }}" alt="{{ product.name }}">
+                    {% else %}
+                        <div class="candidate-shop-image d-flex align-items-center justify-content-center" style="font-size:42px;">🛍️</div>
+                    {% endif %}
+                    <div class="candidate-shop-info">
+                        <div class="candidate-shop-name">{{ product.name }}</div>
+                        <div class="candidate-shop-price">{% if product.sale_price %}₹{{ product.sale_price }}{% else %}₹{{ product.price }}{% endif %}</div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="candidate-empty">
+                <div class="empty-icon"><i class="fas fa-store"></i></div>
+                <h4>No Products Yet</h4>
+                <div>This candidate hasn't added any products yet.</div>
+            </div>
+            {% endif %}
         </div>
     </section>
 </div>

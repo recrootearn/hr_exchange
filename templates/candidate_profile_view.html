@@ -450,6 +450,31 @@
     font-weight:700;
 }
 
+.product-owner-actions{
+    display:flex;
+    gap:7px;
+    padding:0 12px 12px;
+    flex-wrap:wrap;
+}
+.product-owner-actions .btn{
+    flex:1;
+    min-width:80px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:700;
+}
+.video-owner-actions{
+    display:flex;
+    gap:7px;
+    padding:0 12px 12px;
+}
+.video-owner-actions .btn{
+    flex:1;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:700;
+}
+
 .empty-state{
     text-align:center;
     padding:35px 15px;
@@ -674,6 +699,18 @@ style="width:{{ profile_completion }}%;">
                     {% if video.description %}
                     <div class="video-caption">{{ video.description }}</div>
                     {% endif %}
+                    {% if is_owner %}
+                    <div class="video-owner-actions">
+                        <a href="/edit-candidate-video/{{ video.id }}" class="btn btn-outline-primary">
+                            <i class="fas fa-edit me-1"></i> Edit
+                        </a>
+                        <form method="POST" action="/delete-candidate-video/{{ video.id }}" style="flex:1;margin:0;" onsubmit="return confirm('Delete this video?');">
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="fas fa-trash me-1"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
@@ -868,6 +905,21 @@ style="width:{{ profile_completion }}%;">
                         </div>
                     </div>
                 </a>
+                {% if is_owner %}
+                <div class="product-owner-actions">
+                    <a href="/shop/manage-product/{{ product.id }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-cog me-1"></i> Manage
+                    </a>
+                    <a href="/shop/edit-product/{{ product.id }}" class="btn btn-outline-primary">
+                        <i class="fas fa-edit me-1"></i> Edit
+                    </a>
+                    <form method="POST" action="/shop/delete-product/{{ product.id }}" style="flex:1;margin:0;" onsubmit="return confirm('Delete this product?');">
+                        <button type="submit" class="btn btn-outline-danger w-100">
+                            <i class="fas fa-trash me-1"></i> Delete
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
                 {% endfor %}
             </div>
             {% else %}

@@ -11277,6 +11277,11 @@ def view_candidates(id):
 
     candidate_videos = []
     candidate_products = []
+    is_owner = bool(
+        current_user.is_authenticated
+        and linked_user
+        and current_user.id == linked_user.id
+    ) if linked_user else False
 
     if linked_user:
         candidate_videos = JobPost.query.filter_by(
@@ -11302,7 +11307,8 @@ def view_candidates(id):
         is_following=is_following,
         contact_unlocked=contact_unlocked,
         has_applied=has_applied,
-        settings=settings
+        settings=settings,
+        is_owner=is_owner
     )
 
 
@@ -23634,6 +23640,43 @@ def download_order_invoice(order_id):
         download_name=filename,
         mimetype="application/pdf"
     )
+
+@app.route('/edit-candidate-video/<int:video_id>', methods=['GET', 'POST'])
+@login_required
+def edit_candidate_video(video_id):
+    job = JobPost.query.get_or_404(video_id)
+    if job.post_type != 'video' or job.hr_id != current_user.id:
+        return 'Access Denied', 403
+
+    if request.method == 'POST':
+        job.description = request.form.get('description', '').strip()
+        job.video_caption = request.form.get('video_caption', '').strip()
+        job.cta_type = request.form.get('cta_type')
+        job.cta_url = request.form.get('cta_url')
+        db.session.commit()
+        flash('Video updated successfully.', 'success')
+        return redirect(url_for('candidate_profile'))
+
+    return render_template('edit_candidate_video.html', video=job)
+
+@app.route('/delete-candidate-video/<int:video_id>', methods=['POST'])
+@login_required
+def delete_candidate_video(video_id):
+    job = JobPost.query.get_or_404(video_id)
+    if job.post_type != 'video' or job.hr_id != current_user.id:
+        return 'Access Denied', 403
+
+    if job.images:
+        path = os.path.join(app.config['UPLOAD_FOLDER'], job.images.split(',')[0].strip())
+        if os.path.exists(path):
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+    db.session.delete(job)
+    db.session.commit()
+    flash('Video deleted successfully.', 'success')
+    return redirect(url_for('candidate_profile'))
 
 @app.route('/my-post/<int:job_id>')
 @login_required
