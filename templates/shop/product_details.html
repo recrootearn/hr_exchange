@@ -203,6 +203,94 @@ html, body{
     border:1px solid #dbe2ee;
 }
 
+/* Amazon/Flipkart-style variant picker */
+.product-page .variant-picker{
+    margin:4px 0 18px;
+}
+
+.product-page .variant-group{
+    margin-bottom:16px;
+}
+
+.product-page .variant-group-title{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:14px;
+    font-weight:850;
+    color:#172033;
+    margin-bottom:9px;
+}
+
+.product-page .variant-group-title span{
+    color:#6b7280;
+    font-weight:600;
+}
+
+.product-page .variant-options{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+}
+
+.product-page .variant-option{
+    position:relative;
+    min-width:92px;
+    border:1.5px solid #d9e1ee;
+    background:#fff;
+    color:#172033;
+    border-radius:13px;
+    padding:10px 13px;
+    text-align:left;
+    cursor:pointer;
+    transition:.18s ease;
+    box-shadow:0 2px 7px rgba(15,23,42,.04);
+}
+
+.product-page .variant-option:hover{
+    border-color:#93b4ff;
+    transform:translateY(-1px);
+}
+
+.product-page .variant-option.active{
+    border-color:var(--primary);
+    background:#eff6ff;
+    color:#1d4ed8;
+    box-shadow:0 0 0 3px rgba(37,99,235,.10);
+}
+
+.product-page .variant-option.out-of-stock{
+    opacity:.48;
+    cursor:not-allowed;
+    text-decoration:line-through;
+}
+
+.product-page .variant-option-value{
+    display:block;
+    font-weight:800;
+    font-size:14px;
+}
+
+.product-page .variant-option-price{
+    display:block;
+    margin-top:3px;
+    font-size:12px;
+    color:#16803c;
+    font-weight:750;
+}
+
+.product-page .variant-option.active .variant-option-price{
+    color:#1d4ed8;
+}
+
+.product-page .variant-stock{
+    display:block;
+    margin-top:3px;
+    color:#8a93a3;
+    font-size:10px;
+    font-weight:650;
+}
+
 .product-page .variant-select:focus,
 .product-page .quantity-input:focus{
     border-color:var(--primary);
@@ -923,41 +1011,51 @@ html, body{
 
 
                     <!-- PRICE -->
-
-                    {% if product.sale_price %}
-
-                    <div class="price-main text-success">
-
+                    {% if product.product_type == "variable" and variant_options %}
+                        {% set first_variant = variant_options[0] %}
+                        {% set first_variant_price = (
+                            first_variant.variant_price
+                            if first_variant.variant_price is not none
+                            else (
+                                (first_variant.extra_price|abs)
+                                if (first_variant.extra_price or 0) < 0
+                                else ((product.sale_price or product.price) + (first_variant.extra_price or 0))
+                            )
+                        ) %}
+                        <div class="price-main text-success" id="variantPrice">
+                            ₹{{ "%.2f"|format(first_variant_price|float) }}
+                        </div>
+                    {% elif product.sale_price %}
+                    <div class="price-main text-success" id="variantPrice">
                         ₹{{ product.sale_price }}
-
                         <del class="text-muted old-price">
-
                             ₹{{ product.price }}
-
                         </del>
-
                     </div>
-
                     {% else %}
-
-                    <div class="price-main">
-
+                    <div class="price-main" id="variantPrice">
                         ₹{{ product.price }}
-
                     </div>
-
                     {% endif %}
 
 
                     <!-- STOCK -->
+                    {% set available_stock = (
+                        (variant_options|sum(attribute="stock"))
+                        if product.product_type == "variable"
+                        else (product.stock or 0)
+                    ) %}
 
-                    {% if product.stock > 0 %}
+                    {% if available_stock > 0 %}
 
                     <span class="stock-badge badge bg-success">
 
                         <i class="fas fa-check-circle me-1"></i>
 
                         In Stock
+                        {% if product.product_type == "variable" %}
+                            · {{ available_stock }} available
+                        {% endif %}
 
                     </span>
 
@@ -1048,115 +1146,153 @@ html, body{
 
                         {% if product.product_type == "variable" %}
 
-                        <div class="mb-3">
+                            {% if variant_options %}
 
-                            <label
-                                for="variantSelect"
-                                class="form-label fw-bold"
-                            >
-                                Select Variant
-                            </label>
+                            <div class="variant-picker" id="variantPicker">
 
-                            <select
-                                class="form-select variant-select"
-                                id="variantSelect"
-                                name="selected_variant"
-                            >
+                                {% if variant_groups %}
+                                    {% for group in variant_groups %}
+                                    <div class="variant-group">
 
-                                {% if variant_options %}
+                                        <div class="variant-group-title">
+                                            {{ group.name }}
+                                            <span>Choose one</span>
+                                        </div>
 
-                                    {% for variant in variant_options %}
+                                        <div class="variant-options">
+                                            {% for option in group.options %}
 
-                                    <option
-                                        value="{{ variant.id }}"
-                                        data-extra-price="{{ variant.extra_price or 0 }}"
-                                        data-stock="{{ variant.stock or 0 }}"
-                                    >
-                                        {{ variant.variant.name }}
-                                        - {{ variant.value }}
-                                        {% if variant.extra_price %}
-                                            (+₹{{ "%.2f"|format(variant.extra_price) }})
-                                        {% endif %}
-                                        {% if variant.stock is not none %}
-                                            · {{ variant.stock }} available
-                                        {% endif %}
-                                    </option>
+                                            {% set option_price = (
+                                                option.variant_price
+                                                if option.variant_price is not none
+                                                else (
+                                                    (option.extra_price|abs)
+                                                    if (option.extra_price or 0) < 0
+                                                    else ((product.sale_price or product.price) + (option.extra_price or 0))
+                                                )
+                                            ) %}
 
+                                            <button
+                                                type="button"
+                                                class="variant-option{% if (option.stock or 0) <= 0 %} out-of-stock{% endif %}"
+                                                data-variant-id="{{ option.id }}"
+                                                data-price="{{ option_price|float }}"
+                                                data-stock="{{ option.stock or 0 }}"
+                                                {% if (option.stock or 0) <= 0 %}disabled{% endif %}
+                                            >
+                                                <span class="variant-option-value">
+                                                    {{ option.value }}
+                                                </span>
+
+                                                <span class="variant-option-price">
+                                                    ₹{{ "%.2f"|format(option_price|float) }}
+                                                </span>
+
+                                                <span class="variant-stock">
+                                                    {% if (option.stock or 0) > 0 %}
+                                                        {{ option.stock }} available
+                                                    {% else %}
+                                                        Out of stock
+                                                    {% endif %}
+                                                </span>
+                                            </button>
+
+                                            {% endfor %}
+                                        </div>
+
+                                    </div>
                                     {% endfor %}
-
                                 {% else %}
-
-                                    <option value="" disabled selected>
-                                        No variants available
-                                    </option>
-
+                                    <div class="alert alert-warning py-2 mb-3">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        This variable product has no saved options yet.
+                                    </div>
                                 {% endif %}
-
-                            </select>
-
-                        </div>
-
-                        {% if product.product_type == "variable" and not variant_options %}
-                        <div class="alert alert-warning py-2 mb-3">
-                            <i class="fas fa-exclamation-circle me-1"></i>
-                            This variable product has no saved options yet.
-                        </div>
-                        {% endif %}
-
-
-                        <div class="row g-2">
-
-                            <!-- Quantity -->
-
-                            <div class="col-4">
 
                                 <input
-                                    type="number"
-                                    class="form-control quantity-input"
-                                    value="1"
-                                    min="1"
-                                    id="quantityInput"
-                                    max="{{ product.stock }}"
-                                    name="quantity"
+                                    type="hidden"
+                                    name="selected_variant"
+                                    id="selectedVariant"
+                                    value="{{ variant_options[0].id }}"
                                 >
 
                             </div>
 
+                            <div class="row g-2">
 
-                            <!-- Add To Cart -->
+                                <div class="col-4">
+                                    <input
+                                        type="number"
+                                        class="form-control quantity-input"
+                                        value="1"
+                                        min="1"
+                                        id="quantityInput"
+                                        max="{{ variant_options[0].stock or 0 }}"
+                                        name="quantity"
+                                    >
+                                </div>
 
-                            <div class="col-8 d-grid">
-
-                                {% if product.stock > 0 %}
-
-                                <button
-                                    type="submit"
-                                    class="btn btn-primary btn-lg cart-btn"
-                                >
-
-                                    <i class="fas fa-shopping-cart me-1"></i>
-
-                                    Add To Cart
-
-                                </button>
-
-                                {% else %}
-
-                                <button
-                                    type="button"
-                                    class="btn btn-secondary btn-lg"
-                                    disabled
-                                >
-
-                                    Out of Stock
-
-                                </button>
-
-                                {% endif %}
+                                <div class="col-8 d-grid">
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary btn-lg cart-btn"
+                                        id="addToCartButton"
+                                        {% if (variant_options[0].stock or 0) <= 0 %}disabled{% endif %}
+                                    >
+                                        <i class="fas fa-shopping-cart me-1"></i>
+                                        Add To Cart
+                                    </button>
+                                </div>
 
                             </div>
 
-                        </div>
+                            {% else %}
+
+                            <div class="alert alert-warning py-2 mb-3">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                This variable product has no saved options yet.
+                            </div>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            <div class="row g-2">
+
+                                <div class="col-4">
+                                    <input
+                                        type="number"
+                                        class="form-control quantity-input"
+                                        value="1"
+                                        min="1"
+                                        id="quantityInput"
+                                        max="{{ product.stock }}"
+                                        name="quantity"
+                                    >
+                                </div>
+
+                                <div class="col-8 d-grid">
+                                    {% if product.stock > 0 %}
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary btn-lg cart-btn"
+                                        id="addToCartButton"
+                                    >
+                                        <i class="fas fa-shopping-cart me-1"></i>
+                                        Add To Cart
+                                    </button>
+                                    {% else %}
+                                    <button
+                                        type="button"
+                                        class="btn btn-secondary btn-lg"
+                                        disabled
+                                    >
+                                        Out of Stock
+                                    </button>
+                                    {% endif %}
+                                </div>
+
+                            </div>
 
                         {% endif %}
 
@@ -2099,93 +2235,97 @@ function copyLink(){
 
 
 /* =========================================
-   VARIANT DISPLAY
-   =========================================
+   AMAZON/FLIPKART-STYLE VARIANT DISPLAY
+   Variant price is an absolute selling price.
+   It is NOT added to the product/base price.
+   ========================================= */
 
-   The actual cart price calculation is still
-   handled by your existing add_to_cart route.
+const variantButtons =
+    document.querySelectorAll(".variant-option");
 
-   app.py does:
-
-       price = product.sale_price or product.price
-
-       if selected_variant:
-           option = ProductVariantOption.query.get(selected_variant)
-           price += option.extra_price
-
-   So this JS only updates the displayed price.
-*/
-
-const variant =
-    document.getElementById("variantSelect");
+const selectedVariantInput =
+    document.getElementById("selectedVariant");
 
 const quantityInput =
     document.getElementById("quantityInput");
 
-const basePrice =
-    parseFloat(
-        "{{ product.sale_price or product.price }}"
-    ) || 0;
+const variantPriceElement =
+    document.getElementById("variantPrice");
 
-function updateSelectedVariant(){
+const addToCartButton =
+    document.getElementById("addToCartButton");
 
-    if(!variant) return;
+function updateSelectedVariant(button){
+    if(!button || button.disabled) return;
 
-    const option =
-        variant.options[variant.selectedIndex];
+    variantButtons.forEach(function(item){
+        item.classList.remove("active");
+    });
 
-    if(!option) return;
+    button.classList.add("active");
 
-    const extraPrice =
+    const variantId =
+        button.getAttribute("data-variant-id");
+
+    const price =
         parseFloat(
-            option.dataset.extraPrice || "0"
+            button.getAttribute("data-price") || "0"
         );
 
-    const selectedStock =
+    const stock =
         parseInt(
-            option.dataset.stock || "0",
+            button.getAttribute("data-stock") || "0",
             10
         );
 
-    const finalPrice =
-        basePrice + extraPrice;
+    if(selectedVariantInput){
+        selectedVariantInput.value = variantId || "";
+    }
 
-    const priceElement =
-        document.querySelector(".price-main");
-
-    if(priceElement){
-
-        priceElement.innerHTML =
-            "₹" +
-            finalPrice.toFixed(2);
-
+    if(variantPriceElement){
+        variantPriceElement.textContent =
+            "₹" + Math.max(price, 0).toFixed(2);
     }
 
     if(quantityInput){
+        quantityInput.max = Math.max(stock, 0);
 
-        quantityInput.max =
-            Math.max(selectedStock, 0);
+        if(stock > 0){
+            if(parseInt(quantityInput.value || "1", 10) > stock){
+                quantityInput.value = stock;
+            }
 
-        if(
-            selectedStock > 0 &&
-            parseInt(quantityInput.value || "1", 10) > selectedStock
-        ){
-            quantityInput.value = selectedStock;
+            if(parseInt(quantityInput.value || "1", 10) < 1){
+                quantityInput.value = 1;
+            }
+        }else{
+            quantityInput.value = 1;
         }
+    }
 
+    if(addToCartButton){
+        addToCartButton.disabled = stock <= 0;
+        addToCartButton.innerHTML = stock > 0
+            ? '<i class="fas fa-shopping-cart me-1"></i> Add To Cart'
+            : 'Out of Stock';
     }
 }
 
-if(variant){
+variantButtons.forEach(function(button){
+    button.addEventListener("click", function(){
+        updateSelectedVariant(button);
+    });
+});
 
-    variant.addEventListener(
-        "change",
-        updateSelectedVariant
-    );
+if(variantButtons.length){
+    const initialButton =
+        document.querySelector(".variant-option.active:not([disabled])") ||
+        document.querySelector(".variant-option:not([disabled])");
 
-    updateSelectedVariant();
+    if(initialButton){
+        updateSelectedVariant(initialButton);
+    }
 }
-
 </script>
 
 {% endblock %}
