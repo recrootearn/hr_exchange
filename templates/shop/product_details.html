@@ -1660,11 +1660,7 @@ html, body{
 
 
                         <a
-                            href="{{ url_for(
-                                'company_share_shop',
-                                seller_id=product.seller.id,
-                                shop_slug=seller_shop_slug
-                            ) }}"
+                            href="{{ url_for('company_shop', seller_id=product.seller.id) }}"
                             class="btn btn-outline-primary w-100 shop-btn"
                         >
 
