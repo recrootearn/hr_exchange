@@ -182,24 +182,56 @@ body::after{
     opacity:.7;
 }
 
-.btn-hr{
-    background:linear-gradient(135deg,#0b5ed7,#2563eb);
-    color:#fff;
-    box-shadow:0 9px 22px rgba(11,94,215,.22);
-}
-.btn-hr:hover{color:#fff;background:linear-gradient(135deg,#0954c4,#1f58d7);}
-.btn-hr .role-icon{background:rgba(255,255,255,.16);}
-
+.btn-hr,
 .btn-candidate{
     background:#fff;
     color:#172033;
     border:1px solid #e2e8f0;
-    box-shadow:0 7px 18px rgba(15,23,42,.06);
+    box-shadow:0 7px 18px rgba(15,23,42,.055);
 }
-.btn-candidate:hover{color:#172033;background:#f8fbff;}
+
+.btn-hr:hover,
+.btn-candidate:hover{
+    color:#172033;
+    background:#fff;
+    transform:translateY(-1px);
+}
+
+.btn-hr .role-icon{
+    background:#eaf2ff;
+    color:#0b5ed7;
+}
+
 .btn-candidate .role-icon{
-    background:#e9f9ef;
-    color:#15803d;
+    background:#eaf2ff;
+    color:#0b5ed7;
+}
+
+/* Selected / clicked role */
+.btn-hr.active,
+.btn-candidate.active{
+    background:linear-gradient(135deg,#0b5ed7,#2563eb);
+    border-color:#0b5ed7;
+    color:#fff;
+    box-shadow:0 10px 24px rgba(11,94,215,.24);
+    transform:translateY(-1px);
+}
+
+.btn-hr.active:hover,
+.btn-candidate.active:hover{
+    background:linear-gradient(135deg,#0954c4,#1f58d7);
+    color:#fff;
+}
+
+.btn-hr.active .role-icon,
+.btn-candidate.active .role-icon{
+    background:rgba(255,255,255,.16);
+    color:#fff;
+}
+
+.btn-hr.active .role-arrow,
+.btn-candidate.active .role-arrow{
+    color:#fff;
 }
 
 .footer-text{
@@ -277,8 +309,8 @@ body::after{
         <a href="/login" class="btn-role btn-hr">
             <span class="role-icon">🏢</span>
             <span class="role-copy">
-                <span class="role-title">Login as Company</span>
-                <span class="role-desc">Hire, manage candidates & grow</span>
+                <span class="role-title">Login as Business</span>
+                <span class="role-desc">Hire, Build Your Store & Promote</span>
             </span>
             <span class="role-arrow">›</span>
         </a>
@@ -287,7 +319,7 @@ body::after{
             <span class="role-icon">👤</span>
             <span class="role-copy">
                 <span class="role-title">Login as Candidate</span>
-                <span class="role-desc">Find opportunities & build your profile</span>
+                <span class="role-desc">Find opportunities,build your profile & Shop from store</span>
             </span>
             <span class="role-arrow">›</span>
         </a>
@@ -303,6 +335,17 @@ body::after{
     </div>
 
 </div>
+
+<script>
+document.querySelectorAll(".btn-role").forEach(function(button){
+    button.addEventListener("click", function(){
+        document.querySelectorAll(".btn-role").forEach(function(item){
+            item.classList.remove("active");
+        });
+        this.classList.add("active");
+    });
+});
+</script>
 
 <script>
 
