@@ -1,332 +1,830 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
-{% block content %}
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+
+<title>RECROOTEARN SHOP</title>
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
 
 <style>
 
 /* =========================================================
-   PROFILE PAGE
+   RESET
    ========================================================= */
 
-.content{
-    padding:0 !important;
-    background:#f5f7fb;
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
-.insta-profile{
+html,
+body{
     width:100%;
-    max-width:900px;
-    margin:auto;
+    min-height:100%;
+    margin:0;
+    padding:0;
     background:#f5f7fb;
-    min-height:100vh;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+    color:#171a21;
+}
+
+body{
+    overflow-x:hidden;
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+button,
+input{
+    font-family:inherit;
 }
 
 
 /* =========================================================
-   PROFILE HEADER
+   MAIN SHOP
    ========================================================= */
 
-.profile-header{
-    background:linear-gradient(
-        135deg,
-        #2563eb,
-        #1d4ed8,
-        #3b82f6
-    );
-
-    color:white;
-    padding:20px 20px 18px;
-
-    border-bottom-left-radius:22px;
-    border-bottom-right-radius:22px;
-
-    box-shadow:0 10px 25px rgba(0,0,0,.12);
+.shop-app{
+    width:100%;
+    min-height:100vh;
+    background:#f5f7fb;
+    padding-bottom:80px;
 }
 
-.profile-row{
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.shop-header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    width:100%;
+    background:
+        linear-gradient(
+            135deg,
+            #0759d9,
+            #2563eb,
+            #0b5ed7
+        );
+    color:#fff;
+    box-shadow:
+        0 5px 20px rgba(0,0,0,.14);
+}
+
+.shop-header-inner{
+    width:100%;
+    max-width:1250px;
+    margin:auto;
+    min-height:70px;
     display:flex;
     align-items:center;
     gap:18px;
+    padding:10px 20px;
 }
 
-.profile-pic{
-    width:82px;
-    height:82px;
+
+/* LOGO */
+
+.shop-logo{
+    font-size:28px;
+    font-weight:900;
+    letter-spacing:-1.5px;
+    white-space:nowrap;
+}
+
+.shop-logo span{
+    color:#19b957;
+}
+
+
+/* MENU */
+
+.shop-menu{
+    width:42px;
+    height:42px;
+    border:0;
     border-radius:50%;
-    object-fit:cover;
-    border:4px solid white;
-    box-shadow:0 6px 18px rgba(0,0,0,.25);
-}
-
-.profile-stats{
-    flex:1;
-    display:flex;
-    justify-content:space-around;
-}
-
-.profile-stats div{
-    text-align:center;
-}
-
-.profile-stats strong{
-    display:block;
-    font-size:22px;
-    font-weight:700;
-}
-
-.profile-stats small{
-    font-size:13px;
-    opacity:.9;
-}
-
-.profile-name{
-    margin-top:12px;
-    font-size:24px;
-    font-weight:700;
-    text-align:center;
-}
-
-.company-name{
-    text-align:center;
-    font-size:17px;
-    opacity:.95;
-    margin-top:5px;
-    line-height:1.6;
-}
-
-.company-name small{
-    color:#e7e7e7;
-    font-size:14px;
-}
-
-.hr-badge{
-    display:block;
-    width:max-content;
-    margin:12px auto 0;
-    padding:6px 16px;
-    background:rgba(255,255,255,.18);
-    border:1px solid rgba(255,255,255,.35);
-    border-radius:50px;
-    font-size:13px;
-    font-weight:600;
-    backdrop-filter:blur(10px);
-}
-
-.verify-row{
-    display:flex;
-    justify-content:center;
-    gap:25px;
-    flex-wrap:wrap;
-    margin-top:14px;
-    font-size:14px;
-    font-weight:600;
-}
-
-.verify-ok{
-    color:#8effa0;
-}
-
-.verify-no{
-    color:#ffd0d0;
-}
-
-
-/* =========================================================
-   ACTION BUTTONS
-   ========================================================= */
-
-.action-buttons{
-    display:flex;
-    gap:12px;
-    margin-top:18px;
-}
-
-.action-buttons a{
-    flex:1;
-    height:56px;
-    border-radius:16px;
+    background:rgba(255,255,255,.12);
+    color:white;
     display:flex;
     align-items:center;
     justify-content:center;
-    text-decoration:none;
-    font-size:24px;
-    font-weight:600;
-    transition:.25s;
-    border:1.5px solid rgba(255,255,255,.18);
+    font-size:21px;
+    cursor:pointer;
 }
 
-.btn-edit{
+
+/* SEARCH */
+
+.shop-search{
+    flex:1;
+    max-width:650px;
+    margin:auto;
+    position:relative;
+}
+
+.shop-search input{
+    width:100%;
+    height:48px;
+    border:0;
+    outline:none;
+    border-radius:14px;
+    padding:0 52px 0 18px;
+    font-size:16px;
     background:#fff;
+    color:#222;
+    box-shadow:
+        0 4px 15px rgba(0,0,0,.12);
+}
+
+.shop-search-button{
+    position:absolute;
+    right:0;
+    top:0;
+    width:52px;
+    height:48px;
+    border:0;
+    background:transparent;
     color:#2563eb;
-    box-shadow:0 4px 12px rgba(0,0,0,.12);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:19px;
 }
 
-.btn-job{
-    background:rgba(255,255,255,.10);
-    color:#fff;
-    backdrop-filter:blur(10px);
-}
-
-.action-buttons a:hover{
-    transform:translateY(-2px);
-}
-
-.action-buttons a:active{
-    transform:scale(.96);
+.shop-search-button i{
+    color:#2563eb;
+    font-size:19px;
 }
 
 
 /* =========================================================
-   POSTS
+   LIVE SEARCH SUGGESTIONS
    ========================================================= */
 
-.post-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:2px;
-    background:white;
-}
-
-.post-item{
-    aspect-ratio:1/1;
+.shop-search-suggestions{
+    position:absolute;
+    top:calc(100% + 8px);
+    left:0;
+    right:0;
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 15px 40px rgba(15,23,42,.18);
+    border:1px solid #e5e7eb;
     overflow:hidden;
-    background:#eee;
+    display:none;
+    z-index:9999;
+    max-height:420px;
+    overflow-y:auto;
 }
 
-.post-item img{
+.shop-suggestion{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:100%;
+    padding:13px 15px;
+    background:#fff;
+    border:0;
+    text-decoration:none;
+    color:#111827;
+    cursor:pointer;
+    transition:background .15s ease;
+}
+
+.shop-suggestion:hover{
+    background:#f5f7fb;
+}
+
+.shop-suggestion-icon{
+    width:40px;
+    height:40px;
+    flex:0 0 40px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#edf4ff;
+    color:#2563eb;
+    font-size:17px;
+}
+
+.shop-suggestion-content{
+    min-width:0;
+    flex:1;
+}
+
+.shop-suggestion-name{
+    font-size:14px;
+    font-weight:800;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.shop-suggestion-type{
+    margin-top:3px;
+    font-size:11px;
+    color:#6b7280;
+    font-weight:600;
+}
+
+.shop-suggestion-arrow{
+    color:#9ca3af;
+    font-size:13px;
+}
+
+.shop-search-loading,
+.shop-search-no-result{
+    padding:18px;
+    text-align:center;
+    color:#6b7280;
+    font-size:13px;
+}
+
+@media (max-width:600px){
+    .shop-search-suggestions{
+        top:calc(100% + 6px);
+        border-radius:14px;
+        max-height:60vh;
+        box-shadow:0 12px 30px rgba(15,23,42,.18);
+    }
+
+    .shop-suggestion{
+        padding:12px;
+    }
+
+    .shop-suggestion-icon{
+        width:38px;
+        height:38px;
+        flex-basis:38px;
+    }
+
+    .shop-suggestion-name{
+        font-size:13px;
+    }
+}
+
+
+/* HEADER ACTIONS */
+
+.shop-header-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.shop-header-btn{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    background:rgba(255,255,255,.12);
+    position:relative;
+}
+
+.cart-count{
+    position:absolute;
+    top:-3px;
+    right:-3px;
+    min-width:19px;
+    height:19px;
+    padding:0 5px;
+    background:#ef4444;
+    border-radius:50px;
+    font-size:10px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.shop-container{
+    width:100%;
+    max-width:1250px;
+    margin:auto;
+    padding:20px 20px 40px;
+}
+
+
+/* =========================================================
+   ADMIN BANNERS
+   ========================================================= */
+
+.admin-banner-section{
+    width:100%;
+    display:grid;
+    grid-template-columns:minmax(0,1.65fr) minmax(280px,.8fr);
+    gap:15px;
+    margin-bottom:24px;
+}
+
+.admin-banner-main{
+    min-height:320px;
+    border-radius:24px;
+    overflow:hidden;
+    position:relative;
+    background:#dbeafe;
+    box-shadow:0 10px 30px rgba(37,99,235,.15);
+}
+
+.admin-banner-image{
+    position:absolute;
+    inset:0;
     width:100%;
     height:100%;
     object-fit:cover;
 }
 
+.admin-banner-overlay{
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.72) 0%,
+            rgba(0,0,0,.38) 48%,
+            rgba(0,0,0,.04) 100%
+        );
+}
+
+.admin-banner-content{
+    position:relative;
+    z-index:2;
+    width:60%;
+    min-height:320px;
+    padding:38px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    color:#fff;
+}
+
+.admin-banner-content h1{
+    font-size:40px;
+    line-height:1.08;
+    font-weight:900;
+    margin-bottom:12px;
+}
+
+.admin-banner-content p{
+    font-size:16px;
+    line-height:1.5;
+    max-width:520px;
+    margin-bottom:20px;
+    color:rgba(255,255,255,.94);
+}
+
+.admin-banner-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    width:max-content;
+    padding:12px 20px;
+    border-radius:12px;
+    background:#fff;
+    color:#155bd7;
+    font-size:14px;
+    font-weight:900;
+    box-shadow:0 6px 18px rgba(0,0,0,.18);
+}
+
+.admin-banner-side{
+    display:grid;
+    grid-template-rows:1fr 1fr;
+    gap:15px;
+}
+
+.admin-small-banner{
+    min-height:152px;
+    border-radius:20px;
+    overflow:hidden;
+    position:relative;
+    background:#dbeafe;
+    color:#fff;
+    box-shadow:0 7px 22px rgba(15,23,42,.08);
+}
+
+.admin-small-banner img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.admin-small-banner-overlay{
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.66),
+            rgba(0,0,0,.12)
+        );
+}
+
+.admin-small-banner-content{
+    position:relative;
+    z-index:2;
+    width:75%;
+    height:100%;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.admin-small-banner-content h3{
+    font-size:20px;
+    line-height:1.15;
+    font-weight:900;
+    margin-bottom:6px;
+}
+
+.admin-small-banner-content p{
+    font-size:12px;
+    line-height:1.35;
+    opacity:.94;
+}
+
+.admin-small-banner-button{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:10px;
+    font-size:11px;
+    font-weight:900;
+}
+
 
 /* =========================================================
-   POSTS / SHOP TABS
+   FALLBACK HERO
    ========================================================= */
 
-.profile-content-tabs{
-    margin-top:15px;
-    display:flex;
+.hero-fallback{
     width:100%;
-    background:#fff;
-    border-radius:16px 16px 0 0;
-    border-bottom:1px solid #e5e7eb;
+    min-height:285px;
+    margin-bottom:24px;
+    border-radius:24px;
     overflow:hidden;
-}
-
-.profile-tab{
-    flex:1;
-    border:0;
-    background:#fff;
-    color:#6b7280;
-    padding:15px 10px;
-    font-size:14px;
-    font-weight:700;
-    letter-spacing:.5px;
-    cursor:pointer;
     position:relative;
-    display:flex;
+    color:#fff;
+    background:
+        linear-gradient(
+            135deg,
+            #0759d9,
+            #4388f4
+        );
+    box-shadow:
+        0 10px 30px rgba(37,99,235,.18);
+}
+
+.hero-fallback-content{
+    padding:35px;
+}
+
+.hero-fallback-content > span{
+    display:block;
+    font-size:13px;
+    font-weight:800;
+    margin-bottom:8px;
+    opacity:.9;
+}
+
+.hero-fallback h1{
+    font-size:38px;
+    line-height:1.05;
+    font-weight:900;
+    margin-bottom:12px;
+}
+
+.hero-fallback p{
+    max-width:550px;
+    font-size:16px;
+    line-height:1.5;
+    margin-bottom:20px;
+    opacity:.92;
+}
+
+.hero-btn{
+    display:inline-flex;
     align-items:center;
-    justify-content:center;
     gap:8px;
+    padding:12px 20px;
+    border-radius:12px;
+    background:#fff;
+    color:#125bd7;
+    font-weight:800;
 }
 
-.profile-tab.active{
-    color:#2563eb;
+
+/* =========================================================
+   SECTION
+   ========================================================= */
+
+.section{
+    margin-bottom:28px;
 }
 
-.profile-tab.active::after{
-    content:"";
-    position:absolute;
-    bottom:0;
-    left:15%;
-    right:15%;
-    height:3px;
-    background:#2563eb;
-    border-radius:5px 5px 0 0;
+.section-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
 }
 
-.profile-tab-content{
+.section-title{
+    font-size:24px;
+    font-weight:900;
+    color:#171a21;
+}
+
+.section-subtitle{
+    margin-top:4px;
+    color:#6b7280;
+    font-size:13px;
+    line-height:1.35;
+}
+
+
+/* =========================================================
+   CATEGORY
+   ========================================================= */
+
+.category-scroll{
+    display:flex;
+    gap:12px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    padding:3px 2px 4px;
+    align-items:stretch;
+}
+
+.category-scroll::-webkit-scrollbar{
     display:none;
 }
 
-.profile-tab-content.active{
-    display:block;
-}
-
-
-/* =========================================================
-   SHOP GRID
-   ========================================================= */
-
-.shop-profile-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-    background:#f5f7fb;
-    padding:10px;
-}
-
-
-/* =========================================================
-   ADD PRODUCT CARD
-   ========================================================= */
-
-.shop-add-product{
-    display:block;
+.category-card{
+    flex:0 0 120px;
+    width:120px;
+    height:112px;
+    min-height:112px;
+    max-height:112px;
     background:#fff;
-    border-radius:14px;
-    overflow:hidden;
-    text-decoration:none;
-    color:inherit;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    border-radius:18px;
+    border:1px solid #e9edf4;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:12px 8px;
+    text-align:center;
+    box-shadow:
+        0 4px 14px rgba(15,23,42,.05);
     transition:.2s;
 }
 
-.shop-add-product:hover{
-    transform:translateY(-2px);
-    box-shadow:0 5px 15px rgba(0,0,0,.10);
+.category-card:hover{
+    transform:translateY(-3px);
+    box-shadow:
+        0 8px 22px rgba(15,23,42,.1);
 }
 
-.shop-add-product-box{
-    width:100%;
-    aspect-ratio:1/1;
-
-    background:linear-gradient(
-        135deg,
-        #eef4ff,
-        #f8faff
-    );
-
+.category-icon{
+    width:48px;
+    height:48px;
+    border-radius:15px;
     display:flex;
     align-items:center;
     justify-content:center;
-    flex-direction:column;
-
+    background:#edf4ff;
     color:#2563eb;
+    font-size:22px;
+    margin-bottom:8px;
 }
 
-.shop-add-product-icon{
-    width:64px;
-    height:64px;
-    border-radius:50%;
-    background:#2563eb;
-    color:#fff;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:30px;
-    margin-bottom:12px;
-
-    box-shadow:0 5px 15px rgba(37,99,235,.25);
-}
-
-.shop-add-product-text{
-    font-size:15px;
+.category-name{
+    font-size:13px;
     font-weight:800;
+    line-height:1.25;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+
+/* =========================================================
+   SHOP BY STORE
+   ========================================================= */
+
+.store-section{
+    margin-bottom:28px;
+}
+
+.store-scroll{
+    display:flex;
+    gap:12px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scrollbar-width:none;
+    padding:3px 2px 6px;
+    -webkit-overflow-scrolling:touch;
+}
+
+.store-scroll::-webkit-scrollbar{
+    display:none;
+}
+
+.store-card{
+    flex:0 0 120px;
+    width:120px;
+    min-height:128px;
+    background:#fff;
+    border:1px solid #e9edf4;
+    border-radius:18px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:12px 8px;
+    text-align:center;
+    box-shadow:
+        0 4px 14px rgba(15,23,42,.05);
+    transition:
+        transform .2s,
+        box-shadow .2s;
+}
+
+.store-card:hover{
+    transform:translateY(-3px);
+    box-shadow:
+        0 8px 22px rgba(15,23,42,.10);
+}
+
+.store-image-wrap{
+    width:68px;
+    height:68px;
+    border-radius:50%;
+    overflow:hidden;
+    background:#edf4ff;
+    border:3px solid #f1f5ff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:9px;
+    flex-shrink:0;
+}
+
+.store-image{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+.store-placeholder{
     color:#2563eb;
+    font-size:25px;
+}
+
+.store-name{
+    width:100%;
+    font-size:13px;
+    line-height:1.25;
+    font-weight:800;
+    color:#171a21;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+
+/* =========================================================
+   SALE BANNER
+   ========================================================= */
+
+.sale-banner{
+    width:100%;
+    min-height:145px;
+    border-radius:22px;
+    padding:25px 30px;
+    position:relative;
+    overflow:hidden;
+    background:
+        linear-gradient(
+            135deg,
+            #ff7a18,
+            #ffb347
+        );
+    color:#fff;
+    margin-bottom:28px;
+}
+
+.sale-banner-content{
+    position:relative;
+    z-index:2;
+}
+
+.sale-eyebrow{
+    display:block;
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:.7px;
+    text-transform:uppercase;
+    margin-bottom:4px;
+    opacity:.9;
+}
+
+.sale-banner h2{
+    font-size:27px;
+    font-weight:900;
+    position:relative;
+    z-index:2;
+}
+
+.sale-banner p{
+    margin-top:5px;
+    position:relative;
+    z-index:2;
+}
+
+.sale-banner-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:12px;
+    padding:10px 15px;
+    border-radius:10px;
+    background:#fff;
+    color:#ea6b12;
+    font-size:12px;
+    font-weight:900;
+}
+
+.sale-banner::after{
+    content:"";
+    position:absolute;
+    width:230px;
+    height:230px;
+    border-radius:50%;
+    background:rgba(255,255,255,.15);
+    right:-40px;
+    top:-80px;
+}
+
+.sale-banner-icon{
+    position:absolute;
+    right:35px;
+    bottom:20px;
+    font-size:85px;
+    opacity:.18;
+    transform:rotate(-12deg);
+}
+
+
+/* =========================================================
+   PRODUCT RAIL
+   ========================================================= */
+
+.product-rail{
+    display:grid;
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+    gap:14px;
 }
 
 
@@ -334,32 +832,30 @@
    PRODUCT CARD
    ========================================================= */
 
-.shop-profile-product{
-    display:block;
+.product-card{
+    min-width:0;
     background:#fff;
-    border-radius:14px;
+    border-radius:18px;
     overflow:hidden;
-    text-decoration:none;
-    color:inherit;
-
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
-
-    transition:.2s;
-
+    border:1px solid #e8ecf2;
+    box-shadow:
+        0 5px 18px rgba(15,23,42,.06);
+    transition:
+        transform .2s,
+        box-shadow .2s;
     position:relative;
 }
 
-.shop-profile-product:hover{
-    transform:translateY(-2px);
-    box-shadow:0 5px 15px rgba(0,0,0,.10);
+.product-card:hover{
+    transform:translateY(-4px);
+    box-shadow:
+        0 12px 28px rgba(15,23,42,.12);
 }
 
 
-/* =========================================================
-   PRODUCT IMAGE
-   ========================================================= */
+/* IMAGE */
 
-.shop-product-image{
+.product-image{
     width:100%;
     aspect-ratio:1/1;
     background:#f1f5f9;
@@ -367,991 +863,1813 @@
     position:relative;
 }
 
-.shop-product-image img{
+.product-image img{
     width:100%;
     height:100%;
-    object-fit:cover;
     display:block;
+    object-fit:cover;
+    transition:.3s;
 }
 
-.shop-product-placeholder{
+.product-card:hover .product-image img{
+    transform:scale(1.04);
+}
+
+
+/* PLACEHOLDER */
+
+.image-placeholder{
     width:100%;
     height:100%;
     display:flex;
     align-items:center;
     justify-content:center;
-    color:#94a3b8;
-    font-size:35px;
+    color:#a3afc2;
+    font-size:42px;
 }
 
 
-/* =========================================================
-   PRODUCT STATUS
-   ========================================================= */
+/* BADGE */
 
-.product-status{
+.product-badge{
     position:absolute;
     top:9px;
-    right:9px;
-
-    padding:5px 9px;
-
-    border-radius:20px;
-
-    font-size:11px;
-    font-weight:800;
-
-    z-index:5;
-}
-
-.product-status.active{
-    background:#dcfce7;
-    color:#15803d;
-}
-
-.product-status.inactive{
-    background:#fee2e2;
-    color:#b91c1c;
+    left:9px;
+    z-index:2;
+    background:#ef4444;
+    color:#fff;
+    padding:5px 8px;
+    border-radius:8px;
+    font-size:10px;
+    font-weight:900;
 }
 
 
-/* =========================================================
-   PRODUCT INFORMATION
-   ========================================================= */
+/* INFO */
 
-.shop-product-info{
-    padding:10px;
+.product-info{
+    padding:12px;
 }
 
-.shop-product-name{
+.product-name{
     font-size:14px;
-    font-weight:600;
-    color:#111827;
-
-    white-space:nowrap;
+    font-weight:750;
+    color:#171a21;
+    min-height:38px;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
     overflow:hidden;
-    text-overflow:ellipsis;
 }
 
-.shop-product-price{
-    margin-top:5px;
-    font-size:15px;
-    font-weight:800;
-    color:#2563eb;
-}
-
-.shop-product-price span{
-    margin-left:5px;
-    color:#9ca3af;
-    font-size:12px;
-    font-weight:500;
-    text-decoration:line-through;
-}
-
-.manage-product-text{
-    margin-top:7px;
-    color:#2563eb;
+.product-rating{
+    margin-top:6px;
     font-size:11px;
-    font-weight:700;
+    color:#f59e0b;
+}
+
+.product-price{
+    margin-top:7px;
+    font-size:17px;
+    font-weight:900;
+    color:#2563eb;
+}
+
+.product-old-price{
+    margin-left:5px;
+    font-size:12px;
+    color:#9ca3af;
+    text-decoration:line-through;
+    font-weight:500;
+}
+
+.product-view{
+    display:block;
+    width:100%;
+    margin-top:10px;
+    text-align:center;
+    padding:9px;
+    border-radius:10px;
+    background:#edf4ff;
+    color:#2563eb;
+    font-size:12px;
+    font-weight:800;
 }
 
 
 /* =========================================================
-   EMPTY SHOP
+   DEAL SECTION
    ========================================================= */
 
-.shop-empty{
-    background:#fff;
-    text-align:center;
-    padding:60px 20px;
-    border-radius:0 0 16px 16px;
+.deal-section{
+    border-radius:24px;
+    padding:20px;
+    background:
+        linear-gradient(
+            135deg,
+            #eaffef,
+            #d9ffe4
+        );
+    overflow:hidden;
 }
 
-.shop-empty i{
+.deal-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:15px;
+}
+
+.deal-title{
+    font-size:24px;
+    font-weight:900;
+}
+
+.deal-subtitle{
+    font-size:13px;
+    color:#4b5563;
+}
+
+.deal-products{
+    display:grid;
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+    gap:14px;
+}
+
+
+/* =========================================================
+   COLORED SECTIONS
+   ========================================================= */
+
+.colored-section{
+    padding:20px;
+    border-radius:24px;
+    overflow:hidden;
+}
+
+.deals-blue{
+    background:
+        linear-gradient(
+            135deg,
+            #eef6ff,
+            #e1edff
+        );
+}
+
+.recommended-section{
+    background:
+        linear-gradient(
+            135deg,
+            #fff3f5,
+            #ffe8ed
+        );
+}
+
+
+/* =========================================================
+   ALL PRODUCTS
+   ========================================================= */
+
+.all-products-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+    gap:14px;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-shop{
+    background:#fff;
+    border-radius:22px;
+    padding:70px 20px;
+    text-align:center;
+    border:1px solid #e9edf4;
+}
+
+.empty-shop i{
     font-size:55px;
     color:#2563eb;
     margin-bottom:15px;
 }
 
-.shop-empty h4{
-    font-weight:700;
-    margin-bottom:7px;
+.empty-shop h3{
+    font-size:22px;
+    font-weight:900;
 }
 
-.shop-empty p{
+.empty-shop p{
     color:#6b7280;
-    margin-bottom:0;
+    margin-top:6px;
 }
 
 
 /* =========================================================
-   SHOP NAME MANAGEMENT
+   MOBILE NAV
    ========================================================= */
 
-.shop-name-manager{
-    margin:12px 12px 0;
-    padding:14px;
-    background:#fff;
-    border-radius:14px;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
+.mobile-shop-nav{
+    display:none;
 }
 
-.shop-name-manager-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:10px;
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media(max-width:900px){
+
+    .admin-banner-section{
+        grid-template-columns:1fr;
+        gap:10px;
+    }
+
+    .admin-banner-main{
+        min-height:245px;
+        border-radius:20px;
+    }
+
+    .admin-banner-content{
+        min-height:245px;
+        width:68%;
+        padding:25px;
+    }
+
+    .admin-banner-content h1{
+        font-size:30px;
+    }
+
+    .admin-banner-content p{
+        font-size:14px;
+    }
+
+    .admin-banner-side{
+        grid-template-columns:1fr 1fr;
+        grid-template-rows:1fr;
+        gap:10px;
+    }
+
+    .admin-small-banner{
+        min-height:125px;
+        border-radius:17px;
+    }
+
+    .admin-small-banner-content{
+        padding:15px;
+    }
+
+    .admin-small-banner-content h3{
+        font-size:16px;
+    }
+
+    .shop-header-inner{
+        padding:9px 14px;
+        gap:10px;
+    }
+
+    .shop-logo{
+        font-size:23px;
+    }
+
+    .shop-menu{
+        display:none;
+    }
+
+    .shop-header-actions{
+        display:none;
+    }
+
+    .shop-search{
+        order:2;
+    }
+
+    .shop-search input{
+        height:44px;
+        font-size:15px;
+        border-radius:12px;
+    }
+
+    .product-rail,
+    .deal-products{
+        display:flex;
+        overflow-x:auto;
+        gap:12px;
+        scrollbar-width:none;
+    }
+
+    .product-rail::-webkit-scrollbar,
+    .deal-products::-webkit-scrollbar{
+        display:none;
+    }
+
+    .product-rail .product-card,
+    .deal-products .product-card{
+        flex:0 0 175px;
+    }
+
+    .all-products-grid{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+        gap:10px;
+    }
+
+    .shop-container{
+        padding:
+            12px
+            10px
+            95px;
+    }
+
+    .section-title{
+        font-size:20px;
+    }
+
+    .deal-section{
+        padding:14px;
+        border-radius:20px;
+    }
+
+    .sale-banner{
+        min-height:130px;
+        padding:20px;
+        border-radius:18px;
+    }
+
+    .sale-banner h2{
+        font-size:21px;
+    }
+
+    .sale-banner-icon{
+        font-size:65px;
+        right:20px;
+        bottom:15px;
+    }
+
+    .mobile-shop-nav{
+        display:flex;
+        position:fixed;
+        left:10px;
+        right:10px;
+        bottom:10px;
+        z-index:2000;
+        height:64px;
+        border-radius:22px;
+        background:
+            rgba(255,255,255,.96);
+        backdrop-filter:
+            blur(18px);
+        box-shadow:
+            0 8px 30px rgba(0,0,0,.18);
+        border:
+            1px solid rgba(0,0,0,.06);
+        align-items:center;
+        justify-content:space-around;
+    }
+
+    .mobile-shop-nav a{
+        flex:1;
+        height:100%;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:3px;
+        color:#6b7280;
+        font-size:10px;
+        font-weight:700;
+    }
+
+    .mobile-shop-nav i{
+        font-size:20px;
+    }
+
+    .mobile-shop-nav a.active{
+        color:#2563eb;
+    }
 }
 
-.shop-name-manager-title{font-size:14px;font-weight:800;color:#111827;}
-.shop-name-manager-current{font-size:13px;color:#2563eb;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.shop-name-form{display:flex;gap:8px;}
-.shop-name-input{flex:1;min-width:0;height:42px;padding:0 12px;border:1px solid #dbe3ef;border-radius:11px;outline:none;font-size:13px;background:#f8fafc;}
-.shop-name-input:focus{border-color:#2563eb;background:#fff;}
-.shop-name-save{height:42px;padding:0 14px;border:0;border-radius:11px;background:#2563eb;color:#fff;font-size:13px;font-weight:800;cursor:pointer;}
-
-@media(max-width:380px){.shop-name-form{flex-direction:column;}.shop-name-save{width:100%;}}
 
 /* =========================================================
    MOBILE
    ========================================================= */
 
-@media(max-width:768px){
+@media(max-width:500px){
 
-    .profile-row{
-        flex-direction:column;
-        text-align:center;
+    .shop-header{
+        position:sticky;
+        top:0;
     }
 
-    .profile-stats{
+    .shop-header-inner{
+        min-height:62px;
+        padding:8px 10px;
+    }
+
+    .shop-logo{
+        display:none;
+    }
+
+    .shop-search{
         width:100%;
-        margin-top:10px;
     }
 
-    .action-buttons{
-        flex-direction:row;
-        gap:10px;
-        margin-top:16px;
+    .shop-search input{
+        height:43px;
+        padding-left:15px;
+        padding-right:45px;
     }
 
-    .action-buttons a{
-        height:52px;
-        border-radius:15px;
-        font-size:22px;
+    .shop-container{
+        width:100%;
+        padding:
+            10px
+            8px
+            90px;
     }
 
-    .profile-tab{
-        padding:14px 8px;
-        font-size:13px;
+    .admin-banner-main{
+        min-height:220px;
+        border-radius:18px;
     }
 
-    .shop-profile-grid{
-        grid-template-columns:repeat(2,1fr);
-        gap:8px;
-        padding:8px;
+    .admin-banner-content{
+        min-height:220px;
+        width:70%;
+        padding:20px;
     }
 
-    .shop-product-info{
-        padding:8px;
-    }
-
-    .shop-product-name{
-        font-size:13px;
-    }
-
-    .shop-product-price{
-        font-size:14px;
-    }
-
-    .shop-add-product-icon{
-        width:55px;
-        height:55px;
+    .admin-banner-content h1{
         font-size:25px;
     }
 
-    .shop-add-product-text{
+    .admin-banner-content p{
+        font-size:13px;
+        margin-bottom:14px;
+    }
+
+    .admin-banner-btn{
+        padding:10px 14px;
+        font-size:12px;
+    }
+
+    .admin-small-banner{
+        min-height:112px;
+        border-radius:15px;
+    }
+
+    .admin-small-banner-content{
+        padding:13px;
+        width:80%;
+    }
+
+    .admin-small-banner-content h3{
+        font-size:14px;
+    }
+
+    .admin-small-banner-content p{
+        font-size:10px;
+    }
+
+    .admin-small-banner-button{
+        font-size:10px;
+        margin-top:7px;
+    }
+
+    .hero-fallback{
+        min-height:220px;
+        border-radius:18px;
+    }
+
+    .hero-fallback-content{
+        padding:20px;
+    }
+
+    .hero-fallback h1{
+        font-size:25px;
+    }
+
+    .hero-fallback p{
         font-size:13px;
     }
 
+    .section{
+        margin-bottom:18px !important;
+    }
+
+    .section-subtitle{
+        font-size:11px;
+    }
+
+    .category-scroll{
+        padding-bottom:0;
+    }
+
+    .category-card{
+        flex-basis:105px;
+        width:105px;
+        height:100px;
+        min-height:100px;
+        max-height:100px;
+        border-radius:15px;
+    }
+
+    .category-icon{
+        width:42px;
+        height:42px;
+        font-size:18px;
+    }
+
+    .store-section{
+        margin-bottom:20px;
+    }
+
+    .store-scroll{
+        gap:10px;
+        margin-right:-8px;
+        padding-right:8px;
+    }
+
+    .store-card{
+        flex-basis:108px;
+        width:108px;
+        min-height:116px;
+        border-radius:16px;
+        padding:10px 7px;
+    }
+
+    .store-image-wrap{
+        width:62px;
+        height:62px;
+        margin-bottom:8px;
+    }
+
+    .store-name{
+        font-size:12px;
+    }
+
+    .product-rail .product-card,
+    .deal-products .product-card{
+        flex-basis:158px;
+        border-radius:15px;
+    }
+
+    .product-info{
+        padding:9px;
+    }
+
+    .product-name{
+        font-size:13px;
+    }
+
+    .product-price{
+        font-size:15px;
+    }
+
+    .product-view{
+        font-size:11px;
+        padding:8px;
+    }
+
+    .all-products-grid{
+        grid-template-columns:
+            repeat(2,1fr);
+        gap:8px;
+    }
+
+    .sale-banner{
+        margin-top:0;
+        margin-bottom:18px;
+    }
+
+    .sale-banner-icon{
+        font-size:52px;
+        right:10px;
+    }
 }
 
 
 /* =========================================================
-   SMALL MOBILE
+   EDGE TO EDGE MOBILE
    ========================================================= */
 
-@media(max-width:380px){
+@media(max-width:768px){
 
-    .profile-header{
-        padding:16px 12px;
+    html,
+    body{
+        width:100% !important;
+        max-width:100% !important;
+        margin:0 !important;
+        padding:0 !important;
+        overflow-x:hidden !important;
     }
 
-    .shop-profile-grid{
-        gap:6px;
-        padding:6px;
+    .shop-app{
+        width:100vw !important;
+        max-width:100vw !important;
+        margin:0 !important;
+        padding:0 0 80px 0 !important;
     }
 
-    .shop-product-name{
-        font-size:12px;
+    .shop-header{
+        width:100vw !important;
+        margin:0 !important;
     }
+}
 
-    .shop-product-price{
-        font-size:13px;
-    }
 
-    .product-status{
-        top:6px;
-        right:6px;
-        font-size:9px;
-        padding:4px 7px;
-    }
+/* =========================================================
+   LOADING
+   ========================================================= */
 
+.loading{
+    min-height:100px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#94a3b8;
 }
 
 </style>
 
+</head>
 
-<div class="insta-profile">
+
+<body>
 
 
-<!-- =========================================================
-     PROFILE HEADER
-     ========================================================= -->
+<div class="shop-app">
 
-<div class="profile-header">
 
-    <div class="profile-row">
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
 
-        {% if current_user.profile_photo %}
+<header class="shop-header">
+
+    <div class="shop-header-inner">
+
+        <button
+            class="shop-menu"
+            type="button"
+            onclick="history.back()"
+        >
+            <i class="fas fa-arrow-left"></i>
+        </button>
+
+
+        <div class="shop-logo">
+            RECROOT<span>EARN</span>
+        </div>
+
+
+        <form
+            class="shop-search"
+            action="/shop/search"
+            method="GET"
+            id="shopSearchForm"
+        >
+
+            <input
+                type="search"
+                name="q"
+                id="shopSearchInput"
+                placeholder="Search products or shops..."
+                autocomplete="off"
+                enterkeyhint="search"
+                aria-label="Search products or shops"
+            >
+
+            <div
+                id="shopSearchSuggestions"
+                class="shop-search-suggestions"
+            ></div>
+
+            <button
+                type="submit"
+                aria-label="Search"
+                class="shop-search-button"
+            >
+                <i class="fas fa-search"></i>
+            </button>
+
+        </form>
+
+
+        <div class="shop-header-actions">
+
+            <a
+                href="/cart"
+                class="shop-header-btn"
+            >
+
+                <i class="fas fa-shopping-cart"></i>
+
+                <span class="cart-count">
+                    <i class="fas fa-circle"></i>
+                </span>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     MAIN
+     ===================================================== -->
+
+<main class="shop-container">
+
+
+<!-- =====================================================
+     ADMIN BANNERS
+     ===================================================== -->
+
+{% if banners %}
+
+<section class="admin-banner-section">
+
+    {% set main_banner = banners[0] %}
+
+
+    <!-- MAIN BANNER -->
+
+    <div class="admin-banner-main">
+
+        {% if main_banner.image %}
 
         <img
-            src="/static/uploads/{{ current_user.profile_photo }}"
-            class="profile-pic"
-            alt="Profile">
-
-        {% else %}
-
-        <img
-            src="https://via.placeholder.com/300"
-            class="profile-pic"
-            alt="Profile">
+            class="admin-banner-image"
+            src="/static/uploads/homepage_banners/{{ main_banner.image }}"
+            alt="{{ main_banner.title or 'Shop Banner' }}"
+            onerror="
+                if(!this.dataset.f1){
+                    this.dataset.f1='1';
+                    this.src='/static/uploads/{{ main_banner.image }}';
+                }else{
+                    this.style.display='none';
+                }
+            "
+        >
 
         {% endif %}
 
 
-        <div class="profile-stats">
+        <div class="admin-banner-overlay"></div>
 
-            <div>
-                <strong>{{ posts_count }}</strong>
-                <small>Posts</small>
-            </div>
 
-            <div>
-                <strong>{{ followers_count }}</strong>
-                <small>Followers</small>
-            </div>
+        <div class="admin-banner-content">
 
-            <div>
-                <strong>{{ following_count }}</strong>
-                <small>Following</small>
-            </div>
+            {% if main_banner.title %}
+
+            <h1>
+                {{ main_banner.title }}
+            </h1>
+
+            {% endif %}
+
+
+            {% if main_banner.subtitle %}
+
+            <p>
+                {{ main_banner.subtitle }}
+            </p>
+
+            {% endif %}
+
+
+            <a
+                href="/shop/all"
+                class="admin-banner-btn"
+            >
+
+                Shop Now
+
+                <i class="fas fa-arrow-right"></i>
+
+            </a>
 
         </div>
 
     </div>
 
 
-    <div class="profile-name">
 
-        {{ current_user.first_name }}
-        {{ current_user.last_name }}
+    <!-- SIDE BANNERS -->
 
-    </div>
+    {% if banners|length > 1 %}
+
+    <div class="admin-banner-side">
+
+        {% for banner in banners[1:3] %}
+
+        <div class="admin-small-banner">
+
+            {% if banner.image %}
+
+            <img
+                src="/static/uploads/homepage_banners/{{ banner.image }}"
+                alt="{{ banner.title or 'Shop Banner' }}"
+                onerror="
+                    if(!this.dataset.f1){
+                        this.dataset.f1='1';
+                        this.src='/static/uploads/{{ banner.image }}';
+                    }else{
+                        this.style.display='none';
+                    }
+                "
+            >
+
+            {% endif %}
 
 
-    <div class="company-name">
-
-        {{ current_user.company }}
-
-        {% if current_user.company_city %}
-
-        <br>
-
-        <small>
-            <i class="fas fa-map-marker-alt"></i>
-            {{ current_user.company_city }}
-        </small>
-
-        {% endif %}
-
-    </div>
+            <div class="admin-small-banner-overlay"></div>
 
 
-    {% if current_user.hr_type %}
+            <div class="admin-small-banner-content">
 
-    <div class="hr-badge">
+                {% if banner.title %}
 
-        {{ current_user.hr_type }}
+                <h3>
+                    {{ banner.title }}
+                </h3>
+
+                {% endif %}
+
+
+                {% if banner.subtitle %}
+
+                <p>
+                    {{ banner.subtitle }}
+                </p>
+
+                {% endif %}
+
+
+                <a
+                    href="/shop/all"
+                    class="admin-small-banner-button"
+                >
+
+                    Shop Now
+
+                    <i class="fas fa-arrow-right"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
 
     </div>
 
     {% endif %}
 
-
-    <div class="verify-row">
-
-        <div>
-
-            {% if current_user.msme_certificate %}
-
-            <span class="verify-ok">
-                <i class="fas fa-check-circle"></i>
-                MSME
-            </span>
-
-            {% else %}
-
-            <span class="verify-no">
-                <i class="fas fa-times-circle"></i>
-                MSME
-            </span>
-
-            {% endif %}
-
-        </div>
+</section>
 
 
-        <div>
-
-            {% if current_user.gumasta_certificate %}
-
-            <span class="verify-ok">
-                <i class="fas fa-check-circle"></i>
-                Gumasta
-            </span>
-
-            {% else %}
-
-            <span class="verify-no">
-                <i class="fas fa-times-circle"></i>
-                Gumasta
-            </span>
-
-            {% endif %}
-
-        </div>
-
-    </div>
+{% else %}
 
 
-    <!-- PROFILE COMPLETION -->
+<!-- FALLBACK -->
 
-    <div class="mt-4">
+<section class="hero-fallback">
 
-        <div class="d-flex justify-content-between mb-2">
-
-            <strong>
-                Profile Completion
-            </strong>
-
-            <strong>
-                {{ current_user.profile_completion or 0 }}%
-            </strong>
-
-        </div>
-
-        <div
-            class="progress"
-            style="
-                height:12px;
-                border-radius:30px;
-                background:rgba(255,255,255,.25);
-            ">
-
-            <div
-                class="progress-bar bg-success"
-                role="progressbar"
-                style="
-                    width:{{ current_user.profile_completion or 0 }}%;
-                    border-radius:30px;
-                ">
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- ACTION BUTTONS -->
-
-    <div class="action-buttons">
-
-        <a
-            href="/edit-profile"
-            class="btn-edit">
-
-            <i class="fas fa-pen"></i>
-
-        </a>
-
-
-        <a
-            href="/post-job"
-            class="btn-job">
-
-            <i class="fas fa-plus"></i>
-
-        </a>
-
-
-        <a
-            href="/post-video"
-            class="btn-job">
-
-            <i class="fas fa-video"></i>
-
-        </a>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     SHOP NAME
-     ========================================================= -->
-
-<div class="shop-name-manager">
-    <div class="shop-name-manager-head">
-        <span class="shop-name-manager-title">
-            <i class="fas fa-store"></i> Shop Name
-        </span>
-        {% if current_user.shop_name %}
-        <span class="shop-name-manager-current">{{ current_user.shop_name }}</span>
-        {% endif %}
-    </div>
-
-    <form method="POST" action="{{ url_for('shop_settings') }}" class="shop-name-form">
-        <input type="text" name="shop_name" class="shop-name-input" maxlength="200" value="{{ current_user.shop_name or '' }}" placeholder="Enter your public shop name" required>
-        <button type="submit" class="shop-name-save"><i class="fas fa-check"></i> Save</button>
-    </form>
-</div>
-
-
-<!-- =========================================================
-     PROFILE TABS
-     ========================================================= -->
-
-<div class="profile-content-tabs">
-
-    <button
-        type="button"
-        class="profile-tab"
-        data-tab="videos"
-        onclick="switchProfileTab('videos')">
-
-        <i class="fas fa-video"></i>
+    <div class="hero-fallback-content">
 
         <span>
-            Videos
+            RECROOTEARN SHOP
         </span>
 
-    </button>
-
-
-    <button
-        type="button"
-        class="profile-tab active"
-        data-tab="posts"
-        onclick="switchProfileTab('posts')">
-
-        <i class="fas fa-th"></i>
-
-        <span>
-            Posts
-        </span>
-
-    </button>
-
-
-    <button
-        type="button"
-        class="profile-tab"
-        data-tab="shop"
-        onclick="switchProfileTab('shop')">
-
-        <i class="fas fa-store"></i>
-
-        <span>
-            Shop
-        </span>
-
-    </button>
-
-</div>
-
-
-<!-- =========================================================
-     VIDEOS TAB
-     ========================================================= -->
-
-<div
-    id="profile-videos"
-    class="profile-tab-content">
-
-    <div class="post-grid">
-
-        {% set video_namespace = namespace(found=false) %}
-
-        {% for job in jobs %}
-
-            {% set first_file = '' %}
-
-            {% if job.images and job.images != "" %}
-                {% set first_file = job.images.split(',')[0]|trim %}
-            {% elif job.image and job.image != "" %}
-                {% set first_file = job.image|trim %}
-            {% endif %}
-
-            {% if first_file and first_file.lower().endswith(
-                ('.mp4','.mov','.avi','.mkv','.webm')
-            ) %}
-
-                {% set video_namespace.found = true %}
-
-                <a
-                    href="/my-post/{{ job.id }}"
-                    class="post-item">
-
-                    {% set thumb =
-                        first_file.rsplit('.',1)[0] + '.jpg'
-                    %}
-
-                    <div
-                        style="
-                            position:relative;
-                            width:100%;
-                            height:100%;
-                        ">
-
-                        <img
-                            src="/static/uploads/{{ thumb }}"
-                            onerror="
-                                this.onerror=null;
-                                this.src='/static/uploads/video-placeholder.jpg';
-                            "
-                            loading="lazy"
-                            alt="Video">
-
-                        <div
-                            style="
-                                position:absolute;
-                                top:50%;
-                                left:50%;
-                                transform:translate(-50%,-50%);
-                                width:42px;
-                                height:42px;
-                                border-radius:50%;
-                                background:rgba(0,0,0,.45);
-                                display:flex;
-                                align-items:center;
-                                justify-content:center;
-                                color:#fff;
-                                font-size:18px;
-                            ">
-
-                            ▶
-
-                        </div>
-
-                    </div>
-
-                </a>
-
-            {% endif %}
-
-        {% endfor %}
-
-
-        {% if not video_namespace.found %}
-
-        <div
-            style="
-                grid-column:1/-1;
-                background:white;
-                padding:60px 20px;
-                text-align:center;
-            ">
-
-            <i
-                class="fas fa-video"
-                style="
-                    font-size:60px;
-                    color:#2563eb;
-                    margin-bottom:15px;
-                ">
-            </i>
-
-            <h4 class="fw-bold">
-                No Videos Yet
-            </h4>
-
-            <p class="text-muted">
-                Post your first video to show it here.
-            </p>
-
-            <a
-                href="/post-video"
-                class="btn btn-primary mt-2">
-
-                + Post Your First Video
-
-            </a>
-
-        </div>
-
-        {% endif %}
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     POSTS TAB
-     ========================================================= -->
-
-<div
-    id="profile-posts"
-    class="profile-tab-content active">
-
-    <div class="post-grid">
-
-        {% set post_namespace = namespace(found=false) %}
-
-        {% for job in jobs %}
-
-            {% set first_file = '' %}
-
-            {% if job.images and job.images != "" %}
-                {% set first_file = job.images.split(',')[0]|trim %}
-            {% elif job.image and job.image != "" %}
-                {% set first_file = job.image|trim %}
-            {% endif %}
-
-            {% set is_video = first_file and first_file.lower().endswith(
-                ('.mp4','.mov','.avi','.mkv','.webm')
-            ) %}
-
-            {% if not is_video %}
-
-                {% set post_namespace.found = true %}
-
-                <a
-                    href="/my-post/{{ job.id }}"
-                    class="post-item">
-
-                    {% if job.images and job.images != "" %}
-
-                        {% set first_file = job.images.split(',')[0]|trim %}
-
-                        <img
-                            src="/static/uploads/{{ first_file }}"
-                            loading="lazy"
-                            alt="Post">
-
-                    {% elif job.image and job.image != "" %}
-
-                        <img
-                            src="/static/uploads/{{ job.image }}"
-                            loading="lazy"
-                            alt="Post">
-
-                    {% else %}
-
-                        <img
-                            src="https://via.placeholder.com/500x500?text=JOB"
-                            loading="lazy"
-                            alt="Job">
-
-                    {% endif %}
-
-                </a>
-
-            {% endif %}
-
-        {% endfor %}
-
-
-        {% if not post_namespace.found %}
-
-        <div
-            style="
-                grid-column:1/-1;
-                background:white;
-                padding:60px 20px;
-                text-align:center;
-            ">
-
-            <i
-                class="fas fa-briefcase"
-                style="
-                    font-size:60px;
-                    color:#2563eb;
-                    margin-bottom:15px;
-                ">
-            </i>
-
-            <h4 class="fw-bold">
-                No Posts Yet
-            </h4>
-
-            <p class="text-muted">
-                Start hiring by posting your first job.
-            </p>
-
-            <a
-                href="/post-job"
-                class="btn btn-primary mt-2">
-
-                + Post Your First Job
-
-            </a>
-
-        </div>
-
-        {% endif %}
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     SHOP TAB
-     ========================================================= -->
-
-<div
-    id="profile-shop"
-    class="profile-tab-content">
-
-    <div class="shop-profile-grid">
-
-
-        <!-- =================================================
-             FIRST CARD = ALWAYS ADD PRODUCT
-             ================================================= -->
-
-        <a
-            href="/shop/add-product"
-            class="shop-add-product">
-
-            <div class="shop-add-product-box">
-
-                <div class="shop-add-product-icon">
-
-                    <i class="fas fa-plus"></i>
-
-                </div>
-
-                <div class="shop-add-product-text">
-
-                    Add Product
-
-                </div>
-
-            </div>
-
-        </a>
-
-
-        <!-- =================================================
-             ALL PRODUCTS START FROM SECOND CARD
-             ================================================= -->
-
-        {% for product in products %}
-
-        <a
-            href="/shop/manage-product/{{ product.id }}"
-            class="shop-profile-product">
-
-
-            <!-- PRODUCT IMAGE -->
-
-            <div class="shop-product-image">
-
-
-                {% if product.images and product.images|length > 0 %}
-
-                <img
-                    src="{{ url_for(
-                        'static',
-                        filename='uploads/products/' + product.images[0].image
-                    ) }}"
-                    alt="{{ product.name }}"
-                    loading="lazy"
-                    onerror="
-                        this.onerror=null;
-                        this.src='{{ url_for(
-                            'static',
-                            filename='images/no-image.png'
-                        ) }}';
-                    ">
-
-                {% else %}
-
-                <div class="shop-product-placeholder">
-
-                    <i class="fas fa-image"></i>
-
-                </div>
-
-                {% endif %}
-
-
-                <!-- ACTIVE / INACTIVE -->
-
-                {% if product.is_active %}
-
-                <span class="product-status active">
-
-                    ACTIVE
-
-                </span>
-
-                {% else %}
-
-                <span class="product-status inactive">
-
-                    INACTIVE
-
-                </span>
-
-                {% endif %}
-
-            </div>
-
-
-            <!-- PRODUCT INFORMATION -->
-
-            <div class="shop-product-info">
-
-                <div class="shop-product-name">
-
-                    {{ product.name }}
-
-                </div>
-
-
-                <div class="shop-product-price">
-
-                    {% if product.sale_price %}
-
-                        ₹{{ "%.0f"|format(product.sale_price) }}
-
-                        <span>
-                            ₹{{ "%.0f"|format(product.price) }}
-                        </span>
-
-                    {% else %}
-
-                        ₹{{ "%.0f"|format(product.price) }}
-
-                    {% endif %}
-
-                </div>
-
-
-                <div class="manage-product-text">
-
-                    <i class="fas fa-edit"></i>
-
-                    Manage Product
-
-                </div>
-
-            </div>
-
-        </a>
-
-        {% endfor %}
-
-
-    </div>
-
-
-    <!-- =================================================
-         EMPTY SHOP
-         ================================================= -->
-
-    {% if not products %}
-
-    <div class="shop-empty">
-
-        <i class="fas fa-store"></i>
-
-        <h4>
-            No Products Yet
-        </h4>
+        <h1>
+            Discover
+            <br>
+            Something
+            <br>
+            You’ll Love.
+        </h1>
 
         <p>
-            Add your first product to start selling.
+            Explore products from businesses
+            and discover amazing deals.
+        </p>
+
+        <a
+            href="/shop/all"
+            class="hero-btn"
+        >
+
+            Shop Now
+
+            <i class="fas fa-arrow-right"></i>
+
+        </a>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     SHOP BY CATEGORY
+     ===================================================== -->
+
+{% if categories %}
+
+<section class="section">
+
+    <div class="section-header">
+
+        <h2 class="section-title">
+            Shop by Category
+        </h2>
+
+    </div>
+
+
+    <div class="category-scroll">
+
+        {% for category in categories %}
+
+        <a
+            href="/shop/category/{{ category.id }}"
+            class="category-card"
+        >
+
+            <div class="category-icon">
+
+                {% if category.icon %}
+
+                <i class="{{ category.icon }}"></i>
+
+                {% else %}
+
+                <i class="fas fa-layer-group"></i>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="category-name">
+
+                {{ category.name }}
+
+            </div>
+
+        </a>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     SHOP BY STORE
+     ===================================================== -->
+
+{% if stores %}
+
+<section class="section store-section">
+
+    <div class="section-header">
+
+        <h2 class="section-title">
+            Shop by Store
+        </h2>
+
+    </div>
+
+
+    <div class="store-scroll">
+
+        {% for store in stores %}
+
+        <a
+           href="{{ url_for(
+               'company_share_shop',
+               seller_id=store.id,
+               shop_slug=store.generated_shop_slug
+           ) }}"
+           class="store-card"
+        >
+
+
+            <!-- STORE IMAGE -->
+
+            <div class="store-image-wrap">
+
+                {% if store.profile_photo %}
+
+                <img
+                    src="/static/uploads/{{ store.profile_photo }}"
+                    class="store-image"
+                    alt="{{ store.company or store.first_name or store.username or 'Store' }}"
+                    loading="lazy"
+                    onerror="
+                        if(!this.dataset.f1){
+                            this.dataset.f1='1';
+                            this.src='/static/uploads/profile_photos/{{ store.profile_photo }}';
+                        }else if(!this.dataset.f2){
+                            this.dataset.f2='1';
+                            this.src='/static/uploads/users/{{ store.profile_photo }}';
+                        }else{
+                            this.style.display='none';
+                            this.parentElement.querySelector('.store-placeholder').style.display='flex';
+                        }
+                    "
+                >
+
+                {% else %}
+
+                <div class="store-placeholder">
+
+                    <i class="fas fa-store"></i>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- STORE NAME -->
+
+            <div class="store-name">
+
+                {{ store.company
+                   or store.first_name
+                   or store.username
+                   or 'Store'
+                }}
+
+            </div>
+
+        </a>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     DEALS BANNER
+     ===================================================== -->
+
+<div class="sale-banner">
+
+    <div class="sale-banner-content">
+
+        <span class="sale-eyebrow">
+            RECROOTEARN SHOP
+        </span>
+
+
+        <h2>
+            🔥 Deals You Don't Want To Miss
+        </h2>
+
+
+        <p>
+            Discover great products at amazing prices.
+        </p>
+
+
+        <a
+            href="/shop/all"
+            class="sale-banner-btn"
+        >
+
+            Shop Now
+
+            <i class="fas fa-arrow-right"></i>
+
+        </a>
+
+    </div>
+
+
+    <i class="fas fa-bag-shopping sale-banner-icon"></i>
+
+</div>
+
+
+
+<!-- =====================================================
+     PRODUCT CARD MACRO
+     ===================================================== -->
+
+{% macro product_card(product, badge='') %}
+
+<a
+    href="/product/{{ product.id }}"
+    class="product-card"
+>
+
+
+    <!-- PRODUCT IMAGE -->
+
+    <div class="product-image">
+
+
+        {% if badge %}
+
+        <span class="product-badge">
+            {{ badge }}
+        </span>
+
+        {% endif %}
+
+
+        {% if product.images and product.images|length > 0 %}
+
+        <img
+            src="/static/uploads/products/{{ product.images[0].image }}"
+            alt="{{ product.name }}"
+            loading="lazy"
+            onerror="
+                if(!this.dataset.f1){
+                    this.dataset.f1='1';
+                    this.src='/static/product_images/{{ product.images[0].image }}';
+                }else if(!this.dataset.f2){
+                    this.dataset.f2='1';
+                    this.src='/static/uploads/{{ product.images[0].image }}';
+                }else{
+                    this.style.display='none';
+                    this.parentElement.querySelector('.image-placeholder').style.display='flex';
+                }
+            "
+        >
+
+        {% endif %}
+
+
+        <div
+            class="image-placeholder"
+            style="
+                {% if product.images and product.images|length > 0 %}
+                    display:none;
+                {% endif %}
+            "
+        >
+
+            <i class="fas fa-image"></i>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- PRODUCT INFO -->
+
+    <div class="product-info">
+
+
+        <div class="product-name">
+
+            {{ product.name }}
+
+        </div>
+
+
+        <div class="product-rating">
+
+            ★★★★★
+
+        </div>
+
+
+        <div class="product-price">
+
+            {% if product.sale_price %}
+
+                ₹{{ "%.0f"|format(product.sale_price) }}
+
+                <span class="product-old-price">
+
+                    ₹{{ "%.0f"|format(product.price) }}
+
+                </span>
+
+            {% else %}
+
+                ₹{{ "%.0f"|format(product.price) }}
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="product-view">
+
+            View Product
+
+        </div>
+
+    </div>
+
+</a>
+
+{% endmacro %}
+
+
+
+<!-- =====================================================
+     TOP DEALS
+     ===================================================== -->
+
+{% if promoted_products %}
+
+<section class="section deal-section">
+
+    <div class="deal-header">
+
+        <div>
+
+            <div class="deal-title">
+                🔥 Top Deals
+            </div>
+
+            <div class="deal-subtitle">
+                Handpicked products for you
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="deal-products">
+
+        {% for product in promoted_products %}
+
+            {{ product_card(product, 'DEAL') }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     TRENDING NOW
+     ===================================================== -->
+
+{% if trending_products %}
+
+<section class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2 class="section-title">
+                🔥 Trending Now
+            </h2>
+
+            <div class="section-subtitle">
+                Products people are checking out
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="product-rail">
+
+        {% for product in trending_products %}
+
+            {{ product_card(product, 'TRENDING') }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     GREAT DEALS
+     ===================================================== -->
+
+{% if deal_products %}
+
+<section class="section colored-section deals-blue">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2 class="section-title">
+                💥 Great Deals
+            </h2>
+
+            <div class="section-subtitle">
+                Amazing products at attractive prices
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="product-rail">
+
+        {% for product in deal_products %}
+
+            {{ product_card(product, 'DEAL') }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     NEW ARRIVALS
+     ===================================================== -->
+
+{% if new_arrival_products %}
+
+<section class="section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2 class="section-title">
+                ✨ New Arrivals
+            </h2>
+
+            <div class="section-subtitle">
+                Fresh products added by sellers
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="product-rail">
+
+        {% for product in new_arrival_products %}
+
+            {{ product_card(product, 'NEW') }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     RECOMMENDED
+     ===================================================== -->
+
+{% if recommended_products %}
+
+<section class="section colored-section recommended-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2 class="section-title">
+                ❤️ Recommended For You
+            </h2>
+
+            <div class="section-subtitle">
+                Handpicked products you may like
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="product-rail">
+
+        {% for product in recommended_products %}
+
+            {{ product_card(product) }}
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     LATEST PRODUCTS
+     ===================================================== -->
+
+<section
+    class="section"
+    id="products"
+>
+
+    <div class="section-header">
+
+        <div>
+
+            <h2 class="section-title">
+                🆕 Latest Products
+            </h2>
+
+            <div class="section-subtitle">
+                Recently added products
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {% if latest_products %}
+
+    <div class="all-products-grid">
+
+        {% for product in latest_products %}
+
+            {{ product_card(product) }}
+
+        {% endfor %}
+
+    </div>
+
+
+    {% else %}
+
+
+    <div class="empty-shop">
+
+        <i class="fas fa-store"></i>
+
+        <h3>
+            No Products Available
+        </h3>
+
+        <p>
+            Products will appear here when sellers add them.
         </p>
 
     </div>
 
     {% endif %}
 
-</div>
+</section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     MOBILE BOTTOM NAVIGATION
+     ===================================================== -->
+
+<nav class="mobile-shop-nav">
+
+
+    <!-- HOME -->
+
+    <a
+        href="/shop"
+        class="active"
+    >
+
+        <i class="fas fa-house"></i>
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+    <!-- CART -->
+
+    <a href="/cart">
+
+        <i class="fas fa-cart-shopping"></i>
+
+        <span>
+            Cart
+        </span>
+
+    </a>
+
+
+    <!-- ORDERS -->
+
+    <a href="/my-orders">
+
+        <i class="fas fa-box-open"></i>
+
+        <span>
+            My Orders
+        </span>
+
+    </a>
+
+
+    <!-- ACCOUNT -->
+
+    <a
+        href="{% if session.get('candidate_id') %}
+                    {{ url_for('candidate_profile') }}
+              {% else %}
+                    {{ url_for('profile') }}
+              {% endif %}"
+    >
+
+        <i class="fas fa-user"></i>
+
+        <span>
+            Account
+        </span>
+
+    </a>
+
+</nav>
 
 
 </div>
 
 
-<!-- =========================================================
-     TAB SWITCHING
-     ========================================================= -->
 
 <script>
 
-function switchProfileTab(tab){
+/* =========================================================
+   IMAGE FALLBACK
+   ========================================================= */
 
-    document
-        .querySelectorAll('.profile-tab')
-        .forEach(function(button){
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
 
-            button.classList.toggle(
-                'active',
-                button.getAttribute('data-tab') === tab
+        document
+        .querySelectorAll(
+            ".product-image img, .admin-banner-image, .admin-small-banner img, .store-image"
+        )
+        .forEach(function(img){
+
+            img.addEventListener(
+                "error",
+                function(){
+
+                    /*
+                     * Product image fallback is already
+                     * handled inline.
+                     *
+                     * This prevents broken image icons.
+                     */
+
+                    if(
+                        !this.dataset.finalFallback
+                    ){
+
+                        this.dataset.finalFallback = "1";
+
+                        this.style.display = "none";
+
+
+                        const parent =
+                            this.parentElement;
+
+
+                        if(parent){
+
+                            const placeholder =
+                                parent.querySelector(
+                                    ".image-placeholder, .store-placeholder"
+                                );
+
+
+                            if(placeholder){
+
+                                placeholder.style.display =
+                                    "flex";
+
+                            }
+
+                        }
+
+                    }
+
+                }
             );
 
         });
 
-
-    document
-        .querySelectorAll('.profile-tab-content')
-        .forEach(function(content){
-
-            content.classList.remove('active');
-
-        });
+    }
+);
 
 
-    var selected =
-        document.getElementById(
-            'profile-' + tab
-        );
+/* =========================================================
+   SEARCH + LIVE SUGGESTIONS
+   ========================================================= */
 
+const searchForm =
+    document.getElementById("shopSearchForm");
 
-    if(selected){
+const searchInput =
+    document.getElementById("shopSearchInput");
 
-        selected.classList.add('active');
+const searchSuggestions =
+    document.getElementById("shopSearchSuggestions");
 
+let searchTimer = null;
+let searchController = null;
+
+function hideSearchSuggestions(){
+    if(searchSuggestions){
+        searchSuggestions.style.display = "none";
+        searchSuggestions.innerHTML = "";
+    }
+}
+
+function showSearchSuggestions(items){
+    if(!searchSuggestions) return;
+
+    searchSuggestions.innerHTML = "";
+
+    if(!items || items.length === 0){
+        searchSuggestions.innerHTML =
+            '<div class="shop-search-no-result">No products or shops found</div>';
+        searchSuggestions.style.display = "block";
+        return;
     }
 
+    items.forEach(function(item){
+        const link = document.createElement("a");
+        link.href = item.url;
+        link.className = "shop-suggestion";
+
+        const icon = document.createElement("div");
+        icon.className = "shop-suggestion-icon";
+        icon.innerHTML = item.type === "store"
+            ? '<i class="fas fa-store"></i>'
+            : '<i class="fas fa-box"></i>';
+
+        const content = document.createElement("div");
+        content.className = "shop-suggestion-content";
+
+        const name = document.createElement("div");
+        name.className = "shop-suggestion-name";
+        name.textContent = item.name;
+
+        const type = document.createElement("div");
+        type.className = "shop-suggestion-type";
+        type.textContent = item.type === "store" ? "Store" : "Product";
+
+        content.appendChild(name);
+        content.appendChild(type);
+
+        const arrow = document.createElement("div");
+        arrow.className = "shop-suggestion-arrow";
+        arrow.innerHTML = '<i class="fas fa-chevron-right"></i>';
+
+        link.appendChild(icon);
+        link.appendChild(content);
+        link.appendChild(arrow);
+
+        searchSuggestions.appendChild(link);
+    });
+
+    searchSuggestions.style.display = "block";
 }
+
+async function loadSearchSuggestions(keyword){
+    if(!searchSuggestions) return;
+
+    if(!keyword){
+        hideSearchSuggestions();
+        return;
+    }
+
+    if(searchController){
+        searchController.abort();
+    }
+
+    searchController = new AbortController();
+
+    searchSuggestions.innerHTML =
+        '<div class="shop-search-loading"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+    searchSuggestions.style.display = "block";
+
+    try{
+        const response = await fetch(
+            "/shop/search-suggestions?q=" + encodeURIComponent(keyword),
+            {
+                method:"GET",
+                headers:{"Accept":"application/json"},
+                signal:searchController.signal
+            }
+        );
+
+        if(!response.ok){
+            throw new Error("Search request failed");
+        }
+
+        const data = await response.json();
+        showSearchSuggestions(data);
+    }catch(error){
+        if(error.name === "AbortError") return;
+        console.error("Search suggestions error:", error);
+        hideSearchSuggestions();
+    }
+}
+
+if(searchInput){
+    searchInput.addEventListener("input", function(){
+        const value = this.value.trim();
+        clearTimeout(searchTimer);
+
+        if(!value){
+            hideSearchSuggestions();
+            return;
+        }
+
+        searchTimer = setTimeout(function(){
+            loadSearchSuggestions(value);
+        }, 120);
+    });
+
+    searchInput.addEventListener("keydown", function(event){
+        if(event.key === "Escape"){
+            hideSearchSuggestions();
+        }
+    });
+}
+
+if(searchForm && searchInput){
+    searchForm.addEventListener("submit", function(event){
+        const value = searchInput.value.trim();
+
+        if(!value){
+            event.preventDefault();
+            searchInput.focus();
+            return;
+        }
+
+        hideSearchSuggestions();
+        searchInput.value = value;
+    });
+}
+
+document.addEventListener("click", function(event){
+    if(searchForm && !searchForm.contains(event.target)){
+        hideSearchSuggestions();
+    }
+});
 
 </script>
 
-{% endblock %}
+
+</body>
+</html>

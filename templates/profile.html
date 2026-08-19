@@ -485,6 +485,90 @@
 
 
 /* =========================================================
+   SHOP NAME MANAGEMENT
+   IMPORTANT:
+   THIS IS ON PROFILE PAGE, NOT INSIDE SHOP TAB
+   ========================================================= */
+
+.shop-name-manager{
+    margin:12px 12px 0;
+    padding:14px;
+    background:#fff;
+    border-radius:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.shop-name-manager-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.shop-name-manager-title{
+    font-size:14px;
+    font-weight:800;
+    color:#111827;
+}
+
+.shop-name-manager-current{
+    font-size:13px;
+    color:#2563eb;
+    font-weight:800;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.shop-name-form{
+    display:flex;
+    gap:8px;
+}
+
+.shop-name-input{
+    flex:1;
+    min-width:0;
+    height:42px;
+    padding:0 12px;
+    border:1px solid #dbe3ef;
+    border-radius:11px;
+    outline:none;
+    font-size:13px;
+    background:#f8fafc;
+}
+
+.shop-name-input:focus{
+    border-color:#2563eb;
+    background:#fff;
+}
+
+.shop-name-save{
+    height:42px;
+    padding:0 14px;
+    border:0;
+    border-radius:11px;
+    background:#2563eb;
+    color:#fff;
+    font-size:13px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+@media(max-width:380px){
+
+    .shop-name-form{
+        flex-direction:column;
+    }
+
+    .shop-name-save{
+        width:100%;
+    }
+
+}
+
+
+/* =========================================================
    MOBILE
    ========================================================= */
 
@@ -790,6 +874,64 @@
 
 
 <!-- =========================================================
+     SHOP NAME
+     THIS IS ON PROFILE PAGE
+     ========================================================= -->
+
+<div class="shop-name-manager">
+
+    <div class="shop-name-manager-head">
+
+        <span class="shop-name-manager-title">
+
+            <i class="fas fa-store"></i>
+            Shop Name
+
+        </span>
+
+
+        {% if current_user.shop_name %}
+
+        <span class="shop-name-manager-current">
+
+            {{ current_user.shop_name }}
+
+        </span>
+
+        {% endif %}
+
+    </div>
+
+
+    <form
+        method="POST"
+        action="{{ url_for('shop_settings') }}"
+        class="shop-name-form">
+
+        <input
+            type="text"
+            name="shop_name"
+            class="shop-name-input"
+            maxlength="200"
+            value="{{ current_user.shop_name or '' }}"
+            placeholder="Enter your public shop name"
+            required>
+
+        <button
+            type="submit"
+            class="shop-name-save">
+
+            <i class="fas fa-check"></i>
+            Save
+
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- =========================================================
      PROFILE TABS
      ========================================================= -->
 
@@ -859,10 +1001,15 @@
             {% set first_file = '' %}
 
             {% if job.images and job.images != "" %}
+
                 {% set first_file = job.images.split(',')[0]|trim %}
+
             {% elif job.image and job.image != "" %}
+
                 {% set first_file = job.image|trim %}
+
             {% endif %}
+
 
             {% if first_file and first_file.lower().endswith(
                 ('.mp4','.mov','.avi','.mkv','.webm')
@@ -893,6 +1040,7 @@
                             "
                             loading="lazy"
                             alt="Video">
+
 
                         <div
                             style="
@@ -985,14 +1133,25 @@
             {% set first_file = '' %}
 
             {% if job.images and job.images != "" %}
-                {% set first_file = job.images.split(',')[0]|trim %}
+
+                {% set first_file =
+                    job.images.split(',')[0]|trim %}
+
             {% elif job.image and job.image != "" %}
-                {% set first_file = job.image|trim %}
+
+                {% set first_file =
+                    job.image|trim %}
+
             {% endif %}
 
-            {% set is_video = first_file and first_file.lower().endswith(
-                ('.mp4','.mov','.avi','.mkv','.webm')
-            ) %}
+
+            {% set is_video =
+                first_file and
+                first_file.lower().endswith(
+                    ('.mp4','.mov','.avi','.mkv','.webm')
+                )
+            %}
+
 
             {% if not is_video %}
 
@@ -1002,14 +1161,17 @@
                     href="/my-post/{{ job.id }}"
                     class="post-item">
 
+
                     {% if job.images and job.images != "" %}
 
-                        {% set first_file = job.images.split(',')[0]|trim %}
+                        {% set first_file =
+                            job.images.split(',')[0]|trim %}
 
                         <img
                             src="/static/uploads/{{ first_file }}"
                             loading="lazy"
                             alt="Post">
+
 
                     {% elif job.image and job.image != "" %}
 
@@ -1017,6 +1179,7 @@
                             src="/static/uploads/{{ job.image }}"
                             loading="lazy"
                             alt="Post">
+
 
                     {% else %}
 
@@ -1080,6 +1243,11 @@
 
 <!-- =========================================================
      SHOP TAB
+
+     IMPORTANT:
+     ONLY SHOP CONTENT IS HERE.
+
+     NO SHOP NAME EDITOR HERE.
      ========================================================= -->
 
 <div
@@ -1090,7 +1258,7 @@
 
 
         <!-- =================================================
-             FIRST CARD = ALWAYS ADD PRODUCT
+             ADD PRODUCT
              ================================================= -->
 
         <a
@@ -1117,7 +1285,7 @@
 
 
         <!-- =================================================
-             ALL PRODUCTS START FROM SECOND CARD
+             PRODUCTS
              ================================================= -->
 
         {% for product in products %}
@@ -1130,7 +1298,6 @@
             <!-- PRODUCT IMAGE -->
 
             <div class="shop-product-image">
-
 
                 {% if product.images and product.images|length > 0 %}
 
@@ -1160,7 +1327,7 @@
                 {% endif %}
 
 
-                <!-- ACTIVE / INACTIVE -->
+                <!-- PRODUCT STATUS -->
 
                 {% if product.is_active %}
 
