@@ -17587,12 +17587,21 @@ def product_details(id):
             customer_id=current_user.id
         ).first()
 
+    shop_slug = make_shop_slug(
+        product.seller.shop_name
+        or product.seller.company
+        or product.seller.first_name
+        or product.seller.username
+        or "store"
+    )
+
     return render_template(
         "shop/product_details.html",
         product=product,
         related_products=related_products,
         reviews=review_items,
-        current_review=current_review
+        current_review=current_review,
+        shop_slug=shop_slug
     )
 @app.route("/cart/add/<int:product_id>", methods=["POST"])
 @marketplace_login_required
