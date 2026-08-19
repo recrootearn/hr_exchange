@@ -2,6 +2,237 @@
 
 {% block content %}
 
+<style>
+/* =========================================================
+   RECROOTEARN CANDIDATE DASHBOARD — COMPACT MODERN UI
+   ========================================================= */
+.content{
+    padding:12px 16px 28px !important;
+    background:#f4f7fb;
+}
+
+.dashboard-wrap{
+    max-width:1180px;
+    margin:0 auto;
+}
+
+/* Compact spacing for existing Bootstrap structure */
+.row.mt-4{
+    margin-top:4px !important;
+}
+.mb-4{
+    margin-bottom:10px !important;
+}
+.mt-4{
+    margin-top:12px !important;
+}
+.mb-3{
+    margin-bottom:8px !important;
+}
+
+/* ---------- STAT CARDS ---------- */
+.stats-card{
+    background:#fff;
+    border:1px solid #e7ebf2;
+    border-radius:16px;
+    padding:15px 16px;
+    box-shadow:0 5px 18px rgba(15,23,42,.045);
+    transition:.2s ease;
+}
+.stats-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 9px 24px rgba(15,23,42,.08);
+}
+
+.row > [class*="col-"] .stats-card{
+    min-height:112px;
+}
+
+.row > [class*="col-"] .stats-card .mb-3{
+    margin-bottom:7px !important;
+}
+
+.row > [class*="col-"] .stats-card i{
+    font-size:21px !important;
+}
+
+.row > [class*="col-"] .stats-card h6{
+    margin-bottom:3px !important;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.1px;
+}
+
+.row > [class*="col-"] .stats-card h2{
+    font-size:24px;
+    line-height:1.1;
+    margin:0;
+}
+
+/* ---------- SECTION HEADERS ---------- */
+.stats-card > .d-flex > div:first-child h3,
+.stats-card > h3{
+    margin:0;
+    font-size:18px;
+    line-height:1.2;
+    font-weight:800;
+    color:#172033;
+}
+
+.stats-card > .d-flex > div:first-child p,
+.stats-card > .d-flex > div:first-child small{
+    font-size:12px;
+    line-height:1.35;
+}
+
+/* ---------- BADGES ---------- */
+.badge{
+    border-radius:999px !important;
+    font-size:11px !important;
+    font-weight:800 !important;
+    padding:8px 12px !important;
+}
+
+/* ---------- DAILY REWARD ---------- */
+.stats-card hr{
+    margin:13px 0;
+    border-color:#edf0f4;
+    opacity:1;
+}
+
+.stats-card .row{
+    margin-left:-6px;
+    margin-right:-6px;
+}
+
+.stats-card .row > [class*="col-"]{
+    padding-left:6px;
+    padding-right:6px;
+}
+
+.stats-card .d-flex.justify-content-between > span{
+    font-size:13px;
+    color:#3d4655;
+}
+
+.stats-card .progress{
+    height:9px !important;
+    margin-bottom:9px !important;
+    background:#edf1f6;
+    border-radius:99px !important;
+    overflow:hidden;
+}
+
+.stats-card .progress-bar{
+    border-radius:99px;
+    font-size:0;
+}
+
+.stats-card .alert{
+    border:0;
+    border-radius:12px;
+    padding:10px 13px;
+    font-size:12px;
+    margin-bottom:0 !important;
+}
+
+/* ---------- LEVEL CARD ---------- */
+.stats-card .text-center h6{
+    margin-bottom:3px;
+    font-size:11px;
+    font-weight:700;
+    color:#7b8494 !important;
+}
+
+.stats-card .text-center h3{
+    margin:0;
+    font-size:22px;
+    font-weight:800;
+    color:#172033;
+}
+
+@media(max-width:768px){
+    .content{
+        padding:8px 9px 20px !important;
+    }
+
+    .row.mt-4{
+        margin-left:-4px;
+        margin-right:-4px;
+    }
+
+    .row.mt-4 > [class*="col-"]{
+        padding-left:4px;
+        padding-right:4px;
+    }
+
+    .row > [class*="col-"] .stats-card{
+        min-height:98px;
+        padding:12px 9px;
+        border-radius:14px;
+    }
+
+    .row > [class*="col-"] .stats-card h6{
+        font-size:10px;
+    }
+
+    .row > [class*="col-"] .stats-card h2{
+        font-size:21px;
+    }
+
+    .row > [class*="col-"] .stats-card i{
+        font-size:18px !important;
+    }
+
+    .stats-card{
+        border-radius:15px;
+        padding:14px;
+    }
+
+    .stats-card > .d-flex{
+        gap:10px;
+    }
+
+    .stats-card > .d-flex > div:first-child h3,
+    .stats-card > h3{
+        font-size:16px;
+    }
+
+    .stats-card .d-flex.justify-content-between > span{
+        font-size:12px;
+    }
+
+    .stats-card .row > [class*="col-"]{
+        margin-bottom:4px !important;
+    }
+
+    .stats-card hr{
+        margin:10px 0;
+    }
+
+    .stats-card .progress{
+        height:8px !important;
+    }
+}
+
+@media(max-width:380px){
+    .content{
+        padding-left:6px !important;
+        padding-right:6px !important;
+    }
+
+    .row.mt-4 > [class*="col-"]{
+        padding-left:3px;
+        padding-right:3px;
+    }
+
+    .row > [class*="col-"] .stats-card{
+        padding:10px 7px;
+    }
+}
+</style>
+
+
 <div class="row mt-4">  <!-- Wallet -->  
 
 <div class="col-lg-3 col-md-6 col-6 mb-4">  
