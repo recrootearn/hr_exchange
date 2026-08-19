@@ -5192,16 +5192,26 @@ class ProductReview(db.Model):
         nullable=False
     )
 
+    # HR/company reviewer. NULL when the reviewer is a candidate.
     customer_id = db.Column(
         db.Integer,
         db.ForeignKey("user.id"),
-        nullable=False
+        nullable=True
     )
 
+    # Candidate reviewer. NULL when the reviewer is an HR/company account.
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=True
+    )
+
+    # Kept for existing reviews / verified-purchase history.
+    # New reviews are allowed without a purchase.
     order_id = db.Column(
         db.Integer,
         db.ForeignKey("orders.id"),
-        nullable=False
+        nullable=True
     )
 
     rating = db.Column(
@@ -5223,7 +5233,7 @@ class ProductReview(db.Model):
 
     is_verified_purchase = db.Column(
         db.Boolean,
-        default=True
+        default=False
     )
 
     is_approved = db.Column(
@@ -17481,10 +17491,108 @@ def product_details(id):
     product.views += 1
     db.session.commit()
 
+    # Public reviews: everyone viewing the product can see them.
+    reviews = ProductReview.query.filter_by(
+        product_id=product.id,
+        is_approved=True
+    ).order_by(
+        ProductReview.created_at.desc()
+    ).all()
+
+    # Resolve reviewer names/photos without changing the existing
+    # ProductReview relationships.
+    user_ids = {
+        r.customer_id
+        for r in reviews
+        if r.customer_id
+    }
+    candidate_ids = {
+        r.candidate_id
+        for r in reviews
+        if r.candidate_id
+    }
+
+    users_by_id = {
+        u.id: u
+        for u in User.query.filter(User.id.in_(user_ids)).all()
+    } if user_ids else {}
+
+    candidates_by_id = {
+        c.id: c
+        for c in CandidateUser.query.filter(
+            CandidateUser.id.in_(candidate_ids)
+        ).all()
+    } if candidate_ids else {}
+
+    review_items = []
+
+    for r in reviews:
+        reviewer = (
+            candidates_by_id.get(r.candidate_id)
+            if r.candidate_id
+            else users_by_id.get(r.customer_id)
+        )
+
+        if r.candidate_id:
+            reviewer_name = (
+                getattr(reviewer, "full_name", None)
+                or "Candidate"
+            )
+            reviewer_photo = (
+                getattr(reviewer, "profile_photo", None)
+            )
+            reviewer_type = "Candidate"
+        else:
+            reviewer_name = "Customer"
+            if reviewer:
+                reviewer_name = " ".join(
+                    part for part in [
+                        getattr(reviewer, "first_name", None),
+                        getattr(reviewer, "last_name", None)
+                    ]
+                    if part
+                ).strip() or (
+                    getattr(reviewer, "shop_name", None)
+                    or getattr(reviewer, "company", None)
+                    or getattr(reviewer, "username", None)
+                    or "Customer"
+                )
+
+            reviewer_photo = (
+                getattr(reviewer, "profile_photo", None)
+                if reviewer else None
+            )
+            reviewer_type = "Customer"
+
+        review_items.append({
+            "review": r,
+            "reviewer_name": reviewer_name,
+            "reviewer_photo": reviewer_photo,
+            "reviewer_type": reviewer_type
+        })
+
+    # Tell the page whether the current account has already reviewed
+    # this product. This is only used to control the review form.
+    current_review = None
+    candidate_id = session.get("candidate_id")
+
+    if candidate_id:
+        current_review = ProductReview.query.filter_by(
+            product_id=product.id,
+            candidate_id=candidate_id
+        ).first()
+    elif current_user.is_authenticated:
+        current_review = ProductReview.query.filter_by(
+            product_id=product.id,
+            customer_id=current_user.id
+        ).first()
+
     return render_template(
         "shop/product_details.html",
         product=product,
-        related_products=related_products
+        related_products=related_products,
+        reviews=review_items,
+        current_review=current_review
     )
 @app.route("/cart/add/<int:product_id>", methods=["POST"])
 @marketplace_login_required
@@ -19229,74 +19337,137 @@ def seller_sales_chart():
     return jsonify(data[::-1])
 
 @app.route("/product/<int:product_id>/review", methods=["POST"])
-@login_required
+@marketplace_login_required
 def add_product_review(product_id):
 
     product = Product.query.get_or_404(product_id)
 
-    order_item = db.session.query(OrderItem).join(Order).filter(
-        Order.user_id == current_user.id,
-        Order.order_status == "Delivered",
-        OrderItem.product_id == product.id
-    ).first()
+    # ---------------------------------------------------------
+    # Identify the active marketplace account.
+    # A review belongs to either an HR/company account OR a
+    # candidate account. It is never attached to the wrong type.
+    # ---------------------------------------------------------
+    candidate_id = session.get("candidate_id")
+    candidate = None
 
-    if not order_item:
+    if candidate_id:
+        candidate = CandidateUser.query.get(candidate_id)
+        if not candidate or candidate.is_deleted:
+            session.pop("candidate_id", None)
+            candidate_id = None
 
+    customer_id = current_user.id if (
+        not candidate_id and current_user.is_authenticated
+    ) else None
+
+    if not candidate_id and not customer_id:
         flash(
-            "Only customers who purchased this product can review it.",
+            "Please login to submit a review.",
             "warning"
         )
-
         return redirect(f"/product/{product.id}")
 
-    existing = ProductReview.query.filter_by(
-        product_id=product.id,
-        customer_id=current_user.id,
-        order_id=order_item.order_id
-    ).first()
+    # ---------------------------------------------------------
+    # One review per account per product.
+    # No purchase is required.
+    # ---------------------------------------------------------
+    if candidate_id:
+        existing = ProductReview.query.filter_by(
+            product_id=product.id,
+            candidate_id=candidate_id
+        ).first()
+    else:
+        existing = ProductReview.query.filter_by(
+            product_id=product.id,
+            customer_id=customer_id
+        ).first()
 
     if existing:
-
         flash(
             "You have already reviewed this product.",
             "warning"
         )
-
         return redirect(f"/product/{product.id}")
 
+    try:
+        rating = int(request.form.get("rating", 0))
+    except (TypeError, ValueError):
+        rating = 0
+
+    if rating < 1 or rating > 5:
+        flash(
+            "Please select a rating from 1 to 5 stars.",
+            "warning"
+        )
+        return redirect(f"/product/{product.id}")
+
+    # Keep verified-purchase information for accounts that actually
+    # purchased the product, while still allowing everyone to review.
+    order_id = None
+    is_verified_purchase = False
+
+    if customer_id:
+        purchased = db.session.query(OrderItem).join(Order).filter(
+            Order.user_id == customer_id,
+            Order.order_status == "Delivered",
+            OrderItem.product_id == product.id
+        ).first()
+
+        if purchased:
+            order_id = purchased.order_id
+            is_verified_purchase = True
+
+    elif candidate_id:
+        purchased = db.session.query(OrderItem).join(Order).filter(
+            Order.candidate_id == candidate_id,
+            Order.order_status == "Delivered",
+            OrderItem.product_id == product.id
+        ).first()
+
+        if purchased:
+            order_id = purchased.order_id
+            is_verified_purchase = True
+
     review = ProductReview(
-
         product_id=product.id,
-
         seller_id=product.seller_id,
-
-        customer_id=current_user.id,
-
-        order_id=order_item.order_id,
-
-        rating=int(request.form["rating"]),
-
-        title=request.form.get("title"),
-
-        review=request.form.get("review")
-
+        customer_id=customer_id,
+        candidate_id=candidate_id,
+        order_id=order_id,
+        rating=rating,
+        title=request.form.get("title", "").strip() or None,
+        review=request.form.get("review", "").strip() or None,
+        is_verified_purchase=is_verified_purchase,
+        is_approved=True
     )
 
     db.session.add(review)
+    db.session.flush()
 
-    reviews = ProductReview.query.filter_by(
-        product_id=product.id
+    approved_reviews = ProductReview.query.filter_by(
+        product_id=product.id,
+        is_approved=True
     ).all()
 
-    product.total_reviews = len(reviews) + 1
-
-    total = sum(r.rating for r in reviews)
-
+    product.total_reviews = len(approved_reviews)
     product.average_rating = (
-        total + review.rating
-    ) / product.total_reviews
+        round(
+            sum(r.rating for r in approved_reviews)
+            / product.total_reviews,
+            2
+        )
+        if product.total_reviews
+        else 0
+    )
 
     db.session.commit()
+
+    flash(
+        "Your review has been added successfully.",
+        "success"
+    )
+
+    return redirect(f"/product/{product.id}")
 
 @app.route("/wishlist/add/<int:product_id>")
 @login_required
