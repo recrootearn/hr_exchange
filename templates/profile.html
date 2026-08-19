@@ -486,15 +486,17 @@
 
 /* =========================================================
    SHOP NAME MANAGEMENT
-   NOW INSIDE SHOP TAB ONLY
+   IMPORTANT:
+   THIS IS ON PROFILE PAGE, NOT INSIDE SHOP TAB
    ========================================================= */
 
 .shop-name-manager{
-    margin:12px 12px 0;
-    padding:14px;
-    background:#fff;
-    border-radius:14px;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    margin:10px 10px 12px;
+    padding:16px;
+    background:linear-gradient(145deg,#ffffff,#f8fbff);
+    border:1px solid #e5ebf5;
+    border-radius:18px;
+    box-shadow:0 5px 18px rgba(37,99,235,.08);
 }
 
 .shop-name-manager-head{
@@ -502,18 +504,37 @@
     align-items:center;
     justify-content:space-between;
     gap:10px;
-    margin-bottom:10px;
+    margin-bottom:12px;
 }
 
 .shop-name-manager-title{
-    font-size:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:15px;
     font-weight:800;
     color:#111827;
 }
 
-.shop-name-manager-current{
-    font-size:13px;
+.shop-name-manager-title i{
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+    background:#eef4ff;
     color:#2563eb;
+    font-size:15px;
+}
+
+.shop-name-manager-current{
+    max-width:45%;
+    padding:6px 10px;
+    border-radius:20px;
+    background:#eef4ff;
+    color:#2563eb;
+    font-size:12px;
     font-weight:800;
     overflow:hidden;
     text-overflow:ellipsis;
@@ -528,30 +549,46 @@
 .shop-name-input{
     flex:1;
     min-width:0;
-    height:42px;
-    padding:0 12px;
+    height:44px;
+    padding:0 13px;
     border:1px solid #dbe3ef;
-    border-radius:11px;
+    border-radius:12px;
     outline:none;
-    font-size:13px;
+    font-size:14px;
     background:#f8fafc;
+    color:#111827;
+    transition:.2s;
 }
 
 .shop-name-input:focus{
     border-color:#2563eb;
     background:#fff;
+    box-shadow:0 0 0 3px rgba(37,99,235,.10);
 }
 
 .shop-name-save{
-    height:42px;
-    padding:0 14px;
+    height:44px;
+    padding:0 17px;
     border:0;
-    border-radius:11px;
+    border-radius:12px;
     background:#2563eb;
     color:#fff;
     font-size:13px;
     font-weight:800;
     cursor:pointer;
+    box-shadow:0 4px 10px rgba(37,99,235,.22);
+    transition:.2s;
+}
+
+.shop-name-save:hover{
+    transform:translateY(-1px);
+    box-shadow:0 6px 14px rgba(37,99,235,.28);
+}
+
+.shop-name-manager-hint{
+    margin:9px 2px 0;
+    color:#7b8494;
+    font-size:11px;
 }
 
 @media(max-width:380px){
@@ -943,13 +980,11 @@
 
             {% if job.images and job.images != "" %}
 
-                {% set first_file =
-                    job.images.split(',')[0]|trim %}
+                {% set first_file = job.images.split(',')[0]|trim %}
 
             {% elif job.image and job.image != "" %}
 
-                {% set first_file =
-                    job.image|trim %}
+                {% set first_file = job.image|trim %}
 
             {% endif %}
 
@@ -1186,75 +1221,74 @@
 
 <!-- =========================================================
      SHOP TAB
-     SHOP NAME EDITING IS NOW INSIDE SHOP ONLY
+
+     IMPORTANT:
+     ONLY SHOP CONTENT IS HERE.
+
+     NO SHOP NAME EDITOR HERE.
      ========================================================= -->
 
 <div
     id="profile-shop"
     class="profile-tab-content">
 
+<!-- =========================================================
+     SHOP NAME
+     SHOP TAB
+     ========================================================= -->
 
-    <!-- =====================================================
-         SHOP NAME MANAGEMENT
-         ===================================================== -->
+<div class="shop-name-manager">
 
-    <div class="shop-name-manager">
+    <div class="shop-name-manager-head">
 
-        <div class="shop-name-manager-head">
+        <span class="shop-name-manager-title">
 
-            <span class="shop-name-manager-title">
+            <i class="fas fa-store"></i>
+            Shop Name
 
-                <i class="fas fa-store"></i>
-                Shop Name
-
-            </span>
-
-
-            {% if current_user.shop_name %}
-
-            <span class="shop-name-manager-current">
-
-                {{ current_user.shop_name }}
-
-            </span>
-
-            {% endif %}
-
-        </div>
+        </span>
 
 
-        <form
-            method="POST"
-            action="{{ url_for('shop_settings') }}"
-            class="shop-name-form">
+        {% if current_user.shop_name %}
 
-            <input
-                type="text"
-                name="shop_name"
-                class="shop-name-input"
-                maxlength="200"
-                value="{{ current_user.shop_name or '' }}"
-                placeholder="Enter your public shop name"
-                required>
+        <span class="shop-name-manager-current">
 
+            {{ current_user.shop_name }}
 
-            <button
-                type="submit"
-                class="shop-name-save">
+        </span>
 
-                <i class="fas fa-check"></i>
-                Save
-
-            </button>
-
-        </form>
+        {% endif %}
 
     </div>
 
 
-    <!-- =====================================================
-         SHOP PRODUCTS
-         ===================================================== -->
+    <form
+        method="POST"
+        action="{{ url_for('shop_settings') }}"
+        class="shop-name-form">
+
+        <input
+            type="text"
+            name="shop_name"
+            class="shop-name-input"
+            maxlength="200"
+            value="{{ current_user.shop_name or '' }}"
+            placeholder="Enter your public shop name"
+            required>
+
+        <button
+            type="submit"
+            class="shop-name-save">
+
+            <i class="fas fa-check"></i>
+            Save
+
+        </button>
+
+    </form>
+
+</div>
+
 
     <div class="shop-profile-grid">
 
@@ -1395,6 +1429,7 @@
         </a>
 
         {% endfor %}
+
 
     </div>
 
