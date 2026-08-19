@@ -174,7 +174,7 @@
 
 <div class="hr-card">
 
-    {% if hr.profile_photo %}
+    {% if hr.profile_photo and hr.profile_photo != "default.png" %}
 
         <img
         src="/static/uploads/{{ hr.profile_photo }}"
