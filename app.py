@@ -16743,12 +16743,12 @@ def add_product():
 
             for i in range(len(values)):
 
-                # Ignore empty options
                 option_value = values[i].strip()
+
+                # Ignore empty options
                 if not option_value:
                     continue
 
-                # ProductVariant stores the variation type/name.
                 variant_name = (
                     names[i].strip()
                     if i < len(names)
@@ -16756,8 +16756,6 @@ def add_product():
                     else "Option"
                 )
 
-                # The base product price is used as the reference.
-                # ProductVariantOption stores only the extra price.
                 variant_price = (
                     float(prices[i])
                     if i < len(prices)
@@ -16772,10 +16770,8 @@ def add_product():
                     else 0
                 )
 
-                # Reuse the same variation type for multiple options.
-                # Example:
-                # Color -> Red
-                # Color -> Blue
+                # ProductVariant represents the variation group,
+                # e.g. Color, Size, Material.
                 variant = ProductVariant.query.filter_by(
                     product_id=product.id,
                     name=variant_name
@@ -16789,7 +16785,7 @@ def add_product():
                     db.session.add(variant)
                     db.session.flush()
 
-                # ProductVariantOption stores the actual selectable
+                # ProductVariantOption represents the selectable
                 # value, price difference and stock.
                 db.session.add(
                     ProductVariantOption(
@@ -17507,6 +17503,27 @@ def product_details(id):
     product.views += 1
     db.session.commit()
 
+    # =========================================================
+    # VARIABLE PRODUCT OPTIONS
+    # ProductVariant stores the variation group (Color/Size/etc.)
+    # ProductVariantOption stores the selectable value.
+    # =========================================================
+    variant_options = (
+        ProductVariantOption.query
+        .join(
+            ProductVariant,
+            ProductVariantOption.variant_id == ProductVariant.id
+        )
+        .filter(
+            ProductVariant.product_id == product.id
+        )
+        .order_by(
+            ProductVariant.id.asc(),
+            ProductVariantOption.id.asc()
+        )
+        .all()
+    )
+
     # Public reviews: everyone viewing the product can see them.
     reviews = ProductReview.query.filter_by(
         product_id=product.id,
@@ -17615,6 +17632,7 @@ def product_details(id):
         "shop/product_details.html",
         product=product,
         related_products=related_products,
+        variant_options=variant_options,
         reviews=review_items,
         current_review=current_review,
         shop_slug=shop_slug
