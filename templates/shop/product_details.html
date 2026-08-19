@@ -1063,33 +1063,31 @@ html, body{
                                 name="selected_variant"
                             >
 
-                                {% if product.variant_options %}
+                                {% if variant_options %}
 
-                                    {% for variant in product.variant_options %}
+                                    {% for variant in variant_options %}
 
                                     <option
                                         value="{{ variant.id }}"
                                         data-extra-price="{{ variant.extra_price or 0 }}"
+                                        data-stock="{{ variant.stock or 0 }}"
                                     >
-
-                                        {{ variant.variant_name }}
-
-                                        {% if variant.option_value %}
-                                            - {{ variant.option_value }}
-                                        {% endif %}
-
+                                        {{ variant.variant.name }}
+                                        - {{ variant.value }}
                                         {% if variant.extra_price %}
-                                            (+₹{{ variant.extra_price }})
+                                            (+₹{{ "%.2f"|format(variant.extra_price) }})
                                         {% endif %}
-
+                                        {% if variant.stock is not none %}
+                                            · {{ variant.stock }} available
+                                        {% endif %}
                                     </option>
 
                                     {% endfor %}
 
                                 {% else %}
 
-                                    <option value="">
-                                        Default Variant
+                                    <option value="" disabled selected>
+                                        No variants available
                                     </option>
 
                                 {% endif %}
@@ -1098,6 +1096,11 @@ html, body{
 
                         </div>
 
+                        {% if product.product_type == "variable" and not variant_options %}
+                        <div class="alert alert-warning py-2 mb-3">
+                            <i class="fas fa-exclamation-circle me-1"></i>
+                            This variable product has no saved options yet.
+                        </div>
                         {% endif %}
 
 
@@ -1112,6 +1115,7 @@ html, body{
                                     class="form-control quantity-input"
                                     value="1"
                                     min="1"
+                                    id="quantityInput"
                                     max="{{ product.stock }}"
                                     name="quantity"
                                 >
@@ -2113,45 +2117,71 @@ function copyLink(){
 const variant =
     document.getElementById("variantSelect");
 
+const quantityInput =
+    document.getElementById("quantityInput");
+
+const basePrice =
+    parseFloat(
+        "{{ product.sale_price or product.price }}"
+    ) || 0;
+
+function updateSelectedVariant(){
+
+    if(!variant) return;
+
+    const option =
+        variant.options[variant.selectedIndex];
+
+    if(!option) return;
+
+    const extraPrice =
+        parseFloat(
+            option.dataset.extraPrice || "0"
+        );
+
+    const selectedStock =
+        parseInt(
+            option.dataset.stock || "0",
+            10
+        );
+
+    const finalPrice =
+        basePrice + extraPrice;
+
+    const priceElement =
+        document.querySelector(".price-main");
+
+    if(priceElement){
+
+        priceElement.innerHTML =
+            "₹" +
+            finalPrice.toFixed(2);
+
+    }
+
+    if(quantityInput){
+
+        quantityInput.max =
+            Math.max(selectedStock, 0);
+
+        if(
+            selectedStock > 0 &&
+            parseInt(quantityInput.value || "1", 10) > selectedStock
+        ){
+            quantityInput.value = selectedStock;
+        }
+
+    }
+}
 
 if(variant){
 
     variant.addEventListener(
         "change",
-        function(){
-
-            const option =
-                this.options[this.selectedIndex];
-
-            const extraPrice =
-                parseFloat(
-                    option.dataset.extraPrice || "0"
-                );
-
-            const basePrice =
-                parseFloat(
-                    "{{ product.sale_price or product.price }}"
-                ) || 0;
-
-            const finalPrice =
-                basePrice + extraPrice;
-
-
-            const priceElement =
-                document.querySelector(".price-main");
-
-
-            if(priceElement){
-
-                priceElement.innerHTML =
-                    "₹" +
-                    finalPrice.toFixed(2);
-
-            }
-
-        }
+        updateSelectedVariant
     );
 
+    updateSelectedVariant();
 }
 
 </script>
