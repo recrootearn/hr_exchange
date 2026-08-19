@@ -82,6 +82,46 @@ def admin_required(f):
 
     return decorated_function
 
+
+def marketplace_login_required(f):
+    """Allow marketplace access for either an HR or candidate session."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        candidate_id = session.get("candidate_id")
+        if candidate_id:
+            candidate = CandidateUser.query.get(candidate_id)
+            if candidate and not candidate.is_deleted:
+                return f(*args, **kwargs)
+
+        if current_user.is_authenticated:
+            return f(*args, **kwargs)
+
+        return redirect("/candidate-login" if candidate_id else "/login")
+
+    return decorated_function
+
+
+def marketplace_owner_filter(model):
+    """Return the marketplace ownership condition for the active account."""
+    candidate_id = session.get("candidate_id")
+    if candidate_id:
+        candidate = CandidateUser.query.get(candidate_id)
+        if candidate and not candidate.is_deleted:
+            return model.candidate_id == candidate.id
+
+    return model.user_id == current_user.id
+
+
+def marketplace_owner_values():
+    """Return owner fields for new marketplace records."""
+    candidate_id = session.get("candidate_id")
+    if candidate_id:
+        candidate = CandidateUser.query.get(candidate_id)
+        if candidate and not candidate.is_deleted:
+            return {"user_id": None, "candidate_id": candidate.id}
+
+    return {"user_id": current_user.id, "candidate_id": None}
+
 PRODUCT_UPLOAD_FOLDER = os.path.join(
     app.root_path,
     "static",
@@ -2600,7 +2640,13 @@ class Cart(db.Model):
     user_id = db.Column(
         db.Integer,
         db.ForeignKey("user.id"),
-        nullable=False
+        nullable=True
+    )
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=True
     )
 
     seller_id = db.Column(
@@ -2740,7 +2786,13 @@ class ShippingAddress(db.Model):
     user_id = db.Column(
         db.Integer,
         db.ForeignKey("user.id"),
-        nullable=False
+        nullable=True
+    )
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=True
     )
 
     full_name = db.Column(
@@ -2900,7 +2952,13 @@ class Order(db.Model):
     user_id = db.Column(
         db.Integer,
         db.ForeignKey("user.id"),
-        nullable=False
+        nullable=True
+    )
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=True
     )
 
     seller_id = db.Column(
@@ -17429,7 +17487,7 @@ def product_details(id):
         related_products=related_products
     )
 @app.route("/cart/add/<int:product_id>", methods=["POST"])
-@login_required
+@marketplace_login_required
 def add_to_cart(product_id):
 
     product = (
@@ -17446,14 +17504,14 @@ def add_to_cart(product_id):
 
     selected_variant = request.form.get("selected_variant")
 
-    cart = Cart.query.filter_by(
-        user_id=current_user.id
+    cart = Cart.query.filter(
+        marketplace_owner_filter(Cart)
     ).first()
 
     if not cart:
 
         cart = Cart(
-            user_id=current_user.id,
+            **marketplace_owner_values(),
             seller_id=product.seller_id
         )
 
@@ -17510,7 +17568,7 @@ def add_to_cart(product_id):
     return redirect("/cart")
 
 @app.route("/cart/increase/<int:id>")
-@login_required
+@marketplace_login_required
 def increase_cart(id):
 
     item = CartItem.query.get_or_404(id)
@@ -17522,7 +17580,7 @@ def increase_cart(id):
     return redirect("/cart")
 
 @app.route("/cart/decrease/<int:id>")
-@login_required
+@marketplace_login_required
 def decrease_cart(id):
 
     item = CartItem.query.get_or_404(id)
@@ -17536,7 +17594,7 @@ def decrease_cart(id):
     return redirect("/cart")
 
 @app.route("/cart/remove/<int:id>")
-@login_required
+@marketplace_login_required
 def remove_cart(id):
 
     item = CartItem.query.get_or_404(id)
@@ -17561,11 +17619,11 @@ def remove_cart(id):
     return redirect("/cart")
 
 @app.route("/cart")
-@login_required
+@marketplace_login_required
 def cart():
 
-    cart = Cart.query.filter_by(
-        user_id=current_user.id
+    cart = Cart.query.filter(
+        marketplace_owner_filter(Cart)
     ).first()
 
     subtotal = 0
@@ -17589,15 +17647,15 @@ def cart():
     )
 
 @app.route("/checkout")
-@login_required
+@marketplace_login_required
 def checkout():
 
-    cart = Cart.query.filter_by(
-        user_id=current_user.id
+    cart = Cart.query.filter(
+        marketplace_owner_filter(Cart)
     ).first_or_404()
 
-    addresses = ShippingAddress.query.filter_by(
-        user_id=current_user.id
+    addresses = ShippingAddress.query.filter(
+        marketplace_owner_filter(ShippingAddress)
     ).order_by(
         ShippingAddress.is_default.desc()
     ).all()
@@ -17694,12 +17752,12 @@ def calculate_marketplace_shipping_charge(cart, address):
 
 
 @app.route("/calculate-marketplace-shipping", methods=["POST"])
-@login_required
+@marketplace_login_required
 def calculate_marketplace_shipping():
     """Return the server-calculated delivery charge for checkout."""
 
-    cart = Cart.query.filter_by(
-        user_id=current_user.id
+    cart = Cart.query.filter(
+        marketplace_owner_filter(Cart)
     ).first_or_404()
 
     data = request.get_json(silent=True) or request.form
@@ -17719,9 +17777,9 @@ def calculate_marketplace_shipping():
             "error": "Invalid delivery address."
         }), 400
 
-    address = ShippingAddress.query.filter_by(
-        id=address_id,
-        user_id=current_user.id
+    address = ShippingAddress.query.filter(
+        ShippingAddress.id == address_id,
+        marketplace_owner_filter(ShippingAddress)
     ).first()
 
     if not address:
@@ -17765,7 +17823,7 @@ def calculate_marketplace_shipping():
 
 @app.route("/shop/add-address", methods=["GET", "POST"])
 @app.route("/add-address", methods=["GET", "POST"])
-@login_required
+@marketplace_login_required
 def add_address():
 
     if request.method == "POST":
@@ -17792,8 +17850,8 @@ def add_address():
             return redirect(request.referrer or "/checkout")
 
         # If this is the first address, automatically make it default
-        existing_count = ShippingAddress.query.filter_by(
-            user_id=current_user.id
+        existing_count = ShippingAddress.query.filter(
+            marketplace_owner_filter(ShippingAddress)
         ).count()
 
         if existing_count == 0:
@@ -17801,15 +17859,15 @@ def add_address():
 
         # If setting this as default, remove default from other addresses
         if make_default:
-            ShippingAddress.query.filter_by(
-                user_id=current_user.id
+            ShippingAddress.query.filter(
+                marketplace_owner_filter(ShippingAddress)
             ).update(
                 {"is_default": False},
                 synchronize_session=False
             )
 
         address = ShippingAddress(
-            user_id=current_user.id,
+            **marketplace_owner_values(),
             full_name=full_name,
             mobile=mobile,
             alternate_mobile=alternate_mobile or None,
@@ -17841,12 +17899,12 @@ def add_address():
 
 @app.route("/shop/edit-address/<int:address_id>", methods=["GET", "POST"])
 @app.route("/edit-address/<int:address_id>", methods=["GET", "POST"])
-@login_required
+@marketplace_login_required
 def edit_address(address_id):
 
-    address = ShippingAddress.query.filter_by(
-        id=address_id,
-        user_id=current_user.id
+    address = ShippingAddress.query.filter(
+        ShippingAddress.id == address_id,
+        marketplace_owner_filter(ShippingAddress)
     ).first_or_404()
 
     if request.method == "POST":
@@ -17896,7 +17954,7 @@ def edit_address(address_id):
         if make_default:
 
             ShippingAddress.query.filter(
-                ShippingAddress.user_id == current_user.id,
+                marketplace_owner_filter(ShippingAddress),
                 ShippingAddress.id != address.id
             ).update(
                 {"is_default": False},
@@ -17923,12 +17981,12 @@ def edit_address(address_id):
 
 @app.route("/shop/delete-address/<int:address_id>", methods=["POST"])
 @app.route("/delete-address/<int:address_id>", methods=["POST"])
-@login_required
+@marketplace_login_required
 def delete_address(address_id):
 
-    address = ShippingAddress.query.filter_by(
-        id=address_id,
-        user_id=current_user.id
+    address = ShippingAddress.query.filter(
+        ShippingAddress.id == address_id,
+        marketplace_owner_filter(ShippingAddress)
     ).first_or_404()
 
     was_default = address.is_default
@@ -17940,8 +17998,8 @@ def delete_address(address_id):
     # automatically make another address default
     if was_default:
 
-        next_address = ShippingAddress.query.filter_by(
-            user_id=current_user.id
+        next_address = ShippingAddress.query.filter(
+            marketplace_owner_filter(ShippingAddress)
         ).order_by(
             ShippingAddress.created_at.desc()
         ).first()
@@ -17967,16 +18025,16 @@ def delete_address(address_id):
     "/set-default-address/<int:address_id>",
     methods=["POST"]
 )
-@login_required
+@marketplace_login_required
 def set_default_address(address_id):
 
-    address = ShippingAddress.query.filter_by(
-        id=address_id,
-        user_id=current_user.id
+    address = ShippingAddress.query.filter(
+        ShippingAddress.id == address_id,
+        marketplace_owner_filter(ShippingAddress)
     ).first_or_404()
 
     ShippingAddress.query.filter(
-        ShippingAddress.user_id == current_user.id
+        marketplace_owner_filter(ShippingAddress)
     ).update(
         {"is_default": False},
         synchronize_session=False
@@ -17991,11 +18049,11 @@ def set_default_address(address_id):
     return redirect("/checkout")
 
 @app.route("/create-marketplace-order", methods=["POST"])
-@login_required
+@marketplace_login_required
 def create_marketplace_order():
 
-    cart = Cart.query.filter_by(
-        user_id=current_user.id
+    cart = Cart.query.filter(
+        marketplace_owner_filter(Cart)
     ).first_or_404()
 
     data = request.get_json(silent=True) or {}
@@ -18007,9 +18065,9 @@ def create_marketplace_order():
             "error": "Please select a delivery address."
         }), 400
 
-    address = ShippingAddress.query.filter_by(
-        id=int(address_id),
-        user_id=current_user.id
+    address = ShippingAddress.query.filter(
+        ShippingAddress.id == int(address_id),
+        marketplace_owner_filter(ShippingAddress)
     ).first()
 
     if not address:
@@ -18058,7 +18116,7 @@ def create_marketplace_order():
     return jsonify(razorpay_order)
 
 @app.route("/marketplace-payment-success")
-@login_required
+@marketplace_login_required
 def marketplace_payment_success():
 
     razorpay_payment_id = request.args.get("payment_id")
@@ -18133,9 +18191,9 @@ def marketplace_payment_success():
         "address_id"
     )
 
-    address = ShippingAddress.query.filter_by(
-        id=address_id,
-        user_id=current_user.id
+    address = ShippingAddress.query.filter(
+        ShippingAddress.id == address_id,
+        marketplace_owner_filter(ShippingAddress)
     ).first()
 
     if not address:
@@ -18152,8 +18210,8 @@ def marketplace_payment_success():
     # 5. GET CART
     # ---------------------------------------------------------
 
-    cart = Cart.query.filter_by(
-        user_id=current_user.id
+    cart = Cart.query.filter(
+        marketplace_owner_filter(Cart)
     ).first()
 
     if not cart or not cart.items:
@@ -18228,7 +18286,7 @@ def marketplace_payment_success():
 
         order_number=order_number,
 
-        user_id=current_user.id,
+        **marketplace_owner_values(),
 
         seller_id=cart.seller_id,
 
@@ -18405,11 +18463,11 @@ def marketplace_payment_success():
     )
 
 @app.route("/my-orders")
-@login_required
+@marketplace_login_required
 def my_orders():
 
-    orders = Order.query.filter_by(
-        user_id=current_user.id
+    orders = Order.query.filter(
+        marketplace_owner_filter(Order)
     ).order_by(
         Order.created_at.desc()
     ).all()
@@ -18420,12 +18478,12 @@ def my_orders():
     )
 
 @app.route("/my-orders/<int:order_id>")
-@login_required
+@marketplace_login_required
 def my_order_details(order_id):
 
-    order = Order.query.filter_by(
-        id=order_id,
-        user_id=current_user.id
+    order = Order.query.filter(
+        Order.id == order_id,
+        marketplace_owner_filter(Order)
     ).first_or_404()
 
     history = OrderStatusHistory.query.filter_by(
@@ -18466,13 +18524,16 @@ def seller_orders():
     )
 
 @app.route("/order/<int:order_id>")
-@login_required
+@marketplace_login_required
 def order_details(order_id):
 
     order = Order.query.get_or_404(order_id)
 
-    if order.user_id != current_user.id and order.seller_id != current_user.id:
-
+    candidate_id = session.get("candidate_id")
+    if candidate_id:
+        if order.candidate_id != candidate_id:
+            abort(403)
+    elif order.user_id != current_user.id and order.seller_id != current_user.id:
         abort(403)
 
     history = OrderStatusHistory.query.filter_by(
@@ -18546,9 +18607,13 @@ def reject_order(order_id):
         return redirect(f"/order/{order.id}")
 
     seller = User.query.get(order.seller_id)
-    customer = User.query.get(order.user_id)
+    customer = User.query.get(order.user_id) if order.user_id else None
+    candidate_customer = (
+        CandidateUser.query.get(order.candidate_id)
+        if order.candidate_id else None
+    )
 
-    if not seller or not customer:
+    if not seller or (not customer and not candidate_customer):
         flash(
             "Seller or customer account could not be found. "
             "Refund was not processed.",
@@ -18586,11 +18651,18 @@ def reject_order(order_id):
     # =========================================================
     # REFUND CUSTOMER'S COMPLETE PAYMENT
     # =========================================================
-    customer.wallet_balance = round(
-        float(customer.wallet_balance or 0)
-        + refund_amount,
-        2
-    )
+    if candidate_customer:
+        candidate_customer.wallet_balance = round(
+            float(candidate_customer.wallet_balance or 0)
+            + refund_amount,
+            2
+        )
+    else:
+        customer.wallet_balance = round(
+            float(customer.wallet_balance or 0)
+            + refund_amount,
+            2
+        )
 
     # =========================================================
     # REVERSE THIS ORDER'S COMMISSION / SELLER SETTLEMENT
@@ -18627,17 +18699,30 @@ def reject_order(order_id):
     # CUSTOMER NOTIFICATION
     # =========================================================
     try:
-        send_notification(
-            user_id=customer.id,
-            user_type="hr",
-            message=(
-                f"Your order #{order.order_number} was rejected by "
-                f"the seller. ₹{refund_amount:.2f} has been credited "
-                "back to your wallet."
-            ),
-            link=f"/order/{order.id}",
-            type="order"
-        )
+        if candidate_customer:
+            send_notification(
+                user_id=candidate_customer.id,
+                user_type="candidate",
+                message=(
+                    f"Your order #{order.order_number} was rejected by "
+                    f"the seller. ₹{refund_amount:.2f} has been credited "
+                    "back to your wallet."
+                ),
+                link=f"/order/{order.id}",
+                type="order"
+            )
+        else:
+            send_notification(
+                user_id=customer.id,
+                user_type="hr",
+                message=(
+                    f"Your order #{order.order_number} was rejected by "
+                    f"the seller. ₹{refund_amount:.2f} has been credited "
+                    "back to your wallet."
+                ),
+                link=f"/order/{order.id}",
+                type="order"
+            )
     except Exception:
         # Notification failure must not undo the financial refund.
         pass
@@ -18654,12 +18739,12 @@ def reject_order(order_id):
 
 
 @app.route("/cancel-order/<int:order_id>")
-@login_required
+@marketplace_login_required
 def cancel_order(order_id):
 
-    order = Order.query.filter_by(
-        id=order_id,
-        user_id=current_user.id
+    order = Order.query.filter(
+        Order.id == order_id,
+        marketplace_owner_filter(Order)
     ).first_or_404()
 
     if order.order_status not in [
