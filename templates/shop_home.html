@@ -678,11 +678,16 @@ input{
 }
 
 .store-image-wrap .store-promoted-badge{
-    top:-8px;
-    right:-10px;
+    position:absolute;
+    top:-24px;
+    left:50%;
+    right:auto;
+    transform:translateX(-50%);
     white-space:nowrap;
     min-width:max-content;
-    padding:5px 8px;
+    padding:5px 9px;
+    border-radius:999px;
+    z-index:5;
 }
 
 .store-image{
@@ -1420,9 +1425,11 @@ input{
     }
 
     .store-image-wrap .store-promoted-badge{
-        top:-7px;
-        right:-9px;
-        padding:4px 6px;
+        top:-23px;
+        left:50%;
+        right:auto;
+        transform:translateX(-50%);
+        padding:4px 7px;
         font-size:7px;
     }
 
