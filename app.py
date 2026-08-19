@@ -7158,6 +7158,68 @@ def admin_business_settings():
 
 import requests
 
+
+# =========================================================
+# ADMIN — MARKETPLACE PROMOTION CREDIT CONTROL
+# =========================================================
+@app.route("/admin/promotion-credits", methods=["GET", "POST"])
+@login_required
+def admin_promotion_credits():
+    """Admin control for paid marketplace promotion credit pricing/duration."""
+    if not admin_only():
+        return "Access Denied", 403
+
+    settings = get_business_settings()
+
+    if request.method == "POST":
+        try:
+            product_price = int(
+                request.form.get("product_promotion_price", 0)
+            )
+            shop_price = int(
+                request.form.get("shop_promotion_price", 0)
+            )
+            duration_days = int(
+                request.form.get("promotion_duration_days", 7)
+            )
+        except (TypeError, ValueError):
+            flash("Please enter valid promotion settings.", "danger")
+            return redirect(url_for("admin_promotion_credits"))
+
+        if product_price < 0 or shop_price < 0:
+            flash(
+                "Promotion credit prices cannot be negative.",
+                "danger"
+            )
+            return redirect(url_for("admin_promotion_credits"))
+
+        if duration_days < 1 or duration_days > 30:
+            flash(
+                "Promotion duration must be between 1 and 30 days.",
+                "danger"
+            )
+            return redirect(url_for("admin_promotion_credits"))
+
+        settings.product_promotion_price = product_price
+        settings.shop_promotion_price = shop_price
+        settings.promotion_duration_days = duration_days
+        settings.updated_by = current_user.id
+
+        db.session.commit()
+
+        flash(
+            "Promotion credit settings updated successfully.",
+            "success"
+        )
+        return redirect(url_for("admin_promotion_credits"))
+
+    return render_template(
+        "admin_promotion_credits.html",
+        settings=settings,
+        durations=promotion_duration_options(settings)
+    )
+
+
 @app.route('/verify-otp-backend', methods=['POST'])
 def verify_otp_backend():
     req_id = request.form.get('msg91_req_id')
