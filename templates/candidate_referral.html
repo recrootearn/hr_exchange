@@ -3,135 +3,294 @@
 {% block content %}
 
 <style>
-
-body{
-    background:#f5f7fb;
+/* =========================================================
+   RECROOTEARN — CANDIDATE REFERRAL
+   Edge-to-edge page: intentionally overrides base.html width
+   ========================================================= */
+html, body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden;
+    background: #f6f8fc;
 }
 
-.main-card{
-    background:#ffffff;
-    border-radius:24px;
-    padding:22px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
-    margin-bottom:20px;
+body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #172033;
 }
 
-.page-title{
-    font-size:28px;
-    font-weight:800;
-    color:#111827;
+/* Hide common base layout wrappers without changing the base template */
+main, .container, .container-fluid {
+    max-width: 100% !important;
 }
 
-.page-subtitle{
-    color:#6b7280;
-    margin-bottom:20px;
+main.container, main.container-fluid,
+.container > .row, .container-fluid > .row {
+    width: 100% !important;
 }
 
-.reward-banner{
-    background:linear-gradient(135deg,#2563eb,#3b82f6);
-    color:white;
-    border-radius:20px;
-    padding:20px;
-    margin-bottom:20px;
+.ref-page {
+    width: 100%;
+    min-height: calc(100vh - 1px);
+    padding: 18px clamp(12px, 2.5vw, 36px) 40px;
 }
 
-.reward-banner h4{
-    font-weight:800;
-    margin-bottom:8px;
+.ref-shell {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
 }
 
-.referral-box{
-    border:2px dashed #dbeafe;
-    background:#f8fbff;
-    border-radius:18px;
-    padding:18px;
-    margin-top:15px;
+.ref-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 26px;
+    padding: clamp(22px, 4vw, 38px);
+    color: #fff;
+    background:
+        radial-gradient(circle at 92% 12%, rgba(255,255,255,.22), transparent 28%),
+        radial-gradient(circle at 8% 110%, rgba(255,255,255,.13), transparent 34%),
+        linear-gradient(135deg, #0b5ed7 0%, #1769e8 52%, #1648b8 100%);
+    box-shadow: 0 18px 45px rgba(22, 72, 184, .20);
+    margin-bottom: 16px;
 }
 
-.referral-label{
-    color:#6b7280;
-    font-size:13px;
-    font-weight:600;
-    text-transform:uppercase;
-    letter-spacing:.5px;
+.ref-hero:after {
+    content: "";
+    position: absolute;
+    width: 190px;
+    height: 190px;
+    right: -65px;
+    bottom: -95px;
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 50%;
+    box-shadow: 0 0 0 25px rgba(255,255,255,.04), 0 0 0 55px rgba(255,255,255,.025);
 }
 
-.referral-value{
-    font-size:24px;
-    font-weight:800;
-    color:#2563eb;
-    margin-top:6px;
-    word-break:break-all;
+.hero-icon {
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    border-radius: 17px;
+    background: rgba(255,255,255,.16);
+    border: 1px solid rgba(255,255,255,.20);
+    font-size: 27px;
+    margin-bottom: 14px;
 }
 
-.action-btn{
-    border:none;
-    border-radius:50px;
-    padding:12px 18px;
-    font-weight:700;
-    width:100%;
-    margin-top:12px;
+.hero-title {
+    font-size: clamp(25px, 4vw, 38px);
+    line-height: 1.08;
+    font-weight: 850;
+    letter-spacing: -.8px;
+    margin: 0 0 8px;
 }
 
-.copy-btn{
-    background:#2563eb;
-    color:white;
+.hero-subtitle {
+    max-width: 650px;
+    color: rgba(255,255,255,.82);
+    font-size: 14px;
+    margin: 0;
 }
 
-.copy-btn:hover{
-    background:#1d4ed8;
+.earn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 18px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    background: #fff;
+    color: #0b5ed7;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 7px 18px rgba(0,0,0,.10);
 }
 
-.whatsapp-btn{
-    background:#25D366;
-    color:white;
-    text-decoration:none;
-    display:block;
-    text-align:center;
+/* Existing sections become modern cards */
+.main-card {
+    background: #fff;
+    border: 1px solid #e8edf5;
+    border-radius: 20px;
+    padding: clamp(16px, 2.4vw, 24px);
+    margin-bottom: 14px;
+    box-shadow: 0 8px 25px rgba(18, 32, 56, .055);
 }
 
-.whatsapp-btn:hover{
-    color:white;
-    background:#20bf5b;
+.page-title { font-size: 28px; font-weight: 800; }
+.page-subtitle { color: #667085; }
+
+.reward-banner {
+    border-radius: 17px;
+    padding: 18px;
+    margin-bottom: 15px;
+    background: linear-gradient(135deg,#0b5ed7,#2b7bea);
+    box-shadow: 0 12px 28px rgba(11,94,215,.16);
 }
 
-@media(max-width:768px){
+.reward-banner h4 { font-weight: 800; margin-bottom: 6px; }
+.reward-banner p { font-size: 13px; line-height: 1.55; opacity: .92; }
 
-.page-title{
-font-size:24px;
+.referral-box {
+    border: 1px solid #dbe7fa;
+    background: #f7faff;
+    border-radius: 16px;
+    padding: 15px;
+    margin-top: 12px;
 }
 
-.referral-value{
-font-size:18px;
+.referral-label {
+    color: #667085;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .65px;
 }
 
+.referral-value {
+    font-size: 21px;
+    font-weight: 850;
+    color: #0b5ed7;
+    margin-top: 5px;
+    word-break: break-word;
 }
 
+.action-btn {
+    border: 0;
+    border-radius: 12px;
+    min-height: 43px;
+    padding: 10px 14px;
+    font-weight: 750;
+    width: 100%;
+    margin-top: 10px;
+    transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 17px rgba(0,0,0,.10);
+}
+
+.copy-btn { background: #0b5ed7; color: #fff; }
+.copy-btn:hover { background: #084db2; }
+.whatsapp-btn {
+    background: #18b957;
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+}
+.whatsapp-btn:hover { color:#fff; background:#119e49; }
+
+/* Stats */
+.stats-grid .main-card {
+    height: 100%;
+    min-height: 132px;
+    margin-bottom: 0;
+    padding: 17px;
+}
+
+.stat-icon {
+    font-size: 24px !important;
+    margin-bottom: 4px;
+}
+
+.stats-grid h2 {
+    font-size: 25px;
+    margin: 5px 0 0;
+}
+
+/* Progress */
+.main-card h4 {
+    color: #172033;
+}
+
+.progress-track {
+    background: #edf1f7 !important;
+    height: 12px !important;
+}
+.progress-track > div {
+    background: linear-gradient(90deg,#0b5ed7,#20a4f3) !important;
+}
+
+/* Referral history */
+.referral-history-item {
+    border: 1px solid #e7ebf2 !important;
+    background: #fbfcfe;
+    border-radius: 15px !important;
+    padding: 13px !important;
+    margin-bottom: 9px !important;
+}
+
+.referral-history-item h5 {
+    font-size: 15px;
+    font-weight: 750 !important;
+}
+
+.referral-history-item hr {
+    margin: 11px 0;
+    border-color: #edf0f4;
+}
+
+/* How it works */
+.how-step {
+    border-left-width: 3px !important;
+    padding: 10px 0 10px 13px !important;
+    margin-bottom: 10px !important;
+    background: #fbfcfe;
+    border-radius: 0 12px 12px 0;
+}
+
+.how-step h6 { margin-bottom: 4px; }
+
+/* Potential earnings */
+.earning-tier {
+    background: #fbfcfe;
+    border: 1px solid #e7ebf2 !important;
+    border-radius: 15px !important;
+    padding: 14px !important;
+    height: 100%;
+}
+
+/* Tighten Bootstrap spacing */
+.row { --bs-gutter-y: 12px; }
+.mb-4 { margin-bottom: 14px !important; }
+.mb-3 { margin-bottom: 10px !important; }
+
+@media (max-width: 768px) {
+    .ref-page { padding: 10px 10px 28px; }
+    .ref-hero { border-radius: 20px; padding: 22px 18px; }
+    .hero-title { font-size: 27px; }
+    .main-card { border-radius: 17px; padding: 15px; }
+    .referral-value { font-size: 18px; }
+    .stats-grid .main-card { min-height: 116px; }
+}
+
+@media (min-width: 992px) {
+    .ref-page { padding-top: 22px; }
+}
+
+/* Ensure no accidental base gutters remain */
+.ref-page .container,
+.ref-page .container-fluid {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
 </style>
 
-<div class="main-card">
+<div class="ref-page">
+  <div class="ref-shell">
+    <section class="ref-hero">
+      <div class="hero-icon">🎁</div>
+      <h1 class="hero-title">Refer friends. Earn rewards.</h1>
+      <p class="hero-subtitle">Share your RecrootEarn referral link, help someone get hired, and earn when they complete the required journey.</p>
+      <span class="earn-pill">💰 Earn ₹{{ settings.candidate_to_candidate_reward }} per successful referral</span>
+    </section>
 
-<div class="text-center">
 
-<div style="font-size:42px;">
-
-🎁
-
-</div>
-
-<div class="page-title">
-
-Candidate Referral Program
-
-</div>
-
-<div class="page-subtitle">
-
-Invite friends and earn rewards when they complete their journey.
-
-</div>
-
-</div>
 
 <div class="reward-banner">
 
@@ -231,9 +390,8 @@ class="action-btn whatsapp-btn">
 
 </div>
 
-</div>
 
-<div class="row g-3 mb-4">
+<div class="row g-3 mb-4 stats-grid">
 
 <div class="col-6 col-md-4">
 
@@ -454,7 +612,7 @@ class="badge bg-primary rounded-pill">
 
 {% for user in referrals %}
 
-<div class="border rounded-4 p-3 mb-3">
+<div class="border rounded-4 p-3 mb-3 referral-history-item">
 
 <div class="d-flex justify-content-between align-items-center">
 
@@ -595,7 +753,7 @@ class="mb-4">
 </h4>
 
 <div
-class="border-start border-4 border-primary ps-3 mb-4">
+class="border-start border-4 border-primary ps-3 mb-4 how-step">
 
 <h6 style="font-weight:700;">
 
@@ -613,7 +771,7 @@ with your friends.
 </div>
 
 <div
-class="border-start border-4 border-success ps-3 mb-4">
+class="border-start border-4 border-success ps-3 mb-4 how-step">
 
 <h6 style="font-weight:700;">
 
@@ -631,7 +789,7 @@ using your referral code.
 </div>
 
 <div
-class="border-start border-4 border-warning ps-3 mb-4">
+class="border-start border-4 border-warning ps-3 mb-4 how-step">
 
 <h6 style="font-weight:700;">
 
@@ -650,7 +808,7 @@ and applies for at least one job.
 </div>
 
 <div
-class="border-start border-4 border-info ps-3">
+class="border-start border-4 border-info ps-3 how-step">
 
 <h6 style="font-weight:700;">
 
@@ -689,7 +847,7 @@ class="mb-4">
 <div class="col-4">
 
 <div
-class="text-center border rounded-4 p-3">
+class="text-center border rounded-4 p-3 earning-tier">
 
 <div style="font-size:28px;">
 
@@ -724,7 +882,7 @@ Referral
 <div class="col-4">
 
 <div
-class="text-center border rounded-4 p-3">
+class="text-center border rounded-4 p-3 earning-tier">
 
 <div style="font-size:28px;">
 
@@ -759,7 +917,7 @@ Referrals
 <div class="col-4">
 
 <div
-class="text-center border rounded-4 p-3">
+class="text-center border rounded-4 p-3 earning-tier">
 
 <div style="font-size:28px;">
 
@@ -807,6 +965,18 @@ alert("Copied Successfully!");
 
 }
 
+</script>
+  </div>
+</div>
+
+<script>
+function copyText(text){
+    navigator.clipboard.writeText(text).then(function(){
+        const old = document.title;
+        document.title = 'Copied!';
+        setTimeout(function(){ document.title = old; }, 900);
+    });
+}
 </script>
 
 {% endblock %}
