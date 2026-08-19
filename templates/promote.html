@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.promo-wrap{max-width:980px;margin:0 auto;padding:24px 14px 50px}
+.promo-hero{background:linear-gradient(135deg,#0b5ed7,#2563eb);color:#fff;border-radius:22px;padding:24px;margin-bottom:18px;box-shadow:0 12px 35px rgba(37,99,235,.18)}
+.promo-hero h1{font-size:24px;font-weight:850;margin:0 0 6px}.promo-hero p{margin:0;opacity:.9;font-size:13px}
+.credit-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);padding:8px 12px;border-radius:999px;margin-top:15px;font-weight:800;font-size:13px}
+.promo-card{background:#fff;border:1px solid #e8edf5;border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 7px 24px rgba(15,23,42,.06)}
+.promo-card h3{font-size:16px;font-weight:850;margin:0}.sub{font-size:11px;color:#64748b;margin-top:4px}
+.target-tabs{display:flex;gap:8px;margin-bottom:16px}.target-tab{flex:1;border:1px solid #dbe3ef;background:#fff;color:#475569;border-radius:12px;padding:11px;font-weight:800}.target-tab.active{background:#0b5ed7;color:#fff;border-color:#0b5ed7}
+.target-pane{display:none}.target-pane.active{display:block}
+.product-option{border:1px solid #e3e9f2;border-radius:13px;padding:11px;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer}.product-option:hover{border-color:#8db0f8}.product-option input{accent-color:#0b5ed7}.product-name{font-size:13px;font-weight:800}.product-price{font-size:11px;color:#64748b}
+.duration-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.duration-option{border:1px solid #dbe3ef;border-radius:12px;padding:11px 6px;text-align:center;cursor:pointer}.duration-option:has(input:checked){border-color:#0b5ed7;background:#eff6ff}.duration-option input{display:none}.duration-days{font-size:13px;font-weight:850}.duration-cost{font-size:10px;color:#64748b;margin-top:3px}
+.summary{background:#f7f9fc;border-radius:14px;padding:14px;margin-top:16px}.summary-row{display:flex;justify-content:space-between;font-size:12px;margin:6px 0}.summary-total{font-size:18px;font-weight:900;color:#0b5ed7}
+.promo-btn{width:100%;border:0;border-radius:13px;background:#0b5ed7;color:#fff;padding:13px;font-weight:850;margin-top:13px}.promo-btn:disabled{opacity:.5}
+@media(max-width:650px){.duration-grid{grid-template-columns:repeat(3,1fr)}.promo-wrap{padding:14px 10px 35px}.promo-hero{border-radius:17px}}
+</style>
+
+<div class="promo-wrap">
+  <div class="promo-hero">
+    <h1>🚀 Promote on RecrootEarn</h1>
+    <p>Get your product or shop more visibility using paid credits.</p>
+    <div class="credit-pill"><i class="fas fa-coins"></i> Paid Credits: {{ paid_credits }}</div>
+  </div>
+
+  <form method="POST" id="promotionForm">
+    <div class="promo-card">
+      <h3>What do you want to promote?</h3>
+      <div class="sub">Choose one. Promotion uses paid credits only.</div>
+
+      <div class="target-tabs">
+        <button type="button" class="target-tab active" data-target="productPane">Product</button>
+        <button type="button" class="target-tab" data-target="shopPane">Shop</button>
+      </div>
+
+      <input type="hidden" name="target_type" id="targetType" value="product">
+
+      <div id="productPane" class="target-pane active">
+        {% if products %}
+          {% for product in products %}
+          <label class="product-option">
+            <input type="radio" name="product_id" value="{{ product.id }}" {% if loop.first %}checked{% endif %}>
+            <span>
+              <div class="product-name">{{ product.name }}</div>
+              <div class="product-price">₹{{ "%.2f"|format(product.sale_price or product.price or 0) }}</div>
+            </span>
+          </label>
+          {% endfor %}
+        {% else %}
+          <div class="alert alert-light mb-0">You don't have any active products to promote.</div>
+        {% endif %}
+      </div>
+
+      <div id="shopPane" class="target-pane">
+        <div class="product-option" style="cursor:default">
+          <span class="product-name">
+            {{ current_user.shop_name or current_user.company or current_user.first_name or current_user.username }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card">
+      <h3>Choose promotion duration</h3>
+      <div class="sub">Your total paid-credit cost is calculated automatically.</div>
+
+      <div class="duration-grid">
+        {% for days in durations %}
+        <label class="duration-option">
+          <input type="radio" name="days" value="{{ days }}" {% if loop.first %}checked{% endif %}>
+          <div class="duration-days">{{ days }} Day{% if days != 1 %}s{% endif %}</div>
+          <div class="duration-cost" data-days="{{ days }}">— credits</div>
+        </label>
+        {% endfor %}
+      </div>
+
+      <div class="summary">
+        <div class="summary-row"><span>Promotion</span><strong id="summaryType">Product</strong></div>
+        <div class="summary-row"><span>Duration</span><strong id="summaryDays">—</strong></div>
+        <div class="summary-row"><span>Total</span><strong class="summary-total" id="summaryCost">— credits</strong></div>
+        <button class="promo-btn" type="submit" id="promoBtn">Promote Now</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+const productRate = {{ settings.product_promotion_price|int }};
+const shopRate = {{ settings.shop_promotion_price|int }};
+const paidCredits = {{ paid_credits|int }};
+const tabs = document.querySelectorAll('.target-tab');
+const panes = document.querySelectorAll('.target-pane');
+const targetType = document.getElementById('targetType');
+const summaryType = document.getElementById('summaryType');
+const summaryDays = document.getElementById('summaryDays');
+const summaryCost = document.getElementById('summaryCost');
+const promoBtn = document.getElementById('promoBtn');
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.remove('active'));
+    panes.forEach(x => x.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.target).classList.add('active');
+    const isShop = tab.dataset.target === 'shopPane';
+    targetType.value = isShop ? 'shop' : 'product';
+    summaryType.textContent = isShop ? 'Shop' : 'Product';
+    updateSummary();
+  });
+});
+
+function updateSummary(){
+  const selected = document.querySelector('input[name="days"]:checked');
+  const days = selected ? parseInt(selected.value,10) : 0;
+  const isShop = targetType.value === 'shop';
+  const rate = isShop ? shopRate : productRate;
+  const cost = days * rate;
+
+  document.querySelectorAll('.duration-cost').forEach(el => {
+    const d = parseInt(el.dataset.days,10);
+    el.textContent = (d * rate) + ' credits';
+  });
+
+  summaryDays.textContent = days ? days + (days === 1 ? ' day' : ' days') : '—';
+  summaryCost.textContent = cost + ' credits';
+  promoBtn.disabled = !cost || cost > paidCredits;
+  promoBtn.textContent = cost > paidCredits ? 'Not Enough Paid Credits' : 'Promote Now';
+}
+document.querySelectorAll('input[name="days"]').forEach(x => x.addEventListener('change', updateSummary));
+updateSummary();
+</script>
+{% endblock %}

@@ -269,64 +269,120 @@
 
 
 /* =========================================================
-   ADD PRODUCT CARD
+   SHOP ACTION CARD
    ========================================================= */
 
-.shop-add-product{
-    display:block;
+.shop-action-card{
     background:#fff;
-    border-radius:14px;
+    border-radius:16px;
     overflow:hidden;
+    box-shadow:0 4px 14px rgba(15,23,42,.07);
+    border:1px solid #e7edf6;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:210px;
+}
+
+.shop-action{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
     text-decoration:none;
-    color:inherit;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    color:#2563eb;
+    background:linear-gradient(145deg,#f5f8ff,#eef4ff);
+    transition:.2s;
+    padding:18px 10px;
+}
+
+.shop-action + .shop-action{
+    border-left:1px solid #dfe7f3;
+    background:linear-gradient(145deg,#fff8ee,#fff3dc);
+    color:#e57b16;
+}
+
+.shop-action:hover{
+    transform:translateY(-2px);
+}
+
+.shop-action:active{
+    transform:scale(.98);
+}
+
+.shop-action-icon{
+    width:58px;
+    height:58px;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    background:#2563eb;
+    color:#fff;
+    box-shadow:0 7px 18px rgba(37,99,235,.22);
+}
+
+.shop-action + .shop-action .shop-action-icon{
+    background:linear-gradient(135deg,#f59e0b,#ea580c);
+    box-shadow:0 7px 18px rgba(234,88,12,.20);
+}
+
+.shop-action-title{
+    font-size:14px;
+    font-weight:800;
+    text-align:center;
+}
+
+.shop-action-subtitle{
+    font-size:10px;
+    font-weight:600;
+    color:#7b8494;
+    text-align:center;
+    line-height:1.35;
+}
+
+
+/* =========================================================
+   PRODUCT MANAGEMENT ACTIONS
+   ========================================================= */
+
+.shop-product-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+    margin-top:9px;
+}
+
+.shop-product-action{
+    min-height:36px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    text-decoration:none;
+    font-size:11px;
+    font-weight:800;
     transition:.2s;
 }
 
-.shop-add-product:hover{
-    transform:translateY(-2px);
-    box-shadow:0 5px 15px rgba(0,0,0,.10);
-}
-
-.shop-add-product-box{
-    width:100%;
-    aspect-ratio:1/1;
-
-    background:linear-gradient(
-        135deg,
-        #eef4ff,
-        #f8faff
-    );
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-
+.shop-product-action.manage{
+    background:#eef4ff;
     color:#2563eb;
 }
 
-.shop-add-product-icon{
-    width:64px;
-    height:64px;
-    border-radius:50%;
-    background:#2563eb;
-    color:#fff;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:30px;
-    margin-bottom:12px;
-
-    box-shadow:0 5px 15px rgba(37,99,235,.25);
+.shop-product-action.promote{
+    background:#fff3df;
+    color:#d97706;
 }
 
-.shop-add-product-text{
-    font-size:15px;
-    font-weight:800;
-    color:#2563eb;
+.shop-product-action:hover{
+    transform:translateY(-1px);
+}
+
+.shop-product-action:active{
+    transform:scale(.97);
 }
 
 
@@ -655,14 +711,32 @@
         font-size:14px;
     }
 
-    .shop-add-product-icon{
-        width:55px;
-        height:55px;
-        font-size:25px;
+    .shop-action-card{
+        min-height:190px;
     }
 
-    .shop-add-product-text{
+    .shop-action-icon{
+        width:52px;
+        height:52px;
+        font-size:22px;
+        border-radius:16px;
+    }
+
+    .shop-action-title{
         font-size:13px;
+    }
+
+    .shop-action-subtitle{
+        font-size:9px;
+    }
+
+    .shop-product-actions{
+        gap:5px;
+    }
+
+    .shop-product-action{
+        min-height:34px;
+        font-size:10px;
     }
 
 }
@@ -700,6 +774,11 @@
 
 }
 
+
+.shop-profile-product > .shop-product-actions a{
+    position:relative;
+    z-index:10;
+}
 </style>
 
 
@@ -1294,30 +1373,48 @@
 
 
         <!-- =================================================
-             ADD PRODUCT
+             SHOP ACTIONS
              ================================================= -->
 
-        <a
-            href="/shop/add-product"
-            class="shop-add-product">
+        <div class="shop-action-card">
 
-            <div class="shop-add-product-box">
+            <a
+                href="/shop/add-product"
+                class="shop-action">
 
-                <div class="shop-add-product-icon">
-
+                <div class="shop-action-icon">
                     <i class="fas fa-plus"></i>
-
                 </div>
 
-                <div class="shop-add-product-text">
-
+                <div class="shop-action-title">
                     Add Product
-
                 </div>
 
-            </div>
+                <div class="shop-action-subtitle">
+                    Add something new to your shop
+                </div>
 
-        </a>
+            </a>
+
+            <a
+                href="/shop/promote"
+                class="shop-action">
+
+                <div class="shop-action-icon">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+
+                <div class="shop-action-title">
+                    Promote Shop
+                </div>
+
+                <div class="shop-action-subtitle">
+                    Reach more customers
+                </div>
+
+            </a>
+
+        </div>
 
 
         <!-- =================================================
@@ -1326,8 +1423,7 @@
 
         {% for product in products %}
 
-        <a
-            href="/shop/manage-product/{{ product.id }}"
+        <div
             class="shop-profile-product">
 
 
@@ -1416,17 +1512,27 @@
                 </div>
 
 
-                <div class="manage-product-text">
+                <div class="shop-product-actions">
 
-                    <i class="fas fa-edit"></i>
+                    <a
+                        href="/shop/manage-product/{{ product.id }}"
+                        class="shop-product-action manage">
+                        <i class="fas fa-edit"></i>
+                        Manage
+                    </a>
 
-                    Manage Product
+                    <a
+                        href="/shop/promote-product/{{ product.id }}"
+                        class="shop-product-action promote">
+                        <i class="fas fa-bullhorn"></i>
+                        Promote
+                    </a>
 
                 </div>
 
             </div>
 
-        </a>
+        </div>
 
         {% endfor %}
 
