@@ -16744,18 +16744,20 @@ def add_product():
             for i in range(len(values)):
 
                 # Ignore empty options
-                if not values[i].strip():
+                option_value = values[i].strip()
+                if not option_value:
                     continue
 
-                # Variant name
+                # ProductVariant stores the variation type/name.
                 variant_name = (
-                    names[i]
+                    names[i].strip()
                     if i < len(names)
                     and names[i].strip()
                     else "Option"
                 )
 
-                # Variant price
+                # The base product price is used as the reference.
+                # ProductVariantOption stores only the extra price.
                 variant_price = (
                     float(prices[i])
                     if i < len(prices)
@@ -16763,7 +16765,6 @@ def add_product():
                     else float(product.price)
                 )
 
-                # Variant stock
                 variant_stock = (
                     int(stocks[i])
                     if i < len(stocks)
@@ -16771,17 +16772,32 @@ def add_product():
                     else 0
                 )
 
-                db.session.add(
-                    ProductVariant(
+                # Reuse the same variation type for multiple options.
+                # Example:
+                # Color -> Red
+                # Color -> Blue
+                variant = ProductVariant.query.filter_by(
+                    product_id=product.id,
+                    name=variant_name
+                ).first()
 
+                if not variant:
+                    variant = ProductVariant(
                         product_id=product.id,
+                        name=variant_name
+                    )
+                    db.session.add(variant)
+                    db.session.flush()
 
-                        variant_name=variant_name,
-
-                        option_value=values[i].strip(),
-
-                        price=variant_price,
-
+                # ProductVariantOption stores the actual selectable
+                # value, price difference and stock.
+                db.session.add(
+                    ProductVariantOption(
+                        variant_id=variant.id,
+                        value=option_value,
+                        extra_price=(
+                            variant_price - float(product.price)
+                        ),
                         stock=variant_stock
                     )
                 )
