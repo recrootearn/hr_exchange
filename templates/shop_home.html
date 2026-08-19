@@ -1570,8 +1570,6 @@ input{
      MAIN
      ===================================================== -->
 
-{% set now = now|default(none) %}
-
 <main class="shop-container">
 
 
@@ -1821,7 +1819,6 @@ input{
 {% if stores %}
 {% set promoted_stores = stores
     |selectattr('is_shop_promoted')
-    |selectattr('shop_promotion_expires_at')
     |list
 %}
 
@@ -1841,7 +1838,7 @@ input{
 
         {% for store in promoted_stores %}
 
-        {% if not store.shop_promotion_expires_at or store.shop_promotion_expires_at > now %}
+        {% if store.is_shop_promoted %}
 
         <a
             href="{{ url_for(
@@ -2076,7 +2073,7 @@ input{
 
         {% endif %}
 
-        {% if product.is_promoted and product.promotion_expires_at and product.promotion_expires_at > now %}
+        {% if product.is_promoted %}
         <span class="promotion-label">
             <i class="fas fa-bolt"></i> PROMOTED
         </span>
