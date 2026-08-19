@@ -1513,12 +1513,12 @@ html, body{
                                         {% if item.reviewer_photo %}
                                             {% if item.reviewer_type == "Candidate" %}
                                                 <img
-                                                    src="{{ url_for('static', filename='profile/' + item.reviewer_photo) }}"
+                                                    src="{{ url_for('static', filename='uploads/' + item.reviewer_photo) }}"
                                                     alt="{{ item.reviewer_name }}"
                                                 >
                                             {% else %}
                                                 <img
-                                                    src="{{ url_for('static', filename='profile/' + item.reviewer_photo) }}"
+                                                    src="{{ url_for('static', filename='uploads/' + item.reviewer_photo) }}"
                                                     alt="{{ item.reviewer_name }}"
                                                 >
                                             {% endif %}
@@ -1623,10 +1623,10 @@ html, body{
                         <img
                             src="{{ url_for(
                                 'static',
-                                filename='profile/' + product.seller.profile_photo
+                                filename='uploads/' + product.seller.profile_photo
                             ) }}"
                             class="seller-avatar mb-3"
-                            alt="{{ product.seller.shop_name }}"
+                            alt="{{ product.seller.shop_name or product.seller.company or product.seller.first_name or 'Store' }}"
                         >
 
                         {% else %}
@@ -1644,7 +1644,7 @@ html, body{
 
                         <div class="seller-name">
 
-                            {{ product.seller.shop_name }}
+                            {{ product.seller.shop_name or product.seller.company or product.seller.first_name or product.seller.username or 'Store' }}
 
                         </div>
 
@@ -1659,16 +1659,11 @@ html, body{
                         </p>
 
 
-                        <!--
-                        IMPORTANT:
-                        app.py has company_shop(seller_id),
-                        NOT seller_profile(seller_id).
-                        -->
-
                         <a
                             href="{{ url_for(
-                                'company_shop',
-                                seller_id=product.seller.id
+                                'company_share_shop',
+                                seller_id=product.seller.id,
+                                shop_slug=seller_shop_slug
                             ) }}"
                             class="btn btn-outline-primary w-100 shop-btn"
                         >
