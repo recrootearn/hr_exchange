@@ -324,6 +324,308 @@
     line-height:1.9;
 }
 
+
+/* =========================================================
+   CANDIDATE SHOP
+   ========================================================= */
+
+.profile-content-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    background:#fff;
+    border-top:1px solid #eef0f4;
+    border-bottom:1px solid #e5e7eb;
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+.profile-tab{
+    border:0;
+    background:#fff;
+    color:#6b7280;
+    padding:15px 8px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    position:relative;
+}
+
+.profile-tab i{
+    margin-right:6px;
+}
+
+.profile-tab.active{
+    color:#2563eb;
+}
+
+.profile-tab.active::after{
+    content:"";
+    position:absolute;
+    left:18%;
+    right:18%;
+    bottom:0;
+    height:3px;
+    border-radius:5px 5px 0 0;
+    background:#2563eb;
+}
+
+.profile-tab-content{
+    display:none;
+}
+
+.profile-tab-content.active{
+    display:block;
+}
+
+.shop-name-manager{
+    margin:4px 0 16px;
+    padding:16px;
+    background:linear-gradient(145deg,#ffffff,#f8fbff);
+    border:1px solid #e5ebf5;
+    border-radius:18px;
+    box-shadow:0 5px 18px rgba(37,99,235,.08);
+}
+
+.shop-name-manager-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:12px;
+}
+
+.shop-name-manager-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:15px;
+    font-weight:800;
+    color:#111827;
+}
+
+.shop-name-manager-title i{
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+    background:#eef4ff;
+    color:#2563eb;
+    font-size:15px;
+}
+
+.shop-name-manager-current{
+    max-width:45%;
+    padding:6px 10px;
+    border-radius:20px;
+    background:#eef4ff;
+    color:#2563eb;
+    font-size:12px;
+    font-weight:800;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.shop-name-form{
+    display:flex;
+    gap:8px;
+}
+
+.shop-name-input{
+    flex:1;
+    min-width:0;
+    height:44px;
+    padding:0 13px;
+    border:1px solid #dbe3ef;
+    border-radius:12px;
+    outline:none;
+    font-size:14px;
+    background:#f8fafc;
+    color:#111827;
+}
+
+.shop-name-input:focus{
+    border-color:#2563eb;
+    background:#fff;
+    box-shadow:0 0 0 3px rgba(37,99,235,.10);
+}
+
+.shop-name-save{
+    height:44px;
+    padding:0 17px;
+    border:0;
+    border-radius:12px;
+    background:#2563eb;
+    color:#fff;
+    font-size:13px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.shop-profile-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+.shop-add-product,
+.shop-profile-product{
+    display:block;
+    text-decoration:none;
+    color:inherit;
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 4px 14px rgba(15,23,42,.05);
+}
+
+.shop-add-product-box{
+    min-height:210px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    text-align:center;
+    background:#f8fbff;
+    border:1px dashed #93b4f7;
+    border-radius:16px;
+}
+
+.shop-add-product-icon{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#eaf1ff;
+    color:#2563eb;
+    font-size:28px;
+}
+
+.shop-add-product-text{
+    margin-top:12px;
+    font-size:14px;
+    font-weight:800;
+    color:#2563eb;
+}
+
+.shop-product-image{
+    position:relative;
+    width:100%;
+    aspect-ratio:1/1;
+    background:#f3f4f6;
+    overflow:hidden;
+}
+
+.shop-product-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.shop-product-placeholder{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#9ca3af;
+    font-size:32px;
+}
+
+.product-status{
+    position:absolute;
+    top:8px;
+    right:8px;
+    padding:5px 8px;
+    border-radius:20px;
+    font-size:10px;
+    font-weight:800;
+    background:#fff;
+}
+
+.product-status.active{
+    color:#059669;
+}
+
+.product-status.inactive{
+    color:#dc2626;
+}
+
+.shop-product-info{
+    padding:10px;
+}
+
+.shop-product-name{
+    font-size:14px;
+    font-weight:800;
+    color:#111827;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.shop-product-price{
+    margin-top:5px;
+    color:#2563eb;
+    font-size:15px;
+    font-weight:800;
+}
+
+.shop-product-price span{
+    margin-left:5px;
+    color:#9ca3af;
+    text-decoration:line-through;
+    font-size:12px;
+    font-weight:600;
+}
+
+.manage-product-text{
+    margin-top:8px;
+    color:#6b7280;
+    font-size:11px;
+    font-weight:700;
+}
+
+.shop-empty{
+    text-align:center;
+    padding:42px 20px;
+    color:#6b7280;
+}
+
+.shop-empty i{
+    font-size:42px;
+    color:#cbd5e1;
+}
+
+.shop-empty h4{
+    margin:12px 0 5px;
+    color:#111827;
+    font-weight:800;
+}
+
+.shop-empty p{
+    margin:0;
+    font-size:13px;
+}
+
+.candidate-video-empty{
+    text-align:center;
+    padding:55px 20px;
+    color:#6b7280;
+}
+
+.candidate-video-empty i{
+    font-size:42px;
+    color:#cbd5e1;
+}
+
 @media(max-width:768px){
 
 .content{
@@ -412,6 +714,37 @@ height:48px;
 
 }
 
+
+@media(max-width:768px){
+    .profile-tab{
+        padding:14px 5px;
+        font-size:12px;
+    }
+
+    .profile-tab i{
+        margin-right:4px;
+    }
+
+    .shop-profile-grid{
+        grid-template-columns:repeat(2,1fr);
+        gap:8px;
+    }
+}
+
+@media(max-width:380px){
+    .shop-name-form{
+        flex-direction:column;
+    }
+
+    .shop-name-save{
+        width:100%;
+    }
+
+    .shop-profile-grid{
+        gap:6px;
+    }
+}
+
 </style>
 
 <div class="profile-wrapper">
@@ -477,6 +810,35 @@ class="btn edit-btn">
 </a>
 
 </div>
+
+<div class="profile-content-tabs">
+
+<button type="button" class="profile-tab" data-tab="videos" onclick="switchCandidateTab('videos')">
+    <i class="fas fa-video"></i>
+    Videos
+</button>
+
+<button type="button" class="profile-tab active" data-tab="details" onclick="switchCandidateTab('details')">
+    <i class="fas fa-id-card"></i>
+    Details
+</button>
+
+<button type="button" class="profile-tab" data-tab="shop" onclick="switchCandidateTab('shop')">
+    <i class="fas fa-store"></i>
+    Shop
+</button>
+
+</div>
+
+<div id="candidate-tab-videos" class="profile-tab-content">
+    <div class="candidate-video-empty">
+        <i class="fas fa-video"></i>
+        <h4>Videos</h4>
+        <p>Your uploaded videos will appear here.</p>
+    </div>
+</div>
+
+<div id="candidate-tab-details" class="profile-tab-content active">
 
 <div class="profile-body">
 
@@ -855,5 +1217,129 @@ class="btn edit-btn">
 </div>
 
 </div>
+
+<div id="candidate-tab-shop" class="profile-tab-content">
+
+<div class="profile-body">
+
+<div class="shop-name-manager">
+    <div class="shop-name-manager-head">
+        <span class="shop-name-manager-title">
+            <i class="fas fa-store"></i>
+            Shop Name
+        </span>
+
+        {% if current_user.shop_name %}
+        <span class="shop-name-manager-current">
+            {{ current_user.shop_name }}
+        </span>
+        {% endif %}
+    </div>
+
+    <form method="POST" action="{{ url_for('shop_settings') }}" class="shop-name-form">
+        <input
+            type="text"
+            name="shop_name"
+            class="shop-name-input"
+            maxlength="200"
+            value="{{ current_user.shop_name or '' }}"
+            placeholder="Enter your public shop name"
+            required>
+
+        <button type="submit" class="shop-name-save">
+            <i class="fas fa-check"></i>
+            Save
+        </button>
+    </form>
+</div>
+
+<div class="shop-profile-grid">
+
+<a href="/shop/add-product" class="shop-add-product">
+    <div class="shop-add-product-box">
+        <div class="shop-add-product-icon">
+            <i class="fas fa-plus"></i>
+        </div>
+        <div class="shop-add-product-text">
+            Add Product
+        </div>
+    </div>
+</a>
+
+{% for product in products %}
+<a href="/shop/manage-product/{{ product.id }}" class="shop-profile-product">
+    <div class="shop-product-image">
+        {% if product.images and product.images|length > 0 %}
+        <img
+            src="{{ url_for('static', filename='uploads/products/' + product.images[0].image) }}"
+            alt="{{ product.name }}"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/no-image.png') }}';">
+        {% else %}
+        <div class="shop-product-placeholder">
+            <i class="fas fa-image"></i>
+        </div>
+        {% endif %}
+
+        {% if product.is_active %}
+        <span class="product-status active">ACTIVE</span>
+        {% else %}
+        <span class="product-status inactive">INACTIVE</span>
+        {% endif %}
+    </div>
+
+    <div class="shop-product-info">
+        <div class="shop-product-name">{{ product.name }}</div>
+        <div class="shop-product-price">
+            {% if product.sale_price %}
+                ₹{{ "%.0f"|format(product.sale_price) }}
+                <span>₹{{ "%.0f"|format(product.price) }}</span>
+            {% else %}
+                ₹{{ "%.0f"|format(product.price) }}
+            {% endif %}
+        </div>
+        <div class="manage-product-text">
+            <i class="fas fa-edit"></i>
+            Manage Product
+        </div>
+    </div>
+</a>
+{% endfor %}
+
+</div>
+
+{% if not products %}
+<div class="shop-empty">
+    <i class="fas fa-store"></i>
+    <h4>No Products Yet</h4>
+    <p>Add your first product to start selling.</p>
+</div>
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+function switchCandidateTab(tab){
+    document.querySelectorAll('.profile-tab').forEach(function(button){
+        button.classList.toggle(
+            'active',
+            button.getAttribute('data-tab') === tab
+        );
+    });
+
+    document.querySelectorAll('.profile-tab-content').forEach(function(content){
+        content.classList.remove('active');
+    });
+
+    var selected = document.getElementById('candidate-tab-' + tab);
+    if(selected){
+        selected.classList.add('active');
+    }
+}
+</script>
 
 {% endblock %}
