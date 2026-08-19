@@ -121,6 +121,18 @@
     color:white;
 }
 
+
+<style>
+/* Discover: subtle shuffle motion */
+.discover-shuffle-card{
+    animation: discoverCardIn .35s ease both;
+}
+@keyframes discoverCardIn{
+    from{opacity:0;transform:translateY(7px) scale(.985);}
+    to{opacity:1;transform:none;}
+}
+</style>
+
 </style>
 
 <div class="search-box">
@@ -172,7 +184,7 @@
 
         <div class="default-avatar">
 
-            {{ hr.first_name[:1] }}
+            {{ hr.first_name[0]|upper if hr.first_name else "H" }}
 
         </div>
 
@@ -225,5 +237,37 @@
 {% endfor %}
 
 </div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const grids = document.querySelectorAll(
+        ".candidate-grid, .hr-grid"
+    );
+
+    grids.forEach(function(grid) {
+        const cards = Array.from(
+            grid.querySelectorAll(".candidate-card, .hr-card")
+        );
+
+        if (cards.length < 2) return;
+
+        // Fisher-Yates shuffle: every refresh gets a new order.
+        for (let i = cards.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cards[i], cards[j]] = [cards[j], cards[i]];
+        }
+
+        const fragment = document.createDocumentFragment();
+        cards.forEach(function(card, index) {
+            card.classList.add("discover-shuffle-card");
+            card.style.animationDelay = Math.min(index * 0.025, 0.3) + "s";
+            fragment.appendChild(card);
+        });
+
+        grid.appendChild(fragment);
+    });
+});
+</script>
 
 {% endblock %}
