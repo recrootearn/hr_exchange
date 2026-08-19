@@ -486,8 +486,7 @@
 
 /* =========================================================
    SHOP NAME MANAGEMENT
-   IMPORTANT:
-   THIS IS ON PROFILE PAGE, NOT INSIDE SHOP TAB
+   NOW INSIDE SHOP TAB ONLY
    ========================================================= */
 
 .shop-name-manager{
@@ -874,64 +873,6 @@
 
 
 <!-- =========================================================
-     SHOP NAME
-     THIS IS ON PROFILE PAGE
-     ========================================================= -->
-
-<div class="shop-name-manager">
-
-    <div class="shop-name-manager-head">
-
-        <span class="shop-name-manager-title">
-
-            <i class="fas fa-store"></i>
-            Shop Name
-
-        </span>
-
-
-        {% if current_user.shop_name %}
-
-        <span class="shop-name-manager-current">
-
-            {{ current_user.shop_name }}
-
-        </span>
-
-        {% endif %}
-
-    </div>
-
-
-    <form
-        method="POST"
-        action="{{ url_for('shop_settings') }}"
-        class="shop-name-form">
-
-        <input
-            type="text"
-            name="shop_name"
-            class="shop-name-input"
-            maxlength="200"
-            value="{{ current_user.shop_name or '' }}"
-            placeholder="Enter your public shop name"
-            required>
-
-        <button
-            type="submit"
-            class="shop-name-save">
-
-            <i class="fas fa-check"></i>
-            Save
-
-        </button>
-
-    </form>
-
-</div>
-
-
-<!-- =========================================================
      PROFILE TABS
      ========================================================= -->
 
@@ -1002,11 +943,13 @@
 
             {% if job.images and job.images != "" %}
 
-                {% set first_file = job.images.split(',')[0]|trim %}
+                {% set first_file =
+                    job.images.split(',')[0]|trim %}
 
             {% elif job.image and job.image != "" %}
 
-                {% set first_file = job.image|trim %}
+                {% set first_file =
+                    job.image|trim %}
 
             {% endif %}
 
@@ -1243,16 +1186,75 @@
 
 <!-- =========================================================
      SHOP TAB
-
-     IMPORTANT:
-     ONLY SHOP CONTENT IS HERE.
-
-     NO SHOP NAME EDITOR HERE.
+     SHOP NAME EDITING IS NOW INSIDE SHOP ONLY
      ========================================================= -->
 
 <div
     id="profile-shop"
     class="profile-tab-content">
+
+
+    <!-- =====================================================
+         SHOP NAME MANAGEMENT
+         ===================================================== -->
+
+    <div class="shop-name-manager">
+
+        <div class="shop-name-manager-head">
+
+            <span class="shop-name-manager-title">
+
+                <i class="fas fa-store"></i>
+                Shop Name
+
+            </span>
+
+
+            {% if current_user.shop_name %}
+
+            <span class="shop-name-manager-current">
+
+                {{ current_user.shop_name }}
+
+            </span>
+
+            {% endif %}
+
+        </div>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('shop_settings') }}"
+            class="shop-name-form">
+
+            <input
+                type="text"
+                name="shop_name"
+                class="shop-name-input"
+                maxlength="200"
+                value="{{ current_user.shop_name or '' }}"
+                placeholder="Enter your public shop name"
+                required>
+
+
+            <button
+                type="submit"
+                class="shop-name-save">
+
+                <i class="fas fa-check"></i>
+                Save
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- =====================================================
+         SHOP PRODUCTS
+         ===================================================== -->
 
     <div class="shop-profile-grid">
 
@@ -1393,7 +1395,6 @@
         </a>
 
         {% endfor %}
-
 
     </div>
 
