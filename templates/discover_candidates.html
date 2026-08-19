@@ -3,797 +3,579 @@
 {% block content %}
 
 <style>
-/* =========================================================
-   RECROOTEARN CANDIDATE DASHBOARD — COMPACT MODERN UI
-   ========================================================= */
-.content{
-    padding:12px 16px 28px !important;
-    background:#f4f7fb;
+
+.page-title{
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:20px;
 }
 
-.dashboard-wrap{
-    max-width:1180px;
-    margin:0 auto;
-}
-
-/* Compact spacing for existing Bootstrap structure */
-.row.mt-4{
-    margin-top:4px !important;
-}
-.mb-4{
-    margin-bottom:10px !important;
-}
-.mt-4{
-    margin-top:12px !important;
-}
-.mb-3{
-    margin-bottom:8px !important;
-}
-
-/* ---------- STAT CARDS ---------- */
-.stats-card{
+.search-box{
     background:#fff;
-    border:1px solid #e7ebf2;
-    border-radius:16px;
-    padding:15px 16px;
-    box-shadow:0 5px 18px rgba(15,23,42,.045);
-    transition:.2s ease;
-}
-.stats-card:hover{
-    transform:translateY(-2px);
-    box-shadow:0 9px 24px rgba(15,23,42,.08);
+    padding:15px;
+    border-radius:18px;
+    margin-bottom:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.06);
 }
 
-.row > [class*="col-"] .stats-card{
-    min-height:112px;
+.candidate-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    align-items:stretch;
 }
 
-.row > [class*="col-"] .stats-card .mb-3{
-    margin-bottom:7px !important;
-}
+@media(max-width:992px){
 
-.row > [class*="col-"] .stats-card i{
-    font-size:21px !important;
-}
+    .candidate-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
 
-.row > [class*="col-"] .stats-card h6{
-    margin-bottom:3px !important;
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:.1px;
-}
-
-.row > [class*="col-"] .stats-card h2{
-    font-size:24px;
-    line-height:1.1;
-    margin:0;
-}
-
-/* ---------- SECTION HEADERS ---------- */
-.stats-card > .d-flex > div:first-child h3,
-.stats-card > h3{
-    margin:0;
-    font-size:18px;
-    line-height:1.2;
-    font-weight:800;
-    color:#172033;
-}
-
-.stats-card > .d-flex > div:first-child p,
-.stats-card > .d-flex > div:first-child small{
-    font-size:12px;
-    line-height:1.35;
-}
-
-/* ---------- BADGES ---------- */
-.badge{
-    border-radius:999px !important;
-    font-size:11px !important;
-    font-weight:800 !important;
-    padding:8px 12px !important;
-}
-
-/* ---------- DAILY REWARD ---------- */
-.stats-card hr{
-    margin:13px 0;
-    border-color:#edf0f4;
-    opacity:1;
-}
-
-.stats-card .row{
-    margin-left:-6px;
-    margin-right:-6px;
-}
-
-.stats-card .row > [class*="col-"]{
-    padding-left:6px;
-    padding-right:6px;
-}
-
-.stats-card .d-flex.justify-content-between > span{
-    font-size:13px;
-    color:#3d4655;
-}
-
-.stats-card .progress{
-    height:9px !important;
-    margin-bottom:9px !important;
-    background:#edf1f6;
-    border-radius:99px !important;
-    overflow:hidden;
-}
-
-.stats-card .progress-bar{
-    border-radius:99px;
-    font-size:0;
-}
-
-.stats-card .alert{
-    border:0;
-    border-radius:12px;
-    padding:10px 13px;
-    font-size:12px;
-    margin-bottom:0 !important;
-}
-
-/* ---------- LEVEL CARD ---------- */
-.stats-card .text-center h6{
-    margin-bottom:3px;
-    font-size:11px;
-    font-weight:700;
-    color:#7b8494 !important;
-}
-
-.stats-card .text-center h3{
-    margin:0;
-    font-size:22px;
-    font-weight:800;
-    color:#172033;
 }
 
 @media(max-width:768px){
-    .content{
-        padding:8px 9px 20px !important;
+
+    .candidate-grid{
+        grid-template-columns:repeat(2,1fr);
+        gap:12px;
     }
 
-    .row.mt-4{
-        margin-left:-4px;
-        margin-right:-4px;
-    }
-
-    .row.mt-4 > [class*="col-"]{
-        padding-left:4px;
-        padding-right:4px;
-    }
-
-    .row > [class*="col-"] .stats-card{
-        min-height:98px;
-        padding:12px 9px;
-        border-radius:14px;
-    }
-
-    .row > [class*="col-"] .stats-card h6{
-        font-size:10px;
-    }
-
-    .row > [class*="col-"] .stats-card h2{
-        font-size:21px;
-    }
-
-    .row > [class*="col-"] .stats-card i{
-        font-size:18px !important;
-    }
-
-    .stats-card{
-        border-radius:15px;
+    .candidate-card{
         padding:14px;
     }
 
-    .stats-card > .d-flex{
-        gap:10px;
+    .candidate-photo,
+    .default-avatar{
+        width:80px;
+        height:80px;
     }
 
-    .stats-card > .d-flex > div:first-child h3,
-    .stats-card > h3{
-        font-size:16px;
+    .default-avatar{
+        font-size:28px;
     }
 
-    .stats-card .d-flex.justify-content-between > span{
+    .name{
+        font-size:15px;
+        min-height:46px;
+    }
+
+    .designation{
+        font-size:13px;
+        min-height:34px;
+    }
+
+    .city{
         font-size:12px;
+        min-height:46px;
     }
 
-    .stats-card .row > [class*="col-"]{
-        margin-bottom:4px !important;
+    .btn-profile,
+    .btn-follow{
+        height:44px;
+        font-size:13px;
     }
 
-    .stats-card hr{
-        margin:10px 0;
-    }
-
-    .stats-card .progress{
-        height:8px !important;
-    }
 }
 
-@media(max-width:380px){
-    .content{
-        padding-left:6px !important;
-        padding-right:6px !important;
-    }
+.candidate-card{
 
-    .row.mt-4 > [class*="col-"]{
-        padding-left:3px;
-        padding-right:3px;
-    }
+    background:#fff;
+    border-radius:22px;
+    padding:20px;
 
-    .row > [class*="col-"] .stats-card{
-        padding:10px 7px;
-    }
+    text-align:center;
+
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+
+    transition:.25s;
+
+    display:flex;
+    flex-direction:column;
+
+    height:100%;
+
+}
+
+.candidate-card:hover{
+
+    transform:translateY(-4px);
+
+}
+
+.candidate-photo{
+
+    width:90px;
+    height:90px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    margin:0 auto;
+
+    border:4px solid #10b981;
+
+    flex-shrink:0;
+
+}
+
+.default-avatar{
+
+    width:90px;
+    height:90px;
+
+    border-radius:50%;
+
+    margin:0 auto;
+
+    background:#10b981;
+
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:34px;
+    font-weight:700;
+
+    flex-shrink:0;
+
+}
+
+.name{
+
+    margin-top:12px;
+
+    font-size:20px;
+    font-weight:700;
+
+    min-height:56px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    line-height:1.3;
+
+    overflow:hidden;
+
+}
+
+.designation{
+
+    color:#2563eb;
+
+    font-weight:600;
+
+    min-height:40px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    line-height:1.3;
+
+}
+
+.city{
+
+    color:#6b7280;
+
+    font-size:14px;
+
+    min-height:52px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    line-height:1.4;
+
+}
+
+.exp{
+
+    color:#374151;
+
+    font-size:13px;
+
+    min-height:40px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+}
+
+.btn-profile{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#f3f4f6;
+
+    color:#111827;
+
+    text-decoration:none;
+
+    height:48px;
+
+    border-radius:14px;
+
+    margin-top:auto;
+
+    font-weight:700;
+
+}
+
+.btn-profile:hover{
+
+    color:#111827;
+
+}
+
+.btn-follow{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#10b981;
+
+    color:#fff;
+
+    text-decoration:none;
+
+    height:48px;
+
+    border-radius:14px;
+
+    margin-top:10px;
+
+    font-weight:700;
+
+}
+
+.btn-follow:hover{
+
+    color:#fff;
+
+}
+
+.discover-tabs{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-bottom:20px;
+
+}
+
+.discover-tab{
+
+    flex:1;
+
+    border:none;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    background:#e5e7eb;
+
+    font-weight:600;
+
+}
+
+.discover-tab.active{
+
+    background:#2563eb;
+
+    color:#fff;
+
+}
+
+
+<style>
+/* Discover: subtle shuffle motion */
+.discover-shuffle-card{
+    animation: discoverCardIn .35s ease both;
+}
+@keyframes discoverCardIn{
+    from{opacity:0;transform:translateY(7px) scale(.985);}
+    to{opacity:1;transform:none;}
 }
 </style>
 
+</style>
 
-<div class="row mt-4">  <!-- Wallet -->  
+<div class="search-box">
 
-<div class="col-lg-3 col-md-6 col-6 mb-4">  
+    <form method="GET">
 
-    <div class="stats-card text-center">  
+        <div class="input-group">
 
-        <div class="mb-3">  
+            <select name="city" class="form-select">
 
-            <i class="fas fa-wallet fa-2x text-success"></i>  
+                <option value="">All Cities</option>
 
-        </div>  
+                {% for city_name in cities %}
 
-        <h6 class="text-muted mb-2">  
+                <option value="{{ city_name }}"
+                    {% if city == city_name %}selected{% endif %}>
 
-            Wallet Balance  
+                    {{ city_name }}
 
-        </h6>  
+                </option>
 
-        <h2 class="fw-bold text-success">  
+                {% endfor %}
 
-            ₹{{ wallet_balance }}  
+            </select>
 
-        </h2>  
+            <button class="btn btn-primary">
+                Search
+            </button>
 
-    </div>  
+        </div>
 
-</div>  
-
-<!-- Applied Jobs -->  
-
-<div class="col-lg-3 col-md-6 col-6 mb-4">  
-
-    <div class="stats-card text-center">  
-
-        <div class="mb-3">  
-
-            <i class="fas fa-briefcase fa-2x text-primary"></i>  
-
-        </div>  
-
-        <h6 class="text-muted mb-2">  
-
-            Applied Jobs  
-
-        </h6>  
-
-        <h2 class="fw-bold">  
-
-            {{ applied_jobs }}  
-
-        </h2>  
-
-    </div>  
-
-</div>  
-
-<!-- Successful Referrals -->  
-
-<div class="col-lg-3 col-md-6 col-6 mb-4">  
-
-    <div class="stats-card text-center">  
-
-        <div class="mb-3">  
-
-            <i class="fas fa-user-plus fa-2x text-warning"></i>  
-
-        </div>  
-
-        <h6 class="text-muted mb-2">  
-
-            Referrals  
-
-        </h6>  
-
-        <h2 class="fw-bold">  
-
-            {{ referrals }}  
-
-        </h2>  
-
-    </div>  
-
-</div>  
-
-<!-- Interviews -->  
-
-<div class="col-lg-3 col-md-6 col-6 mb-4">  
-
-    <div class="stats-card text-center">  
-
-        <div class="mb-3">  
-
-            <i class="fas fa-calendar-check fa-2x text-danger"></i>  
-
-        </div>  
-
-        <h6 class="text-muted mb-2">  
-
-            Interviews  
-
-        </h6>  
-
-        <h2 class="fw-bold">  
-
-            {{ interviews }}  
-
-        </h2>  
-
-    </div>  
+    </form>
 
 </div>
 
-</div>  <!-- ========================= -->  <!-- DAILY REWARD -->  <!-- ========================= -->  <div class="stats-card">  <div class="d-flex justify-content-between align-items-center">  
+<div class="candidate-grid">
 
-    <div>  
+{% for hr in hrs %}
 
-        <h3 class="fw-bold">  
+<div class="candidate-card hr-section">
 
-            🎁 Daily Reward  
+    {% if hr.profile_photo and hr.profile_photo != "default.png" %}
 
-        </h3>  
+        <img
+        src="/static/uploads/{{ hr.profile_photo }}"
+        class="candidate-photo"
+        alt="{{ hr.first_name or 'HR' }}">
 
-        <p class="text-muted mb-0">  
+    {% else %}
 
-            Complete today's tasks and earn  
+        <div class="default-avatar" aria-label="Profile initials">
 
-            <strong class="text-success">  
+            {{ hr.first_name[0]|upper if hr.first_name else "H" }}
 
-                ₹{{ settings.daily_candidate_reward }}  
+        </div>
 
-            </strong>  
+    {% endif %}
 
-        </p>  
+    <div class="name">
 
-    </div>  
+        {{ (hr.first_name or "Unknown") ~ " " ~ (hr.last_name or "") }}
 
-    <div>  
+    </div>
 
-        {% if candidate.daily_reward_claimed %}  
+    <div class="designation">
 
-        <span class="badge bg-success p-3">  
+        HR Professional
 
-            Reward Claimed  
+    </div>
 
-        </span>  
+    <div class="city">
 
-        {% else %}  
+        🏢 {{ hr.company }}
 
-        <span class="badge bg-warning text-dark p-3">  
+    </div>
 
-            In Progress  
+    <a href="/company/{{ hr.id }}"
+       class="btn-profile">
 
-        </span>  
+       View Profile
 
-        {% endif %}  
+    </a>
 
-    </div>  
+    {% set hr_following = Follow.query.filter_by(
+    follower_hr_id=current_user.id,
+        followed_hr_id=hr.id
+    ).first() %}
 
-</div>  
+    <a href="/follow-hr-user/{{ hr.id }}"
+       class="btn-follow">
 
-<hr>  
+       {% if hr_following %}
+           Following
+       {% else %}
+           Follow HR
+       {% endif %}
 
-<div class="row">  
-
-    {% if settings.daily_reward_login %}  
-
-    <div class="col-md-6 mb-3">  
-
-        <div class="d-flex justify-content-between">  
-
-            <span>  
-
-                {% if candidate.daily_login_completed %}  
-                    ✅ Daily Login  
-                {% else %}  
-                    ⬜ Daily Login  
-                {% endif %}  
-
-            </span>  
-
-            <span>  
-
-                {% if candidate.daily_login_completed %}  
-                    Done  
-                {% else %}  
-                    Pending  
-                {% endif %}  
-
-            </span>  
-
-        </div>  
-
-    </div>  
-
-    {% endif %}  
-
-
-    {% if settings.daily_reward_apply %}  
-
-    <div class="col-md-6 mb-3">  
-
-        <div class="d-flex justify-content-between">  
-
-            <span>  
-
-                {% if candidate.daily_apply_completed %}  
-                    ✅ Apply 1 Job  
-                {% else %}  
-                    ⬜ Apply 1 Job  
-                {% endif %}  
-
-            </span>  
-
-            <span>  
-
-                {% if candidate.daily_apply_completed %}  
-                    Done  
-                {% else %}  
-                    Pending  
-                {% endif %}  
-
-            </span>  
-
-        </div>  
-
-    </div>  
-
-    {% endif %}  
-
-
-    {% if settings.daily_reward_follow %}  
-
-    <div class="col-md-6 mb-3">  
-
-        <div class="d-flex justify-content-between">  
-
-            <span>  
-
-                {% if candidate.daily_follow_completed %}  
-                    ✅ Follow 1 HR  
-                {% else %}  
-                    ⬜ Follow 1 HR  
-                {% endif %}  
-
-            </span>  
-
-            <span>  
-
-                {% if candidate.daily_follow_completed %}  
-                    Done  
-                {% else %}  
-                    Pending  
-                {% endif %}  
-
-            </span>  
-
-        </div>  
-
-    </div>  
-
-    {% endif %}  
-
-
-    {% if settings.daily_reward_referral %}  
-
-    <div class="col-md-6 mb-3">  
-
-        <div class="d-flex justify-content-between">  
-
-            <span>  
-
-                {% if candidate.daily_referral_completed %}  
-                    ✅ Refer {{ settings.daily_referral_target }} Friends  
-                {% else %}  
-                    ⬜ Refer {{ settings.daily_referral_target }} Friends  
-                {% endif %}  
-
-            </span>  
-
-            <span>  
-
-                {% if candidate.daily_referral_completed %}  
-                    Done  
-                {% else %}  
-                    Pending  
-                {% endif %}  
-
-            </span>  
-
-        </div>  
-
-    </div>  
-
-    {% endif %}  
-
-</div>  
-
-<hr>  
-
-<h6 class="mb-3">  
-
-    Today's Progress  
-
-</h6>  
-
-{% set completed = 0 %}  
-{% set total = 0 %}  
-
-{% if settings.daily_reward_login %}  
-    {% set total = total + 1 %}  
-    {% if candidate.daily_login_completed %}  
-        {% set completed = completed + 1 %}  
-    {% endif %}  
-{% endif %}  
-
-{% if settings.daily_reward_apply %}  
-    {% set total = total + 1 %}  
-    {% if candidate.daily_apply_completed %}  
-        {% set completed = completed + 1 %}  
-    {% endif %}  
-{% endif %}  
-
-{% if settings.daily_reward_follow %}  
-    {% set total = total + 1 %}  
-    {% if candidate.daily_follow_completed %}  
-        {% set completed = completed + 1 %}  
-    {% endif %}  
-{% endif %}  
-
-{% if settings.daily_reward_referral %}  
-    {% set total = total + 1 %}  
-    {% if candidate.daily_referral_completed %}  
-        {% set completed = completed + 1 %}  
-    {% endif %}  
-{% endif %}  
-
-{% set percentage = (completed * 100 // total) if total else 0 %}  
-
-<div class="progress mb-3"  
-     style="height:18px;border-radius:20px;">  
-
-    <div class="progress-bar bg-success"  
-         style="width:{{ percentage }}%">  
-
-        {{ percentage }}%  
-
-    </div>  
-
-</div>  
-
-<div class="d-flex justify-content-between">  
-
-    <strong>  
-
-        {{ completed }} / {{ total }} Tasks Completed  
-
-    </strong>  
-
-    <strong class="text-success">  
-
-        ₹{{ settings.daily_candidate_reward }}  
-
-    </strong>  
-
-</div>  
-
-<hr>  
-
-{% if candidate.daily_reward_claimed %}  
-
-<div class="alert alert-success mb-0">  
-
-    🎉 Congratulations! ₹{{ settings.daily_candidate_reward }} has been added to your wallet.  
-
-</div>  
-
-{% else %}  
-
-<div class="alert alert-warning mb-0">  
-
-    Complete all enabled tasks to unlock today's reward.  
-
-</div>  
-
-{% endif %}
-
-</div>  <!-- ========================= -->  <!-- CANDIDATE LEVEL -->  <!-- ========================= -->  <div class="stats-card mt-4">  <div class="d-flex justify-content-between align-items-center mb-3">  
-
-    <div>  
-
-        <h3 class="fw-bold">  
-
-            🏆 Candidate Level  
-
-        </h3>  
-
-        <small class="text-muted">  
-
-            Unlock higher levels by getting successful referrals.  
-
-        </small>  
-
-    </div>  
-
-    <div>  
-
-        {% if referrals < 10 %}  
-
-            <span class="badge bg-secondary p-3">  
-                🌱 Beginner  
-            </span>  
-
-        {% elif referrals < 50 %}  
-
-            <span class="badge bg-warning text-dark p-3">  
-                🥉 Bronze  
-            </span>  
-
-        {% elif referrals < 150 %}  
-
-            <span class="badge bg-info p-3">  
-                🥈 Silver  
-            </span>  
-
-        {% elif referrals < 500 %}  
-
-            <span class="badge bg-warning p-3">  
-                🥇 Gold  
-            </span>  
-
-        {% elif referrals < 1000 %}  
-
-            <span class="badge bg-primary p-3">  
-                💎 Platinum  
-            </span>  
-
-        {% else %}  
-
-            <span class="badge bg-dark p-3">  
-                👑 Legend  
-            </span>  
-
-        {% endif %}  
-
-    </div>  
-
-</div>  
-
-{% if referrals < 10 %}  
-    {% set next_target = 10 %}  
-    {% set next_level = "Bronze" %}  
-{% elif referrals < 50 %}  
-    {% set next_target = 50 %}  
-    {% set next_level = "Silver" %}  
-{% elif referrals < 150 %}  
-    {% set next_target = 150 %}  
-    {% set next_level = "Gold" %}  
-{% elif referrals < 500 %}  
-    {% set next_target = 500 %}  
-    {% set next_level = "Platinum" %}  
-{% elif referrals < 1000 %}  
-    {% set next_target = 1000 %}  
-    {% set next_level = "Legend" %}  
-{% else %}  
-    {% set next_target = referrals %}  
-    {% set next_level = "Maximum" %}  
-{% endif %}  
-
-{% if next_target == referrals %}  
-    {% set level_progress = 100 %}  
-{% else %}  
-    {% set level_progress = (referrals * 100 // next_target) %}  
-{% endif %}  
-
-<div class="progress mb-3"  
-     style="height:18px;border-radius:25px;">  
-
-    <div class="progress-bar bg-primary"  
-
-         style="width:{{ level_progress }}%;">  
-
-        {{ level_progress }}%  
-
-    </div>  
-
-</div>  
-
-<div class="row text-center">  
-
-    <div class="col-md-4 mb-3">  
-
-        <h6 class="text-muted">  
-
-            Successful Referrals  
-
-        </h6>  
-
-        <h3>  
-
-            {{ referrals }}  
-
-        </h3>  
-
-    </div>  
-
-    <div class="col-md-4 mb-3">  
-
-        <h6 class="text-muted">  
-
-            Next Level  
-
-        </h6>  
-
-        <h3>  
-
-            {{ next_level }}  
-
-        </h3>  
-
-    </div>  
-
-    <div class="col-md-4 mb-3">  
-
-        <h6 class="text-muted">  
-
-            Remaining  
-
-        </h6>  
-
-        <h3>  
-
-            {% if next_target == referrals %}  
-                0  
-            {% else %}  
-                {{ next_target-referrals }}  
-            {% endif %}  
-
-        </h3>  
-
-    </div>  
-
-</div>  
-
-{% if next_target == referrals %}  
-
-    <div class="alert alert-success mb-0">  
-
-        🎉 Congratulations! You have reached the highest Candidate Level.  
-
-    </div>  
-
-{% else %}  
-
-    <div class="alert alert-info mb-0">  
-
-        Complete <b>{{ next_target-referrals }}</b> more successful referrals to unlock <b>{{ next_level }}</b> level.  
-
-    </div>  
-
-{% endif %}
+    </a>
 
 </div>
+
+{% endfor %}
+
+{% for candidate in candidates %}
+
+<div class="candidate-card candidate-section">
+
+    {% if candidate.profile_photo %}
+
+        <img
+        src="/static/uploads/{{ candidate.profile_photo }}"
+        class="candidate-photo">
+
+    {% else %}
+
+        <div class="default-avatar">
+
+            {{ candidate.full_name[0] if candidate.full_name else "U" }}
+
+        </div>
+
+    {% endif %}
+
+    <div class="name">
+
+        {{ candidate.full_name or "Unknown Candidate" }}
+
+    </div>
+
+    <div class="designation">
+
+        {{ candidate.designation or "Professional" }}
+
+    </div>
+
+    <div class="city">
+
+        📍 {{ candidate.city or "City Not Added" }}
+
+    </div>
+
+    <a href="/candidate/{{ candidate.id }}"
+       class="btn-profile">
+
+       View Profile
+
+    </a>
+
+    {% set is_following = Follow.query.filter_by(
+    follower_hr_id=current_user.id,
+    followed_candidate_id=candidate.id
+    ).first() %}
+
+    <a href="/follow-candidate/{{ candidate.id }}"
+       class="btn-follow">
+
+       {% if is_following %}
+           Following
+       {% else %}
+           Follow Candidate
+       {% endif %}
+
+    </a>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<script>
+
+function showSection(type,btn){
+
+    document
+    .querySelectorAll('.discover-tab')
+    .forEach(tab=>{
+        tab.classList.remove('active');
+    });
+
+    btn.classList.add('active');
+
+    let hrs =
+    document.querySelectorAll('.hr-section');
+
+    let candidates =
+    document.querySelectorAll('.candidate-section');
+
+    if(type==='all'){
+
+        hrs.forEach(x=>{
+            x.style.display='';
+        });
+
+        candidates.forEach(x=>{
+            x.style.display='';
+        });
+
+    }
+
+    if(type==='hr'){
+
+        hrs.forEach(x=>{
+            x.style.display='';
+        });
+
+        candidates.forEach(x=>{
+            x.style.display='none';
+        });
+
+    }
+
+    if(type==='candidate'){
+
+        hrs.forEach(x=>{
+            x.style.display='none';
+        });
+
+        candidates.forEach(x=>{
+            x.style.display='';
+        });
+
+    }
+
+}
+
+</script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const grids = document.querySelectorAll(
+        ".candidate-grid, .hr-grid"
+    );
+
+    grids.forEach(function(grid) {
+        const cards = Array.from(
+            grid.querySelectorAll(".candidate-card, .hr-card")
+        );
+
+        if (cards.length < 2) return;
+
+        // Fisher-Yates shuffle: every refresh gets a new order.
+        for (let i = cards.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cards[i], cards[j]] = [cards[j], cards[i]];
+        }
+
+        const fragment = document.createDocumentFragment();
+        cards.forEach(function(card, index) {
+            card.classList.add("discover-shuffle-card");
+            card.style.animationDelay = Math.min(index * 0.025, 0.3) + "s";
+            fragment.appendChild(card);
+        });
+
+        grid.appendChild(fragment);
+    });
+});
+</script>
 
 {% endblock %}
