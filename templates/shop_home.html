@@ -119,7 +119,7 @@ input{
 }
 
 
-/* MENU */
+/* BACK BUTTON */
 
 .shop-menu{
     width:42px;
@@ -136,7 +136,9 @@ input{
 }
 
 
-/* SEARCH */
+/* =========================================================
+   SEARCH
+   ========================================================= */
 
 .shop-search{
     flex:1;
@@ -177,12 +179,11 @@ input{
 
 .shop-search-button i{
     color:#2563eb;
-    font-size:19px;
 }
 
 
 /* =========================================================
-   LIVE SEARCH SUGGESTIONS
+   SEARCH SUGGESTIONS
    ========================================================= */
 
 .shop-search-suggestions{
@@ -209,10 +210,8 @@ input{
     padding:13px 15px;
     background:#fff;
     border:0;
-    text-decoration:none;
     color:#111827;
     cursor:pointer;
-    transition:background .15s ease;
 }
 
 .shop-suggestion:hover{
@@ -265,31 +264,10 @@ input{
     font-size:13px;
 }
 
-@media (max-width:600px){
-    .shop-search-suggestions{
-        top:calc(100% + 6px);
-        border-radius:14px;
-        max-height:60vh;
-        box-shadow:0 12px 30px rgba(15,23,42,.18);
-    }
 
-    .shop-suggestion{
-        padding:12px;
-    }
-
-    .shop-suggestion-icon{
-        width:38px;
-        height:38px;
-        flex-basis:38px;
-    }
-
-    .shop-suggestion-name{
-        font-size:13px;
-    }
-}
-
-
-/* HEADER ACTIONS */
+/* =========================================================
+   HEADER ACTIONS
+   ========================================================= */
 
 .shop-header-actions{
     display:flex;
@@ -403,7 +381,6 @@ input{
     line-height:1.5;
     max-width:520px;
     margin-bottom:20px;
-    color:rgba(255,255,255,.94);
 }
 
 .admin-banner-btn{
@@ -417,7 +394,6 @@ input{
     color:#155bd7;
     font-size:14px;
     font-weight:900;
-    box-shadow:0 6px 18px rgba(0,0,0,.18);
 }
 
 .admin-banner-side{
@@ -433,7 +409,6 @@ input{
     position:relative;
     background:#dbeafe;
     color:#fff;
-    box-shadow:0 7px 22px rgba(15,23,42,.08);
 }
 
 .admin-small-banner img{
@@ -476,7 +451,6 @@ input{
 .admin-small-banner-content p{
     font-size:12px;
     line-height:1.35;
-    opacity:.94;
 }
 
 .admin-small-banner-button{
@@ -499,7 +473,6 @@ input{
     margin-bottom:24px;
     border-radius:24px;
     overflow:hidden;
-    position:relative;
     color:#fff;
     background:
         linear-gradient(
@@ -520,7 +493,6 @@ input{
     font-size:13px;
     font-weight:800;
     margin-bottom:8px;
-    opacity:.9;
 }
 
 .hero-fallback h1{
@@ -535,7 +507,6 @@ input{
     font-size:16px;
     line-height:1.5;
     margin-bottom:20px;
-    opacity:.92;
 }
 
 .hero-btn{
@@ -575,7 +546,6 @@ input{
     margin-top:4px;
     color:#6b7280;
     font-size:13px;
-    line-height:1.35;
 }
 
 
@@ -589,7 +559,6 @@ input{
     overflow-x:auto;
     scrollbar-width:none;
     padding:3px 2px 4px;
-    align-items:stretch;
 }
 
 .category-scroll::-webkit-scrollbar{
@@ -600,8 +569,6 @@ input{
     flex:0 0 120px;
     width:120px;
     height:112px;
-    min-height:112px;
-    max-height:112px;
     background:#fff;
     border-radius:18px;
     border:1px solid #e9edf4;
@@ -613,13 +580,6 @@ input{
     text-align:center;
     box-shadow:
         0 4px 14px rgba(15,23,42,.05);
-    transition:.2s;
-}
-
-.category-card:hover{
-    transform:translateY(-3px);
-    box-shadow:
-        0 8px 22px rgba(15,23,42,.1);
 }
 
 .category-icon{
@@ -766,20 +726,15 @@ input{
     letter-spacing:.7px;
     text-transform:uppercase;
     margin-bottom:4px;
-    opacity:.9;
 }
 
 .sale-banner h2{
     font-size:27px;
     font-weight:900;
-    position:relative;
-    z-index:2;
 }
 
 .sale-banner p{
     margin-top:5px;
-    position:relative;
-    z-index:2;
 }
 
 .sale-banner-btn{
@@ -817,7 +772,7 @@ input{
 
 
 /* =========================================================
-   PRODUCT RAIL
+   PRODUCTS
    ========================================================= */
 
 .product-rail{
@@ -826,11 +781,6 @@ input{
         repeat(4,minmax(0,1fr));
     gap:14px;
 }
-
-
-/* =========================================================
-   PRODUCT CARD
-   ========================================================= */
 
 .product-card{
     min-width:0;
@@ -852,9 +802,6 @@ input{
         0 12px 28px rgba(15,23,42,.12);
 }
 
-
-/* IMAGE */
-
 .product-image{
     width:100%;
     aspect-ratio:1/1;
@@ -868,15 +815,7 @@ input{
     height:100%;
     display:block;
     object-fit:cover;
-    transition:.3s;
 }
-
-.product-card:hover .product-image img{
-    transform:scale(1.04);
-}
-
-
-/* PLACEHOLDER */
 
 .image-placeholder{
     width:100%;
@@ -887,9 +826,6 @@ input{
     color:#a3afc2;
     font-size:42px;
 }
-
-
-/* BADGE */
 
 .product-badge{
     position:absolute;
@@ -903,9 +839,6 @@ input{
     font-size:10px;
     font-weight:900;
 }
-
-
-/* INFO */
 
 .product-info{
     padding:12px;
@@ -958,6 +891,35 @@ input{
 
 
 /* =========================================================
+   COLORED SECTIONS
+   ========================================================= */
+
+.colored-section{
+    padding:20px;
+    border-radius:24px;
+    overflow:hidden;
+}
+
+.deals-blue{
+    background:
+        linear-gradient(
+            135deg,
+            #eef6ff,
+            #e1edff
+        );
+}
+
+.recommended-section{
+    background:
+        linear-gradient(
+            135deg,
+            #fff3f5,
+            #ffe8ed
+        );
+}
+
+
+/* =========================================================
    DEAL SECTION
    ========================================================= */
 
@@ -995,35 +957,6 @@ input{
     grid-template-columns:
         repeat(4,minmax(0,1fr));
     gap:14px;
-}
-
-
-/* =========================================================
-   COLORED SECTIONS
-   ========================================================= */
-
-.colored-section{
-    padding:20px;
-    border-radius:24px;
-    overflow:hidden;
-}
-
-.deals-blue{
-    background:
-        linear-gradient(
-            135deg,
-            #eef6ff,
-            #e1edff
-        );
-}
-
-.recommended-section{
-    background:
-        linear-gradient(
-            135deg,
-            #fff3f5,
-            #ffe8ed
-        );
 }
 
 
@@ -1115,7 +1048,6 @@ input{
 
     .admin-small-banner{
         min-height:125px;
-        border-radius:17px;
     }
 
     .admin-small-banner-content{
@@ -1218,10 +1150,8 @@ input{
         z-index:2000;
         height:64px;
         border-radius:22px;
-        background:
-            rgba(255,255,255,.96);
-        backdrop-filter:
-            blur(18px);
+        background:rgba(255,255,255,.96);
+        backdrop-filter:blur(18px);
         box-shadow:
             0 8px 30px rgba(0,0,0,.18);
         border:
@@ -1364,16 +1294,10 @@ input{
         font-size:11px;
     }
 
-    .category-scroll{
-        padding-bottom:0;
-    }
-
     .category-card{
         flex-basis:105px;
         width:105px;
         height:100px;
-        min-height:100px;
-        max-height:100px;
         border-radius:15px;
     }
 
@@ -1480,19 +1404,6 @@ input{
     }
 }
 
-
-/* =========================================================
-   LOADING
-   ========================================================= */
-
-.loading{
-    min-height:100px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#94a3b8;
-}
-
 </style>
 
 </head>
@@ -1543,10 +1454,12 @@ input{
                 aria-label="Search products or shops"
             >
 
+
             <div
                 id="shopSearchSuggestions"
                 class="shop-search-suggestions"
             ></div>
+
 
             <button
                 type="submit"
@@ -1587,6 +1500,7 @@ input{
      ===================================================== -->
 
 <main class="shop-container">
+
 
 
 <!-- =====================================================
@@ -1650,11 +1564,8 @@ input{
                 href="/shop/all"
                 class="admin-banner-btn"
             >
-
                 Shop Now
-
                 <i class="fas fa-arrow-right"></i>
-
             </a>
 
         </div>
@@ -1718,11 +1629,8 @@ input{
                     href="/shop/all"
                     class="admin-small-banner-button"
                 >
-
                     Shop Now
-
                     <i class="fas fa-arrow-right"></i>
-
                 </a>
 
             </div>
@@ -1741,7 +1649,7 @@ input{
 {% else %}
 
 
-<!-- FALLBACK -->
+<!-- FALLBACK HERO -->
 
 <section class="hero-fallback">
 
@@ -1768,11 +1676,8 @@ input{
             href="/shop/all"
             class="hero-btn"
         >
-
             Shop Now
-
             <i class="fas fa-arrow-right"></i>
-
         </a>
 
     </div>
@@ -1825,9 +1730,7 @@ input{
 
 
             <div class="category-name">
-
                 {{ category.name }}
-
             </div>
 
         </a>
@@ -1864,12 +1767,12 @@ input{
         {% for store in stores %}
 
         <a
-           href="{{ url_for(
-               'company_share_shop',
-               seller_id=store.id,
-               shop_slug=store.generated_shop_slug
-           ) }}"
-           class="store-card"
+            href="{{ url_for(
+                'company_share_shop',
+                seller_id=store.id,
+                shop_slug=store.generated_shop_slug
+            ) }}"
+            class="store-card"
         >
 
 
@@ -1882,8 +1785,15 @@ input{
                 <img
                     src="/static/uploads/{{ store.profile_photo }}"
                     class="store-image"
-                    alt="{{ store.company or store.first_name or store.username or 'Store' }}"
+
+                    alt="{{ store.shop_name
+                            or store.company
+                            or store.first_name
+                            or store.username
+                            or 'Store' }}"
+
                     loading="lazy"
+
                     onerror="
                         if(!this.dataset.f1){
                             this.dataset.f1='1';
@@ -1911,11 +1821,16 @@ input{
             </div>
 
 
-            <!-- STORE NAME -->
+
+            <!-- =================================================
+                 IMPORTANT:
+                 CUSTOM SHOP NAME IS SHOWN FIRST
+                 ================================================= -->
 
             <div class="store-name">
 
-                {{ store.company
+                {{ store.shop_name
+                   or store.company
                    or store.first_name
                    or store.username
                    or 'Store'
@@ -1947,26 +1862,20 @@ input{
             RECROOTEARN SHOP
         </span>
 
-
         <h2>
             🔥 Deals You Don't Want To Miss
         </h2>
-
 
         <p>
             Discover great products at amazing prices.
         </p>
 
-
         <a
             href="/shop/all"
             class="sale-banner-btn"
         >
-
             Shop Now
-
             <i class="fas fa-arrow-right"></i>
-
         </a>
 
     </div>
@@ -1994,7 +1903,6 @@ input{
 
     <div class="product-image">
 
-
         {% if badge %}
 
         <span class="product-badge">
@@ -2010,6 +1918,7 @@ input{
             src="/static/uploads/products/{{ product.images[0].image }}"
             alt="{{ product.name }}"
             loading="lazy"
+
             onerror="
                 if(!this.dataset.f1){
                     this.dataset.f1='1';
@@ -2035,9 +1944,7 @@ input{
                 {% endif %}
             "
         >
-
             <i class="fas fa-image"></i>
-
         </div>
 
     </div>
@@ -2048,18 +1955,13 @@ input{
 
     <div class="product-info">
 
-
         <div class="product-name">
-
             {{ product.name }}
-
         </div>
 
 
         <div class="product-rating">
-
             ★★★★★
-
         </div>
 
 
@@ -2070,9 +1972,7 @@ input{
                 ₹{{ "%.0f"|format(product.sale_price) }}
 
                 <span class="product-old-price">
-
                     ₹{{ "%.0f"|format(product.price) }}
-
                 </span>
 
             {% else %}
@@ -2085,9 +1985,7 @@ input{
 
 
         <div class="product-view">
-
             View Product
-
         </div>
 
     </div>
@@ -2344,7 +2242,6 @@ input{
 
     {% else %}
 
-
     <div class="empty-shop">
 
         <i class="fas fa-store"></i>
@@ -2462,13 +2359,6 @@ document.addEventListener(
                 "error",
                 function(){
 
-                    /*
-                     * Product image fallback is already
-                     * handled inline.
-                     *
-                     * This prevents broken image icons.
-                     */
-
                     if(
                         !this.dataset.finalFallback
                     ){
@@ -2477,10 +2367,8 @@ document.addEventListener(
 
                         this.style.display = "none";
 
-
                         const parent =
                             this.parentElement;
-
 
                         if(parent){
 
@@ -2488,7 +2376,6 @@ document.addEventListener(
                                 parent.querySelector(
                                     ".image-placeholder, .store-placeholder"
                                 );
-
 
                             if(placeholder){
 
@@ -2510,6 +2397,7 @@ document.addEventListener(
 );
 
 
+
 /* =========================================================
    SEARCH + LIVE SUGGESTIONS
    ========================================================= */
@@ -2526,147 +2414,337 @@ const searchSuggestions =
 let searchTimer = null;
 let searchController = null;
 
+
+
 function hideSearchSuggestions(){
+
     if(searchSuggestions){
-        searchSuggestions.style.display = "none";
-        searchSuggestions.innerHTML = "";
+
+        searchSuggestions.style.display =
+            "none";
+
+        searchSuggestions.innerHTML =
+            "";
+
     }
+
 }
 
+
+
 function showSearchSuggestions(items){
-    if(!searchSuggestions) return;
 
-    searchSuggestions.innerHTML = "";
-
-    if(!items || items.length === 0){
-        searchSuggestions.innerHTML =
-            '<div class="shop-search-no-result">No products or shops found</div>';
-        searchSuggestions.style.display = "block";
+    if(!searchSuggestions){
         return;
     }
 
+    searchSuggestions.innerHTML =
+        "";
+
+
+    if(!items || items.length === 0){
+
+        searchSuggestions.innerHTML =
+            '<div class="shop-search-no-result">No products or shops found</div>';
+
+        searchSuggestions.style.display =
+            "block";
+
+        return;
+    }
+
+
     items.forEach(function(item){
-        const link = document.createElement("a");
-        link.href = item.url;
-        link.className = "shop-suggestion";
 
-        const icon = document.createElement("div");
-        icon.className = "shop-suggestion-icon";
-        icon.innerHTML = item.type === "store"
-            ? '<i class="fas fa-store"></i>'
-            : '<i class="fas fa-box"></i>';
+        const link =
+            document.createElement("a");
 
-        const content = document.createElement("div");
-        content.className = "shop-suggestion-content";
+        link.href =
+            item.url;
 
-        const name = document.createElement("div");
-        name.className = "shop-suggestion-name";
-        name.textContent = item.name;
+        link.className =
+            "shop-suggestion";
 
-        const type = document.createElement("div");
-        type.className = "shop-suggestion-type";
-        type.textContent = item.type === "store" ? "Store" : "Product";
+
+        const icon =
+            document.createElement("div");
+
+        icon.className =
+            "shop-suggestion-icon";
+
+
+        icon.innerHTML =
+            item.type === "store"
+                ? '<i class="fas fa-store"></i>'
+                : '<i class="fas fa-box"></i>';
+
+
+        const content =
+            document.createElement("div");
+
+        content.className =
+            "shop-suggestion-content";
+
+
+        const name =
+            document.createElement("div");
+
+        name.className =
+            "shop-suggestion-name";
+
+        name.textContent =
+            item.name;
+
+
+        const type =
+            document.createElement("div");
+
+        type.className =
+            "shop-suggestion-type";
+
+        type.textContent =
+            item.type === "store"
+                ? "Store"
+                : "Product";
+
 
         content.appendChild(name);
         content.appendChild(type);
 
-        const arrow = document.createElement("div");
-        arrow.className = "shop-suggestion-arrow";
-        arrow.innerHTML = '<i class="fas fa-chevron-right"></i>';
+
+        const arrow =
+            document.createElement("div");
+
+        arrow.className =
+            "shop-suggestion-arrow";
+
+        arrow.innerHTML =
+            '<i class="fas fa-chevron-right"></i>';
+
 
         link.appendChild(icon);
         link.appendChild(content);
         link.appendChild(arrow);
 
+
         searchSuggestions.appendChild(link);
+
     });
 
-    searchSuggestions.style.display = "block";
+
+    searchSuggestions.style.display =
+        "block";
+
 }
 
-async function loadSearchSuggestions(keyword){
-    if(!searchSuggestions) return;
 
-    if(!keyword){
-        hideSearchSuggestions();
+
+async function loadSearchSuggestions(keyword){
+
+    if(!searchSuggestions){
         return;
     }
 
-    if(searchController){
-        searchController.abort();
+
+    if(!keyword){
+
+        hideSearchSuggestions();
+
+        return;
     }
 
-    searchController = new AbortController();
+
+    if(searchController){
+
+        searchController.abort();
+
+    }
+
+
+    searchController =
+        new AbortController();
+
 
     searchSuggestions.innerHTML =
         '<div class="shop-search-loading"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
-    searchSuggestions.style.display = "block";
+
+    searchSuggestions.style.display =
+        "block";
+
 
     try{
-        const response = await fetch(
-            "/shop/search-suggestions?q=" + encodeURIComponent(keyword),
-            {
-                method:"GET",
-                headers:{"Accept":"application/json"},
-                signal:searchController.signal
-            }
-        );
+
+        const response =
+            await fetch(
+                "/shop/search-suggestions?q=" +
+                encodeURIComponent(keyword),
+                {
+                    method:"GET",
+                    headers:{
+                        "Accept":
+                            "application/json"
+                    },
+                    signal:
+                        searchController.signal
+                }
+            );
+
 
         if(!response.ok){
-            throw new Error("Search request failed");
+
+            throw new Error(
+                "Search request failed"
+            );
+
         }
 
-        const data = await response.json();
+
+        const data =
+            await response.json();
+
+
         showSearchSuggestions(data);
+
+
     }catch(error){
-        if(error.name === "AbortError") return;
-        console.error("Search suggestions error:", error);
+
+        if(
+            error.name ===
+            "AbortError"
+        ){
+
+            return;
+
+        }
+
+
+        console.error(
+            "Search suggestions error:",
+            error
+        );
+
+
         hideSearchSuggestions();
+
     }
+
 }
+
+
 
 if(searchInput){
-    searchInput.addEventListener("input", function(){
-        const value = this.value.trim();
-        clearTimeout(searchTimer);
 
-        if(!value){
-            hideSearchSuggestions();
-            return;
+    searchInput.addEventListener(
+        "input",
+        function(){
+
+            const value =
+                this.value.trim();
+
+
+            clearTimeout(
+                searchTimer
+            );
+
+
+            if(!value){
+
+                hideSearchSuggestions();
+
+                return;
+
+            }
+
+
+            searchTimer =
+                setTimeout(
+                    function(){
+
+                        loadSearchSuggestions(
+                            value
+                        );
+
+                    },
+                    120
+                );
+
         }
+    );
 
-        searchTimer = setTimeout(function(){
-            loadSearchSuggestions(value);
-        }, 120);
-    });
 
-    searchInput.addEventListener("keydown", function(event){
-        if(event.key === "Escape"){
-            hideSearchSuggestions();
+    searchInput.addEventListener(
+        "keydown",
+        function(event){
+
+            if(
+                event.key ===
+                "Escape"
+            ){
+
+                hideSearchSuggestions();
+
+            }
+
         }
-    });
+    );
+
 }
 
-if(searchForm && searchInput){
-    searchForm.addEventListener("submit", function(event){
-        const value = searchInput.value.trim();
 
-        if(!value){
-            event.preventDefault();
-            searchInput.focus();
-            return;
+
+if(
+    searchForm &&
+    searchInput
+){
+
+    searchForm.addEventListener(
+        "submit",
+        function(event){
+
+            const value =
+                searchInput.value.trim();
+
+
+            if(!value){
+
+                event.preventDefault();
+
+                searchInput.focus();
+
+                return;
+
+            }
+
+
+            hideSearchSuggestions();
+
+            searchInput.value =
+                value;
+
         }
+    );
 
-        hideSearchSuggestions();
-        searchInput.value = value;
-    });
 }
 
-document.addEventListener("click", function(event){
-    if(searchForm && !searchForm.contains(event.target)){
-        hideSearchSuggestions();
+
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            searchForm &&
+            !searchForm.contains(
+                event.target
+            )
+        ){
+
+            hideSearchSuggestions();
+
+        }
+
     }
-});
+);
 
 </script>
 
