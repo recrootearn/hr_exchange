@@ -14,7 +14,7 @@ import smtplib
 import secrets
 import resend
 import json
-from sqlalchemy import or_
+from sqlalchemy import or_, text
 from email.mime.text import MIMEText
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -2752,6 +2752,16 @@ class ProductVariantOption(db.Model):
         nullable=False
     )
 
+    # Full selling price for this variant (Amazon/Flipkart-style).
+    # Kept separate from legacy extra_price so variants are never
+    # calculated as "base price + adjustment".
+    variant_price = db.Column(
+        db.Float,
+        nullable=True
+    )
+
+    # Legacy field kept for backward compatibility with older records.
+    # New code does not use it for customer pricing.
     extra_price = db.Column(
         db.Float,
         default=0
@@ -2777,6 +2787,96 @@ class ProductVariantOption(db.Model):
         backref="variant_option",
         lazy=True
     )
+
+def ensure_variant_price_column():
+    """
+    Migrate the marketplace variant pricing model from an additive
+    `extra_price` to an absolute `variant_price`.
+
+    Existing rows are backfilled conservatively:
+      * negative legacy values are treated as corrupted absolute prices
+        and converted to their positive magnitude;
+      * non-negative legacy values are treated as old price adjustments
+        and added to the product base price.
+
+    New/updated variants always store their complete selling price in
+    variant_price. This keeps cart/order pricing deterministic.
+    """
+    try:
+        with db.engine.begin() as conn:
+            exists = conn.execute(
+                text("""
+                    SELECT COUNT(*)
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                    WHERE TABLE_SCHEMA = DATABASE()
+                      AND TABLE_NAME = 'product_variant_options'
+                      AND COLUMN_NAME = 'variant_price'
+                """)
+            ).scalar()
+
+            if not exists:
+                conn.execute(
+                    text("""
+                        ALTER TABLE product_variant_options
+                        ADD COLUMN variant_price FLOAT NULL
+                    """)
+                )
+
+            conn.execute(
+                text("""
+                    UPDATE product_variant_options pvo
+                    JOIN product_variants pv
+                      ON pv.id = pvo.variant_id
+                    JOIN products p
+                      ON p.id = pv.product_id
+                    SET pvo.variant_price =
+                        CASE
+                            WHEN pvo.extra_price < 0
+                                THEN ABS(pvo.extra_price)
+                            ELSE COALESCE(p.price, 0)
+                                 + COALESCE(pvo.extra_price, 0)
+                        END
+                    WHERE pvo.variant_price IS NULL
+                """)
+            )
+    except Exception:
+        # Do not prevent the application from starting if a deployment
+        # has already applied the migration or temporarily restricts
+        # schema-alter permissions. The normal DB error logging remains
+        # available through the application logger.
+        app.logger.exception("Variant price migration failed")
+
+
+def get_variant_selling_price(option, product=None):
+    """Return the absolute selling price of a variant."""
+    raw = getattr(option, "variant_price", None)
+
+    if raw is not None:
+        try:
+            return max(float(raw), 0.0)
+        except (TypeError, ValueError):
+            pass
+
+    # Legacy fallback for rows created before variant_price existed.
+    extra = getattr(option, "extra_price", 0) or 0
+
+    try:
+        extra = float(extra)
+    except (TypeError, ValueError):
+        extra = 0.0
+
+    if extra < 0:
+        return abs(extra)
+
+    base = 0.0
+    if product is not None:
+        try:
+            base = float(product.sale_price or product.price or 0)
+        except (TypeError, ValueError):
+            base = 0.0
+
+    return max(base + extra, 0.0)
+
 
 class ShippingAddress(db.Model):
     __tablename__ = "shipping_addresses"
@@ -16756,12 +16856,23 @@ def add_product():
                     else "Option"
                 )
 
-                variant_price = (
-                    float(prices[i])
+                # IMPORTANT:
+                # option_price[] is the COMPLETE selling price of the
+                # selected variant, not a price adjustment.
+                raw_variant_price = (
+                    prices[i].strip()
                     if i < len(prices)
-                    and prices[i]
-                    else float(product.price)
+                    else ""
                 )
+
+                variant_price = (
+                    float(raw_variant_price)
+                    if raw_variant_price
+                    else float(product.sale_price or product.price or 0)
+                )
+
+                # Never allow a variant to be saved with a negative price.
+                variant_price = max(variant_price, 0.0)
 
                 variant_stock = (
                     int(stocks[i])
@@ -16785,18 +16896,40 @@ def add_product():
                     db.session.add(variant)
                     db.session.flush()
 
-                # ProductVariantOption represents the selectable
-                # value, price difference and stock.
+                # ProductVariantOption stores the COMPLETE selling
+                # price for this option. It is intentionally NOT an
+                # adjustment over the product price.
                 db.session.add(
                     ProductVariantOption(
                         variant_id=variant.id,
                         value=option_value,
-                        extra_price=(
-                            variant_price - float(product.price)
-                        ),
-                        stock=variant_stock
+                        variant_price=variant_price,
+                        # Keep the legacy field harmless for older code.
+                        extra_price=0,
+                        stock=max(variant_stock, 0)
                     )
                 )
+
+            # For variable products the catalog price/stock should
+            # reflect the available variants. The customer-facing
+            # product page still switches to the selected variant's
+            # exact price.
+            saved_variant_prices = [
+                float(option.variant_price or 0)
+                for variant in product.variants
+                for option in variant.options
+                if option.variant_price is not None
+            ]
+
+            saved_variant_stock = sum(
+                max(int(option.stock or 0), 0)
+                for variant in product.variants
+                for option in variant.options
+            )
+
+            if saved_variant_prices:
+                product.price = min(saved_variant_prices)
+                product.stock = saved_variant_stock
 
         # ==========================================
         # FINAL SAVE
@@ -17023,6 +17156,107 @@ def edit_product(id):
                         sort_order=max_sort + 1
                     )
                 )
+
+            # -------------------------------------------------
+            # VARIABLE PRODUCT OPTIONS
+            # -------------------------------------------------
+            # If the edit form sends variant fields, replace the
+            # existing option set with the submitted full prices.
+            # This keeps the database aligned with the same
+            # Amazon/Flipkart-style pricing model used by add_product.
+            if product.product_type == "variable" and (
+                "option_value[]" in request.form
+                or "variant_name[]" in request.form
+            ):
+                existing_variants = ProductVariant.query.filter_by(
+                    product_id=product.id
+                ).all()
+
+                for existing_variant in existing_variants:
+                    db.session.delete(existing_variant)
+
+                db.session.flush()
+
+                names = request.form.getlist("variant_name[]")
+                values = request.form.getlist("option_value[]")
+                prices = request.form.getlist("option_price[]")
+                stocks = request.form.getlist("option_stock[]")
+
+                for i, raw_value in enumerate(values):
+                    option_value = (raw_value or "").strip()
+                    if not option_value:
+                        continue
+
+                    variant_name = (
+                        names[i].strip()
+                        if i < len(names) and names[i].strip()
+                        else "Option"
+                    )
+
+                    raw_price = (
+                        prices[i].strip()
+                        if i < len(prices)
+                        else ""
+                    )
+
+                    variant_price = (
+                        float(raw_price)
+                        if raw_price
+                        else float(product.sale_price or product.price or 0)
+                    )
+                    variant_price = max(variant_price, 0.0)
+
+                    raw_stock = (
+                        stocks[i].strip()
+                        if i < len(stocks)
+                        else ""
+                    )
+
+                    variant_stock = (
+                        int(raw_stock)
+                        if raw_stock
+                        else 0
+                    )
+
+                    variant = ProductVariant(
+                        product_id=product.id,
+                        name=variant_name
+                    )
+                    db.session.add(variant)
+                    db.session.flush()
+
+                    db.session.add(
+                        ProductVariantOption(
+                            variant_id=variant.id,
+                            value=option_value,
+                            variant_price=variant_price,
+                            extra_price=0,
+                            stock=max(variant_stock, 0)
+                        )
+                    )
+
+                db.session.flush()
+
+                refreshed_variant_prices = [
+                    float(option.variant_price or 0)
+                    for variant in ProductVariant.query.filter_by(
+                        product_id=product.id
+                    ).all()
+                    for option in variant.options
+                    if option.variant_price is not None
+                ]
+
+                refreshed_variant_stock = sum(
+                    max(int(option.stock or 0), 0)
+                    for variant in ProductVariant.query.filter_by(
+                        product_id=product.id
+                    ).all()
+                    for option in variant.options
+                )
+
+                if refreshed_variant_prices:
+                    product.price = min(refreshed_variant_prices)
+                    product.stock = refreshed_variant_stock
 
             db.session.commit()
 
@@ -17508,21 +17742,21 @@ def product_details(id):
     # ProductVariant stores the variation group (Color/Size/etc.)
     # ProductVariantOption stores the selectable value.
     # =========================================================
-    variant_options = (
-        ProductVariantOption.query
-        .join(
-            ProductVariant,
-            ProductVariantOption.variant_id == ProductVariant.id
-        )
-        .filter(
-            ProductVariant.product_id == product.id
-        )
-        .order_by(
-            ProductVariant.id.asc(),
-            ProductVariantOption.id.asc()
-        )
+    variant_groups = (
+        ProductVariant.query
+        .filter_by(product_id=product.id)
+        .order_by(ProductVariant.id.asc())
         .all()
     )
+
+    variant_options = [
+        option
+        for group in variant_groups
+        for option in sorted(
+            group.options,
+            key=lambda item: item.id
+        )
+    ]
 
     # Public reviews: everyone viewing the product can see them.
     reviews = ProductReview.query.filter_by(
@@ -17633,6 +17867,7 @@ def product_details(id):
         product=product,
         related_products=related_products,
         variant_options=variant_options,
+        variant_groups=variant_groups,
         reviews=review_items,
         current_review=current_review,
         shop_slug=shop_slug
@@ -17679,13 +17914,46 @@ def add_to_cart(product_id):
 
         return redirect(request.referrer)
 
-    price = product.sale_price or product.price
+    price = max(
+        float(product.sale_price or product.price or 0),
+        0.0
+    )
+
+    option = None
 
     if selected_variant:
+        try:
+            selected_variant_id = int(selected_variant)
+        except (TypeError, ValueError):
+            selected_variant_id = None
 
-        option = ProductVariantOption.query.get(selected_variant)
+        if selected_variant_id:
+            option = (
+                ProductVariantOption.query
+                .join(ProductVariant)
+                .filter(
+                    ProductVariantOption.id == selected_variant_id,
+                    ProductVariant.product_id == product.id
+                )
+                .first()
+            )
 
-        price += option.extra_price
+        if not option:
+            flash("The selected variant is no longer available.", "warning")
+            return redirect(request.referrer or url_for("product_details", id=product.id))
+
+        if (option.stock or 0) <= 0:
+            flash("The selected variant is out of stock.", "warning")
+            return redirect(request.referrer or url_for("product_details", id=product.id))
+
+        # Amazon/Flipkart-style pricing: the variant owns its price.
+        price = get_variant_selling_price(option, product)
+
+        if price < 0:
+            flash("Invalid variant price.", "danger")
+            return redirect(request.referrer or url_for("product_details", id=product.id))
+
+        selected_variant = option.id
 
     item = CartItem.query.filter_by(
         cart_id=cart.id,
@@ -24129,6 +24397,13 @@ def verify_single_device():
         )
 
         return redirect(url_for("login"))
+
+# Apply the variant-price schema migration once the entire application
+# module (including every model) has been loaded. This also runs under
+# Gunicorn, where the __main__ block is not executed.
+with app.app_context():
+    ensure_variant_price_column()
+
 
 if __name__ == "__main__":
 
