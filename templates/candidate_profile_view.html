@@ -412,19 +412,6 @@ height:48px;
 
 }
 
-
-.profile-content-tabs{display:grid;grid-template-columns:repeat(3,1fr);background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:10}
-.profile-tab{border:0;background:#fff;color:#6b7280;padding:15px 8px;font-size:14px;font-weight:800;cursor:pointer;border-bottom:2px solid transparent}
-.profile-tab.active{color:#2563eb;border-bottom-color:#2563eb}.profile-tab i{margin-right:6px}.profile-tab-content{display:none}.profile-tab-content.active{display:block}
-.candidate-shop-wrap{padding:18px}.candidate-shop-card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;overflow:hidden}
-.candidate-shop-head{padding:16px;background:linear-gradient(135deg,#f8fbff,#eef4ff);border-bottom:1px solid #e5e7eb}
-.candidate-shop-head-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.candidate-shop-title{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:800;color:#111827}
-.candidate-shop-title-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#dbeafe;color:#2563eb}.candidate-shop-current{max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:6px 10px;border-radius:20px;background:#dbeafe;color:#1d4ed8;font-size:12px;font-weight:800}
-.candidate-shop-form{display:flex;gap:8px;margin-top:12px}.candidate-shop-input{flex:1;min-width:0;height:44px;border:1px solid #dbe3ef;border-radius:12px;padding:0 13px;outline:none;font-size:14px;background:#fff}.candidate-shop-input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.10)}
-.candidate-shop-save{height:44px;border:0;border-radius:12px;padding:0 16px;background:#2563eb;color:#fff;font-weight:800}.candidate-shop-hint{margin-top:8px;color:#6b7280;font-size:11px}
-.candidate-shop-actions{display:flex;gap:8px;padding:12px 14px 0}.candidate-shop-action{flex:1;min-height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;font-size:13px;font-weight:800}.candidate-shop-action.primary{background:#2563eb;color:#fff}.candidate-shop-action.secondary{background:#eef2f7;color:#334155}
-.candidate-shop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:14px}.candidate-shop-product{display:block;text-decoration:none;color:inherit;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;background:#fff}.candidate-shop-image{aspect-ratio:1/1;background:#f8fafc;position:relative}.candidate-shop-image img{width:100%;height:100%;object-fit:cover;display:block}.candidate-shop-placeholder{height:100%;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:30px}.candidate-shop-info{padding:9px}.candidate-shop-name{font-size:13px;font-weight:800;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.candidate-shop-price{margin-top:4px;font-size:14px;font-weight:900;color:#2563eb}.candidate-shop-price span{margin-left:5px;color:#94a3b8;text-decoration:line-through;font-size:11px;font-weight:600}.candidate-shop-status{position:absolute;top:7px;right:7px;padding:4px 7px;border-radius:20px;font-size:9px;font-weight:900}.candidate-shop-status.active{background:#dcfce7;color:#166534}.candidate-shop-status.inactive{background:#fee2e2;color:#991b1b}.candidate-shop-empty{text-align:center;padding:40px 18px;color:#6b7280}.candidate-shop-empty i{font-size:44px;color:#2563eb;margin-bottom:10px}
-@media(max-width:600px){.profile-tab{font-size:12px;padding:13px 5px}.profile-tab i{margin-right:3px}.candidate-shop-wrap{padding:10px}.candidate-shop-form{flex-direction:column}.candidate-shop-save{width:100%}}
 </style>
 
 <div class="profile-wrapper">
@@ -491,22 +478,6 @@ class="btn edit-btn">
 
 </div>
 
-<div class="profile-content-tabs">
-<button type="button" class="profile-tab" data-tab="videos" onclick="switchProfileTab('videos')"><i class="fas fa-video"></i> Videos</button>
-<button type="button" class="profile-tab active" data-tab="details" onclick="switchProfileTab('details')"><i class="fas fa-id-card"></i> Details</button>
-<button type="button" class="profile-tab" data-tab="shop" onclick="switchProfileTab('shop')"><i class="fas fa-store"></i> Shop</button>
-</div>
-
-<div id="profile-videos" class="profile-tab-content">
-<div style="padding:55px 20px;text-align:center;color:#6b7280;">
-<i class="fas fa-video" style="font-size:50px;color:#2563eb;margin-bottom:14px;"></i>
-<h4 style="font-weight:800;color:#111827;">Videos</h4>
-<p>Your uploaded candidate videos will appear here.</p>
-<a href="/post-video" class="btn btn-primary" style="border-radius:12px;font-weight:700;"><i class="fas fa-video me-1"></i> Post Video</a>
-</div>
-</div>
-
-<div id="profile-details" class="profile-tab-content active">
 <div class="profile-body">
 
 <div class="stats">
@@ -883,51 +854,6 @@ class="btn edit-btn">
 
 </div>
 
-<div id="profile-shop" class="profile-tab-content">
-<div class="candidate-shop-wrap">
-<div class="candidate-shop-card">
-<div class="candidate-shop-head">
-<div class="candidate-shop-head-row">
-<div class="candidate-shop-title"><span class="candidate-shop-title-icon"><i class="fas fa-store"></i></span> My Shop</div>
-{% if shop_seller and shop_seller.shop_name %}<span class="candidate-shop-current">{{ shop_seller.shop_name }}</span>{% endif %}
 </div>
-<form method="POST" action="{{ url_for('shop_settings') }}" class="candidate-shop-form">
-<input type="text" name="shop_name" class="candidate-shop-input" maxlength="200" value="{{ shop_seller.shop_name if shop_seller else '' }}" placeholder="Enter your public shop name" required>
-<button type="submit" class="candidate-shop-save"><i class="fas fa-check"></i> Save</button>
-</form>
-<div class="candidate-shop-hint">Choose the name customers will see when they visit your shop.</div>
-</div>
-<div class="candidate-shop-actions">
-<a href="/shop/add-product" class="candidate-shop-action primary"><i class="fas fa-plus"></i> Add Product</a>
-<a href="/seller/orders" class="candidate-shop-action secondary"><i class="fas fa-box"></i> Orders</a>
-<a href="/seller/pickup" class="candidate-shop-action secondary"><i class="fas fa-location-dot"></i> Pickup</a>
-</div>
-{% if shop_seller %}
-<div style="padding:10px 14px 0;"><a href="/share-shop/{{ shop_seller.id }}/{{ shop_slug }}" target="_blank" style="font-size:12px;color:#2563eb;font-weight:800;text-decoration:none;"><i class="fas fa-external-link-alt"></i> View My Shop</a></div>
-{% endif %}
-{% if products %}
-<div class="candidate-shop-grid">
-{% for product in products %}
-<a href="/shop/manage-product/{{ product.id }}" class="candidate-shop-product">
-<div class="candidate-shop-image">
-{% if product.images and product.images|length > 0 %}<img src="{{ url_for('static', filename='uploads/products/' + product.images[0].image) }}" alt="{{ product.name }}" loading="lazy">{% else %}<div class="candidate-shop-placeholder"><i class="fas fa-image"></i></div>{% endif %}
-{% if product.is_active and product.status == 'active' %}<span class="candidate-shop-status active">ACTIVE</span>{% else %}<span class="candidate-shop-status inactive">INACTIVE</span>{% endif %}
-</div>
-<div class="candidate-shop-info"><div class="candidate-shop-name">{{ product.name }}</div><div class="candidate-shop-price">₹{{ "%.0f"|format(product.sale_price or product.price) }}{% if product.sale_price %}<span>₹{{ "%.0f"|format(product.price) }}</span>{% endif %}</div></div>
-</a>
-{% endfor %}
-</div>
-{% else %}
-<div class="candidate-shop-empty"><i class="fas fa-store"></i><h4 style="font-weight:800;color:#111827;">Your Shop Is Empty</h4><p>Add your first product and start selling to other RecrootEarn users.</p></div>
-{% endif %}
-</div>
-</div>
-</div>
-
-</div>
-
-<script>
-function switchProfileTab(tab){document.querySelectorAll('.profile-tab').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-tab')===tab);});document.querySelectorAll('.profile-tab-content').forEach(function(c){c.classList.remove('active');});var e=document.getElementById('profile-'+tab);if(e)e.classList.add('active');}
-</script>
 
 {% endblock %}

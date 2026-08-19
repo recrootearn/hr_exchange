@@ -6393,26 +6393,12 @@ def release_wallet_amount():
                     2
                 )
 
-                candidate_seller = candidate_for_shop_user(seller)
-                if candidate_seller:
-                    candidate_seller.wallet_balance = round(
-                        float(candidate_seller.wallet_balance or 0)
-                        + amount,
-                        2
-                    )
-                    db.session.add(
-                        CandidateWalletHistory(
-                            candidate_id=candidate_seller.id,
-                            amount=amount,
-                            action="Marketplace Sale Earnings"
-                        )
-                    )
-                else:
-                    seller.wallet_balance = round(
-                        float(seller.wallet_balance or 0)
-                        + amount,
-                        2
-                    )
+                seller.wallet_balance = round(
+                    float(seller.wallet_balance or 0)
+                    + amount,
+                    2
+                )
+
                 order.wallet_released = True
 
     db.session.commit()
@@ -10077,32 +10063,18 @@ def candidate_profile():
 
         completion += 10
 
-    candidate_shop_user = get_candidate_shop_user(candidate, create=False)
-    candidate_shop_products = []
-
-    if candidate_shop_user:
-        candidate_shop_products = Product.query.filter_by(
-            seller_id=candidate_shop_user.id
-        ).order_by(
-            Product.created_at.desc()
-        ).all()
-
     return render_template(
+
         'candidate_profile_view.html',
+
         candidate=candidate,
+
         followers_count=followers_count,
+
         following_count=following_count,
-        profile_completion=completion,
-        shop_seller=candidate_shop_user,
-        shop_slug=(
-            make_shop_slug(
-                candidate_shop_user.shop_name
-                or candidate.full_name
-                or "shop"
-            )
-            if candidate_shop_user else "shop"
-        ),
-        products=candidate_shop_products
+
+        profile_completion=completion
+
     )
 
 @app.route('/edit-candidate-profile', methods=['GET', 'POST'])
@@ -15226,96 +15198,27 @@ def export_unlocked():
         as_attachment=True
     )
 
-# =========================================================
-# CANDIDATE SHOP SUPPORT
-# =========================================================
-
-def get_candidate_shop_user(candidate, create=True):
-    username = f"candidate_shop_{candidate.id}"
-    seller = User.query.filter_by(username=username).first()
-    if not seller and not create:
-        return None
-    if not seller:
-        parts = (candidate.full_name or "Candidate").strip().split()
-        seller = User(
-            first_name=parts[0] if parts else "Candidate",
-            last_name=" ".join(parts[1:]) if len(parts) > 1 else "",
-            email=f"{username}@recrootearn.local",
-            username=username,
-            password=generate_password_hash(secrets.token_urlsafe(32)),
-            company=candidate.full_name or "Candidate Shop",
-            hr_type="Candidate Seller",
-            profile_photo=candidate.profile_photo,
-            is_shop_active=True,
-            is_approved=True,
-            verification_status="Pending",
-        )
-        db.session.add(seller)
-        db.session.flush()
-    parts = (candidate.full_name or "Candidate").strip().split()
-    seller.first_name = parts[0] if parts else "Candidate"
-    seller.last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
-    seller.company = candidate.full_name or "Candidate Shop"
-    seller.profile_photo = candidate.profile_photo
-    seller.hr_type = "Candidate Seller"
-    if getattr(candidate, "shop_name", None):
-        seller.shop_name = candidate.shop_name
-    seller.upi_id = getattr(candidate, "upi_id", None)
-    seller.bank_name = getattr(candidate, "bank_name", None)
-    seller.account_holder_name = getattr(candidate, "account_holder", None)
-    seller.account_number = getattr(candidate, "account_number", None)
-    seller.ifsc_code = getattr(candidate, "ifsc_code", None)
-    return seller
-
-def candidate_for_shop_user(seller):
-    username = getattr(seller, "username", "") or ""
-    if not username.startswith("candidate_shop_"):
-        return None
-    try:
-        candidate_id = int(username.rsplit("_", 1)[1])
-    except (ValueError, IndexError):
-        return None
-    return CandidateUser.query.get(candidate_id)
-
-def get_shop_seller_user():
-    if current_user.is_authenticated:
-        return current_user
-    candidate_id = session.get("candidate_id")
-    if candidate_id:
-        candidate = CandidateUser.query.get(candidate_id)
-        if candidate:
-            return get_candidate_shop_user(candidate)
-    return None
-
-def shop_access_required(view):
-    @wraps(view)
-    def wrapped(*args, **kwargs):
-        if current_user.is_authenticated or session.get("candidate_id"):
-            return view(*args, **kwargs)
-        return redirect("/candidate-login")
-    return wrapped
-
 # =========================
 # SHOP NAME SETTINGS
 # =========================
 @app.route("/shop/settings", methods=["POST"])
-@shop_access_required
+@login_required
 def shop_settings():
     shop_name = request.form.get("shop_name", "").strip()
-    target = "candidate_profile" if session.get("candidate_id") else "profile"
+
     if not shop_name:
         flash("Please enter a shop name.", "warning")
-        return redirect(url_for(target))
+        return redirect(url_for("profile"))
+
     if len(shop_name) > 200:
         flash("Shop name must be 200 characters or less.", "warning")
-        return redirect(url_for(target))
-    seller = get_shop_seller_user()
-    if not seller:
-        return redirect("/candidate-login")
-    seller.shop_name = shop_name
+        return redirect(url_for("profile"))
+
+    current_user.shop_name = shop_name
     db.session.commit()
+
     flash("Shop name updated successfully.", "success")
-    return redirect(url_for(target))
+    return redirect(url_for("profile"))
 
 # =========================
 # PROFILE
@@ -15331,12 +15234,8 @@ def profile():
         JobPost.created_at.desc()
     ).all()
 
-    seller = get_shop_seller_user()
-    if not seller:
-        return redirect("/candidate-login")
-
     products = Product.query.filter_by(
-        seller_id=seller.id
+        seller_id=current_user.id
     ).order_by(
         Product.created_at.desc()
     ).all()
@@ -16575,7 +16474,7 @@ def admin_reported_comments():
     )
 
 @app.route("/shop/add-product", methods=["GET", "POST"])
-@shop_access_required
+@login_required
 def add_product():
 
     # ==========================================
@@ -16594,13 +16493,9 @@ def add_product():
 
     if request.method == "POST":
 
-        seller = get_shop_seller_user()
-        if not seller:
-            return redirect("/candidate-login")
-
         product = Product(
 
-            seller_id=seller.id,
+            seller_id=current_user.id,
 
             category_id=int(
                 request.form["category_id"]
@@ -16848,15 +16743,11 @@ def add_product():
     )
 
 @app.route("/shop/products")
-@shop_access_required
+@login_required
 def shop_products():
 
-    seller = get_shop_seller_user()
-    if not seller:
-        return redirect("/candidate-login")
-
     products = Product.query.filter_by(
-        seller_id=seller.id
+        seller_id=current_user.id
     ).order_by(
         Product.created_at.desc()
     ).all()
@@ -16867,29 +16758,22 @@ def shop_products():
     )
 
 @app.route("/shop/edit-product/<int:id>", methods=["GET", "POST"])
-@shop_access_required
+@login_required
 def edit_product(id):
     # SHOP ONLY:
     # Product owner can edit their own product.
     # Admin (including the primary admin user ID 1) can edit any shop product.
     is_admin_user = (
-        current_user.is_authenticated
-        and (
-            bool(getattr(current_user, "is_admin", False))
-            or current_user.id == 1
-        )
+        bool(getattr(current_user, "is_admin", False))
+        or current_user.id == 1
     )
-
-    seller = get_shop_seller_user()
 
     if is_admin_user:
         product = Product.query.get_or_404(id)
     else:
-        if not seller:
-            return redirect("/candidate-login")
         product = Product.query.filter_by(
             id=id,
-            seller_id=seller.id
+            seller_id=current_user.id
         ).first_or_404()
 
     categories = ProductCategory.query.filter_by(
@@ -17120,30 +17004,23 @@ def edit_product(id):
     "/shop/delete-product/<int:id>",
     methods=["POST"]
 )
-@shop_access_required
+@login_required
 def delete_product(id):
 
     # SHOP ONLY:
     # Owner can delete their own product.
     # Admin can delete any shop product.
     is_admin_user = (
-        current_user.is_authenticated
-        and (
-            bool(getattr(current_user, "is_admin", False))
-            or current_user.id == 1
-        )
+        bool(getattr(current_user, "is_admin", False))
+        or current_user.id == 1
     )
-
-    seller = get_shop_seller_user()
 
     if is_admin_user:
         product = Product.query.get_or_404(id)
     else:
-        if not seller:
-            return redirect("/candidate-login")
         product = Product.query.filter_by(
             id=id,
-            seller_id=seller.id
+            seller_id=current_user.id
         ).first_or_404()
 
     # ---------------------------------------------------------
@@ -18564,16 +18441,13 @@ def my_order_details(order_id):
     )
 
 @app.route("/seller/orders")
-@shop_access_required
+@login_required
 def seller_orders():
 
     status = request.args.get("status")
 
-    seller = get_shop_seller_user()
-    if not seller:
-        return redirect("/candidate-login")
     query = Order.query.filter_by(
-        seller_id=seller.id
+        seller_id=current_user.id
     )
 
     if status:
@@ -18592,17 +18466,13 @@ def seller_orders():
     )
 
 @app.route("/order/<int:order_id>")
-@shop_access_required
+@login_required
 def order_details(order_id):
 
     order = Order.query.get_or_404(order_id)
 
-    seller = get_shop_seller_user()
-    seller_id = seller.id if seller else None
+    if order.user_id != current_user.id and order.seller_id != current_user.id:
 
-    customer_id = current_user.id if current_user.is_authenticated else None
-
-    if order.user_id != customer_id and order.seller_id != seller_id:
         abort(403)
 
     history = OrderStatusHistory.query.filter_by(
@@ -18618,16 +18488,12 @@ def order_details(order_id):
     )
 
 @app.route("/seller/order/<int:order_id>/accept")
-@shop_access_required
+@login_required
 def accept_order(order_id):
-
-    seller = get_shop_seller_user()
-    if not seller:
-        return redirect("/candidate-login")
 
     order = Order.query.filter_by(
         id=order_id,
-        seller_id=seller.id
+        seller_id=current_user.id
     ).first_or_404()
 
     # Only a pending order can be accepted.
@@ -18661,19 +18527,15 @@ def accept_order(order_id):
 
 
 @app.route("/seller/order/<int:order_id>/reject")
-@shop_access_required
+@login_required
 def reject_order(order_id):
 
     # =========================================================
     # SELLER CAN ONLY REJECT THEIR OWN PENDING ORDER
     # =========================================================
-    seller = get_shop_seller_user()
-    if not seller:
-        return redirect("/candidate-login")
-
     order = Order.query.filter_by(
         id=order_id,
-        seller_id=seller.id
+        seller_id=current_user.id
     ).first_or_404()
 
     if order.order_status != "Pending":
@@ -18834,19 +18696,16 @@ def cancel_order(order_id):
     return redirect("/my-orders")
 
 @app.route("/create-shipment/<int:order_id>")
-@shop_access_required
+@login_required
 def create_shipment(order_id):
 
     # ==========================================
     # ONLY SELLER OF THIS ORDER CAN SHIP IT
     # ==========================================
 
-    seller = get_shop_seller_user()
-    if not seller:
-        return redirect("/candidate-login")
     order = Order.query.filter_by(
         id=order_id,
-        seller_id=seller.id
+        seller_id=current_user.id
     ).first_or_404()
 
     # ==========================================
@@ -18966,14 +18825,11 @@ from flask_login import login_required, current_user
 # ==========================================
 
 @app.route("/seller/pickup")
-@shop_access_required
+@login_required
 def seller_pickup():
 
-    seller = get_shop_seller_user()
-    if not seller:
-        return redirect("/candidate-login")
     pickup = SellerPickupAddress.query.filter_by(
-        seller_id=seller.id
+        seller_id=current_user.id
     ).first()
 
     return render_template(
@@ -18987,20 +18843,17 @@ def seller_pickup():
 # ==========================================
 
 @app.route("/seller/pickup/save", methods=["POST"])
-@shop_access_required
+@login_required
 def save_seller_pickup():
 
-    seller = get_shop_seller_user()
-    if not seller:
-        return redirect("/candidate-login")
     pickup = SellerPickupAddress.query.filter_by(
-        seller_id=seller.id
+        seller_id=current_user.id
     ).first()
 
     if not pickup:
 
         pickup = SellerPickupAddress(
-            seller_id=seller.id
+            seller_id=current_user.id
         )
 
         db.session.add(pickup)
@@ -19035,14 +18888,11 @@ def save_seller_pickup():
 # ==========================================
 
 @app.route("/seller/pickup/edit", methods=["GET", "POST"])
-@shop_access_required
+@login_required
 def edit_seller_pickup():
 
-    seller = get_shop_seller_user()
-    if not seller:
-        return redirect("/candidate-login")
     pickup = SellerPickupAddress.query.filter_by(
-        seller_id=seller.id
+        seller_id=current_user.id
     ).first_or_404()
 
     if request.method == "POST":
@@ -20222,13 +20072,10 @@ def shop_search_suggestions():
 
     return jsonify(suggestions[:10])
 @app.route("/seller/analytics")
-@shop_access_required
+@login_required
 def seller_analytics():
 
-    seller = get_shop_seller_user()
-    if not seller:
-        return redirect("/candidate-login")
-    seller_id = seller.id
+    seller_id = current_user.id
 
     total_sales = db.session.query(
         db.func.sum(Order.total_amount)
@@ -20262,12 +20109,9 @@ def seller_analytics():
     )
 
 @app.route("/seller/monthly-sales")
-@shop_access_required
+@login_required
 def monthly_sales():
 
-    seller = get_shop_seller_user()
-    if not seller:
-        return jsonify([])
     data=[]
 
     for month in range(1,13):
@@ -20280,7 +20124,7 @@ def monthly_sales():
 
             db.extract("month",Order.created_at)==month,
 
-            Order.seller_id==seller.id
+            Order.seller_id==current_user.id
 
         ).scalar() or 0
 
@@ -21900,29 +21744,22 @@ def seo_settings():
     )
 
 @app.route("/shop/manage-product/<int:id>")
-@shop_access_required
+@login_required
 def manage_product(id):
     # SHOP ONLY:
     # Owner can manage their own product.
     # Admin can manage any shop product.
     is_admin_user = (
-        current_user.is_authenticated
-        and (
-            bool(getattr(current_user, "is_admin", False))
-            or current_user.id == 1
-        )
+        bool(getattr(current_user, "is_admin", False))
+        or current_user.id == 1
     )
-
-    seller = get_shop_seller_user()
 
     if is_admin_user:
         product = Product.query.get_or_404(id)
     else:
-        if not seller:
-            return redirect("/candidate-login")
         product = Product.query.filter_by(
             id=id,
-            seller_id=seller.id
+            seller_id=current_user.id
         ).first_or_404()
 
     return render_template(
@@ -21935,27 +21772,20 @@ def manage_product(id):
     "/shop/toggle-product/<int:id>",
     methods=["POST"]
 )
-@shop_access_required
+@login_required
 def owner_toggle_product(id):
     # Same SHOP ownership rule as edit/delete.
     is_admin_user = (
-        current_user.is_authenticated
-        and (
-            bool(getattr(current_user, "is_admin", False))
-            or current_user.id == 1
-        )
+        bool(getattr(current_user, "is_admin", False))
+        or current_user.id == 1
     )
-
-    seller = get_shop_seller_user()
 
     if is_admin_user:
         product = Product.query.get_or_404(id)
     else:
-        if not seller:
-            return redirect("/candidate-login")
         product = Product.query.filter_by(
             id=id,
-            seller_id=seller.id
+            seller_id=current_user.id
         ).first_or_404()
 
     if product.status == "active":
@@ -21992,19 +21822,16 @@ def owner_toggle_product(id):
 @app.route(
     "/create-delhivery-shipment/<int:order_id>"
 )
-@shop_access_required
+@login_required
 def create_delhivery_shipment(order_id):
 
     # -----------------------------------------------------
     # ONLY SELLER OF THIS ORDER CAN SHIP IT
     # -----------------------------------------------------
 
-    seller = get_shop_seller_user()
-    if not seller:
-        return redirect("/candidate-login")
     order = Order.query.filter_by(
         id=order_id,
-        seller_id=seller.id
+        seller_id=current_user.id
     ).first_or_404()
 
     # -----------------------------------------------------
