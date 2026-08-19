@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+.promo-admin-wrap{
+    max-width:1000px;
+    margin:0 auto;
+    padding:8px 0 30px;
+}
+
+.promo-hero{
+    background:linear-gradient(135deg,#0b5ed7,#2563eb 55%,#16a34a);
+    border-radius:24px;
+    padding:28px;
+    color:#fff;
+    margin-bottom:22px;
+    box-shadow:0 14px 35px rgba(37,99,235,.18);
+}
+
+.promo-hero h2{
+    margin:0 0 7px;
+    font-weight:900;
+    letter-spacing:-.4px;
+}
+
+.promo-hero p{
+    margin:0;
+    opacity:.9;
+    font-size:14px;
+}
+
+.promo-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+    margin-bottom:16px;
+}
+
+.promo-card{
+    background:#fff;
+    border:1px solid #e6ebf3;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 7px 22px rgba(15,23,42,.06);
+}
+
+.promo-card-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:16px;
+}
+
+.promo-icon{
+    width:46px;
+    height:46px;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:18px;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+}
+
+.promo-card.shop .promo-icon{
+    background:linear-gradient(135deg,#f59e0b,#ea580c);
+}
+
+.promo-card h4{
+    margin:0;
+    font-size:17px;
+    font-weight:900;
+    color:#111827;
+}
+
+.promo-card small{
+    color:#7b8494;
+}
+
+.promo-input{
+    width:100%;
+    height:52px;
+    border:1px solid #dbe3ef;
+    border-radius:13px;
+    padding:0 15px;
+    font-size:18px;
+    font-weight:800;
+    outline:none;
+    box-sizing:border-box;
+}
+
+.promo-input:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 4px rgba(37,99,235,.10);
+}
+
+.promo-help{
+    margin-top:8px;
+    color:#7b8494;
+    font-size:12px;
+}
+
+.duration-card{
+    background:#fff;
+    border:1px solid #e6ebf3;
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:16px;
+    box-shadow:0 7px 22px rgba(15,23,42,.06);
+}
+
+.duration-options{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+    margin-top:13px;
+}
+
+.duration-pill{
+    padding:8px 12px;
+    border-radius:999px;
+    background:#eef4ff;
+    color:#2563eb;
+    font-weight:800;
+    font-size:12px;
+}
+
+.summary{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-bottom:16px;
+}
+
+.summary-item{
+    background:#f8fafc;
+    border:1px solid #e8edf4;
+    border-radius:16px;
+    padding:15px;
+}
+
+.summary-item span{
+    display:block;
+    color:#7b8494;
+    font-size:12px;
+    margin-bottom:5px;
+}
+
+.summary-item strong{
+    color:#111827;
+    font-size:19px;
+}
+
+.save-btn{
+    width:100%;
+    height:54px;
+    border:0;
+    border-radius:14px;
+    color:#fff;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    font-size:15px;
+    font-weight:900;
+    box-shadow:0 9px 22px rgba(37,99,235,.20);
+}
+
+.note{
+    margin-top:13px;
+    padding:13px 15px;
+    border-radius:13px;
+    background:#fff8e8;
+    color:#8a5a00;
+    font-size:12px;
+    line-height:1.5;
+}
+
+@media(max-width:700px){
+    .promo-grid,
+    .summary{
+        grid-template-columns:1fr;
+    }
+
+    .promo-hero{
+        padding:22px;
+        border-radius:19px;
+    }
+
+    .promo-card,
+    .duration-card{
+        padding:16px;
+        border-radius:17px;
+    }
+}
+</style>
+
+<div class="promo-admin-wrap">
+
+    <div class="promo-hero">
+        <h2><i class="fas fa-bullhorn"></i> Promotion Credit Control</h2>
+        <p>Control the paid-credit cost and available promotion duration for marketplace promotions.</p>
+    </div>
+
+    <form method="POST">
+
+        <div class="promo-grid">
+
+            <div class="promo-card">
+                <div class="promo-card-head">
+                    <div class="promo-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div>
+                        <h4>Product Promotion</h4>
+                        <small>Paid credits per day</small>
+                    </div>
+                </div>
+
+                <input
+                    class="promo-input"
+                    type="number"
+                    name="product_promotion_price"
+                    min="0"
+                    step="1"
+                    value="{{ settings.product_promotion_price or 0 }}"
+                    required>
+
+                <div class="promo-help">
+                    Example: 100 credits/day × 7 days = 700 paid credits.
+                </div>
+            </div>
+
+            <div class="promo-card shop">
+                <div class="promo-card-head">
+                    <div class="promo-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div>
+                        <h4>Shop Promotion</h4>
+                        <small>Paid credits per day</small>
+                    </div>
+                </div>
+
+                <input
+                    class="promo-input"
+                    type="number"
+                    name="shop_promotion_price"
+                    min="0"
+                    step="1"
+                    value="{{ settings.shop_promotion_price or 0 }}"
+                    required>
+
+                <div class="promo-help">
+                    Example: 500 credits/day × 7 days = 3,500 paid credits.
+                </div>
+            </div>
+
+        </div>
+
+        <div class="duration-card">
+
+            <div class="promo-card-head">
+                <div class="promo-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div>
+                    <h4>Promotion Duration Control</h4>
+                    <small>Set the additional duration available to sellers</small>
+                </div>
+            </div>
+
+            <input
+                class="promo-input"
+                type="number"
+                name="promotion_duration_days"
+                min="1"
+                max="30"
+                step="1"
+                value="{{ settings.promotion_duration_days or 7 }}"
+                required>
+
+            <div class="duration-options">
+                {% for days in durations %}
+                    <span class="duration-pill">{{ days }} day{% if days != 1 %}s{% endif %}</span>
+                {% endfor %}
+            </div>
+
+            <div class="promo-help">
+                The promotion system already offers 1, 3, 7, 15 and 30 days.
+                This setting adds/configures one additional duration option.
+            </div>
+
+        </div>
+
+        <div class="summary">
+
+            <div class="summary-item">
+                <span>Product / 7 days</span>
+                <strong>{{ (settings.product_promotion_price or 0) * 7 }} credits</strong>
+            </div>
+
+            <div class="summary-item">
+                <span>Shop / 7 days</span>
+                <strong>{{ (settings.shop_promotion_price or 0) * 7 }} credits</strong>
+            </div>
+
+            <div class="summary-item">
+                <span>Configured duration</span>
+                <strong>{{ settings.promotion_duration_days or 7 }} days</strong>
+            </div>
+
+        </div>
+
+        <button type="submit" class="save-btn">
+            <i class="fas fa-save"></i>
+            Save Promotion Settings
+        </button>
+
+        <div class="note">
+            <strong>Important:</strong> These values apply to new promotion purchases.
+            Existing active promotions keep their already-recorded duration and credit usage.
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

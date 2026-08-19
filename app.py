@@ -5647,6 +5647,115 @@ def get_business_settings():
 
     return settings
 
+def promotion_duration_options(settings):
+    """Seller-selectable marketplace promotion durations in days."""
+    values = [1, 3, 7, 15, 30]
+    try:
+        configured = int(settings.promotion_duration_days or 0)
+        if configured > 0:
+            values.append(configured)
+    except (TypeError, ValueError):
+        pass
+    return sorted(set(max(1, min(int(v), 30)) for v in values))
+
+
+def deduct_paid_promotion_credits(user, amount, action):
+    """Deduct only paid credits and keep CreditPurchase records synchronized."""
+    try:
+        amount = int(amount)
+    except (TypeError, ValueError):
+        return False
+
+    if amount <= 0 or int(user.paid_credits or 0) < amount:
+        return False
+
+    purchases = (
+        CreditPurchase.query
+        .filter(
+            CreditPurchase.user_id == user.id,
+            CreditPurchase.credits_remaining > 0
+        )
+        .order_by(CreditPurchase.created_at.asc())
+        .all()
+    )
+
+    if sum(int(p.credits_remaining or 0) for p in purchases) < amount:
+        return False
+
+    remaining = amount
+    for purchase in purchases:
+        if remaining <= 0:
+            break
+        used = min(int(purchase.credits_remaining or 0), remaining)
+        purchase.credits_remaining -= used
+        remaining -= used
+
+    if remaining:
+        return False
+
+    user.paid_credits = int(user.paid_credits or 0) - amount
+    db.session.add(CreditHistory(
+        user_id=user.id,
+        amount=-amount,
+        action=action
+    ))
+    return True
+
+
+def expire_marketplace_promotions():
+    """Deactivate expired paid product/shop promotions."""
+    now = india_time()
+    changed = False
+
+    expired_products = Product.query.filter(
+        Product.is_promoted == True,
+        Product.promotion_expires_at.isnot(None),
+        Product.promotion_expires_at <= now
+    ).all()
+
+    for product in expired_products:
+        product.is_promoted = False
+        product.promotion_priority = 0
+        product.promotion_amount = 0
+        product.promotion_type = None
+        product.promotion_expires_at = None
+        product.promotion_end = None
+
+        latest = (
+            ProductPromotion.query
+            .filter_by(product_id=product.id)
+            .order_by(ProductPromotion.start_date.desc())
+            .first()
+        )
+        if latest and latest.status == "Active":
+            latest.status = "Expired"
+        changed = True
+
+    expired_shops = User.query.filter(
+        User.is_shop_promoted == True,
+        User.shop_promotion_expires_at.isnot(None),
+        User.shop_promotion_expires_at <= now
+    ).all()
+
+    for seller in expired_shops:
+        seller.is_shop_promoted = False
+        seller.shop_promotion_priority = 0
+        seller.shop_promotion_expires_at = None
+
+        latest = (
+            ShopPromotion.query
+            .filter_by(seller_id=seller.id)
+            .order_by(ShopPromotion.start_date.desc())
+            .first()
+        )
+        if latest and latest.status == "Active":
+            latest.status = "Expired"
+        changed = True
+
+    if changed:
+        db.session.commit()
+
+
 def check_daily_reward(candidate):
 
     settings = get_business_settings()
@@ -20289,83 +20398,200 @@ def schedule_return_pickup(return_id):
 
     return redirect(f"/admin/returns/{return_request.id}")
 
-@app.route("/seller/product/<int:id>/promote")
+@app.route("/shop/promote", methods=["GET", "POST"])
 @login_required
-def promote_product(id):
-
-    product = Product.query.filter_by(
-
-        id=id,
-
-        seller_id=current_user.id
-
-    ).first_or_404()
-
+def shop_promote():
+    expire_marketplace_promotions()
     settings = get_business_settings()
 
-    if current_user.credits < settings.product_promotion_price:
+    if request.method == "POST":
+        target_type = request.form.get("target_type", "product").strip().lower()
 
-        flash(
+        try:
+            days = int(request.form.get("days", 1))
+        except (TypeError, ValueError):
+            flash("Please select a valid promotion duration.", "danger")
+            return redirect(url_for("shop_promote"))
 
-            "Not enough credits.",
+        if days not in promotion_duration_options(settings):
+            flash("That promotion duration is not available.", "danger")
+            return redirect(url_for("shop_promote"))
 
-            "danger"
+        if target_type == "product":
+            try:
+                product_id = int(request.form.get("product_id", 0))
+            except (TypeError, ValueError):
+                product_id = 0
 
-        )
+            product = Product.query.filter_by(
+                id=product_id,
+                seller_id=current_user.id
+            ).first()
 
-        return redirect("/seller/products")
+            if not product:
+                flash("Product not found.", "danger")
+                return redirect(url_for("shop_promote"))
 
-    current_user.credits -= settings.product_promotion_price
+            if not product.is_active or product.status != "active":
+                flash("Only active products can be promoted.", "warning")
+                return redirect(url_for("shop_promote"))
 
-    product.is_promoted = True
+            if (
+                product.is_promoted
+                and product.promotion_expires_at
+                and product.promotion_expires_at > india_time()
+            ):
+                flash("This product is already promoted.", "warning")
+                return redirect(url_for("shop_promote"))
 
-    product.promotion_priority = 1
+            daily_rate = max(0, int(settings.product_promotion_price or 0))
+            total_credits = daily_rate * days
 
-    product.promotion_amount = settings.product_promotion_price
+            if total_credits <= 0:
+                flash("Product promotion is currently unavailable.", "warning")
+                return redirect(url_for("shop_promote"))
 
-    product.promotion_type = "Product"
+            if current_user.paid_credits < total_credits:
+                flash(
+                    f"You need {total_credits} paid credits. "
+                    f"Your paid-credit balance is {current_user.paid_credits or 0}.",
+                    "warning"
+                )
+                return redirect("/buy-credits")
 
-    product.promotion_expires_at = (
+            now = india_time()
+            expires_at = now + timedelta(days=days)
 
-        india_time() +
+            if not deduct_paid_promotion_credits(
+                current_user,
+                total_credits,
+                f"Product Promotion - {product.name} - {days} days"
+            ):
+                db.session.rollback()
+                flash("Paid-credit balance could not be verified.", "danger")
+                return redirect(url_for("shop_promote"))
 
-        timedelta(
+            product.is_promoted = True
+            product.promotion_priority = 100
+            product.promotion_amount = total_credits
+            product.promotion_type = "Product"
+            product.promotion_expires_at = expires_at
+            product.promotion_end = expires_at
 
-            days=settings.promotion_duration_days
+            db.session.add(ProductPromotion(
+                product_id=product.id,
+                seller_id=current_user.id,
+                credits_used=total_credits,
+                amount=total_credits,
+                start_date=now,
+                end_date=expires_at,
+                status="Active"
+            ))
+            db.session.commit()
 
-        )
+            flash(
+                f"{product.name} promoted for {days} days using "
+                f"{total_credits} paid credits.",
+                "success"
+            )
+            return redirect(url_for("shop_promote"))
 
+        if target_type == "shop":
+            seller = User.query.get(current_user.id)
+
+            if not seller:
+                flash("Seller account not found.", "danger")
+                return redirect(url_for("shop_promote"))
+
+            if not seller.is_shop_active:
+                flash("Activate your shop before promoting it.", "warning")
+                return redirect(url_for("shop_promote"))
+
+            if (
+                seller.is_shop_promoted
+                and seller.shop_promotion_expires_at
+                and seller.shop_promotion_expires_at > india_time()
+            ):
+                flash("Your shop is already promoted.", "warning")
+                return redirect(url_for("shop_promote"))
+
+            daily_rate = max(0, int(settings.shop_promotion_price or 0))
+            total_credits = daily_rate * days
+
+            if total_credits <= 0:
+                flash("Shop promotion is currently unavailable.", "warning")
+                return redirect(url_for("shop_promote"))
+
+            if current_user.paid_credits < total_credits:
+                flash(
+                    f"You need {total_credits} paid credits. "
+                    f"Your paid-credit balance is {current_user.paid_credits or 0}.",
+                    "warning"
+                )
+                return redirect("/buy-credits")
+
+            now = india_time()
+            expires_at = now + timedelta(days=days)
+
+            if not deduct_paid_promotion_credits(
+                current_user,
+                total_credits,
+                f"Shop Promotion - {days} days"
+            ):
+                db.session.rollback()
+                flash("Paid-credit balance could not be verified.", "danger")
+                return redirect(url_for("shop_promote"))
+
+            seller.is_shop_promoted = True
+            seller.shop_promotion_priority = 100
+            seller.shop_promotion_expires_at = expires_at
+
+            db.session.add(ShopPromotion(
+                seller_id=seller.id,
+                credits_used=total_credits,
+                amount=total_credits,
+                start_date=now,
+                end_date=expires_at,
+                status="Active"
+            ))
+            db.session.commit()
+
+            flash(
+                f"Your shop was promoted for {days} days using "
+                f"{total_credits} paid credits.",
+                "success"
+            )
+            return redirect(url_for("shop_promote"))
+
+        flash("Invalid promotion type.", "danger")
+        return redirect(url_for("shop_promote"))
+
+    products = Product.query.filter_by(
+        seller_id=current_user.id,
+        is_active=True,
+        status="active"
+    ).order_by(Product.created_at.desc()).all()
+
+    return render_template(
+        "shop/promote.html",
+        products=products,
+        settings=settings,
+        durations=promotion_duration_options(settings),
+        paid_credits=int(current_user.paid_credits or 0)
     )
 
-    db.session.add(
 
-        ProductPromotion(
+# Backward-compatible old product promotion URL.
+@app.route("/seller/product/<int:id>/promote", methods=["GET"])
+@login_required
+def promote_product(id):
+    return redirect(url_for("shop_promote", product_id=id))
 
-            product_id=product.id,
 
-            seller_id=current_user.id,
-
-            credits_used=settings.product_promotion_price,
-
-            amount=settings.product_promotion_price,
-
-            end_date=product.promotion_expires_at
-
-        )
-
-    )
-
-    db.session.commit()
-
-    send_notification(
-        user_id=current_user.id,
-        user_type="hr",
-        message=f"{product.name} is now promoted.",
-        link=f"/product/{product.id}",
-        type="promotion"
-    )
-
-    return redirect("/seller/products")
+@app.route("/seller/shop/promote", methods=["GET"])
+@login_required
+def promote_shop():
+    return redirect(url_for("shop_promote"))
 
 
 @app.route("/admin/seller/<int:id>/verify")
@@ -24397,6 +24623,14 @@ def verify_single_device():
         )
 
         return redirect(url_for("login"))
+
+@app.before_request
+def expire_marketplace_promotions_hook():
+    try:
+        expire_marketplace_promotions()
+    except Exception:
+        db.session.rollback()
+
 
 # Apply the variant-price schema migration once the entire application
 # module (including every model) has been loaded. This also runs under
