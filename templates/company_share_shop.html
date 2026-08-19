@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ seller.company or seller.first_name or "Shop" }}{% endblock %}
+{% block title %}{{ seller.shop_name or seller.company or seller.first_name or "Shop" }}{% endblock %}
 
 {% block content %}
 
@@ -415,7 +415,7 @@ body{
             <img
                 class="shop-avatar"
                 src="/static/uploads/{{ seller.company_logo }}"
-                alt="{{ seller.company or 'Shop' }}"
+                alt="{{ seller.shop_name or seller.company or 'Shop' }}"
                 onerror="
                     this.onerror=null;
                     {% if seller.profile_photo %}
@@ -432,7 +432,7 @@ body{
             <img
                 class="shop-avatar"
                 src="/static/uploads/{{ seller.profile_photo }}"
-                alt="{{ seller.company or 'Shop' }}"
+                alt="{{ seller.shop_name or seller.company or 'Shop' }}"
                 onerror="
                     this.style.display='none';
                     this.nextElementSibling.style.display='flex';
@@ -456,7 +456,8 @@ body{
             <div class="shop-header-info">
 
                 <h1 class="shop-name">
-                    {{ seller.company or
+                    {{ seller.shop_name or
+                       seller.company or
                        ((seller.first_name or '') ~ ' ' ~
                         (seller.last_name or '')).strip()
                        or 'Shop' }}
