@@ -221,6 +221,8 @@ class User(UserMixin, db.Model):
     mobile = db.Column(db.String(20), unique=True)
     email = db.Column(db.String(120))
     company = db.Column(db.String(200))
+    # Public marketplace/shop name; independent from registered company name.
+    shop_name = db.Column(db.String(200), nullable=True)
     hr_type = db.Column(db.String(100))
     username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(300))
@@ -15197,6 +15199,28 @@ def export_unlocked():
     )
 
 # =========================
+# SHOP NAME SETTINGS
+# =========================
+@app.route("/shop/settings", methods=["POST"])
+@login_required
+def shop_settings():
+    shop_name = request.form.get("shop_name", "").strip()
+
+    if not shop_name:
+        flash("Please enter a shop name.", "warning")
+        return redirect(url_for("profile"))
+
+    if len(shop_name) > 200:
+        flash("Shop name must be 200 characters or less.", "warning")
+        return redirect(url_for("profile"))
+
+    current_user.shop_name = shop_name
+    db.session.commit()
+
+    flash("Shop name updated successfully.", "success")
+    return redirect(url_for("profile"))
+
+# =========================
 # PROFILE
 # =========================
 
@@ -17130,7 +17154,8 @@ def shop_home():
 
     for store in stores:
         store.generated_shop_slug = make_shop_slug(
-            store.company
+            store.shop_name
+            or store.company
             or store.first_name
             or store.username
             or "store"
@@ -19913,11 +19938,13 @@ def shop_search():
             User.id.in_(active_shop_sellers),
             User.is_shop_active == True,
             or_(
+                User.shop_name.ilike(f"%{keyword}%"),
                 User.company.ilike(f"%{keyword}%"),
                 User.first_name.ilike(f"%{keyword}%"),
                 User.username.ilike(f"%{keyword}%")
             )
         ).order_by(
+            User.shop_name.asc(),
             User.company.asc(),
             User.first_name.asc()
         ).all()
@@ -20007,6 +20034,7 @@ def shop_search_suggestions():
             User.id.in_(active_shop_sellers),
             User.is_shop_active == True,
             or_(
+                User.shop_name.ilike(f"%{keyword}%"),
                 User.company.ilike(f"%{keyword}%"),
                 User.first_name.ilike(f"%{keyword}%"),
                 User.username.ilike(f"%{keyword}%")
@@ -20022,7 +20050,8 @@ def shop_search_suggestions():
 
     for store in stores:
         store_name = (
-            store.company
+            store.shop_name
+            or store.company
             or store.first_name
             or store.username
             or "Store"
