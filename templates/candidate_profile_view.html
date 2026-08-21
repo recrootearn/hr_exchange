@@ -447,46 +447,30 @@
 
         <div id="candidate-profile-videos" class="profile-tab-panel active">
             {% if candidate_videos %}
-            <!-- Instagram-style candidate video grid -->
             <div class="profile-video-grid">
                 {% for cv in candidate_videos %}
-                <a
-                    href="{{ url_for('candidate_video_view', video_id=cv.id) }}"
-                    class="profile-video-item"
-                    aria-label="Open candidate video"
-                >
+                <div class="profile-video-item">
                     <div class="profile-video-media">
-                        <video
-                            muted
-                            playsinline
-                            preload="metadata"
-                            poster="{% if cv.thumbnail %}{{ url_for('static', filename='uploads/' + cv.thumbnail) }}{% endif %}"
-                        >
-                            <source
-                                src="{{ url_for('static', filename='uploads/' + cv.video) }}"
-                                type="video/mp4"
-                            >
+                        <video controls playsinline preload="metadata"
+                               poster="{% if cv.thumbnail %}{{ url_for('static', filename='uploads/' + cv.thumbnail) }}{% endif %}">
+                            <source src="{{ url_for('static', filename='uploads/' + cv.video) }}"
+                                    type="video/mp4">
                         </video>
-
-                        <span class="profile-video-play">
-                            <i class="fas fa-play"></i>
-                        </span>
-
-                        <span class="profile-video-location-badge">
-                            <i class="fas fa-map-marker-alt"></i>
-                            {{ cv.location or candidate.city or "Location not added" }}
-                        </span>
-
-                        {% if cv.active_boost %}
-                        <span class="profile-video-boost-badge">
-                            📢 Promoted
-                        </span>
+                    </div>
+                    <div class="profile-video-info">
+                        <div class="profile-video-location">
+                            📍 {{ cv.location or candidate.city or "Location not added" }}
+                        </div>
+                        {% if cv.caption %}
+                        <div class="profile-video-caption">{{ cv.caption }}</div>
+                        {% endif %}
+                        {% if cv.hashtags %}
+                        <div class="profile-video-hashtags">{{ cv.hashtags }}</div>
                         {% endif %}
                     </div>
-                </a>
+                </div>
                 {% endfor %}
             </div>
-
             {% else %}
             <div class="empty-videos">
                 <div class="empty-videos-icon">🎥</div>
@@ -904,151 +888,24 @@
 .profile-tab.active{background:#eef5ff;color:#155dcc;}
 .profile-tab-panel{display:none;}
 .profile-tab-panel.active{display:block;}
-/* Instagram-style candidate video grid */
 .profile-video-grid{
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:3px;
-    background:#f4f7fb;
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;
 }
-
 .profile-video-item{
-    position:relative;
-    text-decoration:none;
-    color:inherit;
-    display:block;
-    width:100%;
-    padding:0;
-    margin:0;
-    border:0;
-    border-radius:0;
-    overflow:hidden;
-    background:#000;
-    cursor:pointer;
-    appearance:none;
+    background:#fff;border:1px solid #e7ebf2;border-radius:18px;
+    overflow:hidden;box-shadow:0 6px 20px rgba(15,23,42,.05);
 }
-
-.profile-video-media{
-    position:relative;
-    width:100%;
-    aspect-ratio:9/13;
-    background:#000;
-    overflow:hidden;
-}
-
+.profile-video-media{background:#000;aspect-ratio:9/14;}
 .profile-video-media video{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-    pointer-events:none;
+    width:100%;height:100%;object-fit:cover;display:block;
 }
-
-.profile-video-item::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:linear-gradient(
-        to bottom,
-        rgba(0,0,0,.08),
-        transparent 45%,
-        rgba(0,0,0,.42)
-    );
-    pointer-events:none;
+.profile-video-info{padding:11px 12px 13px;}
+.profile-video-location{
+    color:#6b7280;font-size:12px;font-weight:700;margin-bottom:6px;
 }
-
-.profile-video-play{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    width:46px;
-    height:46px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(0,0,0,.58);
-    color:#fff;
-    font-size:17px;
-    z-index:2;
-    box-shadow:0 4px 14px rgba(0,0,0,.28);
-}
-
-.profile-video-play i{
-    margin-left:3px;
-}
-
-.profile-video-location-badge{
-    position:absolute;
-    left:8px;
-    bottom:8px;
-    z-index:3;
-    max-width:calc(100% - 16px);
-    padding:5px 8px;
-    border-radius:999px;
-    background:rgba(0,0,0,.58);
-    color:#fff;
-    font-size:10px;
-    font-weight:700;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-
-.profile-video-location-badge i{
-    margin-right:3px;
-}
-
-.profile-video-boost-badge{
-    position:absolute;
-    top:7px;
-    left:7px;
-    z-index:4;
-    padding:4px 7px;
-    border-radius:999px;
-    background:rgba(37,99,235,.92);
-    color:#fff;
-    font-size:9px;
-    font-weight:800;
-}
-
-.candidate-profile-video-modal{
-    position:fixed;
-    inset:0;
-    z-index:99999;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    background:rgba(0,0,0,.94);
-    padding:20px;
-}
-
-.candidate-profile-video-modal.show{
-    display:flex;
-}
-
-.candidate-profile-video-modal video{
-    width:min(100%,520px);
-    max-height:92vh;
-    object-fit:contain;
-    border-radius:10px;
-    background:#000;
-}
-
-.candidate-profile-video-close{
-    position:absolute;
-    top:18px;
-    right:18px;
-    width:42px;
-    height:42px;
-    border:0;
-    border-radius:50%;
-    background:rgba(255,255,255,.15);
-    color:#fff;
-    font-size:30px;
-    line-height:1;
-    z-index:2;
+.profile-video-caption{color:#253044;font-size:13px;line-height:1.45;}
+.profile-video-hashtags{
+    margin-top:6px;color:#155dcc;font-size:12px;font-weight:700;
 }
 .empty-videos{
     background:#fff;border:1px solid #e7ebf2;border-radius:20px;
@@ -1075,27 +932,36 @@
 .profile-completion-bar > div{
     height:100%;background:#0b5ed7;border-radius:99px;
 }
-@media(max-width:600px){
+@media(max-width:768px){
+    /* Candidate profile must keep the global mobile navigation visible. */
+    .bottom-nav{
+        display:flex !important;
+        visibility:visible !important;
+        opacity:1 !important;
+    }
+
+    .profile-wrapper{
+        margin:14px auto 95px;
+        padding:0 10px;
+    }
+
     .profile-actions-row{flex-direction:column;}
+
+    /* Instagram-style 3-column candidate video grid */
     .profile-video-grid{
         grid-template-columns:repeat(3,minmax(0,1fr));
         gap:2px;
     }
-    .profile-video-media{
-        aspect-ratio:9/13;
+
+    .profile-video-item{
+        border-radius:0;
+        border:0;
+        box-shadow:none;
     }
-    .profile-video-location-badge{
-        left:5px;
-        bottom:5px;
-        max-width:calc(100% - 10px);
-        font-size:9px;
-        padding:4px 6px;
-    }
-    .profile-video-play{
-        width:38px;
-        height:38px;
-        font-size:14px;
-    }
+
+    .profile-video-media{aspect-ratio:9/13;}
+
+    .profile-video-info{display:none;}
 }
 </style>
 
@@ -1112,7 +978,5 @@ function switchCandidateProfileTab(tab,button){
     if(panel) panel.classList.add("active");
 }
 </script>
-
-<script>
 
 {% endblock %}
