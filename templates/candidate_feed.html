@@ -51,7 +51,102 @@
 
 </form>
 
+
+<div style="display:flex;justify-content:flex-end;padding:0 10px 10px;">
+    <a href="{{ url_for('candidate_post_video') }}"
+       class="candidate-post-video-btn">
+        🎥 Post Video
+    </a>
+</div>
 <div class="desktop-feed">
+
+{% if candidate_videos %}
+{% for cv in candidate_videos %}
+<div class="feed-card candidate-video-feed-card" id="candidate-video-{{ cv.id }}">
+
+    <div class="feed-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <div class="feed-avatar candidate-video-avatar">
+                {% if cv.candidate and cv.candidate.profile_photo %}
+                <img src="/static/uploads/{{ cv.candidate.profile_photo }}"
+                     style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                {% else %}
+                {{ cv.candidate.full_name[:1].upper() if cv.candidate and cv.candidate.full_name else 'C' }}
+                {% endif %}
+            </div>
+
+            <div class="ms-2">
+                <div class="feed-company">
+                    {% if cv.candidate %}
+                    <a href="/candidate/{{ cv.candidate.id }}"
+                       style="text-decoration:none;color:inherit;">
+                        {{ cv.candidate.full_name }}
+                    </a>
+                    {% else %}
+                    Candidate
+                    {% endif %}
+                </div>
+                <div class="feed-meta">🎥 Candidate Video</div>
+            </div>
+        </div>
+
+        <span class="candidate-video-badge">CANDIDATE</span>
+    </div>
+
+    <div class="feed-media reel-media video-container">
+        <video class="feed-image feed-video candidate-feed-video"
+               autoplay muted loop playsinline preload="metadata"
+               poster="{% if cv.thumbnail %}/static/uploads/{{ cv.thumbnail }}{% endif %}"
+               onclick="openMedia(this,'/static/uploads/{{ cv.video }}','video')">
+            <source src="/static/uploads/{{ cv.video }}" type="video/mp4">
+        </video>
+
+        <button class="mute-btn"
+                onclick="toggleMute(event,this)"
+                type="button">🔇</button>
+    </div>
+
+    <div class="feed-buttons">
+        <div class="video-actions">
+
+            <button id="candidate-spark-btn-{{ cv.id }}"
+                    class="action-btn spark-btn"
+                    type="button"
+                    onclick="toggleCandidateVideoSpark({{ cv.id }}, this)">
+                <i class="fas fa-bolt"></i>
+            </button>
+
+            <span id="candidate-spark-count-{{ cv.id }}"
+                  class="action-count">
+                {{ cv.sparks|length }}
+            </span>
+
+            <button class="action-btn"
+                    type="button"
+                    onclick="shareCandidateVideo({{ cv.id }})"
+                    style="color:#2563eb;">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+
+        </div>
+    </div>
+
+    {% if cv.caption or cv.hashtags %}
+    <div class="job-details-wrapper">
+        {% if cv.caption %}
+        <div class="description-text">{{ cv.caption }}</div>
+        {% endif %}
+
+        {% if cv.hashtags %}
+        <div class="candidate-video-hashtags">{{ cv.hashtags }}</div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+{% endfor %}
+{% endif %}
+
     {% for job in jobs %}
     <div id="post{{ job.id }}" class="feed-card">
         <!-- HEADER -->
@@ -2081,3 +2176,94 @@ function sendEnquiry(postId){
 </script>
 
 {% endblock %}
+
+<style>
+.candidate-video-feed-card{position:relative;}
+.candidate-video-avatar{overflow:hidden;background:#eef3fb;}
+.candidate-video-badge{
+    display:inline-flex;
+    align-items:center;
+    padding:5px 9px;
+    border-radius:999px;
+    background:#eef5ff;
+    color:#2563eb;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.3px;
+}
+.candidate-video-hashtags{
+    margin-top:8px;
+    color:#2563eb;
+    font-weight:700;
+    font-size:14px;
+    white-space:pre-wrap;
+}
+.candidate-feed-video{background:#000;}
+.candidate-post-video-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:42px;
+    padding:0 17px;
+    border-radius:999px;
+    background:#2563eb;
+    color:#fff !important;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:800;
+}
+</style>
+
+<script>
+async function toggleCandidateVideoSpark(videoId, button){
+    try{
+        const response = await fetch(
+            "/candidate-video-spark/" + videoId,
+            {
+                method:"POST",
+                headers:{"X-Requested-With":"XMLHttpRequest"}
+            }
+        );
+
+        const data = await response.json();
+
+        if(!data.success){
+            alert(data.message || "Please login first.");
+            return;
+        }
+
+        const count = document.getElementById(
+            "candidate-spark-count-" + videoId
+        );
+
+        if(count) count.textContent = data.count;
+
+        button.classList.toggle("sparked", !!data.sparked);
+
+    }catch(error){
+        console.error("Candidate video spark error:", error);
+    }
+}
+
+async function shareCandidateVideo(videoId){
+    const shareUrl =
+        window.location.origin +
+        "/candidate-feed#candidate-video-" + videoId;
+
+    if(navigator.share){
+        try{
+            await navigator.share({
+                title:"RecrootEarn Candidate Video",
+                url:shareUrl
+            });
+        }catch(error){}
+    }else{
+        try{
+            await navigator.clipboard.writeText(shareUrl);
+            alert("Video link copied.");
+        }catch(error){
+            window.prompt("Copy this video link:", shareUrl);
+        }
+    }
+}
+</script>

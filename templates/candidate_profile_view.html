@@ -446,6 +446,19 @@ class="btn edit-btn">
 
 </a>
 
+<a
+href="{{ url_for('candidate_post_video') }}"
+class="btn edit-btn"
+style="
+margin-top:12px;
+background:#0b5ed7;
+color:#fff;
+">
+
+🎥 Post Candidate Video
+
+</a>
+
 </div>
 
 <div class="profile-body">
@@ -465,6 +478,14 @@ class="btn edit-btn">
 <h2>{{ following_count }}</h2>
 
 <p>Following</p>
+
+</div>
+
+<div class="stat">
+
+<h2>{{ candidate_video_count }}</h2>
+
+<p>Videos</p>
 
 </div>
 
