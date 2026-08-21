@@ -121,6 +121,31 @@
     color:white;
 }
 
+.discover-tabs{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.discover-tab{
+    flex:1;
+    border:none;
+    padding:12px;
+    border-radius:12px;
+    background:#e5e7eb;
+    font-weight:600;
+}
+
+.discover-tab.active{
+    background:#2563eb;
+    color:#fff;
+}
+
+.candidate-section{
+    border:2px solid #10b981;
+}
+
+
 
 <style>
 /* Discover: subtle shuffle motion */
@@ -168,67 +193,147 @@
 
 </div>
 
+<div class="discover-tabs">
+    <button type="button"
+            class="discover-tab active"
+            onclick="showSection('all',this)">
+        All
+    </button>
+
+    <button type="button"
+            class="discover-tab"
+            onclick="showSection('hr',this)">
+        HR
+    </button>
+
+    <button type="button"
+            class="discover-tab"
+            onclick="showSection('candidate',this)">
+        Candidates
+    </button>
+</div>
+
 <div class="hr-grid">
 
 {% for hr in hrs %}
 
-<div class="hr-card">
+<div class="hr-card hr-section">
 
     {% if hr.profile_photo and hr.profile_photo != "default.png" %}
-
         <img
-        src="/static/uploads/{{ hr.profile_photo }}"
-        class="hr-photo">
-
+            src="/static/uploads/{{ hr.profile_photo }}"
+            class="hr-photo"
+            alt="{{ hr.first_name or 'HR' }}">
     {% else %}
-
         <div class="default-avatar">
-
             {{ hr.first_name[0]|upper if hr.first_name else "H" }}
-
         </div>
-
     {% endif %}
 
     <div class="hr-name">
-
-        {{ hr.first_name }} {{ hr.last_name }}
-
+        {{ (hr.first_name or "Unknown") ~ " " ~ (hr.last_name or "") }}
     </div>
 
     <div class="company-name">
-
-        {{ hr.company }}
-
+        {{ hr.company or "Company Not Added" }}
     </div>
 
     <div class="city">
-
         📍 {{ hr.company_city or "City Not Added" }}
-
     </div>
 
     <a href="/company/{{ hr.id }}"
        class="btn-profile">
-
-       View Profile
-
+        View Profile
     </a>
 
     {% if session.get('candidate_id') %}
+        {% set is_following_hr = hr.id in following_hr_ids %}
 
-    {% set is_following = hr.id in following_ids %}
+        <a href="/follow-hr/{{ hr.id }}?next={{ request.path }}"
+           class="btn-follow {% if is_following_hr %}btn-success{% endif %}">
+            {% if is_following_hr %}
+                ✓ Following
+            {% else %}
+                Follow HR
+            {% endif %}
+        </a>
 
-    <a href="/follow-hr/{{ hr.id }}?next={{ request.path }}"
-       class="btn-follow {% if is_following %}btn-success{% endif %}">
+    {% elif current_user.is_authenticated and current_user.id != hr.id %}
+        {% set is_following_hr = hr.id in hr_following_ids %}
 
-        {% if is_following %}
-            ✓ Following
-        {% else %}
-            Follow
-        {% endif %}
+        <a href="/follow-hr-user/{{ hr.id }}?next={{ request.path }}"
+           class="btn-follow {% if is_following_hr %}btn-success{% endif %}">
+            {% if is_following_hr %}
+                ✓ Following
+            {% else %}
+                Follow HR
+            {% endif %}
+        </a>
+    {% endif %}
 
+</div>
+
+{% endfor %}
+
+
+{% for candidate in candidates %}
+
+<div class="hr-card candidate-section">
+
+    {% if candidate.profile_photo %}
+        <img
+            src="/static/uploads/{{ candidate.profile_photo }}"
+            class="hr-photo"
+            alt="{{ candidate.full_name or 'Candidate' }}">
+    {% else %}
+        <div class="default-avatar">
+            {{ candidate.full_name[0]|upper if candidate.full_name else "C" }}
+        </div>
+    {% endif %}
+
+    <div class="hr-name">
+        {{ candidate.full_name or "Unknown Candidate" }}
+    </div>
+
+    <div class="company-name">
+        {{ candidate.designation or "Professional" }}
+    </div>
+
+    <div class="city">
+        📍 {{ candidate.city or "City Not Added" }}
+    </div>
+
+    <a href="/candidate/{{ candidate.id }}"
+       class="btn-profile">
+        View Profile
     </a>
+
+    {% if session.get('candidate_id') and session.get('candidate_id') != candidate.id %}
+
+        {% set is_following_candidate = candidate.id in following_candidate_ids %}
+
+        <a href="/follow-candidate-user/{{ candidate.id }}?next={{ request.path }}"
+           class="btn-follow {% if is_following_candidate %}btn-success{% endif %}">
+            {% if is_following_candidate %}
+                ✓ Following
+            {% else %}
+                Follow Candidate
+            {% endif %}
+        </a>
+
+    {% elif current_user.is_authenticated and current_user.id != candidate.id %}
+
+        {% set is_following_candidate = candidate.id in hr_following_candidate_ids %}
+
+        <a href="/follow-candidate/{{ candidate.id }}?next={{ request.path }}"
+           class="btn-follow {% if is_following_candidate %}btn-success{% endif %}">
+            {% if is_following_candidate %}
+                ✓ Following
+            {% else %}
+                Follow Candidate
+            {% endif %}
+        </a>
 
     {% endif %}
 
@@ -238,6 +343,35 @@
 
 </div>
 
+
+<script>
+function showSection(type,btn){
+
+    document
+        .querySelectorAll('.discover-tab')
+        .forEach(tab => tab.classList.remove('active'));
+
+    btn.classList.add('active');
+
+    const hrs = document.querySelectorAll('.hr-section');
+    const candidates = document.querySelectorAll('.candidate-section');
+
+    if(type === 'all'){
+        hrs.forEach(x => x.style.display = '');
+        candidates.forEach(x => x.style.display = '');
+    }
+
+    if(type === 'hr'){
+        hrs.forEach(x => x.style.display = '');
+        candidates.forEach(x => x.style.display = 'none');
+    }
+
+    if(type === 'candidate'){
+        hrs.forEach(x => x.style.display = 'none');
+        candidates.forEach(x => x.style.display = '');
+    }
+}
+</script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
