@@ -1,2072 +1,290 @@
-{% extends "base.html" %}
+{# Candidate video partial.
+   IMPORTANT: this file is INCLUDED by feed/candidate_feed.
+   It must NOT extend base.html and must NOT define block content.
+#}
 
-{% block content %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+{% for cv in candidate_videos %}
 
-<form method="GET" id="filterForm">
+<div class="feed-card candidate-video-feed-card"
+     id="candidate-video-{{ cv.id }}">
 
-<div class="feed-filters">
+    <!-- HEADER -->
+    <div class="feed-header d-flex justify-content-between align-items-center">
 
-    <!-- Location -->
-    <select name="location"
-            class="modern-filter"
-            onchange="document.getElementById('filterForm').submit()">
+        <div class="d-flex align-items-center">
 
-        <option value="">📍 City</option>
-
-        {% for city in locations %}
-        <option value="{{ city }}"
-        {% if selected_location and selected_location.lower()==city.lower() %}selected{% endif %}>
-            {{ city }}
-        </option>
-        {% endfor %}
-
-    </select>
-
-    <!-- All -->
-    <button type="submit"
-            name="content"
-            value="all"
-            class="filter-chip {% if selected_content=='all' %}active{% endif %}">
-        📋 All
-    </button>
-
-    <!-- Hiring -->
-    <button type="submit"
-            name="content"
-            value="jobs"
-            class="filter-chip {% if selected_content=='jobs' %}active{% endif %}">
-        📢 Hiring
-    </button>
-
-    <!-- Videos -->
-    <button type="submit"
-            name="content"
-            value="videos"
-            class="filter-chip {% if selected_content=='videos' %}active{% endif %}">
-        🎥 Videos
-    </button>
-
-</div>
-
-</form>
-
-<div class="desktop-feed">
-
-{% if candidate_videos %}
-        {% include "candidate_video_card.html" %}
-{% endif %}
-
-{% for job in jobs %}
-    <div id="post{{ job.id }}" class="feed-card">
-        <!-- HEADER -->
-        <div class="feed-header d-flex justify-content-between align-items-center">
-
-    <div class="d-flex align-items-center">
-        <div class="feed-avatar">
-            {{ job.company_name[:1].upper() if job.company_name else 'R' }}
-        </div>
-
-        <div class="ms-2">
-            <div class="feed-company">
-                <a href="/company/{{ job.hr_id }}" style="text-decoration:none;color:inherit;">
-                    {{ job.company_name }}
-                </a>
+            <div class="feed-avatar candidate-video-avatar">
+                {% if cv.candidate and cv.candidate.profile_photo %}
+                    <img
+                        src="/static/uploads/{{ cv.candidate.profile_photo }}"
+                        alt="{{ cv.candidate.full_name }}"
+                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
+                    >
+                {% else %}
+                    {{ cv.candidate.full_name[:1].upper()
+                       if cv.candidate and cv.candidate.full_name
+                       else 'C' }}
+                {% endif %}
             </div>
 
-            <div class="feed-meta">
-                📍 {{ job.location }}
-            </div>
-        </div>
-    </div>
-
-    <div class="ms-auto d-flex align-items-center gap-2">
-
-    {% if job.boosts|selectattr("status","equalto","Active")|list|length > 0 %}
-        <span class="promoted-badge">
-            📢 Promoted
-        </span>
-    {% endif %}
-
-    <div class="dropdown">
-        <button class="btn btn-sm border-0 bg-transparent"
-                data-bs-toggle="dropdown">
-            <i class="fas fa-ellipsis-v"></i>
-        </button>
-
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-                <button class="dropdown-item"
-                        onclick="openReportModal({{ job.id }})">
-                    🚩 Report
-                </button>
-            </li>
-        </ul>
-    </div>
-
-    </div>
-</div>
-
-        <!-- MEDIA -->
-        {% if job.images %}
-        <div class="swiper feedSwiper">
-            <div class="swiper-wrapper">
-                {% for img in job.images.split(',') %}
-                <div class="swiper-slide">
-                    {% set ext = img.split('.')[-1].lower() %}
-                    {% if ext in ['mp4','mov','webm','mkv'] %}
-                    <div class="feed-media reel-media video-container">
-                        <video class="feed-image feed-video"
-                               autoplay
-                               muted
-                               loop
-                               playsinline
-                               preload="auto"
-                               poster="/static/uploads/{{ img.rsplit('.', 1)[0] }}.jpg"
-                               onclick="openMedia(this,'/static/uploads/{{ img }}','video')">
-                            <source src="/static/uploads/{{ img }}" type="video/mp4">
-                        </video>
-                        <button class="mute-btn" onclick="toggleMute(event,this)">🔇</button>
-                    </div>
+            <div class="ms-2">
+                <div class="feed-company">
+                    {% if cv.candidate %}
+                        <a
+                            href="/candidate/{{ cv.candidate.id }}"
+                            style="text-decoration:none;color:inherit;"
+                        >
+                            {{ cv.candidate.full_name }}
+                        </a>
                     {% else %}
-                    <div class="feed-media post-media">
-                        <img src="/static/uploads/{{ img }}" class="feed-image" onclick="openMedia('/static/uploads/{{ img }}','image')">
-                    </div>
+                        Candidate
                     {% endif %}
                 </div>
-                {% endfor %}
+
+                <div class="feed-meta">
+                    📍 {{ cv.location or
+                        (cv.candidate.location
+                         if cv.candidate and cv.candidate.location
+                         else 'Location not specified') }}
+                </div>
             </div>
-            <div class="swiper-pagination"></div>
+
+        </div>
+
+        <!-- THREE DOT REPORT MENU -->
+        <div class="dropdown ms-auto">
+            <button
+                class="btn btn-sm border-0 bg-transparent"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+            >
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <button
+                        class="dropdown-item text-danger"
+                        type="button"
+                        onclick="openCandidateVideoReport({{ cv.id }})"
+                    >
+                        🚩 Report
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- VIDEO -->
+    <div class="feed-media reel-media video-container">
+
+        <video
+            class="feed-image feed-video candidate-feed-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            {% if cv.thumbnail %}
+            poster="/static/uploads/{{ cv.thumbnail }}"
+            {% endif %}
+            onclick="openMedia(this,'/static/uploads/{{ cv.video }}','video')"
+        >
+            <source
+                src="/static/uploads/{{ cv.video }}"
+                type="video/mp4"
+            >
+        </video>
+
+        <button
+            class="mute-btn"
+            type="button"
+            onclick="toggleMute(event,this)"
+        >
+            🔇
+        </button>
+
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="feed-buttons">
+
+        <div class="video-actions">
+
+            <!-- SPARK -->
+            <button
+                id="candidate-spark-btn-{{ cv.id }}"
+                class="action-btn spark-btn
+                       {% if current_user.is_authenticated
+                             and cv.sparks
+                             and current_user.id in cv.sparks %}
+                       sparked
+                       {% endif %}"
+                type="button"
+                onclick="toggleCandidateVideoSpark({{ cv.id }}, this)"
+                aria-label="Spark"
+            >
+                <i class="fas fa-bolt"></i>
+            </button>
+
+            <span
+                id="candidate-spark-count-{{ cv.id }}"
+                class="action-count"
+            >
+                {{ cv.sparks|length if cv.sparks else 0 }}
+            </span>
+
+            <!-- COMMENT -->
+            <button
+                class="action-btn"
+                type="button"
+                onclick="openCandidateVideoComments({{ cv.id }})"
+                aria-label="Comment"
+            >
+                <i class="far fa-comment"></i>
+            </button>
+
+            <span
+                id="candidate-comment-count-{{ cv.id }}"
+                class="action-count"
+            >
+                {{ cv.comments|length if cv.comments else 0 }}
+            </span>
+
+            <!-- SHARE -->
+            <button
+                class="action-btn"
+                type="button"
+                onclick="shareCandidateVideo({{ cv.id }})"
+                style="color:#2563eb;"
+                aria-label="Share"
+            >
+                <i class="fas fa-paper-plane"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- CAPTION / HASHTAGS -->
+    {% if cv.caption or cv.hashtags %}
+    <div class="job-details-wrapper">
+
+        {% if cv.caption %}
+        <div class="description-text">
+            {{ cv.caption }}
         </div>
         {% endif %}
 
-        <!-- BUTTONS -->
-        <div class="feed-buttons">
-            {% if job.post_type == "video" %}
-                <div class="video-actions">
-
-    <!-- Spark -->
-    <button
-        id="spark-btn-{{ job.id }}"
-        class="action-btn spark-btn {% if job.id in sparked_jobs %}sparked{% endif %}"
-        type="button"
-        onclick="toggleSpark({{ job.id }}, this)">
-        <i class="fas fa-bolt"></i>
-    </button>
-
-    <span id="spark-count-{{ job.id }}" class="action-count">
-        {{ job.sparks|length }}
-    </span>
-
-    <!-- Comment -->
-    <button
-        class="action-btn"
-        onclick="openComments({{ job.id }})">
-
-        <i class="far fa-comment"></i>
-
-    </button>
-
-    <span
-        id="comment-count-{{ job.id }}"
-        class="action-count">
-
-        {{ job.comments|length }}
-
-    </span>
-
-    <!-- Share -->
-    <a href="/share-job/{{ job.id }}"
-       class="action-btn"
-       style="color:#2563eb;text-decoration:none;">
-
-        <i class="fas fa-paper-plane"></i>
-
-    </a>
-
-   {% if job.cta_type=="shop" %}
-
-<a href="{{ job.cta_url }}"
-   target="_blank"
-   class="btn btn-success cta-btn">
-
-    🛒 Shop Now
-
-</a>
-
-{% endif %}
-
-{% if job.cta_type=="enquire" %}
-
-{% if job.id in enquired_jobs %}
-
-<button
-    id="enquiry-btn-{{ job.id }}"
-    class="cta-btn enquired"
-    disabled>
-
-    <i class="fas fa-check-circle"></i>&nbsp;Enquired
-
-</button>
-
-{% else %}
-
-<button
-    id="enquiry-btn-{{ job.id }}"
-    class="cta-btn"
-    onclick="sendEnquiry({{ job.id }})">
-
-    <i class="fas fa-envelope"></i>&nbsp;Enquire
-
-</button>
-
-{% endif %}
-
-{% endif %}
+        {% if cv.hashtags %}
+        <div class="candidate-video-hashtags">
+            {{ cv.hashtags }}
+        </div>
+        {% endif %}
 
     </div>
-            {% else %}
-                <a href="/job-view/{{ job.id }}" class="btn btn-info">View</a>
-                {% if job.id in applied_jobs %}
-                    <button class="btn btn-success" disabled>Applied</button>
-                {% else %}
-                    <a href="/apply-job-hr/{{ job.id }}" class="btn btn-primary">Apply</a>
-                {% endif %}
-                <a href="/share-job/{{ job.id }}" class="btn btn-success">Share</a>
-            {% endif %}
-        </div>
+    {% endif %}
 
-    <div class="job-details-wrapper">
-            {% if job.post_type == "video" %}
-                <div id="desc-{{ job.id }}" class="description-text">{{ job.description }}</div>
-                {% if job.description and job.description|length > 50 %}
-                <span id="toggle-{{ job.id }}"
-                class="toggle-btn"
-                onclick="toggleDescription('{{ job.id }}')">
-                See more
-                </span>
-                {% endif %}
-            {% else %}
-                <h4 class="job-title" style="margin-bottom: 8px;">{{ job.job_title }}</h4>
-                <div class="salary-tag">₹ {{ job.salary }}</div>
-                <div id="desc-{{ job.id }}" class="description-text" style="margin: 8px 0;">{{ job.description }}</div>
-                <span id="toggle-{{ job.id }}" class="toggle-btn" onclick="toggleDescription('{{ job.id }}')">See more</span>
-            {% endif %}
-        </div>
-
-    </div>
-    {% endfor %}
 </div>
 
-<style>
-.feed-card { background: #fff; border-radius: 16px; margin-bottom: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; }
-.feed-header { display: flex; align-items: center; gap: 12px; padding: 16px; }
-.feed-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
-.feed-company { font-weight: 700; font-size: 15px; color: #111827; }
-.feed-meta { font-size: 13px; color: #6b7280; margin-top: 2px; }
-.job-details-wrapper { padding: 0 16px 16px; }
-.job-title { font-size: 18px; font-weight: 700; color: #111827; }
-.salary-tag { display: inline-block; background: #ecfdf5; color: #065f46; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 13px; }
-.feed-buttons { display: flex; align-items: center; gap: 12px; padding: 16px; }
-.feed-buttons .btn { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 14px; }
-.feed-media { width: 100%; position: relative; background: #000; }
-.post-media { aspect-ratio: 4/5; }
-.reel-media { aspect-ratio: 9/16; }
-.feed-image { width: 100%; height: 100%; display: block; object-fit: contain; background-color: #f3f4f6; }
-.video-actions { display: flex; align-items: center; gap: 16px; width: 100%; }
-.cta-btn{
-    margin-left:auto;
-
-    min-width:120px;
-    height:42px;
-    padding:0 18px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border:none;
-    border-radius:25px;
-
-    background:#1f8f55;
-    color:#fff !important;
-
-    font-size:15px;
-    font-weight:700;
-
-    cursor:pointer;
-    transition:.25s;
-    flex-shrink:0;
-}
-
-.cta-btn:hover{
-    background:#177344;
-}
-
-.cta-btn.enquired{
-    background:#ffffff;
-    color:#1f8f55 !important;
-    border:2px solid #1f8f55;
-}
-
-.cta-btn:disabled{
-    cursor:not-allowed;
-}
-
-.action-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 8px; font-size: 24px; }
-.spark-btn{
-    background:none;
-    border:none;
-    font-size:26px;
-    color:#9ca3af;
-    cursor:pointer;
-    transition:all .25s ease;
-}
-
-.spark-btn i{
-    transition:all .25s ease;
-}
-
-.spark-btn.sparked{
-    color:#FFC107;
-}
-
-.spark-btn.sparked i{
-    filter:drop-shadow(0 0 6px rgba(255,193,7,.55));
-}
-
-.spark-btn:active{
-    transform:scale(1.25);
-}
-.action-count { font-weight: 600; font-size: 14px; margin-left: -10px; }
-.mute-btn { position: absolute; right: 12px; bottom: 12px; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); color: #fff; border: none; }
-.description-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.toggle-btn { color: #666; cursor: pointer; font-size: 0.9em; font-weight: 600; display: block; margin-top: 4px; }
-.spark-animate {
-    animation: pop 0.3s ease-out;
-}
-
-.comments-overlay{
-
-    position:fixed;
-
-    inset:0;
-
-    background:rgba(0,0,0,.35);
-
-    display:none;
-
-    z-index:9998;
-}
-
-.comments-sheet {
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: auto; /* let JS control positioning */
-    bottom: 0;
-    height: 80vh;
-    max-height: 80vh;
-    background: #fff;
-    border-radius: 30px 30px 0 0;
-    display: flex;
-    flex-direction: column;
-    transform: translateY(100%);
-    transition: transform .25s cubic-bezier(.22,.8,.32,1);
-    z-index: 9998;
-}
-
-.comments-sheet.show {
-    transform: translateY(0);
-}
-
-.comments-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px;
-    padding-bottom: 70px; /* Leaves room so last comments aren't hidden */
-}
-
-.comment-input {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    background: #fff;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    box-sizing: border-box;
-    border-top: 1px solid #eee;
-}
-
-.comments-sheet.show {
-    transform: translateY(0);
-}
-
-.comments-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px;
-    /* Ensure space at the bottom so the last comment isn't hidden behind the input */
-    padding-bottom: 70px; 
-}
-
-body.keyboard-open .comments-sheet {
-    bottom: 0 !important;
-    top: auto !important;
-    height: 50vh !important;
-}
-
-body.keyboard-open .comments-body {
-    padding-bottom: 60px !important;
-}
-
-.comments-sheet.show{
-
-    transform:translateY(0);
-
-}
-
-.sheet-handle{
-
-    width:55px;
-
-    height:5px;
-
-    background:#d0d0d0;
-
-    border-radius:50px;
-
-    margin:12px auto 6px;
-}
-
-.comments-header{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 16px;
-    border-bottom: 1.5px solid #eee;
-    font-weight: 700;
-    font-size: 20px;
-    background: #fff;
-    border-radius: 30px 30px 0 0;
-    position: relative;
-    z-index: 10;
-}
-
-.comments-header h5{
-    margin: 0;
-    flex: 1;
-    text-align: center;
-}
-
-.comments-close{
-    width: 40px;
-    height: 40px;
-    border: none;
-    background: #f3f4f6;
-    border-radius: 50%;
-    font-size: 18px;
-    cursor: pointer;
-    color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 10000;
-    transition: background 0.2s;
-}
-
-.comments-close:active {
-    background: #e5e7eb;
-}
-
-.comments-close i{
-    pointer-events: none; /* Prevents the inner icon from blocking the touch/click event */
-}
-
-.comments-body{
-
-    flex:1;
-
-    overflow:auto;
-
-    padding:15px;
-}
-
-.comment-input input{
-
-    flex:1;
-
-    min-width:0;
-
-}
-
-.send-btn{
-
-    flex:0 0 46px;
-
-    width:46px;
-
-    height:46px;
-
-    border-radius:50%;
-
-}
-
-.emoji-btn{
-
-    width:42px;
-
-    height:42px;
-
-    border:none;
-
-    background:none;
-
-    font-size:24px;
-}
-
-.send-btn{
-
-    width:46px;
-
-    height:46px;
-
-    border:none;
-
-    border-radius:50%;
-
-    background:#2563eb;
-
-    color:#fff;
-
-    font-size:18px;
-}
-
-.reply-banner{
-
-    background:#eef5ff;
-
-    padding:10px 16px;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    font-size:13px;
-}
-
-.feed-filters{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:10px;
-    width:100%;
-    box-sizing:border-box;
-}
-
-.feed-filters > *{
-    flex:1;
-    min-width:0;
-}
-
-.modern-filter{
-    width:100%;
-    height:46px;
-    border:none;
-    border-radius:14px;
-    background:#f5f7fb;
-    padding:0 8px;
-    font-size:13px;
-    font-weight:600;
-}
-
-.filter-chip{
-    width:100%;
-    height:46px;
-    border:none;
-    border-radius:14px;
-    background:#f5f7fb;
-    font-size:13px;
-    font-weight:600;
-    white-space:nowrap;
-}
-
-.filter-chip.active{
-    background:#2563eb;
-    color:#fff;
-}
-
-.comment-card{
-
-    display:flex;
-
-    gap:12px;
-
-    margin-bottom:18px;
-
-    animation:fadeUp .25s;
-}
-
-.comment-avatar img{
-
-    width:42px;
-
-    height:42px;
-
-    border-radius:50%;
-
-    object-fit:cover;
-}
-
-.avatar-letter{
-
-    width:42px;
-
-    height:42px;
-
-    border-radius:50%;
-
-    background:#2563eb;
-
-    color:#fff;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    font-weight:bold;
-}
-
-.comment-content{
-
-    flex:1;
-}
-
-.comment-top{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:flex-start;
-}
-
-.comment-name{
-
-    font-weight:700;
-
-    font-size:15px;
-}
-
-.comment-time{
-
-    color:#888;
-
-    margin-left:8px;
-
-    font-size:12px;
-}
-
-.comment-text{
-
-    margin-top:4px;
-
-    font-size:15px;
-
-    line-height:1.45;
-}
-
-.comment-actions{
-
-    margin-top:8px;
-
-    color:#888;
-
-    font-size:12px;
-
-    display:flex;
-
-    gap:8px;
-}
-
-.comment-actions span{
-
-    cursor:pointer;
-}
-
-.comment-like{
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-}
-
-.heart-btn{
-
-    border:none;
-
-    background:none;
-
-    font-size:20px;
-
-    color:#888;
-}
-
-.heart-btn.liked{
-
-    color:#ff3040;
-}
-
-.reply-toggle{
-
-    margin-left:54px;
-
-    color:#666;
-
-    font-size:13px;
-
-    cursor:pointer;
-
-    margin-bottom:10px;
-}
-
-.comment-actions{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-margin-top:8px;
-
-}
-
-.comment-menu{
-
-background:none;
-
-border:none;
-
-font-size:18px;
-
-color:#888;
-
-padding:0;
-
-}
-
-@keyframes heartPop{
-
-0%{
-
-transform:scale(.8);
-
-}
-
-40%{
-
-transform:scale(1.35);
-
-}
-
-100%{
-
-transform:scale(1);
-
-}
-
-}
-
-.heart-btn.liked{
-
-animation:heartPop .25s;
-
-color:#ff3040;
-
-}
-
-.comment-menu-sheet{
-
-position:fixed;
-
-left:0;
-
-right:0;
-
-bottom:-320px;
-
-background:#fff;
-
-border-radius:25px 25px 0 0;
-
-transition:.25s;
-
-z-index:10001;
-
-box-shadow:0 -6px 20px rgba(0,0,0,.15);
-
-}
-
-.comment-menu-sheet.show{
-
-bottom:0;
-
-}
-
-.comment-menu-sheet div{
-
-padding:18px;
-
-border-bottom:1px solid #eee;
-
-font-size:16px;
-
-}
-
-.empty-comments{
-
-height:100%;
-
-display:flex;
-
-flex-direction:column;
-
-justify-content:center;
-
-align-items:center;
-
-color:#999;
-
-}
-
-.promoted-badge{
-    background:linear-gradient(135deg,#FFD54F,#FFB300);
-    color:#222;
-    font-size:11px;
-    font-weight:700;
-    padding:5px 10px;
-    border-radius:999px;
-    white-space:nowrap;
-    box-shadow:0 2px 6px rgba(0,0,0,.15);
-}
-
-#mentionBox{
-
-position:absolute;
-
-bottom:75px;
-
-left:15px;
-
-right:15px;
-
-background:#fff;
-
-border-radius:15px;
-
-box-shadow:0 5px 20px rgba(0,0,0,.12);
-
-max-height:220px;
-
-overflow:auto;
-
-}
-
-@keyframes commentIn{
-
-from{
-
-opacity:0;
-
-transform:translateY(15px);
-
-}
-
-to{
-
-opacity:1;
-
-transform:none;
-
-}
-
-}
-
-.comment-card{
-
-animation:commentIn .25s ease;
-
-}
-
-@keyframes pop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-    100% { transform: scale(1); }
-}
-
-@media (max-width: 768px) {
-    .content {
-        padding: 0 !important;
-        padding-bottom: 120px !important;
-    }
-}
-
-@media (min-width: 992px) { .desktop-feed { max-width: 600px; margin: 0 auto; } }
-</style>
-
-<div id="mediaViewer" class="media-viewer">
-    <img id="viewerImage" style="display:none; max-width:100%; max-height:100%;">
-    <video id="viewerVideo" playsinline muted autoplay style="display:none; max-width:100%; max-height:100%;"></video>
-</div>
-
-<div class="modal fade" id="reportModal" tabindex="-1">
-
+{% endfor %}
+
+
+<!-- Candidate video report modal -->
+<div
+    class="modal fade"
+    id="candidateVideoReportModal"
+    tabindex="-1"
+    aria-hidden="true"
+>
     <div class="modal-dialog">
-
         <div class="modal-content">
 
             <div class="modal-header">
+                <h5 class="modal-title">Report Video</h5>
 
-                <h5 class="modal-title">
-                    Report Post
-                </h5>
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal">
-                </button>
-
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                ></button>
             </div>
 
             <div class="modal-body">
 
-                <input type="hidden"
-                       id="reportPostId">
+                <input
+                    type="hidden"
+                    id="candidateVideoReportId"
+                >
 
-                <label class="form-label">
-                    Reason
-                </label>
+                <label class="form-label">Reason</label>
 
-                <select class="form-select"
-                        id="reportReason">
-
+                <select
+                    class="form-select"
+                    id="candidateVideoReportReason"
+                >
                     <option>Spam</option>
-
-                    <option>Fake Job</option>
-
                     <option>Violence</option>
-
                     <option>Nudity</option>
-
                     <option>Hate Speech</option>
-
                     <option>Scam / Fraud</option>
-
+                    <option>Harassment</option>
+                    <option>Copyright</option>
                     <option>Other</option>
-
                 </select>
 
-                <label class="form-label mt-3">
-                    Comment
-                </label>
+                <label class="form-label mt-3">Comment</label>
 
                 <textarea
-                    id="reportComment"
+                    id="candidateVideoReportComment"
                     class="form-control"
                     rows="4"
-                    placeholder="Tell us more..."></textarea>
+                    placeholder="Tell us more..."
+                ></textarea>
 
             </div>
 
             <div class="modal-footer">
 
                 <button
+                    type="button"
                     class="btn btn-secondary"
-                    data-bs-dismiss="modal">
+                    data-bs-dismiss="modal"
+                >
                     Cancel
                 </button>
 
                 <button
+                    type="button"
                     class="btn btn-danger"
-                    onclick="submitReport()">
+                    onclick="submitCandidateVideoReport()"
+                >
                     Submit Report
                 </button>
 
             </div>
 
         </div>
-
-    </div>
-
-</div>
-
-<div id="commentMenu" class="comment-menu-sheet">
-
-    <div id="deleteOption" onclick="deleteSelectedComment()">
-        🗑 Delete
-    </div>
-
-    <div onclick="reportSelectedComment()">
-        🚩 Report
-    </div>
-
-    <div onclick="closeCommentMenu()">
-        Cancel
-    </div>
-
-</div>
-
-<div id="commentsOverlay" class="comments-overlay" onclick="closeComments()"></div>
-
-<div id="commentsModal" class="comments-sheet">
-
-    <!-- Drag Handle -->
-    <div class="sheet-handle"></div>
-
-    <!-- Header -->
-    <div class="comments-header">
-        <h5>Comments</h5>
-
-        <button
-            type="button"
-            class="comments-close"
-            onclick="closeComments()">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-
-    <!-- Comments -->
-
-    <div id="commentsContainer"
-         class="comments-body">
-
-    </div>
-
-    <!-- Reply Banner -->
-
-    <div id="replyBanner"
-         class="reply-banner"
-         style="display:none;">
-
-        Replying...
-
-        <span onclick="cancelReply()">
-
-            ✕
-
-        </span>
-
-    </div>
-
-    <!-- Bottom Input -->
-
-    <div class="comment-input">
-
-        <button class="emoji-btn">
-
-            😊
-
-        </button>
-
-        <input
-
-            id="commentText"
-
-            placeholder="Add a comment..."
-
-            autocomplete="off">
-
-        <button
-
-            class="send-btn"
-
-            onclick="sendComment()">
-
-            <i class="fas fa-paper-plane"></i>
-
-        </button>
-
-    </div>
-
-</div>
-
-<div id="customConfirmModal" class="comments-overlay" style="display:none; align-items:center; justify-content:center;">
-    <div style="background:#fff; padding:24px; border-radius:16px; width:85%; max-width:320px; text-align:center; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
-        <h5 style="margin-bottom:12px; font-weight:700; color:#111827;">Delete Comment</h5>
-        <p style="margin-bottom:20px; color:#4b5563; font-size:14px;">Are you sure you want to delete this comment?</p>
-        <div style="display:flex; gap:10px;">
-            <button id="confirmCancelBtn" style="flex:1; padding:10px; border:none; background:#f3f4f6; font-weight:600; border-radius:8px; cursor:pointer;">Cancel</button>
-            <button id="confirmOkBtn" style="flex:1; padding:10px; border:none; background:#ef4444; color:#fff; font-weight:600; border-radius:8px; cursor:pointer;">Delete</button>
-        </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-<script>
-
-let openedFeedVideo = null;
-let currentFeedVideo = null;
-
-window.soundEnabled = false;
-
-function playCurrentVideo(video){
-
-    document.querySelectorAll(".feed-video").forEach(function(v){
-
-        if(v!==video){
-
-            v.pause();
-            v.muted=true;
-
-            let btn=v.parentElement.querySelector(".mute-btn");
-
-            if(btn) btn.innerHTML="🔇";
-
-        }
-
-    });
-
-    currentFeedVideo = video;
-
-    if(video.paused){
-        video.play().catch(()=>{});
-    }
-
-}
-
-function toggleVideo(video){
-
-    if(video.paused){
-        video.play();
-    }else{
-        video.pause();
-    }
-
-}
-
-function toggleMute(e, btn){
-
-    e.stopPropagation();
-
-    const video = btn.previousElementSibling;
-
-    // If already unmuted, mute it
-    if(!video.muted){
-
-        video.muted = true;
-        btn.innerHTML = "🔇";
-        return;
-
-    }
-
-    // Mute all videos first
-    document.querySelectorAll(".feed-video").forEach(v=>{
-
-        v.muted = true;
-
-        const b = v.parentElement.querySelector(".mute-btn");
-
-        if(b){
-            b.innerHTML = "🔇";
-        }
-
-    });
-
-    // Unmute current video
-    video.muted = false;
-    btn.innerHTML = "🔊";
-
-}
-
-// Android back button closes fullscreen
-window.addEventListener("popstate",function(){
-
-    let viewer=document.getElementById("mediaViewer");
-
-    if(viewer.style.display=="flex"){
-
-        closeMedia();
-
-    }
-
-});
-
-document.querySelectorAll(".feedSwiper").forEach(function(container){
-
-new Swiper(container,{
-
-slidesPerView:1,
-
-spaceBetween:0,
-
-pagination:{
-el:container.querySelector(".swiper-pagination"),
-clickable:true
-},
-
-on:{
-
-slideChange:function(){
-
-container.querySelectorAll("video").forEach(v=>{
-
-v.pause();
-
-});
-
-let current=
-
-this.slides[this.activeIndex]
-.querySelector("video");
-
-if(current){
-
-playCurrentVideo(current);
-
-}
-
-}
-
-}
-
-});
-
-});
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-
-        const video = entry.target;
-
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-
-            document.querySelectorAll(".feed-video").forEach(v => {
-                if (v !== video) {
-                    v.pause();
-                    v.muted = true;
-
-                    const b = v.parentElement.querySelector(".mute-btn");
-                    if (b) b.innerHTML = "🔇";
-                }
-            });
-
-            video.muted = false;
-            video.play().catch(() => {});
-
-            const btn = video.parentElement.querySelector(".mute-btn");
-            if (btn) btn.innerHTML = "🔊";
-
-        } else {
-
-            video.pause();
-            video.muted = true;
-
-            const btn = video.parentElement.querySelector(".mute-btn");
-            if (btn) btn.innerHTML = "🔇";
-        }
-
-    });
-}, {
-    threshold: 0.6
-});
-
-document.querySelectorAll(".feed-video").forEach(video => observer.observe(video));
-
-</script>
-
-<script>
-
-let reportModal;
-
-document.addEventListener("DOMContentLoaded", function () {
-    reportModal = new bootstrap.Modal(
-        document.getElementById("reportModal")
-    );
-});
-
-function openReportModal(postId){
-
-    document.getElementById("reportPostId").value = postId;
-
-    document.getElementById("reportComment").value = "";
-
-    document.getElementById("reportReason").selectedIndex = 0;
-
-    reportModal.show();
-
-}
-
-function submitReport(){
-
-    let postId = document.getElementById("reportPostId").value;
-
-    let reason = document.getElementById("reportReason").value;
-
-    let comment = document.getElementById("reportComment").value;
-
-    fetch("/report-post/" + postId, {
-
-        method: "POST",
-
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-
-        body:
-            "reason=" + encodeURIComponent(reason)
-            + "&comment=" + encodeURIComponent(comment)
-
-    })
-
-    .then(r => r.json())
-
-    .then(data => {
-
-        if(data.success){
-
-            reportModal.hide();
-
-            document.getElementById(
-                "post" + postId
-            ).remove();
-
-            alert(
-                "Report submitted successfully."
-            );
-
-        }else{
-
-            alert(
-                data.message || "Unable to submit report."
-            );
-
-        }
-
-    });
-
-}
-
-let selectedComment = null;
-let selectedCommentText = "";
-let selectedCommentOwner = false;
-
-function openCommentMenu(id, text, owner){
-
-    selectedComment = id;
-    selectedCommentText = text;
-    selectedCommentOwner = owner;
-
-    document.getElementById("commentMenu").classList.add("show");
-
-    document.getElementById("editOption").style.display =
-        owner ? "block" : "none";
-
-    document.getElementById("deleteOption").style.display =
-        owner ? "block" : "none";
-
-}
-
-function closeCommentMenu(){
-
-document
-
-.getElementById("commentMenu")
-
-.classList.remove("show");
-
-}
-
-function toggleSpark(jobId, btn){
-
-    if(navigator.vibrate){
-        navigator.vibrate(80);
-    }
-
-    btn.classList.add("spark-animate");
-
-    setTimeout(function(){
-        btn.classList.remove("spark-animate");
-    },300);
-
-    fetch("/spark/" + jobId,{
-        method:"POST"
-    })
-    .then(r=>r.json())
-    .then(data=>{
-
-        if(data.success){
-
-            document.getElementById(
-                "spark-count-" + jobId
-            ).innerHTML=data.count;
-
-            if(data.sparked){
-                btn.classList.add("sparked");
-            }else{
-                btn.classList.remove("sparked");
-            }
-
-        }
-
-    })
-    .catch(console.error);
-
-}
-
-function toggleDescription(jobId) {
-    const desc = document.getElementById('desc-' + jobId);
-    const toggle = document.getElementById('toggle-' + jobId);
-    
-    if (desc.style.webkitLineClamp === 'unset') {
-        desc.style.webkitLineClamp = '2';
-        toggle.innerText = 'See more';
-    } else {
-        desc.style.webkitLineClamp = 'unset';
-        toggle.innerText = 'See less';
-    }
-}
-
-function openComments(jobId) {
-
-    currentJobId = jobId;
-
-    const modal = document.getElementById("commentsModal");
-    const overlay = document.getElementById("commentsOverlay");
-
-    // Reset any previous swipe transform
-    modal.style.transform = "";
-
-    overlay.style.display = "block";
-
-    requestAnimationFrame(() => {
-        modal.classList.add("show");
-    });
-
-    loadComments();
-}
-
-function closeComments() {
-
-    const modal = document.getElementById("commentsModal");
-    const overlay = document.getElementById("commentsOverlay");
-    const input = document.getElementById("commentText");
-
-    // Close keyboard
-    input.blur();
-    document.body.classList.remove("keyboard-open");
-
-    // Reset any swipe transform
-    modal.style.transform = "";
-
-    // Hide sheet
-    modal.classList.remove("show");
-
-    // Hide overlay after animation
-    setTimeout(() => {
-        overlay.style.display = "none";
-    }, 250);
-}
-
-// Push a dummy history state right when entering the page or opening comments 
-// so the first physical back press is always intercepted by our listener instead of leaving the dashboard
-// Run it once on load or call it inside openComments
-
-const commentInputEl = document.getElementById("commentText");
-
-commentInputEl.addEventListener("focus", function() {
-    document.body.classList.add("keyboard-open");
-    commentState = 2; // State 2: Keyboard is active/typing
-});
-
-commentInputEl.addEventListener("blur", function() {
-    document.body.classList.remove("keyboard-open");
-    if(commentState === 2) {
-        commentState = 1; // Fallback to sheet open if blurred manually
-    }
-});
-
-const input = document.getElementById("commentText");
-
-input.addEventListener("focus", function(){
-
-    setTimeout(function(){
-
-        const sheet = document.getElementById("commentsModal");
-
-        sheet.style.height = "100dvh";
-
-        input.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
-
-    },300);
-
-});
-
-input.addEventListener("blur", function(){
-
-    document.getElementById("commentsModal").style.height = "88vh";
-
-});
-
-const sheet=document.getElementById("commentsModal");
-
-let startY=0;
-
-let currentY=0;
-
-sheet.addEventListener("touchstart",e=>{
-
-    startY=e.touches[0].clientY;
-
-});
-
-sheet.addEventListener("touchmove",e=>{
-
-    currentY=e.touches[0].clientY;
-
-    let diff=currentY-startY;
-
-    if(diff>0){
-
-        sheet.style.transform="";
-
-    }
-
-});
-
-sheet.addEventListener("touchend",()=>{
-
-    let diff=currentY-startY;
-
-    if(diff>120){
-
-        closeComments();
-
-    }else{
-
-        sheet.style.transform="translateY(0)";
-
-    }
-
-    currentY=0;
-
-});
-
-function loadComments(){
-
-    fetch("/comments/" + currentJobId)
-
-    .then(r => r.json())
-
-    .then(data => {
-
-        let html = "";
-
-        if(data.length === 0){
-
-            html = `
-                <div class="empty-comments">
-                    <div style="font-size:42px;">💬</div>
-                    <h5>No comments yet</h5>
-                    <p>Start the conversation.</p>
-                </div>
-            `;
-
-        }else{
-
-            data.forEach(c=>{
-                html += renderComment(c);
-            });
-
-        }
-
-        document.getElementById("commentsContainer").innerHTML = html;
-
-    });
-
-}
-
-function toggleReplies(id){
-
-    let box=document.getElementById("reply-"+id);
-
-    if(box.style.display=="none"){
-
-        box.style.display="block";
-
-    }else{
-
-        box.style.display="none";
-
-    }
-
-}
-
-function sendComment(){
-
-    let text = document.getElementById("commentText").value;
-
-    if(text.trim()=="") return;
-
-    fetch("/comment/" + currentJobId,{
-
-        method:"POST",
-
-        headers:{
-            "Content-Type":"application/x-www-form-urlencoded"
-        },
-
-        body:
-            "comment="+encodeURIComponent(text)+
-            "&parent_comment_id="+(replyToComment || "")
-
-    })
-
-    .then(r=>r.json())
-
-    .then(data=>{
-
-        if(!data.success) return;
-
-        replyToComment = null;
-
-        const input=document.getElementById("commentText");
-
-        input.value="";
-
-        input.placeholder="Add a comment...";
-
-        document.getElementById("replyBanner").style.display="none";
-
-        loadComments();
-
-        setTimeout(function(){
-
-            const box=document.getElementById("commentsContainer");
-
-            box.scrollTop=box.scrollHeight;
-
-        },200);
-
-        if(navigator.vibrate){
-
-            navigator.vibrate(20);
-
-        }
-
-    });
-
-}
-
-function cancelReply(){
-
-    replyToComment = null;
-
-    document.getElementById("replyBanner").style.display = "none";
-
-    document.getElementById("commentText").placeholder = "Add a comment...";
-
-}
-
-let replyToComment = null;
-
-function replyTo(id){
-
-    replyToComment = id;
-
-    document.getElementById("replyBanner").style.display = "flex";
-
-    document.getElementById("commentText").placeholder = "Reply...";
-
-    document.getElementById("commentText").focus();
-
-}
-
-function renderComment(c, level = 0){
-
-    const safeCommentText = c.comment.replace(/[`'\\]/g, '\\$&');
-
-    // Check if photo exists and is not empty or "None"
-    const hasValidPhoto = c.photo && c.photo !== "None" && c.photo.trim() !== "";
-
-    let html = `
-
-    <div class="comment-card"
-         style="margin-left:${level * 18}px">
-
-        <div class="comment-avatar">
-
-            ${
-                hasValidPhoto
-                ? `<img src="${c.photo}" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'avatar-letter\'>${c.name.charAt(0)}</div>';">`
-                : `<div class="avatar-letter">${c.name.charAt(0)}</div>`
-            }
-
-        </div>
-
-        <div class="comment-content">
-
-            <div class="comment-top">
-
-                <div>
-
-                    <span class="comment-name">
-                        ${c.name}
-                    </span>
-
-                    <span class="comment-time">
-                        ${c.time || ""}
-                    </span>
-
-                </div>
-
-                <div class="comment-like">
-
-                    <button
-                        id="like-${c.id}"
-                        class="heart-btn ${c.liked ? "liked" : ""}"
-                        onclick="toggleCommentLike(${c.id})">
-
-                        <i class="${c.liked ? "fas" : "far"} fa-heart"></i>
-
-                    </button>
-
-                    <small id="like-count-${c.id}">
-                        ${c.likes}
-                    </small>
-
-                </div>
-
-            </div>
-
-            <div class="comment-text">
-                ${c.comment}
-            </div>
-
-            <div class="comment-actions">
-
-                <span onclick="replyTo(${c.id})">
-                    Reply
-                </span>
-
-                ${
-                    (c.is_owner || c.is_post_owner) 
-                    ? `<button class="comment-menu" onclick="openCommentMenu(${c.id}, \`${safeCommentText}\`, ${c.is_owner})">
-                           <i class="fas fa-ellipsis-h"></i>
-                       </button>`
-                    : ``
-                }
-
-            </div>
-
-        </div>
-
-    </div>
-
-    `;
-
-    if(c.replies && c.replies.length){
-
-        html += `
-
-        <div class="reply-toggle"
-             onclick="toggleReplies(${c.id})">
-
-            View ${c.replies.length} replies
-
-        </div>
-
-        <div id="reply-${c.id}" style="display:none;">
-
-        `;
-
-        c.replies.forEach(function(r){
-
-            html += renderComment(r, level + 1);
-
-        });
-
-        html += `</div>`;
-    }
-
-    return html;
-
-}
-
-function toggleCommentLike(commentId){
-
-    fetch("/comment-like/"+commentId,{
-        method:"POST"
-    })
-
-    .then(r=>r.json())
-
-    .then(data=>{
-
-        if(!data.success) return;
-
-        const btn=document.getElementById("like-"+commentId);
-
-        const count=document.getElementById("like-count-"+commentId);
-
-        count.innerHTML=data.count;
-
-        btn.classList.toggle("liked",data.liked);
-
-        btn.innerHTML=data.liked
-            ?'<i class="fas fa-heart"></i>'
-            :'<i class="far fa-heart"></i>';
-
-        if(navigator.vibrate){
-            navigator.vibrate(20);
-        }
-
-    });
-
-}
-
-let mentionBox = document.getElementById("mentionBox");
-
-commentText.addEventListener("keyup", function(){
-
-    let value = this.value;
-
-    let match = value.match(/@(\w+)$/);
-
-    if(!match){
-        mentionBox.style.display="none";
-        return;
-    }
-
-    fetch("/mention-search?q="+match[1])
-
-    .then(r=>r.json())
-
-    .then(showMentionSuggestions);
-
-});
-
-function chooseMention(name){
-
-    let text = commentText.value;
-
-    text = text.replace(/@\w+$/, "@"+name+" ");
-
-    commentText.value = text;
-
-    mentionBox.style.display="none";
-
-}
-
-function editSelectedComment(){
-
-    closeCommentMenu();
-
-    let newText = prompt("Edit comment", selectedCommentText);
-
-    if(newText==null) return;
-
-    fetch("/edit-comment/" + selectedComment,{
-
-        method:"POST",
-
-        headers:{
-            "Content-Type":"application/x-www-form-urlencoded"
-        },
-
-        body:"comment="+encodeURIComponent(newText)
-
-    })
-
-    .then(r=>r.json())
-
-    .then(data=>{
-
-        if(data.success){
-
-            loadComments();
-
-        }else{
-
-            alert(data.message || "Unable to edit.");
-
-        }
-
-    });
-
-}
-
-function deleteSelectedComment(){
-    closeCommentMenu();
-
-    // Show custom modal
-    const modal = document.getElementById("customConfirmModal");
-    modal.style.display = "flex";
-
-    // Handle Cancel
-    document.getElementById("confirmCancelBtn").onclick = function() {
-        modal.style.display = "none";
-    };
-
-    // Handle OK / Delete
-    document.getElementById("confirmOkBtn").onclick = function() {
-        modal.style.display = "none";
-
-        fetch("/delete-comment/" + selectedComment, {
-            method: "POST"
-        })
-        .then(r => r.json())
-        .then(data => {
-            if(data.success){
-                loadComments();
-            } else {
-                alert(data.message || "Unable to delete comment.");
-            }
-        })
-        .catch(err => {
-            console.error("Delete Error:", err);
-            alert("An error occurred while deleting.");
-        });
-    };
-}
-
-function copyComment(){
-
-    closeCommentMenu();
-
-    navigator.clipboard.writeText(selectedCommentText);
-
-    alert("Comment copied.");
-}
-
-function reportSelectedComment(){
-
-    closeCommentMenu();
-
-    let reason = prompt("Reason for reporting");
-
-    if(reason==null) return;
-
-    fetch("/report-comment/" + selectedComment,{
-
-        method:"POST",
-
-        headers:{
-            "Content-Type":"application/x-www-form-urlencoded"
-        },
-
-        body:"reason="+encodeURIComponent(reason)
-
-    })
-
-    .then(r=>r.json())
-
-    .then(data=>{
-
-        if(data.success){
-
-            alert("Comment reported.");
-
-        }else{
-
-            alert(data.message || "Unable to report.");
-
-        }
-
-    });
-
-}
-
-const commentsModal = document.getElementById("commentsModal");
-const commentInput = document.getElementById("commentText");
-
-commentInput.addEventListener("focus", function() {
-    document.body.classList.add("keyboard-open");
-    setTimeout(() => {
-        commentInput.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }, 200);
-});
-
-commentInput.addEventListener("blur", function() {
-    setTimeout(() => {
-        document.body.classList.remove("keyboard-open");
-    }, 150);
-});
-
-if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", function() {
-        if (!commentsModal.classList.contains("show")) return;
-        const keyboardHeight = window.innerHeight - window.visualViewport.height;
-        if (keyboardHeight > 50) {
-            document.body.classList.add("keyboard-open");
-        } else {
-            document.body.classList.remove("keyboard-open");
-        }
-    });
-}
-
-function sendEnquiry(postId){
-
-    fetch("/enquire-post/" + postId,{
-        method:"POST"
-    })
-
-    .then(r=>r.json())
-
-    .then(data=>{
-
-        if(data.success){
-
-            const btn = document.getElementById("enquiry-btn-" + postId);
-
-            btn.innerHTML =
-                '<i class="fas fa-check-circle"></i>&nbsp;Enquired';
-
-            btn.classList.add("enquired");
-            btn.disabled = true;
-            btn.onclick = null;
-
-        }else{
-
-            alert(data.message);
-
-        }
-
-    });
-
-}
-
-</script>
-
-{% endblock %}
 
 <style>
-.candidate-video-feed-card{position:relative;}
-.candidate-video-avatar{overflow:hidden;background:#eef3fb;}
-.candidate-video-badge{
-    display:inline-flex;
-    align-items:center;
-    padding:5px 9px;
-    border-radius:999px;
-    background:#eef5ff;
-    color:#2563eb;
-    font-size:10px;
-    font-weight:800;
-    letter-spacing:.3px;
+.candidate-video-feed-card{
+    position:relative;
 }
+
+.candidate-video-avatar{
+    overflow:hidden;
+    background:#eef3fb;
+}
+
+.candidate-feed-video{
+    background:#000;
+}
+
 .candidate-video-hashtags{
     margin-top:8px;
     color:#2563eb;
@@ -2074,30 +292,21 @@ function sendEnquiry(postId){
     font-size:14px;
     white-space:pre-wrap;
 }
-.candidate-feed-video{background:#000;}
-.candidate-post-video-btn{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-height:42px;
-    padding:0 17px;
-    border-radius:999px;
-    background:#2563eb;
-    color:#fff !important;
-    text-decoration:none;
-    font-size:14px;
-    font-weight:800;
-}
 </style>
+
 
 <script>
 async function toggleCandidateVideoSpark(videoId, button){
+
     try{
+
         const response = await fetch(
             "/candidate-video-spark/" + videoId,
             {
                 method:"POST",
-                headers:{"X-Requested-With":"XMLHttpRequest"}
+                headers:{
+                    "X-Requested-With":"XMLHttpRequest"
+                }
             }
         );
 
@@ -2108,38 +317,203 @@ async function toggleCandidateVideoSpark(videoId, button){
             return;
         }
 
-        const count = document.getElementById(
-            "candidate-spark-count-" + videoId
+        const count =
+            document.getElementById(
+                "candidate-spark-count-" + videoId
+            );
+
+        if(count){
+            count.textContent = data.count;
+        }
+
+        button.classList.toggle(
+            "sparked",
+            !!data.sparked
         );
 
-        if(count) count.textContent = data.count;
-
-        button.classList.toggle("sparked", !!data.sparked);
-
     }catch(error){
-        console.error("Candidate video spark error:", error);
+
+        console.error(
+            "Candidate video spark error:",
+            error
+        );
+
     }
+
 }
 
+
 async function shareCandidateVideo(videoId){
+
     const shareUrl =
         window.location.origin +
-        "/candidate-feed#candidate-video-" + videoId;
+        "/candidate-feed#candidate-video-" +
+        videoId;
 
     if(navigator.share){
+
         try{
+
             await navigator.share({
                 title:"RecrootEarn Candidate Video",
                 url:shareUrl
             });
-        }catch(error){}
-    }else{
-        try{
-            await navigator.clipboard.writeText(shareUrl);
-            alert("Video link copied.");
+
         }catch(error){
-            window.prompt("Copy this video link:", shareUrl);
+            // User cancelled sharing.
         }
+
+    }else{
+
+        try{
+
+            await navigator.clipboard.writeText(
+                shareUrl
+            );
+
+            alert("Video link copied.");
+
+        }catch(error){
+
+            window.prompt(
+                "Copy this video link:",
+                shareUrl
+            );
+
+        }
+
     }
+
+}
+
+
+function openCandidateVideoReport(videoId){
+
+    const id =
+        document.getElementById(
+            "candidateVideoReportId"
+        );
+
+    if(id){
+        id.value = videoId;
+    }
+
+    const modalElement =
+        document.getElementById(
+            "candidateVideoReportModal"
+        );
+
+    if(modalElement && window.bootstrap){
+
+        bootstrap.Modal
+            .getOrCreateInstance(modalElement)
+            .show();
+
+    }
+
+}
+
+
+async function submitCandidateVideoReport(){
+
+    const videoId =
+        document.getElementById(
+            "candidateVideoReportId"
+        ).value;
+
+    const reason =
+        document.getElementById(
+            "candidateVideoReportReason"
+        ).value;
+
+    const comment =
+        document.getElementById(
+            "candidateVideoReportComment"
+        ).value;
+
+    try{
+
+        const response = await fetch(
+            "/candidate-video-report/" + videoId,
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":
+                        "application/x-www-form-urlencoded",
+                    "X-Requested-With":"XMLHttpRequest"
+                },
+                body:
+                    "reason=" +
+                    encodeURIComponent(reason) +
+                    "&comment=" +
+                    encodeURIComponent(comment)
+            }
+        );
+
+        const data = await response.json();
+
+        if(data.success){
+
+            const modalElement =
+                document.getElementById(
+                    "candidateVideoReportModal"
+                );
+
+            if(modalElement && window.bootstrap){
+
+                bootstrap.Modal
+                    .getOrCreateInstance(
+                        modalElement
+                    )
+                    .hide();
+
+            }
+
+            alert("Report submitted successfully.");
+
+        }else{
+
+            alert(
+                data.message ||
+                "Unable to submit report."
+            );
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "Candidate video report error:",
+            error
+        );
+
+        alert("Unable to submit report.");
+
+    }
+
+}
+
+
+function openCandidateVideoComments(videoId){
+
+    /*
+      The existing feed comment system is job-based.
+      Candidate-video comments need their own backend endpoint.
+      If that endpoint is not present yet, show a clear message
+      rather than breaking the whole feed.
+    */
+
+    if(typeof window.openCandidateVideoCommentsModal === "function"){
+
+        window.openCandidateVideoCommentsModal(videoId);
+
+        return;
+
+    }
+
+    alert(
+        "Candidate video comments are not connected yet."
+    );
+
 }
 </script>
