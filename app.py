@@ -249,6 +249,18 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 db = SQLAlchemy(app)
 
+@app.context_processor
+def candidate_sidebar_context():
+    try:
+        cid = session.get("candidate_id")
+        if cid:
+            c = CandidateUser.query.get(cid)
+            return {"candidate_paid_credits": int(c.paid_credits or 0) if c else 0}
+    except Exception:
+        pass
+    return {"candidate_paid_credits": 0}
+
+
 # =========================
 # MODELS
 # =========================
@@ -680,6 +692,11 @@ class CandidateUser(UserMixin, db.Model):
 
     wallet_balance = db.Column(
         db.Float,
+        default=0
+    )
+
+    paid_credits = db.Column(
+        db.Integer,
         default=0
     )
 
@@ -2006,6 +2023,56 @@ class CandidateVideoReport(db.Model):
         default=india_time,
         index=True
     )
+
+
+class CandidateCreditPurchase(db.Model):
+    __tablename__ = "candidate_credit_purchase"
+
+    id = db.Column(db.Integer, primary_key=True)
+    candidate_id = db.Column(db.Integer, db.ForeignKey("candidate_user.id"), nullable=False, index=True)
+    package_name = db.Column(db.String(100))
+    amount_paid = db.Column(db.Float)
+    credits_bought = db.Column(db.Integer)
+    credits_remaining = db.Column(db.Integer)
+    price_per_credit = db.Column(db.Float)
+    payment_id = db.Column(db.String(100))
+    payment_status = db.Column(db.String(20), default="Paid")
+    created_at = db.Column(db.DateTime, default=india_time)
+
+
+class CandidateCreditHistory(db.Model):
+    __tablename__ = "candidate_credit_history"
+
+    id = db.Column(db.Integer, primary_key=True)
+    candidate_id = db.Column(db.Integer, db.ForeignKey("candidate_user.id"), nullable=False, index=True)
+    amount = db.Column(db.Integer)
+    action = db.Column(db.String(200))
+    created_at = db.Column(db.DateTime, default=india_time)
+
+
+class CandidateVideoBoost(db.Model):
+    __tablename__ = "candidate_video_boost"
+
+    id = db.Column(db.Integer, primary_key=True)
+    video_id = db.Column(db.Integer, db.ForeignKey("candidate_video_post.id", ondelete="CASCADE"), nullable=False, index=True)
+    candidate_id = db.Column(db.Integer, db.ForeignKey("candidate_user.id", ondelete="CASCADE"), nullable=False, index=True)
+    boost_type = db.Column(db.String(20))
+    state = db.Column(db.String(100))
+    cities = db.Column(db.Text)
+    days = db.Column(db.Integer)
+    total_credits = db.Column(db.Integer)
+    status = db.Column(db.String(20), default="Active")
+    impressions = db.Column(db.Integer, default=0)
+    clicks = db.Column(db.Integer, default=0)
+    starts_at = db.Column(db.DateTime, default=india_time)
+    expires_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=india_time)
+    credits_used = db.Column(db.Integer, default=0)
+    credits_remaining = db.Column(db.Integer, default=0)
+    days_completed = db.Column(db.Integer, default=0)
+    last_credit_deduction = db.Column(db.Date)
+
+    video = db.relationship("CandidateVideoPost", backref=db.backref("boosts", lazy=True))
 
 
 class Spark(db.Model):
@@ -10520,6 +10587,19 @@ def candidate_profile():
         .all()
     )
 
+    active_candidate_boosts = {}
+    if candidate_videos:
+        active_candidate_boosts = {
+            b.video_id: b
+            for b in CandidateVideoBoost.query.filter(
+                CandidateVideoBoost.video_id.in_([v.id for v in candidate_videos]),
+                CandidateVideoBoost.status == "Active"
+            ).all()
+        }
+
+    for video in candidate_videos:
+        video.active_boost = active_candidate_boosts.get(video.id)
+
     # ----------------------------
     # PROFILE COMPLETION
     # ----------------------------
@@ -10606,6 +10686,10 @@ def candidate_profile():
         following_count=following_count,
 
         candidate_video_count=candidate_video_count,
+
+        candidate_videos=candidate_videos,
+
+        candidate_paid_credits=int(candidate.paid_credits or 0),
 
         profile_completion=completion
 
@@ -13377,6 +13461,217 @@ def candidate_video_report(video_id):
     )
 
 
+
+@app.route("/candidate-video/<int:video_id>")
+def candidate_video_view(video_id):
+    video = CandidateVideoPost.query.get_or_404(video_id)
+    if not video.is_active:
+        return "Video not available.", 404
+
+    cid = session.get("candidate_id")
+    hid = current_user.id if current_user.is_authenticated else None
+    sparked = False
+    if cid:
+        sparked = CandidateVideoSpark.query.filter_by(video_id=video.id, candidate_id=cid).first() is not None
+    elif hid:
+        sparked = CandidateVideoSpark.query.filter_by(video_id=video.id, hr_id=hid).first() is not None
+
+    active_boost = CandidateVideoBoost.query.filter_by(video_id=video.id, status="Active").first()
+
+    return render_template("candidate_video_post.html",
+        video=video, sparked=sparked, active_boost=active_boost,
+        is_owner=bool(cid and video.candidate_id == cid))
+
+
+@app.route("/candidate-video-edit/<int:video_id>", methods=["GET", "POST"])
+def candidate_video_edit(video_id):
+    if "candidate_id" not in session:
+        return redirect("/candidate-login")
+    candidate = CandidateUser.query.get_or_404(session["candidate_id"])
+    video = CandidateVideoPost.query.get_or_404(video_id)
+    if video.candidate_id != candidate.id:
+        flash("Unauthorized access.", "danger")
+        return redirect("/candidate-profile")
+
+    if request.method == "POST":
+        location=request.form.get("location","").strip()
+        caption=request.form.get("caption","").strip()
+        hashtags=request.form.get("hashtags","").strip()
+        if not location:
+            flash("Please add the location.", "danger")
+            return redirect(request.url)
+        video.location=location[:150]
+        video.caption=caption[:2000] if caption else None
+        video.hashtags=hashtags[:500] if hashtags else None
+        db.session.commit()
+        flash("Video post updated successfully.", "success")
+        return redirect(url_for("candidate_video_view", video_id=video.id))
+
+    return render_template("candidate_video_edit.html", video=video, candidate=candidate)
+
+
+@app.route("/candidate-video-delete/<int:video_id>", methods=["POST", "GET"])
+def candidate_video_delete(video_id):
+    if "candidate_id" not in session:
+        return redirect("/candidate-login")
+    video=CandidateVideoPost.query.get_or_404(video_id)
+    if video.candidate_id != session["candidate_id"]:
+        flash("Unauthorized access.", "danger")
+        return redirect("/candidate-profile")
+    old_files=[video.video, video.thumbnail]
+    upload_dir=app.config["UPLOAD_FOLDER"]
+    db.session.delete(video); db.session.commit()
+    for filename in old_files:
+        if filename:
+            p=os.path.join(upload_dir,filename)
+            if os.path.exists(p):
+                try: os.remove(p)
+                except OSError: pass
+    flash("Video deleted successfully.", "success")
+    return redirect("/candidate-profile")
+
+
+@app.route("/candidate-video-boost/<int:video_id>", methods=["GET", "POST"])
+def candidate_video_boost(video_id):
+    if "candidate_id" not in session:
+        return redirect("/candidate-login")
+    candidate=CandidateUser.query.get_or_404(session["candidate_id"])
+    video=CandidateVideoPost.query.get_or_404(video_id)
+    if video.candidate_id != candidate.id:
+        flash("Unauthorized access.", "danger")
+        return redirect("/candidate-profile")
+
+    settings=get_business_settings()
+    existing=CandidateVideoBoost.query.filter_by(video_id=video.id,status="Active").first()
+    if existing:
+        return redirect(url_for("candidate_video_manage_boost",video_id=video.id))
+
+    if request.method=="POST":
+        boost_type=request.form.get("boost_type")
+        state=request.form.get("state","").strip()
+        cities=request.form.getlist("cities")
+        days=request.form.get("days",1,type=int)
+        if days<settings.boost_min_days or days>settings.boost_max_days:
+            flash(f"Boost duration must be between {settings.boost_min_days} and {settings.boost_max_days} day(s).","danger")
+            return redirect(request.url)
+        if boost_type=="city":
+            if not cities:
+                flash("Please select at least one city.","danger"); return redirect(request.url)
+            total=len(cities)*days*settings.boost_city_price
+        elif boost_type=="state":
+            total=days*settings.boost_state_price
+        elif boost_type=="pan_india":
+            total=days*settings.boost_pan_india_price
+        else:
+            flash("Invalid boost type.","danger"); return redirect(request.url)
+
+        if int(candidate.paid_credits or 0)<total:
+            flash(f"You need {total} paid credits. Your balance is {candidate.paid_credits or 0}.","danger")
+            return redirect("/candidate-buy-credits")
+
+        candidate.paid_credits=int(candidate.paid_credits or 0)-total
+        db.session.add(CandidateCreditHistory(candidate_id=candidate.id,amount=-total,action="Candidate Video Boost"))
+        db.session.add(CandidateVideoBoost(
+            video_id=video.id,candidate_id=candidate.id,boost_type=boost_type,state=state,
+            cities=",".join(cities) if cities else None,days=days,total_credits=total,
+            status="Active",starts_at=india_time(),expires_at=india_time()+timedelta(days=days),
+            credits_used=0,credits_remaining=total
+        ))
+        db.session.commit()
+        flash(f"Your video has been boosted successfully using {total} credits.","success")
+        return redirect(url_for("candidate_video_view",video_id=video.id))
+
+    locs=db.session.query(func.lower(CandidateVideoPost.location)).filter(
+        CandidateVideoPost.location.isnot(None),CandidateVideoPost.location!="").distinct().order_by(
+        func.lower(CandidateVideoPost.location)).all()
+    return render_template("candidate_video_boost.html",video=video,candidate=candidate,settings=settings,
+                           locations=[x[0].title() for x in locs if x[0]])
+
+
+@app.route("/candidate-video-manage-boost/<int:video_id>")
+def candidate_video_manage_boost(video_id):
+    if "candidate_id" not in session: return redirect("/candidate-login")
+    candidate=CandidateUser.query.get_or_404(session["candidate_id"])
+    video=CandidateVideoPost.query.get_or_404(video_id)
+    if video.candidate_id!=candidate.id: return redirect("/candidate-profile")
+    boost=CandidateVideoBoost.query.filter(
+        CandidateVideoBoost.video_id==video.id,
+        CandidateVideoBoost.status.in_(["Active","Paused"])
+    ).order_by(CandidateVideoBoost.id.desc()).first()
+    if not boost: return redirect(url_for("candidate_video_boost",video_id=video.id))
+    return render_template("candidate_video_manage_boost.html",video=video,boost=boost,candidate=candidate)
+
+
+@app.route("/candidate-video-boost-pause/<int:boost_id>",methods=["POST"])
+def candidate_video_boost_pause(boost_id):
+    if "candidate_id" not in session: return redirect("/candidate-login")
+    candidate=CandidateUser.query.get_or_404(session["candidate_id"])
+    boost=CandidateVideoBoost.query.get_or_404(boost_id)
+    if boost.candidate_id!=candidate.id: return "Unauthorized",403
+    boost.status="Paused" if boost.status=="Active" else "Active"
+    db.session.commit()
+    return redirect(url_for("candidate_video_manage_boost",video_id=boost.video_id))
+
+
+@app.route("/candidate-video-boost-delete/<int:boost_id>",methods=["POST"])
+def candidate_video_boost_delete(boost_id):
+    if "candidate_id" not in session: return redirect("/candidate-login")
+    candidate=CandidateUser.query.get_or_404(session["candidate_id"])
+    boost=CandidateVideoBoost.query.get_or_404(boost_id)
+    if boost.candidate_id!=candidate.id: return "Unauthorized",403
+    boost.status="Cancelled"; db.session.commit()
+    flash("Video boost cancelled.","success")
+    return redirect(url_for("candidate_video_view",video_id=boost.video_id))
+
+
+@app.route("/candidate-buy-credits")
+def candidate_buy_credits_page():
+    if "candidate_id" not in session: return redirect("/candidate-login")
+    candidate=CandidateUser.query.get_or_404(session["candidate_id"])
+    packages=CreditPackage.query.filter_by(is_active=True).order_by(CreditPackage.display_order.asc()).all()
+    return render_template("candidate_buy_credits.html",packages=packages,candidate=candidate)
+
+
+@app.route("/candidate-buy-credits/<int:package_id>")
+def candidate_buy_credits(package_id):
+    if "candidate_id" not in session: return redirect("/candidate-login")
+    package=CreditPackage.query.filter_by(id=package_id,is_active=True).first_or_404()
+    order=client.order.create({"amount":int(float(package.price)*100),"currency":"INR","payment_capture":1})
+    session["candidate_buy_credits"]=package.credits
+    session["candidate_buy_amount"]=package.price
+    session["candidate_package_name"]=package.package_name
+    return render_template("candidate_payment.html",order=order,amount=package.price,credits=package.credits,
+                           package=package,razorpay_key=RAZORPAY_KEY)
+
+
+@app.route("/candidate-payment-success")
+def candidate_payment_success():
+    if "candidate_id" not in session: return redirect("/candidate-login")
+    candidate=CandidateUser.query.get_or_404(session["candidate_id"])
+    credits=int(session.get("candidate_buy_credits",0) or 0)
+    amount=float(session.get("candidate_buy_amount",0) or 0)
+    if credits<=0 or amount<=0:
+        flash("Invalid credit purchase.","danger"); return redirect("/candidate-buy-credits")
+    try:
+        client.utility.verify_payment_signature({
+            "razorpay_order_id":request.args.get("order_id"),
+            "razorpay_payment_id":request.args.get("payment_id"),
+            "razorpay_signature":request.args.get("signature")
+        })
+    except Exception:
+        flash("Payment verification failed.","danger"); return redirect("/candidate-buy-credits")
+    candidate.paid_credits=int(candidate.paid_credits or 0)+credits
+    db.session.add(CandidateCreditPurchase(
+        candidate_id=candidate.id,package_name=session.get("candidate_package_name") or f"{credits} Credit Pack",
+        amount_paid=amount,credits_bought=credits,credits_remaining=credits,price_per_credit=amount/credits,
+        payment_id=request.args.get("payment_id"),payment_status="Paid"))
+    db.session.add(CandidateCreditHistory(candidate_id=candidate.id,amount=credits,action=f"Purchased {credits} Paid Credits"))
+    db.session.commit()
+    for k in ("candidate_buy_credits","candidate_buy_amount","candidate_package_name"): session.pop(k,None)
+    flash(f"🎉 {credits} credits have been credited to your account.","success")
+    return redirect("/candidate-buy-credits")
+
+
 @app.route('/candidate-feed')
 def candidate_feed():
 
@@ -13576,9 +13871,38 @@ def candidate_feed():
 
         candidate_videos = (
             video_query
-            .order_by(CandidateVideoPost.created_at.desc())
+            .outerjoin(
+                CandidateVideoBoost,
+                db.and_(
+                    CandidateVideoBoost.video_id == CandidateVideoPost.id,
+                    CandidateVideoBoost.status == "Active"
+                )
+            )
+            .order_by(
+                case((CandidateVideoBoost.id == None, 1), else_=0),
+                CandidateVideoBoost.created_at.desc(),
+                CandidateVideoPost.created_at.desc()
+            )
             .all()
         )
+
+    active_candidate_video_boosts = {
+        b.video_id: b
+        for b in CandidateVideoBoost.query.filter(
+            CandidateVideoBoost.video_id.in_([v.id for v in candidate_videos])
+            if candidate_videos else []
+        ).filter(
+            CandidateVideoBoost.status == "Active"
+        ).all()
+    }
+    for video in candidate_videos:
+        video.active_boost = active_candidate_video_boosts.get(video.id)
+
+    sparked_candidate_video_ids = {
+        s.video_id for s in CandidateVideoSpark.query.filter_by(
+            candidate_id=session["candidate_id"]
+        ).all()
+    }
 
     return render_template(
 
@@ -13593,6 +13917,8 @@ def candidate_feed():
         enquired_jobs=enquired_jobs,
 
         candidate_videos=candidate_videos,
+
+        sparked_candidate_video_ids=sparked_candidate_video_ids,
 
         selected_id=selected_id,
 
@@ -13647,6 +13973,12 @@ def discover_hr():
                 follower_candidate_id=session['candidate_id']
             ).all()
         ]
+
+    sparked_candidate_video_ids = {
+        s.video_id for s in CandidateVideoSpark.query.filter_by(
+            hr_id=current_user.id
+        ).all()
+    }
 
     return render_template(
         "discover_hr.html",
@@ -13998,7 +14330,18 @@ def feed():
                     followed_candidate_ids
                 )
             )
-            .order_by(CandidateVideoPost.created_at.desc())
+            .outerjoin(
+                CandidateVideoBoost,
+                db.and_(
+                    CandidateVideoBoost.video_id == CandidateVideoPost.id,
+                    CandidateVideoBoost.status == "Active"
+                )
+            )
+            .order_by(
+                case((CandidateVideoBoost.id == None, 1), else_=0),
+                CandidateVideoBoost.created_at.desc(),
+                CandidateVideoPost.created_at.desc()
+            )
             .all()
         )
     else:
@@ -14069,6 +14412,24 @@ def feed():
         for loc in locations
     ]
 
+    active_candidate_video_boosts = {
+        b.video_id: b
+        for b in CandidateVideoBoost.query.filter(
+            CandidateVideoBoost.video_id.in_([v.id for v in candidate_videos])
+            if candidate_videos else []
+        ).filter(
+            CandidateVideoBoost.status == "Active"
+        ).all()
+    }
+    for video in candidate_videos:
+        video.active_boost = active_candidate_video_boosts.get(video.id)
+
+    sparked_candidate_video_ids = {
+        s.video_id for s in CandidateVideoSpark.query.filter_by(
+            hr_id=current_user.id
+        ).all()
+    }
+
     return render_template(
 
         "feed.html",
@@ -14076,6 +14437,8 @@ def feed():
         jobs=jobs,
 
         candidate_videos=candidate_videos,
+
+        sparked_candidate_video_ids=sparked_candidate_video_ids,
 
         applied_jobs=applied_jobs,
 
