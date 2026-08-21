@@ -291,6 +291,7 @@
 
 {% for candidate in candidates %}
 
+{% if not session.get('candidate_id') or (session.get('candidate_id')|int != candidate.id|int) %}
 <div class="hr-card candidate-section">
 
     {% if candidate.profile_photo %}
@@ -321,7 +322,7 @@
         View Profile
     </a>
 
-    {% if session.get('candidate_id') and session.get('candidate_id') != candidate.id %}
+    {% if session.get('candidate_id') and (session.get('candidate_id')|int != candidate.id|int) %}
 
         {% set is_following_candidate = candidate.id in following_candidate_ids %}
 
@@ -350,6 +351,7 @@
     {% endif %}
 
 </div>
+{% endif %}
 
 {% endfor %}
 
