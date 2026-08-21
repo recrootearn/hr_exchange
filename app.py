@@ -1845,6 +1845,10 @@ class CandidateVideoPost(db.Model):
 
     video = db.Column(db.String(500), nullable=False)
     thumbnail = db.Column(db.String(500), nullable=True)
+
+    # Location selected when the candidate publishes the video.
+    location = db.Column(db.String(150), nullable=True, index=True)
+
     caption = db.Column(db.Text, nullable=True)
     hashtags = db.Column(db.Text, nullable=True)
 
@@ -1866,6 +1870,13 @@ class CandidateVideoPost(db.Model):
 
     sparks = db.relationship(
         "CandidateVideoSpark",
+        backref="video_post",
+        cascade="all, delete-orphan",
+        lazy=True
+    )
+
+    comments = db.relationship(
+        "CandidateVideoComment",
         backref="video_post",
         cascade="all, delete-orphan",
         lazy=True
@@ -1911,6 +1922,89 @@ class CandidateVideoSpark(db.Model):
     hr = db.relationship(
         "User",
         foreign_keys=[hr_id]
+    )
+
+
+
+class CandidateVideoComment(db.Model):
+    __tablename__ = "candidate_video_comment"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    video_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_video_post.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=True,
+        index=True
+    )
+
+    hr_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True,
+        index=True
+    )
+
+    comment = db.Column(db.Text, nullable=False)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time,
+        index=True
+    )
+
+    candidate = db.relationship(
+        "CandidateUser",
+        foreign_keys=[candidate_id]
+    )
+
+    hr = db.relationship(
+        "User",
+        foreign_keys=[hr_id]
+    )
+
+
+class CandidateVideoReport(db.Model):
+    __tablename__ = "candidate_video_report"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    video_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_video_post.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=True,
+        index=True
+    )
+
+    hr_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True,
+        index=True
+    )
+
+    reason = db.Column(db.String(200), nullable=False)
+
+    comment = db.Column(db.Text, nullable=True)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time,
+        index=True
     )
 
 
@@ -10416,6 +10510,16 @@ def candidate_profile():
         is_active=True
     ).count()
 
+    candidate_videos = (
+        CandidateVideoPost.query
+        .filter_by(
+            candidate_id=candidate.id,
+            is_active=True
+        )
+        .order_by(CandidateVideoPost.created_at.desc())
+        .all()
+    )
+
     # ----------------------------
     # PROFILE COMPLETION
     # ----------------------------
@@ -12904,8 +13008,13 @@ def candidate_post_video():
 
     if request.method == "POST":
         video = request.files.get("candidate_video")
+        location = request.form.get("location", "").strip()
         caption = request.form.get("caption", "").strip()
         hashtags = request.form.get("hashtags", "").strip()
+
+        if not location:
+            flash("Please add the location for this video.", "danger")
+            return redirect("/candidate-post-video")
 
         if not video or not video.filename:
             flash("Please select a video.", "danger")
@@ -12970,6 +13079,7 @@ def candidate_post_video():
                 candidate_id=candidate.id,
                 video=final_filename,
                 thumbnail=thumbnail_filename,
+                location=location[:150],
                 caption=caption[:2000] if caption else None,
                 hashtags=hashtags[:500] if hashtags else None
             )
@@ -13097,6 +13207,173 @@ def candidate_video_spark(video_id):
         success=True,
         count=count,
         sparked=sparked
+    )
+
+
+
+@app.route("/candidate-video-comments/<int:video_id>")
+def candidate_video_comments(video_id):
+    """Return comments for a candidate video."""
+    CandidateVideoPost.query.get_or_404(video_id)
+
+    comments = (
+        CandidateVideoComment.query
+        .filter_by(video_id=video_id)
+        .order_by(CandidateVideoComment.created_at.asc())
+        .all()
+    )
+
+    result = []
+
+    for item in comments:
+        if item.candidate_id and item.candidate:
+            name = item.candidate.full_name or "Candidate"
+            photo = item.candidate.profile_photo
+            user_type = "candidate"
+        elif item.hr_id and item.hr:
+            name = (
+                f"{item.hr.first_name or ''} "
+                f"{item.hr.last_name or ''}"
+            ).strip() or "HR"
+            photo = item.hr.profile_photo
+            user_type = "hr"
+        else:
+            name = "User"
+            photo = None
+            user_type = "user"
+
+        result.append({
+            "id": item.id,
+            "name": name,
+            "photo": photo,
+            "user_type": user_type,
+            "comment": item.comment,
+            "created_at": item.created_at.strftime("%d %b %Y, %I:%M %p")
+                if item.created_at else ""
+        })
+
+    return jsonify(
+        success=True,
+        comments=result,
+        count=len(result)
+    )
+
+
+@app.route("/candidate-video-comment/<int:video_id>", methods=["POST"])
+def candidate_video_comment(video_id):
+    """Add a comment from a candidate or HR."""
+    video = CandidateVideoPost.query.get_or_404(video_id)
+
+    comment_text = request.form.get("comment", "").strip()
+
+    if not comment_text:
+        data = request.get_json(silent=True) or {}
+        comment_text = str(data.get("comment", "")).strip()
+
+    if not comment_text:
+        return jsonify(
+            success=False,
+            message="Comment cannot be empty."
+        ), 400
+
+    if len(comment_text) > 1000:
+        return jsonify(
+            success=False,
+            message="Comment is too long."
+        ), 400
+
+    candidate_id = session.get("candidate_id")
+    hr_id = current_user.id if current_user.is_authenticated else None
+
+    if not candidate_id and not hr_id:
+        return jsonify(
+            success=False,
+            message="Please login first."
+        ), 401
+
+    item = CandidateVideoComment(
+        video_id=video.id,
+        candidate_id=candidate_id,
+        hr_id=hr_id,
+        comment=comment_text
+    )
+
+    db.session.add(item)
+    db.session.commit()
+
+    return jsonify(
+        success=True,
+        comment={
+            "id": item.id,
+            "name": (
+                CandidateUser.query.get(candidate_id).full_name
+                if candidate_id and CandidateUser.query.get(candidate_id)
+                else (
+                    (
+                        f"{current_user.first_name or ''} "
+                        f"{current_user.last_name or ''}"
+                    ).strip()
+                    if hr_id else "User"
+                )
+            ),
+            "comment": item.comment,
+            "created_at": item.created_at.strftime("%d %b %Y, %I:%M %p")
+                if item.created_at else ""
+        },
+        count=CandidateVideoComment.query.filter_by(
+            video_id=video.id
+        ).count()
+    )
+
+
+@app.route("/candidate-video-report/<int:video_id>", methods=["POST"])
+def candidate_video_report(video_id):
+    """Report a candidate video."""
+    CandidateVideoPost.query.get_or_404(video_id)
+
+    candidate_id = session.get("candidate_id")
+    hr_id = current_user.id if current_user.is_authenticated else None
+
+    if not candidate_id and not hr_id:
+        return jsonify(
+            success=False,
+            message="Please login first."
+        ), 401
+
+    data = request.get_json(silent=True) or {}
+
+    reason = (
+        request.form.get("reason")
+        or data.get("reason")
+        or ""
+    ).strip()
+
+    comment = (
+        request.form.get("comment")
+        or data.get("comment")
+        or ""
+    ).strip()
+
+    if not reason:
+        return jsonify(
+            success=False,
+            message="Please select a report reason."
+        ), 400
+
+    report = CandidateVideoReport(
+        video_id=video_id,
+        candidate_id=candidate_id,
+        hr_id=hr_id,
+        reason=reason[:200],
+        comment=comment[:1000] if comment else None
+    )
+
+    db.session.add(report)
+    db.session.commit()
+
+    return jsonify(
+        success=True,
+        message="Report submitted successfully."
     )
 
 
@@ -13279,6 +13556,12 @@ def candidate_feed():
         video_query = CandidateVideoPost.query.filter(
             CandidateVideoPost.is_active == True
         )
+
+        if selected_location:
+            video_query = video_query.filter(
+                func.lower(CandidateVideoPost.location)
+                == selected_location.lower()
+            )
 
         if followed_candidate_ids:
             video_query = video_query.filter(
@@ -13697,11 +13980,20 @@ def feed():
         if f.followed_candidate_id
     ]
 
+    video_query = CandidateVideoPost.query.filter(
+        CandidateVideoPost.is_active == True
+    )
+
+    if selected_location:
+        video_query = video_query.filter(
+            func.lower(CandidateVideoPost.location)
+            == selected_location.lower()
+        )
+
     if followed_candidate_ids:
         candidate_videos = (
-            CandidateVideoPost.query
+            video_query
             .filter(
-                CandidateVideoPost.is_active == True,
                 CandidateVideoPost.candidate_id.in_(
                     followed_candidate_ids
                 )
@@ -13710,6 +14002,7 @@ def feed():
             .all()
         )
     else:
+        candidate_videos = []
         candidate_videos = []
 
     # -----------------------------
