@@ -788,7 +788,7 @@
 
             </div>
 
-            {% if is_owner or contact_unlocked %}
+            {% if is_owner %}
             <a
             href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}"
             target="_blank"
@@ -805,7 +805,24 @@
                 <i class="fas fa-download me-2"></i>
                 Download Resume
             </a>
-            {% else %}
+            {% elif not is_candidate_viewer and contact_unlocked %}
+            <a
+            href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}"
+            target="_blank"
+            class="btn btn-success"
+            style="
+            min-width:190px;
+            height:48px;
+            border-radius:12px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:700;
+            ">
+                <i class="fas fa-download me-2"></i>
+                Download Resume
+            </a>
+            {% elif not is_candidate_viewer %}
             <a
             href="{{ url_for('unlock_contact', id=candidate.id) }}"
             class="btn btn-success"
