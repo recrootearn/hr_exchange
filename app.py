@@ -1830,6 +1830,90 @@ class Earnings(db.Model):
         default=india_time
     )
 
+
+class CandidateVideoPost(db.Model):
+    __tablename__ = "candidate_video_post"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=False,
+        index=True
+    )
+
+    video = db.Column(db.String(500), nullable=False)
+    thumbnail = db.Column(db.String(500), nullable=True)
+    caption = db.Column(db.Text, nullable=True)
+    hashtags = db.Column(db.Text, nullable=True)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time,
+        index=True
+    )
+
+    is_active = db.Column(
+        db.Boolean,
+        default=True
+    )
+
+    candidate = db.relationship(
+        "CandidateUser",
+        foreign_keys=[candidate_id]
+    )
+
+    sparks = db.relationship(
+        "CandidateVideoSpark",
+        backref="video_post",
+        cascade="all, delete-orphan",
+        lazy=True
+    )
+
+
+class CandidateVideoSpark(db.Model):
+    __tablename__ = "candidate_video_spark"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    video_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_video_post.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    candidate_id = db.Column(
+        db.Integer,
+        db.ForeignKey("candidate_user.id"),
+        nullable=True,
+        index=True
+    )
+
+    hr_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=True,
+        index=True
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=india_time
+    )
+
+    candidate = db.relationship(
+        "CandidateUser",
+        foreign_keys=[candidate_id]
+    )
+
+    hr = db.relationship(
+        "User",
+        foreign_keys=[hr_id]
+    )
+
+
 class Spark(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
@@ -10327,6 +10411,11 @@ def candidate_profile():
         follower_candidate_id=candidate.id
     ).count()
 
+    candidate_video_count = CandidateVideoPost.query.filter_by(
+        candidate_id=candidate.id,
+        is_active=True
+    ).count()
+
     # ----------------------------
     # PROFILE COMPLETION
     # ----------------------------
@@ -10411,6 +10500,8 @@ def candidate_profile():
         followers_count=followers_count,
 
         following_count=following_count,
+
+        candidate_video_count=candidate_video_count,
 
         profile_completion=completion
 
@@ -12094,6 +12185,59 @@ def follow_hr_user(id):
 
     return redirect(request.referrer)
 
+
+@app.route('/follow-candidate-user/<int:id>')
+def follow_candidate_user(id):
+    """Candidate -> Candidate follow/unfollow."""
+    if "candidate_id" not in session:
+        return redirect("/candidate-login")
+
+    follower_id = session["candidate_id"]
+
+    if follower_id == id:
+        return redirect(request.referrer or "/discover-candidates")
+
+    target = CandidateUser.query.get_or_404(id)
+
+    existing = Follow.query.filter_by(
+        follower_candidate_id=follower_id,
+        followed_candidate_id=id
+    ).first()
+
+    follower = CandidateUser.query.get_or_404(follower_id)
+
+    if existing:
+        db.session.delete(existing)
+
+        send_notification(
+            user_id=target.id,
+            user_type="candidate",
+            message=f"{follower.full_name} unfollowed you",
+            link=f"/candidate/{follower.id}",
+            image=follower.profile_photo,
+            type="unfollow"
+        )
+    else:
+        db.session.add(
+            Follow(
+                follower_candidate_id=follower_id,
+                followed_candidate_id=id
+            )
+        )
+
+        send_notification(
+            user_id=target.id,
+            user_type="candidate",
+            message=f"{follower.full_name} started following you",
+            link=f"/candidate/{follower.id}",
+            image=follower.profile_photo,
+            type="follow"
+        )
+
+    db.session.commit()
+    return redirect(request.args.get("next") or request.referrer or "/discover-candidates")
+
+
 @app.route('/follow-candidate/<int:id>')
 @login_required
 def follow_candidate(id):
@@ -12697,6 +12841,265 @@ def my_jobs():
 
 from sqlalchemy import func
 
+
+def get_video_duration_seconds(filepath):
+    """Return video duration using ffprobe, or None if unavailable."""
+    try:
+        result = subprocess.run(
+            [
+                "/usr/bin/ffprobe",
+                "-v", "error",
+                "-show_entries", "format=duration",
+                "-of", "default=noprint_wrappers=1:nokey=1",
+                filepath
+            ],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return float(result.stdout.strip())
+    except Exception:
+        return None
+
+
+def compress_candidate_video(input_path, output_path):
+    """Compress candidate video and create a poster thumbnail."""
+    command = [
+        "/usr/bin/ffmpeg",
+        "-i", input_path,
+        "-vf", "scale=-2:1080",
+        "-c:v", "libx264",
+        "-crf", "28",
+        "-preset", "veryfast",
+        "-c:a", "aac",
+        "-movflags", "+faststart",
+        "-y",
+        output_path
+    ]
+    subprocess.run(command, check=True)
+
+    thumb_path = output_path.rsplit(".", 1)[0] + ".jpg"
+
+    thumb_command = [
+        "/usr/bin/ffmpeg",
+        "-i", output_path,
+        "-ss", "00:00:01",
+        "-vframes", "1",
+        "-y", thumb_path
+    ]
+    subprocess.run(thumb_command, check=True)
+
+    return thumb_path
+
+
+@app.route("/candidate-post-video", methods=["GET", "POST"])
+def candidate_post_video():
+    """Candidate-only video posting feature."""
+    if "candidate_id" not in session:
+        return redirect("/candidate-login")
+
+    candidate = CandidateUser.query.get_or_404(
+        session["candidate_id"]
+    )
+
+    if request.method == "POST":
+        video = request.files.get("candidate_video")
+        caption = request.form.get("caption", "").strip()
+        hashtags = request.form.get("hashtags", "").strip()
+
+        if not video or not video.filename:
+            flash("Please select a video.", "danger")
+            return redirect("/candidate-post-video")
+
+        allowed_extensions = {
+            "mp4", "mov", "m4v", "webm", "avi", "mkv"
+        }
+
+        if "." not in video.filename:
+            flash("Invalid video file.", "danger")
+            return redirect("/candidate-post-video")
+
+        ext = video.filename.rsplit(".", 1)[1].lower()
+
+        if ext not in allowed_extensions:
+            flash(
+                "Please upload MP4, MOV, M4V, WEBM, AVI or MKV video.",
+                "danger"
+            )
+            return redirect("/candidate-post-video")
+
+        filename = f"candidate_{uuid.uuid4().hex}.{ext}"
+        temp_filename = f"temp_{filename}"
+
+        upload_dir = app.config["UPLOAD_FOLDER"]
+        os.makedirs(upload_dir, exist_ok=True)
+
+        temp_path = os.path.join(upload_dir, temp_filename)
+        final_filename = f"candidate_{uuid.uuid4().hex}.mp4"
+        final_path = os.path.join(upload_dir, final_filename)
+
+        video.save(temp_path)
+
+        try:
+            duration = get_video_duration_seconds(temp_path)
+
+            if duration is None:
+                flash(
+                    "Could not read the video. Please try another video.",
+                    "danger"
+                )
+                return redirect("/candidate-post-video")
+
+            if duration > 60.0:
+                flash(
+                    "Candidate videos must be 60 seconds or shorter.",
+                    "danger"
+                )
+                return redirect("/candidate-post-video")
+
+            compress_candidate_video(
+                temp_path,
+                final_path
+            )
+
+            thumbnail_filename = (
+                final_filename.rsplit(".", 1)[0] + ".jpg"
+            )
+
+            post = CandidateVideoPost(
+                candidate_id=candidate.id,
+                video=final_filename,
+                thumbnail=thumbnail_filename,
+                caption=caption[:2000] if caption else None,
+                hashtags=hashtags[:500] if hashtags else None
+            )
+
+            db.session.add(post)
+            db.session.commit()
+
+            # Notify every follower — candidates and HRs.
+            followers = Follow.query.filter_by(
+                followed_candidate_id=candidate.id
+            ).all()
+
+            for follow in followers:
+
+                if follow.follower_candidate_id:
+                    follower_candidate = CandidateUser.query.get(
+                        follow.follower_candidate_id
+                    )
+
+                    if follower_candidate:
+                        send_notification(
+                            user_id=follower_candidate.id,
+                            user_type="candidate",
+                            message=f"{candidate.full_name} posted a new video 🎥",
+                            link="/candidate-feed",
+                            image=candidate.profile_photo,
+                            type="candidate_video_post"
+                        )
+
+                if follow.follower_hr_id:
+                    follower_hr = User.query.get(
+                        follow.follower_hr_id
+                    )
+
+                    if follower_hr:
+                        send_notification(
+                            user_id=follower_hr.id,
+                            user_type="hr",
+                            message=f"{candidate.full_name} posted a new video 🎥",
+                            link="/feed",
+                            image=candidate.profile_photo,
+                            type="candidate_video_post"
+                        )
+
+            db.session.commit()
+
+            flash("Video posted successfully.", "success")
+            return redirect("/candidate-feed")
+
+        except subprocess.CalledProcessError:
+            db.session.rollback()
+            flash(
+                "The video could not be processed. Please try another video.",
+                "danger"
+            )
+            return redirect("/candidate-post-video")
+
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
+    return render_template(
+        "candidate_post_video.html",
+        candidate=candidate
+    )
+
+
+@app.route("/candidate-video-spark/<int:video_id>", methods=["POST"])
+def candidate_video_spark(video_id):
+    """Spark a candidate video from either a candidate or HR account."""
+    video = CandidateVideoPost.query.get_or_404(video_id)
+
+    candidate_id = session.get("candidate_id")
+    hr_id = current_user.id if current_user.is_authenticated else None
+
+    if not candidate_id and not hr_id:
+        return jsonify(
+            success=False,
+            message="Please login first."
+        ), 401
+
+    if candidate_id:
+        existing = CandidateVideoSpark.query.filter_by(
+            video_id=video.id,
+            candidate_id=candidate_id
+        ).first()
+
+        if existing:
+            db.session.delete(existing)
+            sparked = False
+        else:
+            db.session.add(
+                CandidateVideoSpark(
+                    video_id=video.id,
+                    candidate_id=candidate_id
+                )
+            )
+            sparked = True
+
+    else:
+        existing = CandidateVideoSpark.query.filter_by(
+            video_id=video.id,
+            hr_id=hr_id
+        ).first()
+
+        if existing:
+            db.session.delete(existing)
+            sparked = False
+        else:
+            db.session.add(
+                CandidateVideoSpark(
+                    video_id=video.id,
+                    hr_id=hr_id
+                )
+            )
+            sparked = True
+
+    db.session.commit()
+
+    count = CandidateVideoSpark.query.filter_by(
+        video_id=video.id
+    ).count()
+
+    return jsonify(
+        success=True,
+        count=count,
+        sparked=sparked
+    )
+
+
 @app.route('/candidate-feed')
 def candidate_feed():
 
@@ -12857,6 +13260,43 @@ def candidate_feed():
 
         enquired_jobs = []
 
+    # -------------------------------------------------
+    # Candidate videos from followed candidates
+    # -------------------------------------------------
+    candidate_videos = []
+
+    if "candidate_id" in session:
+        viewer_candidate_id = session["candidate_id"]
+
+        followed_candidate_ids = [
+            f.followed_candidate_id
+            for f in Follow.query.filter_by(
+                follower_candidate_id=viewer_candidate_id
+            ).all()
+            if f.followed_candidate_id
+        ]
+
+        video_query = CandidateVideoPost.query.filter(
+            CandidateVideoPost.is_active == True
+        )
+
+        if followed_candidate_ids:
+            video_query = video_query.filter(
+                CandidateVideoPost.candidate_id.in_(
+                    followed_candidate_ids + [viewer_candidate_id]
+                )
+            )
+        else:
+            video_query = video_query.filter(
+                CandidateVideoPost.candidate_id == viewer_candidate_id
+            )
+
+        candidate_videos = (
+            video_query
+            .order_by(CandidateVideoPost.created_at.desc())
+            .all()
+        )
+
     return render_template(
 
         'candidate_feed.html',
@@ -12868,6 +13308,8 @@ def candidate_feed():
         sparked_jobs=sparked_jobs,
 
         enquired_jobs=enquired_jobs,
+
+        candidate_videos=candidate_videos,
 
         selected_id=selected_id,
 
@@ -13244,6 +13686,32 @@ def feed():
             for boost in job.boosts
         )
 
+    # -------------------------------------------------
+    # Candidate videos from candidates followed by this HR
+    # -------------------------------------------------
+    followed_candidate_ids = [
+        f.followed_candidate_id
+        for f in Follow.query.filter_by(
+            follower_hr_id=current_user.id
+        ).all()
+        if f.followed_candidate_id
+    ]
+
+    if followed_candidate_ids:
+        candidate_videos = (
+            CandidateVideoPost.query
+            .filter(
+                CandidateVideoPost.is_active == True,
+                CandidateVideoPost.candidate_id.in_(
+                    followed_candidate_ids
+                )
+            )
+            .order_by(CandidateVideoPost.created_at.desc())
+            .all()
+        )
+    else:
+        candidate_videos = []
+
     # -----------------------------
     # Applied Jobs
     # -----------------------------
@@ -13313,6 +13781,8 @@ def feed():
         "feed.html",
 
         jobs=jobs,
+
+        candidate_videos=candidate_videos,
 
         applied_jobs=applied_jobs,
 
@@ -24699,6 +25169,10 @@ def expire_marketplace_promotions_hook():
 # Gunicorn, where the __main__ block is not executed.
 with app.app_context():
     ensure_variant_price_column()
+
+    # Candidate video feature tables.
+    # Safe because create_all() only creates missing tables.
+    db.create_all()
 
 
 if __name__ == "__main__":
