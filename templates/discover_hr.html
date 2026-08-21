@@ -121,6 +121,18 @@
     color:white;
 }
 
+.btn-follow.is-following{
+    background:#198754;
+    border-color:#198754;
+    color:white;
+}
+
+.btn-follow.is-following:hover{
+    background:#157347;
+    border-color:#146c43;
+    color:white;
+}
+
 .discover-tabs{
     display:flex;
     gap:10px;
@@ -242,7 +254,7 @@
         📍 {{ hr.company_city or "City Not Added" }}
     </div>
 
-    <a href="/company/{{ hr.id }}"
+    <a href="/company/{{ hr.id }}?next={{ request.path }}"
        class="btn-profile">
         View Profile
     </a>
@@ -251,7 +263,7 @@
         {% set is_following_hr = hr.id in following_hr_ids %}
 
         <a href="/follow-hr/{{ hr.id }}?next={{ request.path }}"
-           class="btn-follow {% if is_following_hr %}btn-success{% endif %}">
+           class="btn-follow {% if is_following_hr %}is-following{% endif %}">
             {% if is_following_hr %}
                 ✓ Following
             {% else %}
@@ -263,7 +275,7 @@
         {% set is_following_hr = hr.id in hr_following_ids %}
 
         <a href="/follow-hr-user/{{ hr.id }}?next={{ request.path }}"
-           class="btn-follow {% if is_following_hr %}btn-success{% endif %}">
+           class="btn-follow {% if is_following_hr %}is-following{% endif %}">
             {% if is_following_hr %}
                 ✓ Following
             {% else %}
@@ -304,7 +316,7 @@
         📍 {{ candidate.city or "City Not Added" }}
     </div>
 
-    <a href="/candidate/{{ candidate.id }}"
+    <a href="/candidate/{{ candidate.id }}?next={{ request.path }}"
        class="btn-profile">
         View Profile
     </a>
@@ -314,7 +326,7 @@
         {% set is_following_candidate = candidate.id in following_candidate_ids %}
 
         <a href="/follow-candidate-user/{{ candidate.id }}?next={{ request.path }}"
-           class="btn-follow {% if is_following_candidate %}btn-success{% endif %}">
+           class="btn-follow {% if is_following_candidate %}is-following{% endif %}">
             {% if is_following_candidate %}
                 ✓ Following
             {% else %}
@@ -327,7 +339,7 @@
         {% set is_following_candidate = candidate.id in hr_following_candidate_ids %}
 
         <a href="/follow-candidate/{{ candidate.id }}?next={{ request.path }}"
-           class="btn-follow {% if is_following_candidate %}btn-success{% endif %}">
+           class="btn-follow {% if is_following_candidate %}is-following{% endif %}">
             {% if is_following_candidate %}
                 ✓ Following
             {% else %}
