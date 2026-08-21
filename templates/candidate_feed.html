@@ -61,93 +61,10 @@
 <div class="desktop-feed">
 
 {% if candidate_videos %}
-{% for cv in candidate_videos %}
-<div class="feed-card candidate-video-feed-card" id="candidate-video-{{ cv.id }}">
-
-    <div class="feed-header d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-            <div class="feed-avatar candidate-video-avatar">
-                {% if cv.candidate and cv.candidate.profile_photo %}
-                <img src="/static/uploads/{{ cv.candidate.profile_photo }}"
-                     style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
-                {% else %}
-                {{ cv.candidate.full_name[:1].upper() if cv.candidate and cv.candidate.full_name else 'C' }}
-                {% endif %}
-            </div>
-
-            <div class="ms-2">
-                <div class="feed-company">
-                    {% if cv.candidate %}
-                    <a href="/candidate/{{ cv.candidate.id }}"
-                       style="text-decoration:none;color:inherit;">
-                        {{ cv.candidate.full_name }}
-                    </a>
-                    {% else %}
-                    Candidate
-                    {% endif %}
-                </div>
-                <div class="feed-meta">🎥 Candidate Video</div>
-            </div>
-        </div>
-
-        <span class="candidate-video-badge">CANDIDATE</span>
-    </div>
-
-    <div class="feed-media reel-media video-container">
-        <video class="feed-image feed-video candidate-feed-video"
-               autoplay muted loop playsinline preload="metadata"
-               poster="{% if cv.thumbnail %}/static/uploads/{{ cv.thumbnail }}{% endif %}"
-               onclick="openMedia(this,'/static/uploads/{{ cv.video }}','video')">
-            <source src="/static/uploads/{{ cv.video }}" type="video/mp4">
-        </video>
-
-        <button class="mute-btn"
-                onclick="toggleMute(event,this)"
-                type="button">🔇</button>
-    </div>
-
-    <div class="feed-buttons">
-        <div class="video-actions">
-
-            <button id="candidate-spark-btn-{{ cv.id }}"
-                    class="action-btn spark-btn"
-                    type="button"
-                    onclick="toggleCandidateVideoSpark({{ cv.id }}, this)">
-                <i class="fas fa-bolt"></i>
-            </button>
-
-            <span id="candidate-spark-count-{{ cv.id }}"
-                  class="action-count">
-                {{ cv.sparks|length }}
-            </span>
-
-            <button class="action-btn"
-                    type="button"
-                    onclick="shareCandidateVideo({{ cv.id }})"
-                    style="color:#2563eb;">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-
-        </div>
-    </div>
-
-    {% if cv.caption or cv.hashtags %}
-    <div class="job-details-wrapper">
-        {% if cv.caption %}
-        <div class="description-text">{{ cv.caption }}</div>
-        {% endif %}
-
-        {% if cv.hashtags %}
-        <div class="candidate-video-hashtags">{{ cv.hashtags }}</div>
-        {% endif %}
-    </div>
-    {% endif %}
-
-</div>
-{% endfor %}
+        {% include "candidate_video_card.html" %}
 {% endif %}
 
-    {% for job in jobs %}
+{% for job in jobs %}
     <div id="post{{ job.id }}" class="feed-card">
         <!-- HEADER -->
         <div class="feed-header d-flex justify-content-between align-items-center">

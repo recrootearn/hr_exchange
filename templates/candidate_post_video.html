@@ -106,6 +106,28 @@
 
             <div class="video-field">
 
+                <label for="location">
+                    Location
+                </label>
+
+                <input
+                    id="location"
+                    type="text"
+                    name="location"
+                    value="{{ candidate.city or '' }}"
+                    maxlength="150"
+                    placeholder="Where was this video posted from?"
+                    required
+                >
+
+                <div class="video-help">
+                    This location will be shown publicly with your video.
+                </div>
+
+            </div>
+
+            <div class="video-field">
+
                 <label for="caption">
                     Caption
                 </label>
