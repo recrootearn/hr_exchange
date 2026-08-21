@@ -13988,11 +13988,22 @@ from sqlalchemy import func
 
 @app.route('/discover-hr')
 def discover_hr():
+    """
+    Discover HR:
+    - Shows BOTH HRs and Candidates, matching Discover Candidates behavior.
+    - City filter applies to both HR company city and candidate city.
+    - Candidate accounts can follow HRs and other candidates.
+    - HR accounts can follow HRs and candidates.
+    - Follow-state lists are supplied to discover_hr.html so the UI
+      remains persistent after refresh.
+    """
 
     city = request.args.get('city', '').strip()
 
-    # Get all unique cities (case-insensitive)
-    cities = (
+    # -------------------------------------------------
+    # AVAILABLE CITIES — HR + CANDIDATE, case-insensitive
+    # -------------------------------------------------
+    hr_city_rows = (
         db.session.query(func.lower(User.company_city))
         .filter(
             User.is_approved == True,
@@ -14000,46 +14011,124 @@ def discover_hr():
             User.company_city != ""
         )
         .distinct()
-        .order_by(func.lower(User.company_city))
         .all()
     )
 
-    cities = [c[0].title() for c in cities]
+    candidate_city_rows = (
+        db.session.query(func.lower(CandidateUser.city))
+        .filter(
+            CandidateUser.city.isnot(None),
+            CandidateUser.city != "",
+            CandidateUser.is_deleted == False
+        )
+        .distinct()
+        .all()
+    )
 
-    query = User.query.filter_by(is_approved=True)
+    cities = sorted({
+        row[0].title()
+        for row in hr_city_rows + candidate_city_rows
+        if row[0]
+    })
+
+    # -------------------------------------------------
+    # HRs
+    # -------------------------------------------------
+    hr_query = User.query.filter(
+        User.is_approved == True,
+        User.is_deleted == False
+    )
 
     if city:
-        query = query.filter(
+        hr_query = hr_query.filter(
             func.lower(User.company_city) == city.lower()
         )
 
-    hrs = query.order_by(
+    hrs = hr_query.order_by(
         User.id.desc()
     ).all()
 
-    following_ids = []
+    # -------------------------------------------------
+    # CANDIDATES
+    # -------------------------------------------------
+    candidate_query = CandidateUser.query.filter(
+        CandidateUser.is_deleted == False
+    )
 
-    if 'candidate_id' in session:
+    if city:
+        candidate_query = candidate_query.filter(
+            func.lower(CandidateUser.city) == city.lower()
+        )
 
-        following_ids = [
+    candidates = candidate_query.order_by(
+        CandidateUser.id.desc()
+    ).all()
+
+    # -------------------------------------------------
+    # FOLLOW STATE FOR CANDIDATE VIEWER
+    # -------------------------------------------------
+    following_hr_ids = []
+    following_candidate_ids = []
+
+    candidate_id = session.get("candidate_id")
+
+    if candidate_id:
+        following_hr_ids = [
             f.followed_hr_id
             for f in Follow.query.filter_by(
-                follower_candidate_id=session['candidate_id']
+                follower_candidate_id=candidate_id
             ).all()
+            if f.followed_hr_id
         ]
 
-    sparked_candidate_video_ids = {
-        s.video_id for s in CandidateVideoSpark.query.filter_by(
-            hr_id=current_user.id
-        ).all()
-    }
+        following_candidate_ids = [
+            f.followed_candidate_id
+            for f in Follow.query.filter_by(
+                follower_candidate_id=candidate_id
+            ).all()
+            if f.followed_candidate_id
+        ]
+
+    # -------------------------------------------------
+    # FOLLOW STATE FOR HR VIEWER
+    # -------------------------------------------------
+    hr_following_ids = []
+    hr_following_candidate_ids = []
+
+    if current_user.is_authenticated:
+        hr_following_ids = [
+            f.followed_hr_id
+            for f in Follow.query.filter_by(
+                follower_hr_id=current_user.id
+            ).all()
+            if f.followed_hr_id
+        ]
+
+        hr_following_candidate_ids = [
+            f.followed_candidate_id
+            for f in Follow.query.filter_by(
+                follower_hr_id=current_user.id
+            ).all()
+            if f.followed_candidate_id
+        ]
 
     return render_template(
         "discover_hr.html",
         hrs=hrs,
+        candidates=candidates,
         city=city,
         cities=cities,
-        following_ids=following_ids
+
+        # Candidate viewer
+        following_hr_ids=following_hr_ids,
+        following_candidate_ids=following_candidate_ids,
+
+        # HR viewer
+        hr_following_ids=hr_following_ids,
+        hr_following_candidate_ids=hr_following_candidate_ids,
+
+        # Kept available for templates that still use Follow directly.
+        Follow=Follow
     )
 
 from sqlalchemy import func
