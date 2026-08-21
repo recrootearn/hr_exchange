@@ -447,30 +447,41 @@
 
         <div id="candidate-profile-videos" class="profile-tab-panel active">
             {% if candidate_videos %}
+            <!-- Instagram-style candidate video grid -->
             <div class="profile-video-grid">
                 {% for cv in candidate_videos %}
-                <div class="profile-video-item">
+                <button
+                    type="button"
+                    class="profile-video-item"
+                    onclick="openCandidateProfileVideo('{{ url_for('static', filename='uploads/' + cv.video) }}','{% if cv.thumbnail %}{{ url_for('static', filename='uploads/' + cv.thumbnail) }}{% endif %}')"
+                    aria-label="Open candidate video"
+                >
                     <div class="profile-video-media">
-                        <video controls playsinline preload="metadata"
-                               poster="{% if cv.thumbnail %}{{ url_for('static', filename='uploads/' + cv.thumbnail) }}{% endif %}">
-                            <source src="{{ url_for('static', filename='uploads/' + cv.video) }}"
-                                    type="video/mp4">
+                        <video
+                            muted
+                            playsinline
+                            preload="metadata"
+                            poster="{% if cv.thumbnail %}{{ url_for('static', filename='uploads/' + cv.thumbnail) }}{% endif %}"
+                        >
+                            <source
+                                src="{{ url_for('static', filename='uploads/' + cv.video) }}"
+                                type="video/mp4"
+                            >
                         </video>
+
+                        <span class="profile-video-play">
+                            <i class="fas fa-play"></i>
+                        </span>
+
+                        <span class="profile-video-location-badge">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ cv.location or candidate.city or "Location not added" }}
+                        </span>
                     </div>
-                    <div class="profile-video-info">
-                        <div class="profile-video-location">
-                            📍 {{ cv.location or candidate.city or "Location not added" }}
-                        </div>
-                        {% if cv.caption %}
-                        <div class="profile-video-caption">{{ cv.caption }}</div>
-                        {% endif %}
-                        {% if cv.hashtags %}
-                        <div class="profile-video-hashtags">{{ cv.hashtags }}</div>
-                        {% endif %}
-                    </div>
-                </div>
+                </button>
                 {% endfor %}
             </div>
+
             {% else %}
             <div class="empty-videos">
                 <div class="empty-videos-icon">🎥</div>
@@ -480,6 +491,30 @@
                    class="empty-video-btn">Upload Video</a>
             </div>
             {% endif %}
+        </div>
+
+        <!-- Instagram-style full-screen video viewer -->
+        <div
+            id="candidateProfileVideoModal"
+            class="candidate-profile-video-modal"
+            onclick="closeCandidateProfileVideo(event)"
+        >
+            <button
+                type="button"
+                class="candidate-profile-video-close"
+                onclick="closeCandidateProfileVideo(event)"
+                aria-label="Close video"
+            >
+                &times;
+            </button>
+
+            <video
+                id="candidateProfileVideoPlayer"
+                controls
+                playsinline
+                preload="metadata"
+                onclick="event.stopPropagation()"
+            ></video>
         </div>
 
         <div id="candidate-profile-details" class="profile-tab-panel">
@@ -888,24 +923,136 @@
 .profile-tab.active{background:#eef5ff;color:#155dcc;}
 .profile-tab-panel{display:none;}
 .profile-tab-panel.active{display:block;}
+/* Instagram-style candidate video grid */
 .profile-video-grid{
-    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:3px;
+    background:#f4f7fb;
 }
+
 .profile-video-item{
-    background:#fff;border:1px solid #e7ebf2;border-radius:18px;
-    overflow:hidden;box-shadow:0 6px 20px rgba(15,23,42,.05);
+    position:relative;
+    display:block;
+    width:100%;
+    padding:0;
+    margin:0;
+    border:0;
+    border-radius:0;
+    overflow:hidden;
+    background:#000;
+    cursor:pointer;
+    appearance:none;
 }
-.profile-video-media{background:#000;aspect-ratio:9/14;}
+
+.profile-video-media{
+    position:relative;
+    width:100%;
+    aspect-ratio:9/13;
+    background:#000;
+    overflow:hidden;
+}
+
 .profile-video-media video{
-    width:100%;height:100%;object-fit:cover;display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    pointer-events:none;
 }
-.profile-video-info{padding:11px 12px 13px;}
-.profile-video-location{
-    color:#6b7280;font-size:12px;font-weight:700;margin-bottom:6px;
+
+.profile-video-item::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        to bottom,
+        rgba(0,0,0,.08),
+        transparent 45%,
+        rgba(0,0,0,.42)
+    );
+    pointer-events:none;
 }
-.profile-video-caption{color:#253044;font-size:13px;line-height:1.45;}
-.profile-video-hashtags{
-    margin-top:6px;color:#155dcc;font-size:12px;font-weight:700;
+
+.profile-video-play{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.58);
+    color:#fff;
+    font-size:17px;
+    z-index:2;
+    box-shadow:0 4px 14px rgba(0,0,0,.28);
+}
+
+.profile-video-play i{
+    margin-left:3px;
+}
+
+.profile-video-location-badge{
+    position:absolute;
+    left:8px;
+    bottom:8px;
+    z-index:3;
+    max-width:calc(100% - 16px);
+    padding:5px 8px;
+    border-radius:999px;
+    background:rgba(0,0,0,.58);
+    color:#fff;
+    font-size:10px;
+    font-weight:700;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.profile-video-location-badge i{
+    margin-right:3px;
+}
+
+.candidate-profile-video-modal{
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.94);
+    padding:20px;
+}
+
+.candidate-profile-video-modal.show{
+    display:flex;
+}
+
+.candidate-profile-video-modal video{
+    width:min(100%,520px);
+    max-height:92vh;
+    object-fit:contain;
+    border-radius:10px;
+    background:#000;
+}
+
+.candidate-profile-video-close{
+    position:absolute;
+    top:18px;
+    right:18px;
+    width:42px;
+    height:42px;
+    border:0;
+    border-radius:50%;
+    background:rgba(255,255,255,.15);
+    color:#fff;
+    font-size:30px;
+    line-height:1;
+    z-index:2;
 }
 .empty-videos{
     background:#fff;border:1px solid #e7ebf2;border-radius:20px;
@@ -934,8 +1081,25 @@
 }
 @media(max-width:600px){
     .profile-actions-row{flex-direction:column;}
-    .profile-video-grid{grid-template-columns:1fr;}
-    .profile-video-media{aspect-ratio:9/13;}
+    .profile-video-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:2px;
+    }
+    .profile-video-media{
+        aspect-ratio:9/13;
+    }
+    .profile-video-location-badge{
+        left:5px;
+        bottom:5px;
+        max-width:calc(100% - 10px);
+        font-size:9px;
+        padding:4px 6px;
+    }
+    .profile-video-play{
+        width:38px;
+        height:38px;
+        font-size:14px;
+    }
 }
 </style>
 
@@ -951,6 +1115,76 @@ function switchCandidateProfileTab(tab,button){
     const panel=document.getElementById("candidate-profile-"+tab);
     if(panel) panel.classList.add("active");
 }
+</script>
+
+<script>
+
+function openCandidateProfileVideo(videoUrl, posterUrl){
+
+    const modal =
+        document.getElementById("candidateProfileVideoModal");
+
+    const player =
+        document.getElementById("candidateProfileVideoPlayer");
+
+    if(!modal || !player) return;
+
+    player.pause();
+    player.src = videoUrl;
+
+    if(posterUrl){
+        player.poster = posterUrl;
+    }else{
+        player.removeAttribute("poster");
+    }
+
+    modal.classList.add("show");
+    document.body.style.overflow = "hidden";
+
+    player.currentTime = 0;
+
+    const playPromise = player.play();
+
+    if(playPromise && playPromise.catch){
+        playPromise.catch(function(){});
+    }
+}
+
+function closeCandidateProfileVideo(event){
+
+    if(event){
+        event.stopPropagation();
+    }
+
+    const modal =
+        document.getElementById("candidateProfileVideoModal");
+
+    const player =
+        document.getElementById("candidateProfileVideoPlayer");
+
+    if(!modal || !player) return;
+
+    player.pause();
+    player.removeAttribute("src");
+    player.load();
+
+    modal.classList.remove("show");
+    document.body.style.overflow = "";
+}
+
+document.addEventListener("keydown", function(event){
+
+    if(event.key !== "Escape") return;
+
+    const modal =
+        document.getElementById("candidateProfileVideoModal");
+
+    if(modal && modal.classList.contains("show")){
+        closeCandidateProfileVideo();
+    }
+
+});
+
 </script>
 
 {% endblock %}
