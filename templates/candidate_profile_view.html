@@ -448,14 +448,21 @@
         <div id="candidate-profile-videos" class="profile-tab-panel active">
             {% if candidate_videos %}
             <div class="profile-video-grid">
+                {# Instagram-style grid: clicking a thumbnail opens the single post page. #}
                 {% for cv in candidate_videos %}
-                <div class="profile-video-item">
+                <a class="profile-video-item profile-video-link"
+                   href="{{ url_for('candidate_video', video_id=cv.id) }}"
+                   aria-label="Open candidate video">
                     <div class="profile-video-media">
-                        <video controls playsinline preload="metadata"
+                        <video playsinline preload="metadata"
+                               muted
                                poster="{% if cv.thumbnail %}{{ url_for('static', filename='uploads/' + cv.thumbnail) }}{% endif %}">
                             <source src="{{ url_for('static', filename='uploads/' + cv.video) }}"
                                     type="video/mp4">
                         </video>
+                        <div class="profile-video-play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
                     </div>
                     <div class="profile-video-info">
                         <div class="profile-video-location">
@@ -468,7 +475,7 @@
                         <div class="profile-video-hashtags">{{ cv.hashtags }}</div>
                         {% endif %}
                     </div>
-                </div>
+                </a>
                 {% endfor %}
             </div>
             {% else %}
@@ -895,6 +902,43 @@
     background:#fff;border:1px solid #e7ebf2;border-radius:18px;
     overflow:hidden;box-shadow:0 6px 20px rgba(15,23,42,.05);
 }
+.profile-video-link{
+    display:block;
+    color:inherit !important;
+    text-decoration:none !important;
+    cursor:pointer;
+}
+.profile-video-link:active{
+    opacity:.88;
+}
+.profile-video-media{
+    position:relative;
+}
+.profile-video-play-overlay{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .15s ease;
+}
+.profile-video-link:hover .profile-video-play-overlay{
+    opacity:1;
+}
+.profile-video-play-overlay i{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding-left:3px;
+    background:rgba(0,0,0,.55);
+    color:#fff;
+    font-size:18px;
+}
 .profile-video-media{background:#000;aspect-ratio:9/14;}
 .profile-video-media video{
     width:100%;height:100%;object-fit:cover;display:block;
@@ -959,9 +1003,22 @@
         box-shadow:none;
     }
 
-    .profile-video-media{aspect-ratio:9/13;}
+    .profile-video-media{aspect-ratio:1/1;}
 
     .profile-video-info{display:none;}
+
+    .profile-video-play-overlay{
+        opacity:1;
+        align-items:flex-end;
+        justify-content:flex-end;
+        padding:7px;
+    }
+    .profile-video-play-overlay i{
+        width:28px;
+        height:28px;
+        font-size:11px;
+        background:rgba(0,0,0,.45);
+    }
 }
 </style>
 
