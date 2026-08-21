@@ -252,6 +252,10 @@
     {% endfor %}
 </div>
 
+{% if candidate_videos %}
+    {% include "candidate_video_card.html" %}
+{% endif %}
+
 <style>
 .feed-card { background: #fff; border-radius: 16px; margin-bottom: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; }
 .feed-header { display: flex; align-items: center; gap: 12px; padding: 16px; }

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4" style="max-width:900px;">
+ <div class="d-flex justify-content-between align-items-center mb-4">
+  <div><h2 class="fw-bold mb-1">💰 Buy Credits</h2><div class="text-muted">Use paid credits to boost your candidate videos.</div></div>
+  <div class="badge bg-primary fs-6 p-3">Balance: {{ candidate.paid_credits or 0 }}</div>
+ </div>
+ <div class="row g-3">
+  {% for package in packages %}
+  <div class="col-md-4">
+   <div class="card h-100 border-0 shadow-sm rounded-4 p-3">
+    {% if package.badge %}<span class="badge bg-{{ package.color or 'primary' }} align-self-start">{{ package.badge }}</span>{% endif %}
+    <h4 class="fw-bold mt-2">{{ package.package_name }}</h4>
+    <div class="display-6 fw-bold text-primary">{{ package.credits }}</div>
+    <div class="text-muted mb-3">Paid Credits</div>
+    <div class="fs-4 fw-bold mb-2">₹{{ package.price }}</div>
+    {% if package.description %}<p class="text-muted small">{{ package.description }}</p>{% endif %}
+    <a class="btn btn-primary w-100 mt-auto" href="{{ url_for('candidate_buy_credits',package_id=package.id) }}">Buy Now</a>
+   </div>
+  </div>
+  {% endfor %}
+ </div>
+</div>
+{% endblock %}

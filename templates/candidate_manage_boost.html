@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4" style="max-width:760px;">
+ <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+  <div class="p-4 text-white" style="background:linear-gradient(135deg,#2563eb,#7c3aed);">
+   <h2 class="fw-bold mb-1">📢 Manage Video Boost</h2>
+   <p class="mb-0">Control the promotion of your candidate video.</p>
+  </div>
+  <div class="p-4">
+   <div class="row g-3 mb-4">
+    <div class="col-6"><div class="p-3 bg-light rounded-3"><small>Status</small><div class="fw-bold">{{ boost.status }}</div></div></div>
+    <div class="col-6"><div class="p-3 bg-light rounded-3"><small>Credits</small><div class="fw-bold">{{ boost.total_credits }}</div></div></div>
+    <div class="col-6"><div class="p-3 bg-light rounded-3"><small>Days</small><div class="fw-bold">{{ boost.days }}</div></div></div>
+    <div class="col-6"><div class="p-3 bg-light rounded-3"><small>Remaining</small><div class="fw-bold">{{ boost.credits_remaining }}</div></div></div>
+   </div>
+   <div class="d-flex gap-2">
+    <form method="POST" action="{{ url_for('candidate_video_boost_pause',boost_id=boost.id) }}" class="flex-fill">
+     <button class="btn btn-outline-primary w-100">{{ 'Pause' if boost.status == 'Active' else 'Resume' }}</button>
+    </form>
+    <form method="POST" action="{{ url_for('candidate_video_boost_delete',boost_id=boost.id) }}" class="flex-fill" onsubmit="return confirm('Cancel this boost?')">
+     <button class="btn btn-outline-danger w-100">Cancel Boost</button>
+    </form>
+   </div>
+   <a href="{{ url_for('candidate_video_view',video_id=video.id) }}" class="btn btn-light w-100 mt-3">Back to Video</a>
+  </div>
+ </div>
+</div>
+{% endblock %}

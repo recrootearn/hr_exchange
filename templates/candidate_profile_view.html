@@ -450,10 +450,9 @@
             <!-- Instagram-style candidate video grid -->
             <div class="profile-video-grid">
                 {% for cv in candidate_videos %}
-                <button
-                    type="button"
+                <a
+                    href="{{ url_for('candidate_video_view', video_id=cv.id) }}"
                     class="profile-video-item"
-                    onclick="openCandidateProfileVideo('{{ url_for('static', filename='uploads/' + cv.video) }}','{% if cv.thumbnail %}{{ url_for('static', filename='uploads/' + cv.thumbnail) }}{% endif %}')"
                     aria-label="Open candidate video"
                 >
                     <div class="profile-video-media">
@@ -477,8 +476,14 @@
                             <i class="fas fa-map-marker-alt"></i>
                             {{ cv.location or candidate.city or "Location not added" }}
                         </span>
+
+                        {% if cv.active_boost %}
+                        <span class="profile-video-boost-badge">
+                            📢 Promoted
+                        </span>
+                        {% endif %}
                     </div>
-                </button>
+                </a>
                 {% endfor %}
             </div>
 
@@ -491,30 +496,6 @@
                    class="empty-video-btn">Upload Video</a>
             </div>
             {% endif %}
-        </div>
-
-        <!-- Instagram-style full-screen video viewer -->
-        <div
-            id="candidateProfileVideoModal"
-            class="candidate-profile-video-modal"
-            onclick="closeCandidateProfileVideo(event)"
-        >
-            <button
-                type="button"
-                class="candidate-profile-video-close"
-                onclick="closeCandidateProfileVideo(event)"
-                aria-label="Close video"
-            >
-                &times;
-            </button>
-
-            <video
-                id="candidateProfileVideoPlayer"
-                controls
-                playsinline
-                preload="metadata"
-                onclick="event.stopPropagation()"
-            ></video>
         </div>
 
         <div id="candidate-profile-details" class="profile-tab-panel">
@@ -933,6 +914,8 @@
 
 .profile-video-item{
     position:relative;
+    text-decoration:none;
+    color:inherit;
     display:block;
     width:100%;
     padding:0;
@@ -1015,6 +998,19 @@
 
 .profile-video-location-badge i{
     margin-right:3px;
+}
+
+.profile-video-boost-badge{
+    position:absolute;
+    top:7px;
+    left:7px;
+    z-index:4;
+    padding:4px 7px;
+    border-radius:999px;
+    background:rgba(37,99,235,.92);
+    color:#fff;
+    font-size:9px;
+    font-weight:800;
 }
 
 .candidate-profile-video-modal{
@@ -1118,73 +1114,5 @@ function switchCandidateProfileTab(tab,button){
 </script>
 
 <script>
-
-function openCandidateProfileVideo(videoUrl, posterUrl){
-
-    const modal =
-        document.getElementById("candidateProfileVideoModal");
-
-    const player =
-        document.getElementById("candidateProfileVideoPlayer");
-
-    if(!modal || !player) return;
-
-    player.pause();
-    player.src = videoUrl;
-
-    if(posterUrl){
-        player.poster = posterUrl;
-    }else{
-        player.removeAttribute("poster");
-    }
-
-    modal.classList.add("show");
-    document.body.style.overflow = "hidden";
-
-    player.currentTime = 0;
-
-    const playPromise = player.play();
-
-    if(playPromise && playPromise.catch){
-        playPromise.catch(function(){});
-    }
-}
-
-function closeCandidateProfileVideo(event){
-
-    if(event){
-        event.stopPropagation();
-    }
-
-    const modal =
-        document.getElementById("candidateProfileVideoModal");
-
-    const player =
-        document.getElementById("candidateProfileVideoPlayer");
-
-    if(!modal || !player) return;
-
-    player.pause();
-    player.removeAttribute("src");
-    player.load();
-
-    modal.classList.remove("show");
-    document.body.style.overflow = "";
-}
-
-document.addEventListener("keydown", function(event){
-
-    if(event.key !== "Escape") return;
-
-    const modal =
-        document.getElementById("candidateProfileVideoModal");
-
-    if(modal && modal.classList.contains("show")){
-        closeCandidateProfileVideo();
-    }
-
-});
-
-</script>
 
 {% endblock %}

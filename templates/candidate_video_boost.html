@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.boost-wrap{max-width:900px;margin:25px auto 100px;padding:0 14px;}
+.boost-card{background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 12px 35px rgba(15,23,42,.09);}
+.boost-head{background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;padding:28px;}
+.option{border:1px solid #e5e7eb;border-radius:18px;padding:16px;margin-bottom:12px;cursor:pointer;}
+.option.active{border-color:#2563eb;background:#eff6ff;}
+.credit-balance{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:16px;padding:15px;font-weight:800;color:#166534;}
+</style>
+<div class="boost-wrap">
+ <div class="boost-card">
+  <div class="boost-head"><h2 class="fw-bold mb-1">🚀 Boost Your Video</h2><p class="mb-0">Promote this candidate video using paid credits, just like an HR post.</p></div>
+  <div class="p-4">
+   <div class="credit-balance mb-4">💰 Your paid credits: {{ candidate.paid_credits or 0 }} &nbsp; <a href="/candidate-buy-credits">Buy Credits</a></div>
+   <div class="mb-4">
+    <label class="form-label fw-bold">Promotion type</label>
+    <label class="option d-block" id="cityOption"><input type="radio" name="boost_type_radio" value="city" checked> <b>City</b><div class="small text-muted">Target selected cities</div></label>
+    <label class="option d-block" id="stateOption"><input type="radio" name="boost_type_radio" value="state"> <b>State</b><div class="small text-muted">Reach candidates in a state</div></label>
+    <label class="option d-block" id="panOption"><input type="radio" name="boost_type_radio" value="pan_india"> <b>Pan India</b><div class="small text-muted">Maximum reach</div></label>
+   </div>
+   <form method="POST" id="boostForm">
+    <input type="hidden" name="boost_type" id="boostType" value="city">
+    <div id="cityFields" class="mb-3">
+      <label class="form-label fw-bold">Cities</label>
+      <select name="cities" multiple class="form-select" size="6">
+       {% for loc in locations %}<option value="{{ loc }}">{{ loc }}</option>{% endfor %}
+      </select>
+      <small class="text-muted">Use Ctrl/long-press to select multiple cities.</small>
+    </div>
+    <div id="stateFields" class="mb-3" style="display:none;">
+      <label class="form-label fw-bold">State</label>
+      <input class="form-control" name="state" placeholder="Madhya Pradesh">
+    </div>
+    <div class="mb-4">
+      <label class="form-label fw-bold">Days</label>
+      <select name="days" class="form-select">
+       {% for d in range(settings.boost_min_days, settings.boost_max_days + 1) %}
+       <option value="{{ d }}">{{ d }} day{% if d != 1 %}s{% endif %}</option>
+       {% endfor %}
+      </select>
+    </div>
+    <button class="btn btn-primary btn-lg w-100 fw-bold">🚀 Boost Video</button>
+   </form>
+  </div>
+ </div>
+</div>
+<script>
+document.querySelectorAll('input[name="boost_type_radio"]').forEach(r=>{
+ r.addEventListener("change",()=>{
+  document.getElementById("boostType").value=r.value;
+  document.getElementById("cityFields").style.display=r.value==="city"?"block":"none";
+  document.getElementById("stateFields").style.display=r.value==="state"?"block":"none";
+ });
+});
+</script>
+{% endblock %}

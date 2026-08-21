@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4" style="max-width:760px;">
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="p-4 text-white" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
+      <h2 class="fw-bold mb-1">Edit Video Post</h2>
+      <p class="mb-0 opacity-75">Update your candidate video details.</p>
+    </div>
+    <form method="POST" class="p-4">
+      <div class="mb-3">
+        <label class="form-label fw-bold">📍 Location</label>
+        <input class="form-control form-control-lg rounded-3" name="location" maxlength="150" required value="{{ video.location or candidate.city or '' }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-bold">📝 Caption</label>
+        <textarea class="form-control rounded-3" name="caption" rows="6" maxlength="2000">{{ video.caption or '' }}</textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-bold">#️⃣ Hashtags</label>
+        <input class="form-control form-control-lg rounded-3" name="hashtags" maxlength="500" value="{{ video.hashtags or '' }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-bold">Current Video</label>
+        <video controls playsinline style="width:100%;max-height:500px;background:#000;border-radius:16px;">
+          <source src="/static/uploads/{{ video.video }}" type="video/mp4">
+        </video>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="{{ url_for('candidate_video_view',video_id=video.id) }}" class="btn btn-light flex-fill">Cancel</a>
+        <button class="btn btn-primary flex-fill fw-bold">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,519 +1,361 @@
-{# Candidate video partial.
-   IMPORTANT: this file is INCLUDED by feed/candidate_feed.
-   It must NOT extend base.html and must NOT define block content.
-#}
-
+{# Candidate video feed partial. DO NOT extend base.html. #}
 {% for cv in candidate_videos %}
+{% set is_sparked = cv.id in (sparked_candidate_video_ids|default([])) %}
+{% set active_boost = cv.active_boost if cv.active_boost is defined else None %}
 
-<div class="feed-card candidate-video-feed-card"
-     id="candidate-video-{{ cv.id }}">
+<div class="feed-card candidate-video-card" id="candidate-video-{{ cv.id }}">
 
-    <!-- HEADER -->
-    <div class="feed-header d-flex justify-content-between align-items-center">
-
-        <div class="d-flex align-items-center">
-
-            <div class="feed-avatar candidate-video-avatar">
-                {% if cv.candidate and cv.candidate.profile_photo %}
-                    <img
-                        src="/static/uploads/{{ cv.candidate.profile_photo }}"
-                        alt="{{ cv.candidate.full_name }}"
-                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
-                    >
-                {% else %}
-                    {{ cv.candidate.full_name[:1].upper()
-                       if cv.candidate and cv.candidate.full_name
-                       else 'C' }}
-                {% endif %}
-            </div>
-
-            <div class="ms-2">
-                <div class="feed-company">
-                    {% if cv.candidate %}
-                        <a
-                            href="/candidate/{{ cv.candidate.id }}"
-                            style="text-decoration:none;color:inherit;"
-                        >
-                            {{ cv.candidate.full_name }}
-                        </a>
-                    {% else %}
-                        Candidate
-                    {% endif %}
-                </div>
-
-                <div class="feed-meta">
-                    📍 {{ cv.location or
-                        (cv.candidate.location
-                         if cv.candidate and cv.candidate.location
-                         else 'Location not specified') }}
-                </div>
-            </div>
-
-        </div>
-
-        <!-- THREE DOT REPORT MENU -->
-        <div class="dropdown ms-auto">
-            <button
-                class="btn btn-sm border-0 bg-transparent"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-            >
-                <i class="fas fa-ellipsis-v"></i>
-            </button>
-
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <button
-                        class="dropdown-item text-danger"
-                        type="button"
-                        onclick="openCandidateVideoReport({{ cv.id }})"
-                    >
-                        🚩 Report
-                    </button>
-                </li>
-            </ul>
-        </div>
-
-    </div>
-
-    <!-- VIDEO -->
-    <div class="feed-media reel-media video-container">
-
-        <video
-            class="feed-image feed-video candidate-feed-video"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="metadata"
-            {% if cv.thumbnail %}
-            poster="/static/uploads/{{ cv.thumbnail }}"
+    <div class="feed-header">
+        <div class="feed-avatar" style="overflow:hidden;">
+            {% if cv.candidate and cv.candidate.profile_photo %}
+                <img src="/static/uploads/{{ cv.candidate.profile_photo }}"
+                     style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
+                     alt="">
+            {% else %}
+                {{ cv.candidate.full_name[:1].upper() if cv.candidate and cv.candidate.full_name else 'C' }}
             {% endif %}
-            onclick="openMedia(this,'/static/uploads/{{ cv.video }}','video')"
-        >
-            <source
-                src="/static/uploads/{{ cv.video }}"
-                type="video/mp4"
-            >
-        </video>
+        </div>
 
-        <button
-            class="mute-btn"
-            type="button"
-            onclick="toggleMute(event,this)"
-        >
-            🔇
-        </button>
+        <div>
+            <div class="feed-company">
+                {{ cv.candidate.full_name if cv.candidate else "Candidate" }}
+            </div>
+            <div class="feed-meta">📍 {{ cv.location or "Location not specified" }}</div>
+        </div>
 
+        <div class="ms-auto d-flex align-items-center gap-2">
+            {% if active_boost %}
+            <span class="promoted-badge">📢 Promoted</span>
+            {% endif %}
+
+            <div class="dropdown">
+                <button class="btn btn-sm border-0" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end">
+                    {% if session.get("candidate_id") == cv.candidate_id %}
+                        {% if active_boost %}
+                        <li>
+                            <a class="dropdown-item"
+                               href="{{ url_for('candidate_video_manage_boost', video_id=cv.id) }}">
+                                <i class="fas fa-chart-line me-2"></i> Manage Boost
+                            </a>
+                        </li>
+                        {% else %}
+                        <li>
+                            <a class="dropdown-item"
+                               href="{{ url_for('candidate_video_edit', video_id=cv.id) }}">
+                                <i class="fas fa-pen me-2"></i> Edit Post
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-danger"
+                               href="{{ url_for('candidate_video_delete', video_id=cv.id) }}"
+                               onclick="return confirm('Delete this video post?')">
+                                <i class="fas fa-trash me-2"></i> Delete Post
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                               href="{{ url_for('candidate_video_boost', video_id=cv.id) }}">
+                                <i class="fas fa-rocket me-2"></i> Boost Post
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% else %}
+                    <li>
+                        <button class="dropdown-item text-danger" type="button"
+                                onclick="openCandidateVideoReport({{ cv.id }})">
+                            <i class="fas fa-flag me-2"></i> Report Post
+                        </button>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
     </div>
 
-    <!-- ACTIONS -->
-    <div class="feed-buttons">
+    <div class="feed-media reel-media video-container">
+        <video class="feed-image feed-video"
+               autoplay muted loop playsinline preload="metadata"
+               poster="{% if cv.thumbnail %}/static/uploads/{{ cv.thumbnail }}{% endif %}"
+               onclick="openMedia(this,'/static/uploads/{{ cv.video }}','video')">
+            <source src="/static/uploads/{{ cv.video }}" type="video/mp4">
+        </video>
+        <button class="mute-btn" type="button"
+                onclick="toggleMute(event,this)">🔇</button>
+    </div>
 
+    <div class="feed-buttons">
         <div class="video-actions">
 
-            <!-- SPARK -->
-            <button
-                id="candidate-spark-btn-{{ cv.id }}"
-                class="action-btn spark-btn
-                       {% if current_user.is_authenticated
-                             and cv.sparks
-                             and current_user.id in cv.sparks %}
-                       sparked
-                       {% endif %}"
-                type="button"
-                onclick="toggleCandidateVideoSpark({{ cv.id }}, this)"
-                aria-label="Spark"
-            >
+            <button id="candidate-spark-btn-{{ cv.id }}"
+                    class="action-btn spark-btn {% if is_sparked %}sparked{% endif %}"
+                    type="button"
+                    onclick="toggleCandidateVideoSpark({{ cv.id }},this)"
+                    aria-label="Spark">
                 <i class="fas fa-bolt"></i>
             </button>
 
-            <span
-                id="candidate-spark-count-{{ cv.id }}"
-                class="action-count"
-            >
-                {{ cv.sparks|length if cv.sparks else 0 }}
+            <span id="candidate-spark-count-{{ cv.id }}" class="action-count">
+                {{ cv.sparks|length }}
             </span>
 
-            <!-- COMMENT -->
-            <button
-                class="action-btn"
-                type="button"
-                onclick="openCandidateVideoComments({{ cv.id }})"
-                aria-label="Comment"
-            >
+            <button class="action-btn" type="button"
+                    onclick="openCandidateVideoComments({{ cv.id }})"
+                    aria-label="Comment">
                 <i class="far fa-comment"></i>
             </button>
 
-            <span
-                id="candidate-comment-count-{{ cv.id }}"
-                class="action-count"
-            >
-                {{ cv.comments|length if cv.comments else 0 }}
+            <span id="candidate-comment-count-{{ cv.id }}" class="action-count">
+                {{ cv.comments|length }}
             </span>
 
-            <!-- SHARE -->
-            <button
-                class="action-btn"
-                type="button"
-                onclick="shareCandidateVideo({{ cv.id }})"
-                style="color:#2563eb;"
-                aria-label="Share"
-            >
+            <button class="action-btn" type="button"
+                    style="color:#2563eb;"
+                    onclick="shareCandidateVideo({{ cv.id }})"
+                    aria-label="Share">
                 <i class="fas fa-paper-plane"></i>
             </button>
-
         </div>
-
     </div>
 
-    <!-- CAPTION / HASHTAGS -->
     {% if cv.caption or cv.hashtags %}
     <div class="job-details-wrapper">
-
         {% if cv.caption %}
-        <div class="description-text">
-            {{ cv.caption }}
-        </div>
+        <div class="description-text">{{ cv.caption }}</div>
         {% endif %}
-
         {% if cv.hashtags %}
-        <div class="candidate-video-hashtags">
-            {{ cv.hashtags }}
-        </div>
+        <div class="candidate-video-hashtags">{{ cv.hashtags }}</div>
         {% endif %}
-
     </div>
     {% endif %}
-
 </div>
-
 {% endfor %}
 
-
-<!-- Candidate video report modal -->
-<div
-    class="modal fade"
-    id="candidateVideoReportModal"
-    tabindex="-1"
-    aria-hidden="true"
->
-    <div class="modal-dialog">
+<!-- Shared candidate-video comments/report modals -->
+<div class="modal fade" id="candidateVideoCommentsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-
             <div class="modal-header">
-                <h5 class="modal-title">Report Video</h5>
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                ></button>
+                <h5 class="modal-title">Comments</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
             <div class="modal-body">
+                <div id="candidateVideoCommentsList"></div>
+            </div>
+            <div class="modal-footer">
+                <div style="width:100%;display:flex;gap:8px;">
+                    <input id="candidateVideoCommentInput"
+                           class="form-control"
+                           maxlength="1000"
+                           placeholder="Write a comment...">
+                    <button class="btn btn-primary" type="button"
+                            onclick="submitCandidateVideoComment()">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                <input
-                    type="hidden"
-                    id="candidateVideoReportId"
-                >
-
-                <label class="form-label">Reason</label>
-
-                <select
-                    class="form-select"
-                    id="candidateVideoReportReason"
-                >
+<div class="modal fade" id="candidateVideoReportModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Report Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="candidateVideoReportId">
+                <select id="candidateVideoReportReason" class="form-select mb-3">
                     <option>Spam</option>
+                    <option>Harassment</option>
+                    <option>Hate Speech</option>
                     <option>Violence</option>
                     <option>Nudity</option>
-                    <option>Hate Speech</option>
                     <option>Scam / Fraud</option>
-                    <option>Harassment</option>
                     <option>Copyright</option>
                     <option>Other</option>
                 </select>
-
-                <label class="form-label mt-3">Comment</label>
-
-                <textarea
-                    id="candidateVideoReportComment"
-                    class="form-control"
-                    rows="4"
-                    placeholder="Tell us more..."
-                ></textarea>
-
+                <textarea id="candidateVideoReportComment" class="form-control"
+                          rows="4" placeholder="Tell us more..."></textarea>
             </div>
-
             <div class="modal-footer">
-
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                >
-                    Cancel
-                </button>
-
-                <button
-                    type="button"
-                    class="btn btn-danger"
-                    onclick="submitCandidateVideoReport()"
-                >
+                <button class="btn btn-danger" type="button"
+                        onclick="submitCandidateVideoReport()">
                     Submit Report
                 </button>
-
             </div>
-
         </div>
     </div>
 </div>
 
-
 <style>
-.candidate-video-feed-card{
-    position:relative;
+.candidate-video-card .promoted-badge{
+    background:#2563eb;
+    color:#fff;
+    padding:5px 9px;
+    border-radius:999px;
+    font-size:10px;
+    font-weight:800;
 }
-
-.candidate-video-avatar{
-    overflow:hidden;
-    background:#eef3fb;
-}
-
-.candidate-feed-video{
-    background:#000;
-}
-
 .candidate-video-hashtags{
-    margin-top:8px;
     color:#2563eb;
     font-weight:700;
-    font-size:14px;
-    white-space:pre-wrap;
+    margin-top:7px;
 }
 </style>
 
-
 <script>
+let candidateVideoCommentTarget = null;
+
 async function toggleCandidateVideoSpark(videoId, button){
-
     try{
-
-        const response = await fetch(
-            "/candidate-video-spark/" + videoId,
-            {
-                method:"POST",
-                headers:{
-                    "X-Requested-With":"XMLHttpRequest"
-                }
-            }
-        );
-
-        const data = await response.json();
+        const r = await fetch("/candidate-video-spark/"+videoId,{
+            method:"POST",
+            headers:{"X-Requested-With":"XMLHttpRequest"}
+        });
+        const data = await r.json();
 
         if(!data.success){
             alert(data.message || "Please login first.");
             return;
         }
 
-        const count =
-            document.getElementById(
-                "candidate-spark-count-" + videoId
-            );
+        const count=document.getElementById("candidate-spark-count-"+videoId);
+        if(count) count.textContent=data.count;
 
-        if(count){
-            count.textContent = data.count;
-        }
-
-        button.classList.toggle(
-            "sparked",
-            !!data.sparked
-        );
-
-    }catch(error){
-
-        console.error(
-            "Candidate video spark error:",
-            error
-        );
-
+        button.classList.toggle("sparked", !!data.sparked);
+    }catch(e){
+        console.error(e);
+        alert("Could not update Spark.");
     }
-
 }
 
-
-async function shareCandidateVideo(videoId){
-
-    const shareUrl =
-        window.location.origin +
-        "/candidate-feed#candidate-video-" +
-        videoId;
-
+function shareCandidateVideo(videoId){
+    const url=window.location.origin+"/candidate-video/"+videoId;
     if(navigator.share){
-
-        try{
-
-            await navigator.share({
-                title:"RecrootEarn Candidate Video",
-                url:shareUrl
-            });
-
-        }catch(error){
-            // User cancelled sharing.
-        }
-
+        navigator.share({title:"RecrootEarn Candidate Video",url:url}).catch(()=>{});
     }else{
-
-        try{
-
-            await navigator.clipboard.writeText(
-                shareUrl
-            );
-
-            alert("Video link copied.");
-
-        }catch(error){
-
-            window.prompt(
-                "Copy this video link:",
-                shareUrl
-            );
-
-        }
-
+        navigator.clipboard.writeText(url)
+            .then(()=>alert("Video link copied."))
+            .catch(()=>window.prompt("Copy video link:",url));
     }
-
 }
 
+async function openCandidateVideoComments(videoId){
+    candidateVideoCommentTarget=videoId;
+    const list=document.getElementById("candidateVideoCommentsList");
+    list.innerHTML='<div class="text-center text-muted py-4">Loading comments...</div>';
 
-function openCandidateVideoReport(videoId){
-
-    const id =
-        document.getElementById(
-            "candidateVideoReportId"
-        );
-
-    if(id){
-        id.value = videoId;
-    }
-
-    const modalElement =
-        document.getElementById(
-            "candidateVideoReportModal"
-        );
-
-    if(modalElement && window.bootstrap){
-
-        bootstrap.Modal
-            .getOrCreateInstance(modalElement)
-            .show();
-
-    }
-
-}
-
-
-async function submitCandidateVideoReport(){
-
-    const videoId =
-        document.getElementById(
-            "candidateVideoReportId"
-        ).value;
-
-    const reason =
-        document.getElementById(
-            "candidateVideoReportReason"
-        ).value;
-
-    const comment =
-        document.getElementById(
-            "candidateVideoReportComment"
-        ).value;
+    const modal=document.getElementById("candidateVideoCommentsModal");
+    bootstrap.Modal.getOrCreateInstance(modal).show();
 
     try{
+        const r=await fetch("/candidate-video-comments/"+videoId);
+        const data=await r.json();
 
-        const response = await fetch(
-            "/candidate-video-report/" + videoId,
+        if(!data.success || !data.comments.length){
+            list.innerHTML='<div class="text-center text-muted py-4">No comments yet. Be the first to comment.</div>';
+        }else{
+            list.innerHTML=data.comments.map(c=>`
+                <div style="display:flex;gap:10px;padding:11px 0;border-bottom:1px solid #edf0f5;">
+                    <div style="width:36px;height:36px;border-radius:50%;background:#eef4ff;display:flex;align-items:center;justify-content:center;font-weight:800;">
+                        ${(c.name||"U").charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                        <div style="font-weight:800;">${escapeCandidateVideoHtml(c.name)}</div>
+                        <div style="color:#374151;">${escapeCandidateVideoHtml(c.comment)}</div>
+                        <small class="text-muted">${escapeCandidateVideoHtml(c.created_at)}</small>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        const count=document.getElementById("candidate-comment-count-"+videoId);
+        if(count) count.textContent=data.count;
+    }catch(e){
+        list.innerHTML='<div class="text-center text-danger py-4">Unable to load comments.</div>';
+    }
+}
+
+async function submitCandidateVideoComment(){
+    if(!candidateVideoCommentTarget) return;
+    const input=document.getElementById("candidateVideoCommentInput");
+    const comment=input.value.trim();
+    if(!comment) return;
+
+    const body=new URLSearchParams();
+    body.set("comment",comment);
+
+    try{
+        const r=await fetch(
+            "/candidate-video-comment/"+candidateVideoCommentTarget,
             {
                 method:"POST",
                 headers:{
-                    "Content-Type":
-                        "application/x-www-form-urlencoded",
+                    "Content-Type":"application/x-www-form-urlencoded",
                     "X-Requested-With":"XMLHttpRequest"
                 },
-                body:
-                    "reason=" +
-                    encodeURIComponent(reason) +
-                    "&comment=" +
-                    encodeURIComponent(comment)
+                body:body.toString()
             }
         );
+        const data=await r.json();
 
-        const data = await response.json();
-
-        if(data.success){
-
-            const modalElement =
-                document.getElementById(
-                    "candidateVideoReportModal"
-                );
-
-            if(modalElement && window.bootstrap){
-
-                bootstrap.Modal
-                    .getOrCreateInstance(
-                        modalElement
-                    )
-                    .hide();
-
-            }
-
-            alert("Report submitted successfully.");
-
-        }else{
-
-            alert(
-                data.message ||
-                "Unable to submit report."
-            );
-
+        if(!data.success){
+            alert(data.message || "Unable to comment.");
+            return;
         }
 
-    }catch(error){
-
-        console.error(
-            "Candidate video report error:",
-            error
-        );
-
-        alert("Unable to submit report.");
-
+        input.value="";
+        const count=document.getElementById("candidate-comment-count-"+candidateVideoCommentTarget);
+        if(count) count.textContent=data.count;
+        await openCandidateVideoComments(candidateVideoCommentTarget);
+    }catch(e){
+        alert("Unable to comment.");
     }
-
 }
 
+function openCandidateVideoReport(videoId){
+    document.getElementById("candidateVideoReportId").value=videoId;
+    bootstrap.Modal.getOrCreateInstance(
+        document.getElementById("candidateVideoReportModal")
+    ).show();
+}
 
-function openCandidateVideoComments(videoId){
+async function submitCandidateVideoReport(){
+    const id=document.getElementById("candidateVideoReportId").value;
+    const body=new URLSearchParams();
+    body.set("reason",document.getElementById("candidateVideoReportReason").value);
+    body.set("comment",document.getElementById("candidateVideoReportComment").value);
 
-    /*
-      The existing feed comment system is job-based.
-      Candidate-video comments need their own backend endpoint.
-      If that endpoint is not present yet, show a clear message
-      rather than breaking the whole feed.
-    */
+    const r=await fetch("/candidate-video-report/"+id,{
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:body.toString()
+    });
+    const data=await r.json();
 
-    if(typeof window.openCandidateVideoCommentsModal === "function"){
-
-        window.openCandidateVideoCommentsModal(videoId);
-
-        return;
-
+    if(data.success){
+        bootstrap.Modal.getOrCreateInstance(
+            document.getElementById("candidateVideoReportModal")
+        ).hide();
+        alert("Report submitted.");
+    }else{
+        alert(data.message || "Unable to report.");
     }
+}
 
-    alert(
-        "Candidate video comments are not connected yet."
-    );
-
+function escapeCandidateVideoHtml(value){
+    return String(value||"")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
 }
 </script>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Buy RecrootEarn Credits</title>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f7fb;margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;}
+.card{background:#fff;width:min(430px,92vw);padding:30px;border-radius:24px;box-shadow:0 15px 45px rgba(15,23,42,.12);text-align:center;}
+.amount{font-size:42px;font-weight:800;color:#2563eb;margin:12px 0;}
+button{width:100%;border:0;border-radius:14px;padding:15px;background:#2563eb;color:#fff;font-size:17px;font-weight:800;}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>💰 Buy Paid Credits</h2>
+<p>{{ package.package_name }}</p>
+<div class="amount">₹{{ amount }}</div>
+<p>{{ credits }} paid credits will be added to your candidate account after successful payment.</p>
+<button id="payBtn">Pay Securely</button>
+</div>
+<script>
+const options={
+ key:"{{ razorpay_key }}",
+ amount:{{ order.amount }},
+ currency:"INR",
+ name:"RecrootEarn",
+ description:"{{ package.package_name }}",
+ order_id:"{{ order.id }}",
+ handler:function(response){
+  const q=new URLSearchParams({
+   payment_id:response.razorpay_payment_id,
+   order_id:response.razorpay_order_id,
+   signature:response.razorpay_signature
+  });
+  window.location.href="/candidate-payment-success?"+q.toString();
+ },
+ theme:{color:"#2563eb"}
+};
+document.getElementById("payBtn").onclick=function(){
+ new Razorpay(options).open();
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.candidate-post-page{max-width:760px;margin:20px auto 100px;padding:0 12px;}
+.candidate-post-card{background:#fff;border-radius:18px;overflow:hidden;border:1px solid #e5e7eb;box-shadow:0 8px 25px rgba(15,23,42,.08);}
+.candidate-post-header{display:flex;align-items:center;padding:15px;gap:12px;}
+.candidate-post-avatar{width:46px;height:46px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;}
+.candidate-post-avatar img{width:100%;height:100%;object-fit:cover;}
+.candidate-post-name{font-weight:800;color:#111827;}
+.candidate-post-location{font-size:13px;color:#6b7280;margin-top:2px;}
+.candidate-post-media{background:#000;aspect-ratio:9/16;position:relative;}
+.candidate-post-media video{width:100%;height:100%;object-fit:contain;display:block;}
+.candidate-post-actions{display:flex;align-items:center;gap:5px;padding:12px 15px;}
+.candidate-post-actions button{border:0;background:transparent;font-size:25px;padding:6px 9px;cursor:pointer;}
+.spark-btn{color:#9ca3af!important;}
+.spark-btn.sparked{color:#FFC107!important;filter:drop-shadow(0 0 5px rgba(255,193,7,.5));}
+.action-count{font-weight:700;font-size:14px;margin-right:8px;}
+.candidate-post-body{padding:0 15px 18px;}
+.candidate-post-caption{font-size:15px;line-height:1.55;color:#253044;}
+.candidate-post-tags{color:#2563eb;font-weight:700;margin-top:7px;}
+.owner-menu .dropdown-item{font-weight:600;}
+.promoted-label{display:inline-block;background:#2563eb;color:#fff;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:800;}
+</style>
+
+<div class="candidate-post-page">
+    <div class="candidate-post-card">
+
+        <div class="candidate-post-header">
+            <div class="candidate-post-avatar">
+                {% if video.candidate and video.candidate.profile_photo %}
+                    <img src="/static/uploads/{{ video.candidate.profile_photo }}" alt="">
+                {% else %}
+                    {{ video.candidate.full_name[:1].upper() if video.candidate else 'C' }}
+                {% endif %}
+            </div>
+
+            <div>
+                <div class="candidate-post-name">
+                    {{ video.candidate.full_name if video.candidate else "Candidate" }}
+                </div>
+                <div class="candidate-post-location">
+                    📍 {{ video.location or "Location not specified" }}
+                </div>
+            </div>
+
+            <div class="ms-auto d-flex align-items-center gap-2">
+                {% if active_boost %}
+                    <span class="promoted-label">📢 Promoted</span>
+                {% endif %}
+
+                <div class="dropdown owner-menu">
+                    <button class="btn btn-sm border-0" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        {% if is_owner %}
+                            <li><a class="dropdown-item" href="{{ url_for('candidate_video_edit',video_id=video.id) }}"><i class="fas fa-pen me-2"></i>Edit</a></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('candidate_video_delete',video_id=video.id) }}" onclick="return confirm('Delete this post?')"><i class="fas fa-trash me-2"></i>Delete</a></li>
+                            {% if active_boost %}
+                            <li><a class="dropdown-item" href="{{ url_for('candidate_video_manage_boost',video_id=video.id) }}"><i class="fas fa-chart-line me-2"></i>Manage Boost</a></li>
+                            {% else %}
+                            <li><a class="dropdown-item" href="{{ url_for('candidate_video_boost',video_id=video.id) }}"><i class="fas fa-rocket me-2"></i>Boost</a></li>
+                            {% endif %}
+                        {% else %}
+                            <li><button class="dropdown-item text-danger" onclick="openPostReport()"><i class="fas fa-flag me-2"></i>Report</button></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="candidate-post-media">
+            <video controls playsinline autoplay muted loop
+                   poster="{% if video.thumbnail %}/static/uploads/{{ video.thumbnail }}{% endif %}">
+                <source src="/static/uploads/{{ video.video }}" type="video/mp4">
+            </video>
+        </div>
+
+        <div class="candidate-post-actions">
+            <button id="postSparkBtn" class="spark-btn {% if sparked %}sparked{% endif %}"
+                    onclick="togglePostSpark()">
+                <i class="fas fa-bolt"></i>
+            </button>
+            <span id="postSparkCount" class="action-count">{{ video.sparks|length }}</span>
+
+            <button onclick="openPostComments()"><i class="far fa-comment"></i></button>
+            <span id="postCommentCount" class="action-count">{{ video.comments|length }}</span>
+
+            <button onclick="sharePost()" style="color:#2563eb;"><i class="fas fa-paper-plane"></i></button>
+        </div>
+
+        {% if video.caption or video.hashtags %}
+        <div class="candidate-post-body">
+            {% if video.caption %}<div class="candidate-post-caption">{{ video.caption }}</div>{% endif %}
+            {% if video.hashtags %}<div class="candidate-post-tags">{{ video.hashtags }}</div>{% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Comments -->
+<div class="modal fade" id="postCommentsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Comments</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="postCommentsList"></div>
+            <div class="modal-footer">
+                <div style="width:100%;display:flex;gap:8px;">
+                    <input id="postCommentInput" class="form-control" maxlength="1000" placeholder="Write a comment...">
+                    <button class="btn btn-primary" onclick="sendPostComment()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="postReportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">Report Post</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <select id="postReportReason" class="form-select mb-3">
+                    <option>Spam</option><option>Harassment</option><option>Hate Speech</option>
+                    <option>Violence</option><option>Nudity</option><option>Scam / Fraud</option>
+                    <option>Copyright</option><option>Other</option>
+                </select>
+                <textarea id="postReportComment" class="form-control" rows="4"></textarea>
+            </div>
+            <div class="modal-footer"><button class="btn btn-danger" onclick="sendPostReport()">Submit Report</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const candidatePostId={{ video.id }};
+
+async function togglePostSpark(){
+    const btn=document.getElementById("postSparkBtn");
+    const r=await fetch("/candidate-video-spark/"+candidatePostId,{method:"POST"});
+    const data=await r.json();
+    if(!data.success){alert(data.message||"Please login.");return;}
+    btn.classList.toggle("sparked",!!data.sparked);
+    document.getElementById("postSparkCount").textContent=data.count;
+}
+async function openPostComments(){
+    const modal=bootstrap.Modal.getOrCreateInstance(document.getElementById("postCommentsModal"));
+    modal.show();
+    const list=document.getElementById("postCommentsList");
+    list.innerHTML='<div class="text-center text-muted py-4">Loading comments...</div>';
+    const r=await fetch("/candidate-video-comments/"+candidatePostId);
+    const data=await r.json();
+    if(!data.comments.length){list.innerHTML='<div class="text-center text-muted py-4">No comments yet.</div>';return;}
+    list.innerHTML=data.comments.map(c=>`
+        <div style="padding:11px 0;border-bottom:1px solid #eee;">
+            <b>${safe(c.name)}</b><div>${safe(c.comment)}</div><small class="text-muted">${safe(c.created_at)}</small>
+        </div>`).join("");
+    document.getElementById("postCommentCount").textContent=data.count;
+}
+async function sendPostComment(){
+    const input=document.getElementById("postCommentInput");
+    const comment=input.value.trim(); if(!comment)return;
+    const r=await fetch("/candidate-video-comment/"+candidatePostId,{
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:"comment="+encodeURIComponent(comment)
+    });
+    const data=await r.json();
+    if(!data.success){alert(data.message||"Unable to comment.");return;}
+    input.value="";
+    openPostComments();
+}
+function sharePost(){
+    const url=location.origin+"/candidate-video/"+candidatePostId;
+    if(navigator.share) navigator.share({title:"RecrootEarn Candidate Video",url}).catch(()=>{});
+    else navigator.clipboard.writeText(url).then(()=>alert("Link copied."));
+}
+function openPostReport(){bootstrap.Modal.getOrCreateInstance(document.getElementById("postReportModal")).show();}
+async function sendPostReport(){
+    const body=new URLSearchParams();
+    body.set("reason",document.getElementById("postReportReason").value);
+    body.set("comment",document.getElementById("postReportComment").value);
+    const r=await fetch("/candidate-video-report/"+candidatePostId,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:body.toString()});
+    const data=await r.json();
+    if(data.success){bootstrap.Modal.getOrCreateInstance(document.getElementById("postReportModal")).hide();alert("Report submitted.");}
+    else alert(data.message||"Unable to report.");
+}
+function safe(v){return String(v||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
+</script>
+{% endblock %}
