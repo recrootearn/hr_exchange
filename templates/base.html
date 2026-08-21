@@ -1538,6 +1538,14 @@ body{
     Wallet
 </a>
 
+<a href="/candidate-buy-credits">
+    <i class="fas fa-coins"></i>
+    Buy Credits
+    {% if candidate_paid_credits is defined %}
+        <span style="margin-left:auto;font-size:12px;font-weight:800;color:#dbeafe;">{{ candidate_paid_credits }}</span>
+    {% endif %}
+</a>
+
 <div class="more-section">
     <div class="more-items">
         <a href="/candidate-general-info">
