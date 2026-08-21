@@ -421,14 +421,21 @@
             </div>
 
             <div class="profile-actions-row">
-                <a href="{{ url_for('edit_candidate_profile') }}"
-                   class="profile-action-white">
-                    ✏ Edit Profile
-                </a>
-                <a href="{{ url_for('candidate_post_video') }}"
-                   class="profile-action-white profile-action-video">
-                    🎥 Upload Video
-                </a>
+                {% if is_owner %}
+                    <a href="{{ url_for('edit_candidate_profile') }}"
+                       class="profile-action-white">
+                        ✏ Edit Profile
+                    </a>
+                    <a href="{{ url_for('candidate_post_video') }}"
+                       class="profile-action-white profile-action-video">
+                        🎥 Upload Video
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('follow_candidate', id=candidate.id) }}"
+                       class="profile-action-white profile-action-video">
+                        {% if is_following %}✓ Following{% else %}+ Follow{% endif %}
+                    </a>
+                {% endif %}
             </div>
         </div>
 
@@ -483,8 +490,10 @@
                 <div class="empty-videos-icon">🎥</div>
                 <h3>No videos yet</h3>
                 <p>Upload your first video to showcase yourself to recruiters.</p>
+                {% if is_owner %}
                 <a href="{{ url_for('candidate_post_video') }}"
                    class="empty-video-btn">Upload Video</a>
+                {% endif %}
             </div>
             {% endif %}
         </div>
@@ -779,6 +788,7 @@
 
             </div>
 
+            {% if is_owner or contact_unlocked %}
             <a
             href="{{ url_for('static', filename='uploads/' + candidate.resume_file) }}"
             target="_blank"
@@ -792,12 +802,28 @@
             justify-content:center;
             font-weight:700;
             ">
-
                 <i class="fas fa-download me-2"></i>
-
                 Download Resume
-
             </a>
+            {% else %}
+            <a
+            href="{{ url_for('unlock_contact', id=candidate.id) }}"
+            class="btn btn-success"
+            style="
+            min-width:220px;
+            height:48px;
+            border-radius:12px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:700;
+            background:#0b5ed7;
+            border-color:#0b5ed7;
+            ">
+                <i class="fas fa-lock me-2"></i>
+                Unlock Resume · 2 Paid Credits
+            </a>
+            {% endif %}
 
         </div>
 
