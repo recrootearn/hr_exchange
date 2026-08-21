@@ -12514,6 +12514,15 @@ def follow_candidate(id):
 @app.route('/unlock-contact/<int:id>')
 @login_required
 def unlock_contact(id):
+    # SECURITY: CANDIDATE ACCOUNTS CANNOT UNLOCK
+    # This check is server-side, before any credit deduction.
+    if session.get('candidate_id') is not None:
+        flash(
+            "Only HR accounts can unlock candidate resumes.",
+            "warning"
+        )
+        return redirect(request.referrer or "/discover-hr")
+
 
     settings = get_business_settings()
 
@@ -15417,6 +15426,15 @@ def bulk_upload():
 @app.route('/unlock/<int:id>')
 @login_required
 def unlock(id):
+    # SECURITY: CANDIDATE ACCOUNTS CANNOT UNLOCK
+    # This check is server-side, before any credit deduction.
+    if session.get('candidate_id') is not None:
+        flash(
+            "Only HR accounts can unlock candidate resumes.",
+            "warning"
+        )
+        return redirect(request.referrer or "/discover-hr")
+
 
     candidate = Candidate.query.get_or_404(id)
 
