@@ -4,65 +4,227 @@
 
 <style>
 .candidate-video-wrap{
-    max-width:720px;
-    margin:30px auto 60px;
-    padding:0 16px;
+    max-width:850px;
+    margin:20px auto 100px;
+    padding:12px;
 }
+
 .candidate-video-card{
     background:#fff;
-    border:1px solid #e8edf5;
-    border-radius:22px;
-    padding:26px;
-    box-shadow:0 10px 35px rgba(15,23,42,.07);
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
 }
-.candidate-video-title{
-    font-size:25px;
+
+.candidate-video-header{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:#fff;
+    padding:32px 20px;
+    text-align:center;
+}
+
+.candidate-video-header h2{
+    font-size:32px;
     font-weight:800;
-    color:#172033;
+    margin:0;
 }
-.candidate-video-subtitle{
-    color:#6b7280;
-    margin-top:7px;
+
+.candidate-video-header p{
+    margin-top:8px;
+    opacity:.9;
 }
+
+.candidate-video-section{
+    padding:22px;
+    border-bottom:1px solid #eef2f7;
+}
+
+.candidate-video-section-title{
+    font-size:22px;
+    font-weight:700;
+    color:#111827;
+    margin-bottom:18px;
+}
+
 .video-field{
-    margin-top:20px;
+    margin-bottom:22px;
 }
+
 .video-field label{
     display:block;
     font-weight:700;
-    color:#253044;
+    color:#374151;
     margin-bottom:8px;
 }
+
 .video-field input,
 .video-field textarea{
     width:100%;
-    border:1px solid #dfe5ee;
-    border-radius:13px;
-    padding:13px 14px;
+    border:1px solid #d7dce5;
+    border-radius:16px;
+    padding:14px 16px;
     outline:none;
+    box-sizing:border-box;
 }
+
+.video-field input:focus,
+.video-field textarea:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 .2rem rgba(37,99,235,.15);
+}
+
 .video-field textarea{
-    min-height:120px;
-    resize:vertical;
+    min-height:150px;
+    resize:none;
 }
+
 .video-help{
     margin-top:7px;
     color:#7a8494;
     font-size:13px;
 }
+
+.upload-box{
+    border:2px dashed #2563eb;
+    border-radius:18px;
+    padding:35px 20px;
+    text-align:center;
+    cursor:pointer;
+    color:#2563eb;
+    font-weight:700;
+    background:#fafcff;
+    transition:.2s;
+}
+
+.upload-box:hover{
+    background:#f7faff;
+}
+
+.upload-box.selected{
+    border-style:solid;
+    background:#f7faff;
+}
+
+#preview-container{
+    margin-top:20px;
+}
+
+#preview-container video{
+    width:100%;
+    max-height:600px;
+    border-radius:18px;
+    background:#000;
+    display:block;
+}
+
+.upload-progress-box{
+    display:none;
+    margin:0 22px 22px;
+    padding:16px;
+    border-radius:16px;
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+}
+
+.upload-progress-label{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-weight:700;
+    color:#374151;
+    margin-bottom:9px;
+}
+
+.upload-progress-track{
+    width:100%;
+    height:12px;
+    background:#e5e7eb;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.upload-progress-bar{
+    width:0%;
+    height:100%;
+    background:linear-gradient(90deg,#2563eb,#1d4ed8);
+    border-radius:20px;
+    transition:width .15s linear;
+}
+
+.upload-status{
+    margin-top:8px;
+    color:#64748b;
+    font-size:13px;
+}
+
+.policy-box{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    background:#f8fafc;
+    border:1px solid #dbe4f0;
+    border-radius:18px;
+    padding:16px;
+}
+
+.policy-box input{
+    width:22px;
+    height:22px;
+    margin-top:2px;
+    flex-shrink:0;
+}
+
+.policy-box label{
+    margin:0;
+    font-size:14px;
+    line-height:1.65;
+    color:#374151;
+}
+
 .video-submit{
     width:100%;
-    margin-top:22px;
-    border:0;
-    border-radius:13px;
-    padding:14px;
-    background:#0b5ed7;
+    height:58px;
+    border:none;
+    border-radius:18px;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
     color:#fff;
-    font-weight:800;
-    font-size:15px;
+    font-size:18px;
+    font-weight:700;
+    margin-top:20px;
 }
-.video-submit:hover{
-    opacity:.94;
+
+.video-submit:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+.video-submit.uploading{
+    pointer-events:none;
+}
+
+@media (max-width:768px){
+    .content{
+        padding:0 !important;
+    }
+
+    .candidate-video-wrap{
+        margin:0 auto 100px;
+        padding:0;
+        max-width:100%;
+    }
+
+    .candidate-video-card{
+        border-radius:0;
+        box-shadow:none;
+    }
+
+    .candidate-video-header{
+        padding:28px 18px;
+    }
+
+    .candidate-video-header h2{
+        font-size:27px;
+    }
 }
 </style>
 
@@ -70,104 +232,573 @@
 
     <div class="candidate-video-card">
 
-        <div class="candidate-video-title">
-            🎥 Post a Candidate Video
-        </div>
-
-        <div class="candidate-video-subtitle">
-            Share your skills, introduction, achievements or career journey.
+        <div class="candidate-video-header">
+            <h2>🎥 Post Candidate Video</h2>
+            <p>Show recruiters and candidates your skills, achievements and career journey.</p>
         </div>
 
         <form
             method="POST"
             action="{{ url_for('candidate_post_video') }}"
             enctype="multipart/form-data"
+            id="candidateVideoForm"
         >
 
-            <div class="video-field">
+            <div class="candidate-video-section">
 
-                <label for="candidate_video">
-                    Video
-                </label>
+                <div class="candidate-video-section-title">
+                    🎥 Video Information
+                </div>
 
-                <input
-                    id="candidate_video"
-                    type="file"
-                    name="candidate_video"
-                    accept="video/*"
-                    required
-                >
+                <!-- Video -->
+                <div class="video-field">
 
-                <div class="video-help">
-                    Maximum duration: 60 seconds.
+                    <label for="candidate_video">
+                        🎥 Candidate Video (Max 60 sec)
+                    </label>
+
+                    <input
+                        id="candidate_video"
+                        type="file"
+                        name="candidate_video"
+                        accept="video/*"
+                        hidden
+                        required
+                    >
+
+                    <label
+                        for="candidate_video"
+                        class="upload-box"
+                        id="uploadBox"
+                    >
+                        <i class="fas fa-video fa-3x mb-3"></i>
+                        <h5 id="uploadTitle">Upload Candidate Video</h5>
+                        <p class="mb-0" id="uploadHelp">
+                            Tap to choose a video • Maximum 60 seconds
+                        </p>
+                    </label>
+
+                    <div id="preview-container"></div>
+
+                    <div class="video-help">
+                        For a faster upload, use a reasonably compressed MP4 video.
+                    </div>
+
+                </div>
+
+                <!-- Location -->
+                <div class="video-field">
+
+                    <label for="location">📍 Location</label>
+
+                    <input
+                        id="location"
+                        type="text"
+                        name="location"
+                        value="{{ candidate.city or '' }}"
+                        maxlength="150"
+                        placeholder="Where was this video posted from?"
+                        required
+                    >
+
+                    <div class="video-help">
+                        This location will be shown publicly with your video.
+                    </div>
+
+                </div>
+
+                <!-- Caption -->
+                <div class="video-field">
+
+                    <label for="caption">📝 Caption</label>
+
+                    <textarea
+                        id="caption"
+                        name="caption"
+                        maxlength="2000"
+                        placeholder="Tell recruiters and other candidates about this video..."
+                    ></textarea>
+
+                </div>
+
+                <!-- Hashtags -->
+                <div class="video-field">
+
+                    <label for="hashtags">#️⃣ Hashtags</label>
+
+                    <input
+                        id="hashtags"
+                        type="text"
+                        name="hashtags"
+                        maxlength="500"
+                        placeholder="#Python #Marketing #Designer"
+                    >
+
                 </div>
 
             </div>
 
-            <div class="video-field">
-
-                <label for="location">
-                    Location
-                </label>
-
-                <input
-                    id="location"
-                    type="text"
-                    name="location"
-                    value="{{ candidate.city or '' }}"
-                    maxlength="150"
-                    placeholder="Where was this video posted from?"
-                    required
-                >
-
-                <div class="video-help">
-                    This location will be shown publicly with your video.
-                </div>
-
-            </div>
-
-            <div class="video-field">
-
-                <label for="caption">
-                    Caption
-                </label>
-
-                <textarea
-                    id="caption"
-                    name="caption"
-                    maxlength="2000"
-                    placeholder="Tell recruiters and other candidates about this video..."
-                ></textarea>
-
-            </div>
-
-            <div class="video-field">
-
-                <label for="hashtags">
-                    Hashtags
-                </label>
-
-                <input
-                    id="hashtags"
-                    type="text"
-                    name="hashtags"
-                    maxlength="500"
-                    placeholder="#Hiring #Python #Marketing"
-                >
-
-            </div>
-
-            <button
-                type="submit"
-                class="video-submit"
+            <!-- Real upload progress -->
+            <div
+                id="uploadProgressBox"
+                class="upload-progress-box"
             >
-                Post Video
-            </button>
+
+                <div class="upload-progress-label">
+                    <span id="uploadProgressTitle">Uploading Video...</span>
+                    <span id="uploadPercent">0%</span>
+                </div>
+
+                <div class="upload-progress-track">
+                    <div
+                        id="uploadBar"
+                        class="upload-progress-bar"
+                    ></div>
+                </div>
+
+                <div
+                    id="uploadStatus"
+                    class="upload-status"
+                >
+                    Preparing upload...
+                </div>
+
+            </div>
+
+            <div class="candidate-video-section">
+
+                <div class="policy-box">
+
+                    <input
+                        type="checkbox"
+                        id="agreePolicy"
+                    >
+
+                    <label for="agreePolicy">
+                        I confirm that this video does not contain nudity, sexual
+                        content, violence, hate speech, illegal activities,
+                        copyrighted material, misleading information, or any
+                        content that violates RecrootEarn's Community Guidelines.
+                        I understand that violating these rules may result in
+                        removal of my content or permanent suspension.
+                    </label>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="video-submit"
+                    id="publishBtn"
+                    disabled
+                >
+                    🚀 Publish Video
+                </button>
+
+            </div>
 
         </form>
 
     </div>
 
 </div>
+
+<!-- 60 second alert -->
+<div
+    class="modal fade"
+    id="videoAlert"
+    tabindex="-1"
+>
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content" style="border-radius:20px;">
+
+            <div class="modal-body text-center p-4">
+                <h5>❌ Video Not Allowed</h5>
+                <p class="mb-0">
+                    Maximum 60 seconds video is allowed.
+                </p>
+            </div>
+
+            <div class="modal-footer justify-content-center border-0">
+                <button
+                    class="btn btn-primary"
+                    data-bs-dismiss="modal"
+                >
+                    OK
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+const form = document.getElementById("candidateVideoForm");
+const videoInput = document.getElementById("candidate_video");
+const uploadBox = document.getElementById("uploadBox");
+const uploadTitle = document.getElementById("uploadTitle");
+const uploadHelp = document.getElementById("uploadHelp");
+const preview = document.getElementById("preview-container");
+
+const agreePolicy = document.getElementById("agreePolicy");
+const publishBtn = document.getElementById("publishBtn");
+
+const progressBox = document.getElementById("uploadProgressBox");
+const uploadBar = document.getElementById("uploadBar");
+const uploadPercent = document.getElementById("uploadPercent");
+const uploadStatus = document.getElementById("uploadStatus");
+const uploadProgressTitle = document.getElementById("uploadProgressTitle");
+
+let selectedVideoURL = null;
+let uploading = false;
+
+
+/* ============================
+   POLICY
+============================ */
+
+agreePolicy.addEventListener("change", function(){
+
+    publishBtn.disabled =
+        !this.checked ||
+        !videoInput.files.length ||
+        uploading;
+
+});
+
+
+/* ============================
+   VIDEO SELECTION
+============================ */
+
+videoInput.addEventListener("change", function(){
+
+    preview.innerHTML = "";
+
+    if(selectedVideoURL){
+        URL.revokeObjectURL(selectedVideoURL);
+        selectedVideoURL = null;
+    }
+
+    if(!this.files.length){
+
+        uploadTitle.textContent =
+            "Upload Candidate Video";
+
+        uploadHelp.textContent =
+            "Tap to choose a video • Maximum 60 seconds";
+
+        publishBtn.disabled = true;
+
+        return;
+    }
+
+    const file = this.files[0];
+
+    /* Basic size feedback */
+    const sizeMB =
+        file.size / (1024 * 1024);
+
+    selectedVideoURL =
+        URL.createObjectURL(file);
+
+    const video =
+        document.createElement("video");
+
+    video.preload = "metadata";
+    video.muted = true;
+    video.playsInline = true;
+
+    video.onloadedmetadata = function(){
+
+        const duration = video.duration;
+
+        if(!isFinite(duration) || duration > 60){
+
+            if(window.bootstrap){
+
+                new bootstrap.Modal(
+                    document.getElementById("videoAlert")
+                ).show();
+
+            }else{
+
+                alert(
+                    "Maximum 60 seconds video is allowed."
+                );
+
+            }
+
+            videoInput.value = "";
+            preview.innerHTML = "";
+
+            URL.revokeObjectURL(selectedVideoURL);
+            selectedVideoURL = null;
+
+            uploadTitle.textContent =
+                "Upload Candidate Video";
+
+            uploadHelp.textContent =
+                "Tap to choose a video • Maximum 60 seconds";
+
+            publishBtn.disabled = true;
+
+            return;
+        }
+
+        uploadTitle.textContent =
+            "✓ Video Selected";
+
+        uploadHelp.textContent =
+            file.name +
+            " • " +
+            sizeMB.toFixed(1) +
+            " MB • " +
+            Math.ceil(duration) +
+            " sec";
+
+        preview.innerHTML = "";
+
+        const previewVideo =
+            document.createElement("video");
+
+        previewVideo.src =
+            selectedVideoURL;
+
+        previewVideo.controls = true;
+        previewVideo.playsInline = true;
+        previewVideo.preload = "metadata";
+
+        preview.appendChild(previewVideo);
+
+        publishBtn.disabled =
+            !agreePolicy.checked;
+
+    };
+
+    video.onerror = function(){
+
+        alert(
+            "This video could not be read. Please choose another video."
+        );
+
+        videoInput.value = "";
+        preview.innerHTML = "";
+
+        if(selectedVideoURL){
+            URL.revokeObjectURL(selectedVideoURL);
+            selectedVideoURL = null;
+        }
+
+        publishBtn.disabled = true;
+
+    };
+
+    video.src = selectedVideoURL;
+
+});
+
+
+/* ============================
+   REAL UPLOAD PROGRESS
+   ============================ */
+
+form.addEventListener("submit", function(event){
+
+    event.preventDefault();
+
+    if(uploading){
+        return;
+    }
+
+    if(!videoInput.files.length){
+
+        alert("Please select a video.");
+
+        return;
+    }
+
+    if(!agreePolicy.checked){
+
+        alert("Please accept the Community Guidelines.");
+
+        return;
+    }
+
+    uploading = true;
+
+    publishBtn.disabled = true;
+    publishBtn.classList.add("uploading");
+
+    publishBtn.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+
+    progressBox.style.display = "block";
+
+    uploadBar.style.width = "0%";
+    uploadPercent.textContent = "0%";
+
+    uploadProgressTitle.textContent =
+        "Uploading Video...";
+
+    uploadStatus.textContent =
+        "Starting secure upload...";
+
+    /*
+       XMLHttpRequest gives REAL network upload progress.
+       Unlike the old timer-based progress, this bar follows
+       the actual bytes sent to the server.
+    */
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.open(
+        "POST",
+        form.action,
+        true
+    );
+
+    xhr.upload.addEventListener(
+        "progress",
+        function(event){
+
+            if(!event.lengthComputable){
+                return;
+            }
+
+            const percent =
+                Math.round(
+                    (event.loaded / event.total) * 100
+                );
+
+            uploadBar.style.width =
+                percent + "%";
+
+            uploadPercent.textContent =
+                percent + "%";
+
+            if(percent >= 100){
+
+                uploadProgressTitle.textContent =
+                    "Processing Video...";
+
+                uploadStatus.textContent =
+                    "Upload complete. Preparing your video...";
+
+            }else{
+
+                uploadProgressTitle.textContent =
+                    "Uploading Video...";
+
+                uploadStatus.textContent =
+                    "Uploading " +
+                    Math.round(event.loaded / 1024 / 1024) +
+                    " MB of " +
+                    Math.round(event.total / 1024 / 1024) +
+                    " MB";
+
+            }
+
+        }
+    );
+
+    xhr.onreadystatechange = function(){
+
+        if(xhr.readyState !== 4){
+            return;
+        }
+
+        if(xhr.status >= 200 && xhr.status < 400){
+
+            uploadBar.style.width = "100%";
+            uploadPercent.textContent = "100%";
+
+            uploadProgressTitle.textContent =
+                "✓ Video Uploaded";
+
+            uploadStatus.textContent =
+                "Finalizing your post...";
+
+            /*
+               Flask/Gunicorn normally returns a redirect after
+               a successful POST. XHR follows it and exposes the
+               final URL through responseURL.
+            */
+
+            setTimeout(function(){
+
+                if(xhr.responseURL){
+
+                    window.location.href =
+                        xhr.responseURL;
+
+                }else{
+
+                    window.location.reload();
+
+                }
+
+            }, 400);
+
+        }else{
+
+            uploading = false;
+
+            publishBtn.disabled =
+                !agreePolicy.checked;
+
+            publishBtn.classList.remove("uploading");
+
+            publishBtn.innerHTML =
+                "🚀 Publish Video";
+
+            uploadProgressTitle.textContent =
+                "❌ Upload Failed";
+
+            uploadStatus.textContent =
+                "Please try again.";
+
+            alert(
+                "Video upload failed. Please try again."
+            );
+
+        }
+
+    };
+
+    xhr.onerror = function(){
+
+        uploading = false;
+
+        publishBtn.disabled =
+            !agreePolicy.checked;
+
+        publishBtn.classList.remove("uploading");
+
+        publishBtn.innerHTML =
+            "🚀 Publish Video";
+
+        uploadProgressTitle.textContent =
+            "❌ Upload Failed";
+
+        uploadStatus.textContent =
+            "Network error. Please check your connection.";
+
+        alert(
+            "Network error while uploading the video."
+        );
+
+    };
+
+    const formData =
+        new FormData(form);
+
+    xhr.send(formData);
+
+});
+
+</script>
 
 {% endblock %}
