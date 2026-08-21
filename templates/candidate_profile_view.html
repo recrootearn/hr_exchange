@@ -451,7 +451,7 @@
                 {# Instagram-style grid: clicking a thumbnail opens the single post page. #}
                 {% for cv in candidate_videos %}
                 <a class="profile-video-item profile-video-link"
-                   href="{{ url_for('candidate_video', video_id=cv.id) }}"
+                   href="{{ url_for('candidate_video_view', video_id=cv.id) }}"
                    aria-label="Open candidate video">
                     <div class="profile-video-media">
                         <video playsinline preload="metadata"
