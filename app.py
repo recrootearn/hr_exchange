@@ -10691,7 +10691,10 @@ def candidate_profile():
 
         candidate_paid_credits=int(candidate.paid_credits or 0),
 
-        profile_completion=completion
+        profile_completion=completion,
+        is_owner=True,
+        is_following=False,
+        contact_unlocked=True
 
     )
 
@@ -12095,15 +12098,35 @@ def view_candidates(id):
         if candidate.company_name and candidate.designation:
             completion += 10
 
-    is_following = Follow.query.filter_by(
-        follower_hr_id=current_user.id,
-        followed_candidate_id=id
-    ).first()
+    # ---------------------------------------------------------
+    # OWNER / VIEWER MODE
+    # ---------------------------------------------------------
+    # A candidate can reach this route from Discover and open their
+    # own profile. In that case the profile MUST render owner controls
+    # (Edit Profile + Upload Video), never the Follow button.
+    viewer_candidate_id = session.get("candidate_id")
+    is_owner = (
+        viewer_candidate_id is not None
+        and int(viewer_candidate_id) == int(id)
+    )
 
-    contact_unlocked = CandidateContactUnlock.query.filter_by(
-        hr_id=current_user.id,
-        candidate_user_id=id
-    ).first()
+    if is_owner:
+        is_following = False
+        contact_unlocked = True
+        candidate_paid_credits = int(candidate.paid_credits or 0)
+    else:
+        # Only HR viewers use HR -> candidate follow/unlock state.
+        is_following = Follow.query.filter_by(
+            follower_hr_id=current_user.id,
+            followed_candidate_id=id
+        ).first()
+
+        contact_unlocked = CandidateContactUnlock.query.filter_by(
+            hr_id=current_user.id,
+            candidate_user_id=id
+        ).first()
+
+        candidate_paid_credits = 0
 
     return render_template(
         "candidate_profile_view.html",
@@ -12112,9 +12135,9 @@ def view_candidates(id):
         following_count=following_count,
         candidate_video_count=len(candidate_videos),
         candidate_videos=candidate_videos,
-        candidate_paid_credits=0,
+        candidate_paid_credits=candidate_paid_credits,
         profile_completion=completion,
-        is_owner=False,
+        is_owner=is_owner,
         is_following=is_following,
         contact_unlocked=contact_unlocked
     )
