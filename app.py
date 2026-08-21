@@ -12024,14 +12024,76 @@ def check_email():
 @app.route('/candidate/<int:id>')
 @login_required
 def view_candidates(id):
+    """
+    Discover Candidates -> same full candidate profile view.
 
-    settings = get_business_settings()
+    HR viewers get the complete candidate profile but are treated as
+    non-owners, so owner-only controls are hidden by the template.
+    """
 
     candidate = CandidateUser.query.get_or_404(id)
 
     followers_count = Follow.query.filter_by(
         followed_candidate_id=id
     ).count()
+
+    following_count = Follow.query.filter_by(
+        follower_candidate_id=id
+    ).count()
+
+    candidate_videos = (
+        CandidateVideoPost.query
+        .filter_by(
+            candidate_id=id,
+            is_active=True
+        )
+        .order_by(
+            CandidateVideoPost.created_at.desc()
+        )
+        .all()
+    )
+
+    active_candidate_boosts = {}
+
+    if candidate_videos:
+        active_candidate_boosts = {
+            b.video_id: b
+            for b in CandidateVideoBoost.query.filter(
+                CandidateVideoBoost.video_id.in_(
+                    [v.id for v in candidate_videos]
+                ),
+                CandidateVideoBoost.status == "Active"
+            ).all()
+        }
+
+    for video in candidate_videos:
+        video.active_boost = active_candidate_boosts.get(video.id)
+
+    # Same completion calculation used by the candidate's own profile.
+    completion = 0
+
+    if candidate.profile_photo:
+        completion += 10
+    if candidate.resume_file:
+        completion += 10
+    if candidate.about_me:
+        completion += 10
+    if candidate.skills:
+        completion += 10
+    if candidate.city:
+        completion += 10
+    if candidate.qualification:
+        completion += 10
+    if candidate.dob:
+        completion += 10
+    if candidate.education:
+        completion += 10
+    if candidate.interested_fields:
+        completion += 10
+
+    if candidate.career_level == "Experienced":
+        if candidate.company_name and candidate.designation:
+            completion += 10
 
     is_following = Follow.query.filter_by(
         follower_hr_id=current_user.id,
@@ -12043,23 +12105,20 @@ def view_candidates(id):
         candidate_user_id=id
     ).first()
 
-    has_applied = JobApplication.query.join(
-        JobPost,
-        JobPost.id == JobApplication.job_id
-    ).filter(
-        JobApplication.candidate_id == candidate.id,
-        JobPost.hr_id == current_user.id
-    ).first()
-
     return render_template(
-        "candidate_view.html",
+        "candidate_profile_view.html",
         candidate=candidate,
         followers_count=followers_count,
+        following_count=following_count,
+        candidate_video_count=len(candidate_videos),
+        candidate_videos=candidate_videos,
+        candidate_paid_credits=0,
+        profile_completion=completion,
+        is_owner=False,
         is_following=is_following,
-        contact_unlocked=contact_unlocked,
-        has_applied=has_applied,
-        settings=settings
+        contact_unlocked=contact_unlocked
     )
+
 
 @app.route('/follow-hr/<int:id>')
 def follow_hr(id):
@@ -12469,7 +12528,7 @@ def unlock_contact(id):
 
     candidate = CandidateUser.query.get_or_404(id)
 
-    cost = settings.discover_unlock_credits
+    cost = 2  # Discover resume unlock is ALWAYS 2 PAID credits
 
     paid_credit_used = False
     purchase = None
@@ -12495,20 +12554,15 @@ def unlock_contact(id):
             purchase.credits_remaining -= cost
 
     # =====================================
-    # OTHERWISE USE FREE CREDITS
-    # =====================================
-
-    elif current_user.credits >= cost:
-
-        current_user.credits -= cost
-
-    # =====================================
     # NOT ENOUGH CREDITS
     # =====================================
 
     else:
 
-        flash(f"Need {cost} credits")
+        flash(
+            "You need 2 paid credits to unlock this candidate's resume.",
+            "warning"
+        )
 
         return redirect(request.referrer)
 
