@@ -20609,6 +20609,21 @@ def marketplace_payment_success():
     # 14. CLEAR PAYMENT SESSION
     # ---------------------------------------------------------
 
+    # ---------------------------------------------------------
+    # SELLER ORDER RECEIVED NOTIFICATION
+    # ---------------------------------------------------------
+    try:
+        notify_event(
+            order.seller_id,
+            "hr",
+            "New Order Received 🛒",
+            f"You have received a new order #{order.order_number}.",
+            f"/order/{order.id}",
+            "order",
+        )
+    except Exception as e:
+        print("Seller order notification error:", e)
+
     session.pop(
         "marketplace_payment",
         None
