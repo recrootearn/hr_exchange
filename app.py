@@ -20669,7 +20669,7 @@ def marketplace_payment_success():
                 "candidate",
                 "Order Placed Successfully ✅",
                 f"Your order #{order.order_number} has been placed successfully.",
-                f"/order/{order.id}",
+                f"/my-orders/{order.id}",
                 "order",
             )
         elif getattr(order, "user_id", None):
@@ -20700,8 +20700,10 @@ def marketplace_payment_success():
         "success"
     )
 
+    # Customer must land on the customer order-details page,
+    # not the shared seller Accept/Reject order page.
     return redirect(
-        f"/order/{order.id}"
+        f"/my-orders/{order.id}"
     )
 
 @app.route("/my-orders")
