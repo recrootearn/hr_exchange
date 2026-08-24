@@ -13923,7 +13923,9 @@ def candidate_feed():
     # -------------------------------------------------
     candidate_videos = []
 
-    if "candidate_id" in session:
+    # Candidate-uploaded videos are video content. They must appear in
+    # ALL and VIDEOS, but never in HIRING.
+    if selected_content != "jobs" and "candidate_id" in session:
         viewer_candidate_id = session["candidate_id"]
 
         followed_candidate_ids = [
