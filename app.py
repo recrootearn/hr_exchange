@@ -4821,6 +4821,44 @@ class DelhiveryService:
                     "payment_mode":
                         payment_mode,
 
+                    # -------------------------------------------------
+                    # ORDER VALUE / COD AMOUNT
+                    # These values are sent to Delhivery so the
+                    # shipping label does not show ₹0 for a paid order.
+                    # total_amount = product value + delivery charges.
+                    # -------------------------------------------------
+                    "total_amount":
+                        round(
+                            float(
+                                getattr(order, "total_amount", 0) or 0
+                            ),
+                            2
+                        ),
+
+                    "product_value":
+                        round(
+                            float(
+                                getattr(order, "subtotal", 0) or 0
+                            ),
+                            2
+                        ),
+
+                    "shipping_charges":
+                        round(
+                            float(
+                                getattr(order, "shipping_charge", 0) or 0
+                            ),
+                            2
+                        ),
+
+                    "cod_amount":
+                        round(
+                            float(
+                                getattr(order, "total_amount", 0) or 0
+                            ),
+                            2
+                        ) if payment_mode == "COD" else 0,
+
                     "products_desc":
                         product_description,
 
