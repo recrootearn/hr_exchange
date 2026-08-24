@@ -6166,7 +6166,8 @@ def send_notification(
     link="",
     image="",
     type="general",
-    extra=None
+    extra=None,
+    title="RecrootEarn"
 ):
 
     try:
@@ -6207,7 +6208,7 @@ def send_notification(
         if user and user.fcm_token:
             send_push_notification(
                 user.fcm_token,
-                "",
+                title or "RecrootEarn",
                 message
             )
     except Exception as e:
@@ -6359,7 +6360,7 @@ def notify_order_event(user_id, user_type, order_id, status, link=None):
         user_type,
         title,
         template.format(order_id),
-        link or f"/orders/{order_id}",
+        link or f"/order/{order_id}",
         "order_status",
     )
 
@@ -6431,7 +6432,7 @@ def notify_order_event_args(order_id, status, link=None):
     return (
         title,
         message,
-        link or f"/orders/{order_id}",
+        link or f"/order/{order_id}",
         "order_status",
         None,
     )
@@ -20610,9 +20611,10 @@ def marketplace_payment_success():
     # ---------------------------------------------------------
 
     # ---------------------------------------------------------
-    # SELLER ORDER RECEIVED NOTIFICATION
+    # ORDER PUSH NOTIFICATIONS
     # ---------------------------------------------------------
     try:
+        # Seller notification
         notify_event(
             order.seller_id,
             "hr",
@@ -20621,8 +20623,29 @@ def marketplace_payment_success():
             f"/order/{order.id}",
             "order",
         )
+
+        # Customer notification
+        if getattr(order, "candidate_id", None):
+            notify_event(
+                order.candidate_id,
+                "candidate",
+                "Order Placed Successfully ✅",
+                f"Your order #{order.order_number} has been placed successfully.",
+                f"/order/{order.id}",
+                "order",
+            )
+        elif getattr(order, "user_id", None):
+            notify_event(
+                order.user_id,
+                "hr",
+                "Order Placed Successfully ✅",
+                f"Your order #{order.order_number} has been placed successfully.",
+                f"/order/{order.id}",
+                "order",
+            )
+
     except Exception as e:
-        print("Seller order notification error:", e)
+        print("Order push notification error:", e)
 
     session.pop(
         "marketplace_payment",
