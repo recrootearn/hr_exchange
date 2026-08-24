@@ -6213,6 +6213,269 @@ def send_notification(
     except Exception as e:
         print("Push notification error:", e)
 
+
+
+def notify_event(
+    user_id,
+    user_type,
+    title,
+    message,
+    link=None,
+    notification_type="general",
+    image=None,
+):
+    """
+    Central notification gateway.
+
+    Saves the in-app notification and attempts the existing push notification
+    mechanism. Errors are isolated so a notification failure never breaks the
+    user's main action (payment/order/etc.).
+    """
+    try:
+        payload = {
+            "user_id": user_id,
+            "user_type": user_type,
+            "title": title,
+            "message": message,
+            "link": link,
+            "type": notification_type,
+            "image": image,
+        }
+
+        # Reuse the application's existing notification helper.
+        send_notification(**payload)
+        return True
+
+    except Exception as e:
+        print("NOTIFICATION EVENT ERROR:", e)
+        db.session.rollback()
+        return False
+
+
+def notify_both(
+    user_id,
+    title,
+    message,
+    link=None,
+    notification_type="general",
+    image=None,
+):
+    """
+    Send the same event to both possible account types only when the
+    corresponding account exists. This is useful for shared social/shop
+    actions where the recipient may be an HR or a candidate.
+    """
+    sent = False
+
+    try:
+        if User.query.get(user_id):
+            sent = notify_event(
+                user_id,
+                "hr",
+                title,
+                message,
+                link,
+                notification_type,
+                image,
+            ) or sent
+    except Exception:
+        pass
+
+    try:
+        if CandidateUser.query.get(user_id):
+            sent = notify_event(
+                user_id,
+                "candidate",
+                title,
+                message,
+                link,
+                notification_type,
+                image,
+            ) or sent
+    except Exception:
+        pass
+
+    return sent
+
+
+def notify_payment_success(user_id, user_type, amount, credits=None, link="/wallet"):
+    extra = f" {credits} credits have been added to your account." if credits is not None else ""
+    return notify_event(
+        user_id,
+        user_type,
+        "Payment Successful 💳",
+        f"Your payment of ₹{amount:.2f} was successful.{extra}",
+        link,
+        "payment_success",
+    )
+
+
+def notify_credits_added(user_id, user_type, credits, link="/wallet"):
+    return notify_event(
+        user_id,
+        user_type,
+        "Credits Added 💰",
+        f"{credits} credits have been added to your wallet.",
+        link,
+        "credits_added",
+    )
+
+
+def notify_credits_deducted(user_id, user_type, credits, reason="", link="/wallet"):
+    suffix = f" for {reason}" if reason else ""
+    return notify_event(
+        user_id,
+        user_type,
+        "Credits Used",
+        f"{credits} paid credits were deducted from your wallet{suffix}.",
+        link,
+        "credits_deducted",
+    )
+
+
+def notify_order_event(user_id, user_type, order_id, status, link=None):
+    labels = {
+        "Placed": ("Order Placed 🛒", "Your order #{0} has been placed successfully."),
+        "Confirmed": ("Order Confirmed ✅", "Your order #{0} has been confirmed."),
+        "Packed": ("Order Packed 📦", "Your order #{0} has been packed."),
+        "Shipped": ("Order Shipped 🚚", "Your order #{0} has been shipped."),
+        "Out for Delivery": ("Out for Delivery 🛵", "Your order #{0} is out for delivery."),
+        "Delivered": ("Order Delivered 🎉", "Your order #{0} has been delivered."),
+        "Cancelled": ("Order Cancelled", "Your order #{0} has been cancelled."),
+        "Return Requested": ("Return Requested", "A return has been requested for order #{0}."),
+        "Return Approved": ("Return Approved", "The return for order #{0} has been approved."),
+        "Return Rejected": ("Return Rejected", "The return for order #{0} has been rejected."),
+        "Refund Initiated": ("Refund Initiated 💸", "A refund has been initiated for order #{0}."),
+        "Refund Completed": ("Refund Completed 💰", "Your refund for order #{0} has been completed."),
+    }
+
+    title, template = labels.get(
+        status,
+        ("Order Update", "Your order #{0} status is now: " + str(status) + "."),
+    )
+
+    return notify_event(
+        user_id,
+        user_type,
+        title,
+        template.format(order_id),
+        link or f"/orders/{order_id}",
+        "order_status",
+    )
+
+
+def notify_order_parties(order, status, link=None):
+    """
+    Notify buyer for every order-status transition and notify the seller
+    for the seller-relevant lifecycle events.
+    """
+    sent = False
+
+    buyer_id = getattr(order, "user_id", None)
+    if buyer_id:
+        sent = notify_event(
+            buyer_id,
+            "candidate" if getattr(order, "user_type", "") == "candidate" else "hr",
+            *notify_order_event_args(order.id, status, link),
+        ) or sent
+
+    seller_id = getattr(order, "seller_id", None)
+    if seller_id and status in {
+        "Placed", "Cancelled", "Return Requested",
+        "Return Approved", "Return Rejected",
+    }:
+        sent = notify_event(
+            seller_id,
+            "hr",
+            *notify_order_event_args(order.id, status, link),
+        ) or sent
+
+    return sent
+
+
+
+def notify_order_status_change(order, new_status):
+    """Call after an existing order status is successfully committed."""
+    try:
+        return notify_order_parties(
+            order,
+            str(new_status),
+            f"/orders/{order.id}"
+        )
+    except Exception as e:
+        print("Order status notification error:", e)
+        return False
+
+
+def notify_order_event_args(order_id, status, link=None):
+    labels = {
+        "Placed": ("Order Placed 🛒", f"Your order #{order_id} has been placed successfully."),
+        "Confirmed": ("Order Confirmed ✅", f"Your order #{order_id} has been confirmed."),
+        "Packed": ("Order Packed 📦", f"Your order #{order_id} has been packed."),
+        "Shipped": ("Order Shipped 🚚", f"Your order #{order_id} has been shipped."),
+        "Out for Delivery": ("Out for Delivery 🛵", f"Your order #{order_id} is out for delivery."),
+        "Delivered": ("Order Delivered 🎉", f"Your order #{order_id} has been delivered."),
+        "Cancelled": ("Order Cancelled", f"Your order #{order_id} has been cancelled."),
+        "Return Requested": ("Return Requested", f"A return has been requested for order #{order_id}."),
+        "Return Approved": ("Return Approved", f"The return for order #{order_id} has been approved."),
+        "Return Rejected": ("Return Rejected", f"The return for order #{order_id} has been rejected."),
+        "Refund Initiated": ("Refund Initiated 💸", f"A refund has been initiated for order #{order_id}."),
+        "Refund Completed": ("Refund Completed 💰", f"Your refund for order #{order_id} has been completed."),
+    }
+
+    title, message = labels.get(
+        status,
+        ("Order Update", f"Your order #{order_id} status is now: {status}."),
+    )
+
+    return (
+        title,
+        message,
+        link or f"/orders/{order_id}",
+        "order_status",
+        None,
+    )
+
+def notify_hr_followers(hr_id, message, link="", image="", type="general"):
+    """Notify all candidates and HRs following an HR/shop owner."""
+    followers = Follow.query.filter_by(followed_hr_id=hr_id).all()
+    for follow in followers:
+        if follow.follower_candidate_id:
+            follower = CandidateUser.query.get(follow.follower_candidate_id)
+            if follower:
+                send_notification(
+                    user_id=follower.id, user_type="candidate",
+                    message=message, link=link, image=image, type=type
+                )
+        if follow.follower_hr_id:
+            follower = User.query.get(follow.follower_hr_id)
+            if follower:
+                send_notification(
+                    user_id=follower.id, user_type="hr",
+                    message=message, link=link, image=image, type=type
+                )
+
+
+def notify_candidate_followers(candidate_id, message, link="", image="", type="general"):
+    """Notify all candidates and HRs following a candidate."""
+    followers = Follow.query.filter_by(followed_candidate_id=candidate_id).all()
+    for follow in followers:
+        if follow.follower_candidate_id:
+            follower = CandidateUser.query.get(follow.follower_candidate_id)
+            if follower:
+                send_notification(
+                    user_id=follower.id, user_type="candidate",
+                    message=message, link=link, image=image, type=type
+                )
+        if follow.follower_hr_id:
+            follower = User.query.get(follow.follower_hr_id)
+            if follower:
+                send_notification(
+                    user_id=follower.id, user_type="hr",
+                    message=message, link=link, image=image, type=type
+                )
+
+
 def replace_notification_variables(message, user=None, extra=None):
 
     if extra is None:
@@ -12530,6 +12793,17 @@ def follow_candidate(id):
 
         db.session.add(follow)
 
+        candidate = CandidateUser.query.get(id)
+        if candidate:
+            send_notification(
+                user_id=candidate.id,
+                user_type="candidate",
+                message=f"{current_user.first_name} {current_user.last_name} started following you",
+                link=f"/candidate/{candidate.id}",
+                image=current_user.profile_photo,
+                type="follow"
+            )
+
     db.session.commit()
 
     return redirect(request.referrer)
@@ -12842,46 +13116,17 @@ def post_job():
         db.session.commit()
 
         # ===========================
-        # NOTIFY FOLLOWERS
+        # NOTIFY ALL FOLLOWERS
         # ===========================
+        first_image = saved_images[0] if saved_images else ""
 
-        followers = Follow.query.filter_by(
-            followed_hr_id=current_user.id
-        ).all()
-
-        first_image = (
-            saved_images[0]
-            if saved_images
-            else ""
+        notify_hr_followers(
+            current_user.id,
+            f"{current_user.company} posted a new job: {job.job_title}",
+            link=f"/job/{job.id}",
+            image=first_image,
+            type="job_post"
         )
-
-        for f in followers:
-
-            if not f.follower_candidate_id:
-                continue
-
-            candidate = CandidateUser.query.get(
-                f.follower_candidate_id
-            )
-
-            if not candidate:
-                continue
-
-            send_notification(
-
-                user_id=candidate.id,
-
-                user_type="candidate",
-
-                message=f"{current_user.company} posted a new job: {job.job_title}",
-
-                link=f"/job/{job.id}",
-
-                image=first_image,
-
-                type="job_post"
-
-            )
 
         db.session.commit()
 
@@ -12962,6 +13207,16 @@ def post_video():
         )
 
         db.session.add(job)
+        db.session.commit()
+
+        notify_hr_followers(
+            current_user.id,
+            f"{current_user.company} posted a new video 🎥",
+            link=f"/job/{job.id}",
+            image=filename,
+            type="company_video_post"
+        )
+
         db.session.commit()
 
         flash("Company video posted successfully.", "success")
@@ -13258,41 +13513,13 @@ def candidate_post_video():
             db.session.commit()
 
             # Notify every follower — candidates and HRs.
-            followers = Follow.query.filter_by(
-                followed_candidate_id=candidate.id
-            ).all()
-
-            for follow in followers:
-
-                if follow.follower_candidate_id:
-                    follower_candidate = CandidateUser.query.get(
-                        follow.follower_candidate_id
-                    )
-
-                    if follower_candidate:
-                        send_notification(
-                            user_id=follower_candidate.id,
-                            user_type="candidate",
-                            message=f"{candidate.full_name} posted a new video 🎥",
-                            link="/candidate-feed",
-                            image=candidate.profile_photo,
-                            type="candidate_video_post"
-                        )
-
-                if follow.follower_hr_id:
-                    follower_hr = User.query.get(
-                        follow.follower_hr_id
-                    )
-
-                    if follower_hr:
-                        send_notification(
-                            user_id=follower_hr.id,
-                            user_type="hr",
-                            message=f"{candidate.full_name} posted a new video 🎥",
-                            link="/feed",
-                            image=candidate.profile_photo,
-                            type="candidate_video_post"
-                        )
+            notify_candidate_followers(
+                candidate.id,
+                f"{candidate.full_name} posted a new video 🎥",
+                link="/candidate-feed",
+                image=candidate.profile_photo,
+                type="candidate_video_post"
+            )
 
             db.session.commit()
 
@@ -18444,6 +18671,16 @@ def add_product():
         # ==========================================
         # FINAL SAVE
         # ==========================================
+
+        db.session.commit()
+
+        notify_hr_followers(
+            current_user.id,
+            f"{current_user.shop_name or current_user.company or current_user.first_name} added a new product: {product.name} 🛍️",
+            link=f"/product/{product.id}",
+            image=(product.images[0].image if product.images else ""),
+            type="product_added"
+        )
 
         db.session.commit()
 
