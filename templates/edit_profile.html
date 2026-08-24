@@ -204,6 +204,69 @@ padding:18px;
 
 }
 
+
+/* ===== Real save/upload progress overlay ===== */
+.re-progress-overlay{
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    background:rgba(15,23,42,.58);
+    backdrop-filter:blur(7px);
+}
+.re-progress-overlay.show{display:flex}
+.re-progress-box{
+    width:min(430px,100%);
+    background:#fff;
+    border-radius:22px;
+    padding:22px;
+    box-shadow:0 25px 70px rgba(0,0,0,.25);
+}
+.re-progress-top{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    margin-bottom:16px;
+}
+.re-progress-icon{
+    width:44px;height:44px;border-radius:13px;
+    display:grid;place-items:center;
+    color:#fff;background:linear-gradient(135deg,#2563eb,#1748c7);
+    flex:0 0 44px;
+}
+.re-progress-title{
+    font-size:16px;font-weight:900;color:#111827;
+}
+.re-progress-status{
+    font-size:12px;color:#64748b;margin-top:3px;
+}
+.re-progress-track{
+    width:100%;height:11px;background:#e8eef8;border-radius:999px;overflow:hidden;
+}
+.re-progress-bar{
+    height:100%;width:0%;
+    border-radius:999px;
+    background:linear-gradient(90deg,#2563eb,#4f46e5);
+    transition:width .18s ease;
+}
+.re-progress-meta{
+    display:flex;justify-content:space-between;gap:10px;
+    margin-top:9px;font-size:12px;font-weight:800;color:#475569;
+}
+.re-progress-note{
+    margin-top:13px;padding:10px 12px;border-radius:11px;
+    background:#f8fafc;color:#64748b;font-size:11px;line-height:1.45;
+}
+.re-progress-spinner{
+    display:inline-block;width:12px;height:12px;border:2px solid #cbd5e1;
+    border-top-color:#2563eb;border-radius:50%;animation:reSpin .7s linear infinite;
+    vertical-align:-2px;margin-right:5px;
+}
+@keyframes reSpin{to{transform:rotate(360deg)}}
+
 </style>
 
 <div class="post-job-wrapper">
@@ -232,9 +295,33 @@ class="profile-photo">
 
 </div>
 
+
+<div id="reProgressOverlay" class="re-progress-overlay" aria-hidden="true">
+    <div class="re-progress-box" role="status" aria-live="polite">
+        <div class="re-progress-top">
+            <div class="re-progress-icon"><i id="reProgressIcon" class="fas fa-cloud-upload-alt"></i></div>
+            <div>
+                <div id="reProgressTitle" class="re-progress-title">Saving...</div>
+                <div id="reProgressStatus" class="re-progress-status">Preparing upload</div>
+            </div>
+        </div>
+        <div class="re-progress-track">
+            <div id="reProgressBar" class="re-progress-bar"></div>
+        </div>
+        <div class="re-progress-meta">
+            <span id="reProgressPercent">0%</span>
+            <span id="reProgressTime">Calculating time...</span>
+        </div>
+        <div class="re-progress-note">
+            <span class="re-progress-spinner"></span>
+            Please keep this page open until the update is complete.
+        </div>
+    </div>
+</div>
+
 <form
 method="POST"
-enctype="multipart/form-data">
+enctype="multipart/form-data" onsubmit="reSubmitWithProgress(this, 'Updating business profile...'); return false;">
 
 {% if profile_completion %}
 
@@ -785,6 +872,114 @@ new TomSelect("#company_city",{
     }
 });
 
+</script>
+
+
+<script>
+(function(){
+    const overlay = document.getElementById("reProgressOverlay");
+    const bar = document.getElementById("reProgressBar");
+    const percent = document.getElementById("reProgressPercent");
+    const timeText = document.getElementById("reProgressTime");
+    const title = document.getElementById("reProgressTitle");
+    const status = document.getElementById("reProgressStatus");
+
+    if(!overlay) return;
+
+    function formatTime(seconds){
+        seconds = Math.max(0, Math.ceil(seconds));
+        if(seconds < 2) return "Almost done";
+        if(seconds < 60) return seconds + " sec left";
+        const m = Math.floor(seconds/60);
+        const s = seconds % 60;
+        return m + "m " + s + "s left";
+    }
+
+    function showProgress(label){
+        title.textContent = label || "Saving...";
+        status.textContent = "Preparing upload";
+        bar.style.width = "0%";
+        percent.textContent = "0%";
+        timeText.textContent = "Calculating time...";
+        overlay.classList.add("show");
+        overlay.setAttribute("aria-hidden","false");
+    }
+
+    function finishProgress(){
+        bar.style.width = "100%";
+        percent.textContent = "100%";
+        timeText.textContent = "Almost done";
+        status.textContent = "Finalizing...";
+    }
+
+    window.reSubmitWithProgress = function(form, label){
+        if(form.dataset.reSubmitting === "1") return;
+        form.dataset.reSubmitting = "1";
+        showProgress(label);
+
+        const method = (form.method || "POST").toUpperCase();
+        const action = form.action || window.location.href;
+        const data = new FormData(form);
+        const xhr = new XMLHttpRequest();
+        const started = performance.now();
+
+        xhr.open(method, action, true);
+
+        xhr.upload.addEventListener("progress", function(e){
+            if(!e.lengthComputable) {
+                status.textContent = "Uploading...";
+                return;
+            }
+
+            const p = Math.min(99, Math.round((e.loaded / e.total) * 100));
+            bar.style.width = p + "%";
+            percent.textContent = p + "%";
+
+            const elapsed = (performance.now() - started) / 1000;
+            if(p > 1){
+                const totalEstimate = elapsed * (100 / p);
+                timeText.textContent = formatTime(totalEstimate - elapsed);
+            }else{
+                timeText.textContent = "Calculating time...";
+            }
+
+            if(p < 25) status.textContent = "Uploading files...";
+            else if(p < 70) status.textContent = "Uploading data...";
+            else status.textContent = "Almost finished...";
+        });
+
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState !== XMLHttpRequest.DONE) return;
+
+            if(xhr.status >= 200 && xhr.status < 400){
+                finishProgress();
+                status.textContent = "Update complete. Opening page...";
+                setTimeout(function(){
+                    // Follow redirects returned by Flask when possible.
+                    // For normal form POSTs, the browser remains on the same
+                    // route only if the server did not redirect.
+                    if(xhr.responseURL && xhr.responseURL !== window.location.href){
+                        window.location.href = xhr.responseURL;
+                    }else{
+                        window.location.reload();
+                    }
+                }, 350);
+            }else{
+                form.dataset.reSubmitting = "0";
+                overlay.classList.remove("show");
+                alert("Unable to complete the update. Please try again.");
+            }
+        };
+
+        xhr.onerror = function(){
+            form.dataset.reSubmitting = "0";
+            overlay.classList.remove("show");
+            alert("Network error. Please try again.");
+        };
+
+        xhr.send(data);
+    };
+})();
 </script>
 
 {% endblock %}
