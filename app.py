@@ -14604,15 +14604,25 @@ def feed():
         for loc in locations
     ]
 
-    active_candidate_video_boosts = {
-        b.video_id: b
-        for b in CandidateVideoBoost.query.filter(
-            CandidateVideoBoost.video_id.in_([v.id for v in candidate_videos])
-            if candidate_videos else []
-        ).filter(
-            CandidateVideoBoost.status == "Active"
-        ).all()
-    }
+    # -------------------------------------------------
+    # Active candidate-video boosts
+    # IMPORTANT: never pass an empty Python list to .filter().
+    # This route is the HR feed, so it needs the same guard as
+    # /candidate-feed when there are no candidate videos.
+    # -------------------------------------------------
+    active_candidate_video_boosts = {}
+
+    if candidate_videos:
+        video_ids = [v.id for v in candidate_videos]
+
+        active_candidate_video_boosts = {
+            b.video_id: b
+            for b in CandidateVideoBoost.query.filter(
+                CandidateVideoBoost.video_id.in_(video_ids),
+                CandidateVideoBoost.status == "Active"
+            ).all()
+        }
+
     for video in candidate_videos:
         video.active_boost = active_candidate_video_boosts.get(video.id)
 
