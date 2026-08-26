@@ -14764,49 +14764,51 @@ def feed():
     # -------------------------------------------------
     # Candidate videos from candidates followed by this HR
     # -------------------------------------------------
-    followed_candidate_ids = [
-        f.followed_candidate_id
-        for f in Follow.query.filter_by(
-            follower_hr_id=current_user.id
-        ).all()
-        if f.followed_candidate_id
-    ]
+    # Candidate-uploaded videos are VIDEO content.
+    # They must appear in ALL and VIDEOS, but NEVER in HIRING.
+    candidate_videos = []
 
-    video_query = CandidateVideoPost.query.filter(
-        CandidateVideoPost.is_active == True
-    )
+    if selected_content != "jobs":
+        followed_candidate_ids = [
+            f.followed_candidate_id
+            for f in Follow.query.filter_by(
+                follower_hr_id=current_user.id
+            ).all()
+            if f.followed_candidate_id
+        ]
 
-    if selected_location:
-        video_query = video_query.filter(
-            func.lower(CandidateVideoPost.location)
-            == selected_location.lower()
+        video_query = CandidateVideoPost.query.filter(
+            CandidateVideoPost.is_active == True
         )
 
-    if followed_candidate_ids:
-        candidate_videos = (
-            video_query
-            .filter(
-                CandidateVideoPost.candidate_id.in_(
-                    followed_candidate_ids
+        if selected_location:
+            video_query = video_query.filter(
+                func.lower(CandidateVideoPost.location)
+                == selected_location.lower()
+            )
+
+        if followed_candidate_ids:
+            candidate_videos = (
+                video_query
+                .filter(
+                    CandidateVideoPost.candidate_id.in_(
+                        followed_candidate_ids
+                    )
                 )
-            )
-            .outerjoin(
-                CandidateVideoBoost,
-                db.and_(
-                    CandidateVideoBoost.video_id == CandidateVideoPost.id,
-                    CandidateVideoBoost.status == "Active"
+                .outerjoin(
+                    CandidateVideoBoost,
+                    db.and_(
+                        CandidateVideoBoost.video_id == CandidateVideoPost.id,
+                        CandidateVideoBoost.status == "Active"
+                    )
                 )
+                .order_by(
+                    case((CandidateVideoBoost.id == None, 1), else_=0),
+                    CandidateVideoBoost.created_at.desc(),
+                    CandidateVideoPost.created_at.desc()
+                )
+                .all()
             )
-            .order_by(
-                case((CandidateVideoBoost.id == None, 1), else_=0),
-                CandidateVideoBoost.created_at.desc(),
-                CandidateVideoPost.created_at.desc()
-            )
-            .all()
-        )
-    else:
-        candidate_videos = []
-        candidate_videos = []
 
     # -----------------------------
     # Applied Jobs
